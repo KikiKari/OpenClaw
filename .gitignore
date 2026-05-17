@@ -271,3 +271,10 @@ important/
 **/OPENAI-KEY-*
 **/PASSWORD.md
 **/WEBSEARCH_CONFIG.md
+
+# =====================================================
+# Memory: persönliche Notizen mit Konversationen,
+# Session-IDs, Infrastruktur-Details - NICHT öffentlich
+# =====================================================
+memory/
+**/memory/
