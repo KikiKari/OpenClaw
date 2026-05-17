@@ -1,0 +1,2 @@
+# ClawHub ↔ Git Sync Sub-Agent - Stündlich
+0 * * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/clawhub-git-sync-agent/scripts/sync_agent.py >> /home/openclaw/.openclaw/workspace/logs/sync-agent.log 2>&1

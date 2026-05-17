@@ -1,0 +1,25 @@
+# OpenClaw Server Maintenance CRON Jobs
+# RAM: 8GB, Location: Europe/Berlin
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/openclaw/.npm-global/bin
+
+# Täglich 03:00 - APT Update Check
+0 3 * * * root apt update -qq 2>&1 | tail -5 >> /var/log/server-maintenance.log 2>&1
+
+# Wöchentlich Sonntag 04:00 - APT Upgrade
+0 4 * * 0 root /usr/bin/unattended-upgrade --dry-run 2>&1 | grep -q "0 upgraded" || (apt upgrade -y >> /var/log/apt-upgrade.log 2>&1 && echo "$(date '+%Y-%m-%d %H:%M:%S'): APT Upgrade completed" >> /var/log/server-maintenance.log)
+
+# Täglich 05:00 - NPM Global Update Check
+0 5 * * * root su - openclaw -c "npm outdated -g" >> /var/log/npm-update.log 2>&1
+
+# Wöchentlich Montag 05:00 - NPM Global Upgrade
+0 5 * * 1 root su - openclaw -c "npm update -g" >> /var/log/npm-upgrade.log 2>&1 && echo "$(date '+%Y-%m-%d %H:%M:%S'): NPM Upgrade completed" >> /var/log/server-maintenance.log
+
+# Täglich 06:00 - System Health Check (RAM, Disk, NTP)
+0 6 * * * root /home/openclaw/.openclaw/scripts/server-maintenance.sh >> /var/log/server-maintenance.log 2>&1
+
+# Stündlich - OpenClaw Gateway Check
+0 * * * * root systemctl is-active --quiet openclaw-gateway || systemctl restart openclaw-gateway
+
+# Täglich 02:00 - Log Rotation
+0 2 * * * root /usr/sbin/logrotate -f /etc/logrotate.conf 2>/dev/null || true

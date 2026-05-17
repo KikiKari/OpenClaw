@@ -1,0 +1,6 @@
+# Channel Status Agent - Regelmäßige Status-Updates
+# Täglich um 09:00 - Tagesstatus
+0 9 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/channel-status-agent/scripts/channel_status.py --type daily >> /home/openclaw/.openclaw/workspace/logs/channel-status.log 2>&1
+
+# Wöchentlich Montag 09:00 - Wochenbericht
+0 9 * * 1 /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/channel-status-agent/scripts/channel_status.py --type weekly >> /home/openclaw/.openclaw/workspace/logs/channel-status.log 2>&1

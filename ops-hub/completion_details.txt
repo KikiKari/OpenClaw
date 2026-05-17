@@ -1,0 +1,3 @@
+Exact completion details:
+Exec finished (gateway id=ddbfb335-5a2f-49f3-a6de-8424da2c8b3c, session=sharp-glade, code 1)
+OLLECTOR ============================================================ [2026-05-03T17:36:15.811844] [INFO] ============================================================ [2026-05-03T17:36:15.812105] [INFO] LOG COLLECTOR CYCLE START [2026-05-03T17:36:15.812158] [INFO] ============================================================ CRITICAL ERROR: unable to open database file (Command exited with code 1)

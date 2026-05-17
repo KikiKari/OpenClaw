@@ -1,0 +1,11 @@
+# hourly-email-check (deaktiviert)
+# 0 * * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/himalaya/scripts/email_check.py >> /home/openclaw/.openclaw/workspace/logs/email-check.log 2>&1
+
+# node3-reboot-check (deaktiviert - einmalig)
+# 2026-04-08T03:31:00.000Z
+
+# tiktok-live-check-45 (deaktiviert)
+# 45 * * * * /usr/bin/python3 /home/openclaw/.openclaw/skills/tiktok-live/scripts/check_streams.py --interval 45 >> /home/openclaw/.openclaw/workspace/logs/tiktok-live.log 2>&1
+
+# tiktok-live-check-20 (deaktiviert)
+# 20 * * * * /usr/bin/python3 /home/openclaw/.openclaw/skills/tiktok-live/scripts/check_streams.py --interval 20 >> /home/openclaw/.openclaw/workspace/logs/tiktok-live.log 2>&1

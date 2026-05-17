@@ -1,0 +1,2 @@
+# Script Abstractions Manager - Alle 6 Stunden
+0 */6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py >> /home/openclaw/.openclaw/workspace/logs/abstractions-manager/cron.log 2>&1

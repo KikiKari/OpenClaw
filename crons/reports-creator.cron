@@ -1,0 +1,6 @@
+# Reports Creator - Tägliche und wöchentliche Reports
+# Täglich um 06:00 - Tagesreport
+0 6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/reports-creator/scripts/daily_report.py >> /home/openclaw/.openclaw/workspace/logs/reports-creator.log 2>&1
+
+# Wöchentlich Sonntag 08:00 - Wochenreport  
+0 8 * * 0 /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/reports-creator/scripts/weekly_report.py >> /home/openclaw/.openclaw/workspace/logs/reports-creator.log 2>&1

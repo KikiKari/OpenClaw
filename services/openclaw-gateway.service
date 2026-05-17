@@ -1,0 +1,19 @@
+[Unit]
+Description=OpenClaw Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=openclaw
+Group=openclaw
+WorkingDirectory=/home/openclaw/.openclaw/workspace
+Environment=HOME=/home/openclaw
+Environment=PATH=/home/openclaw/.npm-global/bin:/usr/bin:/bin
+EnvironmentFile=/home/openclaw/.config/openclaw/env
+ExecStart=/home/openclaw/.npm-global/bin/openclaw gateway start
+ExecStop=/home/openclaw/.npm-global/bin/openclaw gateway stop
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

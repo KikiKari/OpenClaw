@@ -1,0 +1,40 @@
+{
+  "name": "@openclaw/model-usage",
+  "version": "1.0.0",
+  "description": "AI Model management and configuration for OpenRouter",
+  "main": "index.js",
+  "bin": {
+    "model-usage": "./cli.js"
+  },
+  "scripts": {
+    "test": "echo 'No tests yet'"
+  },
+  "keywords": [
+    "openclaw",
+    "skill",
+    "models",
+    "openrouter",
+    "ai"
+  ],
+  "author": "OpenClaw User",
+  "license": "MIT",
+  "peerDependencies": {
+    "openclaw": ">=2026.4.0"
+  },
+  "openclaw": {
+    "skill": {
+      "name": "model-usage",
+      "displayName": "Model Usage",
+      "description": "Manage AI models and configurations",
+      "version": "1.0.0",
+      "entry": "index.js",
+      "commands": [
+        "current",
+        "list",
+        "recommend",
+        "set-primary",
+        "usage"
+      ]
+    }
+  }
+}

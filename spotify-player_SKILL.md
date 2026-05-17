@@ -1,0 +1,1 @@
+skills/spotify-player/SKILL.md

@@ -1,0 +1,2 @@
+# Node Health Monitor - Alle 15 Minuten
+*/15 * * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/node-health-monitor/scripts/node_health.py --node all --alert >> /home/openclaw/.openclaw/workspace/logs/node-health.log 2>&1

@@ -1,0 +1,1 @@
+skills/resource-manager/SKILL.md

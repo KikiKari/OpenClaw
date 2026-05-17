@@ -1,0 +1,2 @@
+# Log Collector - Alle 3 Stunden
+0 */3 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/log-collector/scripts/log_collector.py >> /home/openclaw/.openclaw/workspace/logs/log-collector/cron.log 2>&1

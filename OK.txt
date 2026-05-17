@@ -1,0 +1,3 @@
+OK: System-Check bestanden
+Disk-Usage: 8%
+Load: 0.37

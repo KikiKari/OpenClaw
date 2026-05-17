@@ -1,0 +1,53 @@
+# Bereinigte Root-Crontab
+
+# Script Abstractions Manager - Alle 6 Stunden
+0 */6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py >> /home/openclaw/.openclaw/workspace/logs/abstractions-manager/cron.log 2>&1
+
+# ClawHub ↔ Git Sync Sub-Agent - Stündlich
+0 * * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/clawhub-git-sync-agent/scripts/sync_agent.py >> /home/openclaw/.openclaw/workspace/logs/sync-agent.log 2>&1
+
+# DB Maintainer - Alle 30 Minuten
+*/30 * * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/db-maintainer/scripts/db_maintainer.py >> /home/openclaw/.openclaw/workspace/logs/db-maintainer/cron.log 2>&1
+
+# Log Collector - Alle 3 Stunden
+0 */3 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/log-collector/scripts/log_collector.py >> /home/openclaw/.openclaw/workspace/logs/log-collector/cron.log 2>&1
+
+# Täglich 06:00 - System Health Check
+0 6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/node-health-monitor/scripts/node_health.py --node all --alert >> /home/openclaw/.openclaw/workspace/logs/node-health.log 2>&1
+
+# Channel Status Agent - Alle 12 Stunden (09:00 und 21:00)
+0 9,21 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/channel-status-agent/scripts/channel_status.py --type daily >> /home/openclaw/.openclaw/workspace/logs/channel-status.log 2>&1
+
+# Channel Status Agent - Wöchentlich Montag 09:00
+0 9 * * 1 /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/channel-status-agent/scripts/channel_status.py --type weekly >> /home/openclaw/.openclaw/workspace/logs/channel-status.log 2>&1
+
+# Reports Creator - Täglich um 06:00
+0 6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/reports-creator/scripts/daily_report.py >> /home/openclaw/.openclaw/workspace/logs/reports-creator.log 2>&1
+
+# Reports Creator - Wöchentlich Sonntag 08:00
+0 8 * * 0 /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/reports-creator/scripts/weekly_report.py >> /home/openclaw/.openclaw/workspace/logs/reports-creator.log 2>&1
+
+# OpenClaw Server Maintenance CRON Jobs (root)
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/openclaw/.npm-global/bin
+
+# Täglich 03:00 - APT Update Check
+0 3 * * * root apt update -qq 2>&1 | tail -5 >> /var/log/server-maintenance.log 2>&1
+
+# Wöchentlich Sonntag 04:00 - APT Upgrade
+0 4 * * 0 root /usr/bin/unattended-upgrade --dry-run 2>&1 | grep -q "0 upgraded" || (apt upgrade -y >> /var/log/apt-upgrade.log 2>&1 && echo "$(date '+%Y-%m-%d %H:%M:%S'): APT Upgrade completed" >> /var/log/server-maintenance.log)
+
+# Täglich 05:00 - NPM Global Update Check
+0 5 * * * root su - openclaw -c "npm outdated -g" >> /var/log/npm-update.log 2>&1
+
+# Wöchentlich Montag 05:00 - NPM Global Upgrade
+0 5 * * 1 root su - openclaw -c "npm update -g" >> /var/log/npm-upgrade.log 2>&1 && echo "$(date '+%Y-%m-%d %H:%M:%S'): NPM Upgrade completed" >> /var/log/server-maintenance.log
+
+# Täglich 06:00 - System Health Check (RAM, Disk, NTP)
+0 6 * * * root /home/openclaw/.openclaw/scripts/server-maintenance.sh >> /var/log/server-maintenance.log 2>&1
+
+# Stündlich - OpenClaw Gateway Check
+0 * * * * root systemctl is-active --quiet openclaw-gateway || systemctl restart openclaw-gateway
+
+# Täglich 02:00 - Log Rotation
+0 2 * * * root /usr/sbin/logrotate -f /etc/logrotate.conf 2>/dev/null || true
