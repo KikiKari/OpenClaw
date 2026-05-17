@@ -1,0 +1,467 @@
+# MEMORY.md - System-Konfiguration & Wichtige Einstellungen
+
+**Letzte Aktualisierung:** 2026-04-16 (07:00 CET)
+
+---
+
+## 📓 Letzte Änderungen
+
+### 2026-04-15 - SearXNG Konfiguration & Lernmoment
+- **Kontext:** SearXNG Plugin geladen, aber Config-Schema noch Work-in-Progress
+- **Aktion:** Manuelles Patchen der Config nach User-Anweisung
+- **Wichtig:** Keine eigenständigen Neustarts mehr ohne explizite Bestätigung
+- **Lernen:** Besser zuhören, weniger "Alleingänge", auf User-Anweisungen warten
+
+### 2026-04-14 - Websearch Frustration & Node 7
+- **Issue:** User frustriert über eigenständige Config-Änderungen und Neustarts
+- **Ergebnis:** Websearch erfordert API-Keys (keine gratis Option außer SearXNG)
+- **Node 7:** Dokumentation erstellt (`2026-04-13-node7-setup.md`)
+- **Slack:** Skill entfernt (fehlende Tokens)
+
+### 2026-04-12 - TikTok Live Skill v2 Fertiggestellt
+- **Skill veröffentlicht:** `tiktok-live` unter `~/.openclaw/skills/tiktok-live/`
+- **Skripte:**
+  - `tiktok-check-profile.js` v2.1 - Robuste Live-Erkennung via Playwright
+  - `tiktok-get-stream.js` v2.4 - FLV-Extraktion mit `page.on('response')`
+  - `extract-tiktok-streamlink.sh` v1.2 - Streamlink-Fallback
+  - `extract-tiktok-yt-dlp.sh` v1.1 - yt-dlp-Fallback
+- **Methode:** Visuelle Erkennung (roter Rahmen/LIVE-Badge) statt API
+- **Login-Handling:** DSGVO-Banner + Anmelde-Popups geschlossen
+- **Tests erfolgreich:** @arbrita.a, @lovelycandyshop1, @hanneklechof
+- **Installierte Tools:** streamlink v8.3.0, gallery-dl, yt-dlp v2026.03.17
+
+### 2026-04-13 - Memory-Maintenance Cron
+- Tägliche Memory-Maintenance um 07:00 CET eingerichtet
+- Automatische Archivierung von Dateien >30 Tage
+
+### 2026-04-17 - Daily Memory-Maintenance
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ✅ Tagesprotokoll 2026-04-17 erstellt (keine Protokolle für 16.04.)
+- ✅ Archiv-Check: Keine Dateien >30 Tage (älteste: 2026-04-02 = 15 Tage)
+- ✅ Rückblick 15.-16.04.: Ruhige Tage, keine signifikanten Events
+- OpenClaw v2026.4.11 läuft stabil
+
+### 2026-04-16 - Daily Memory-Maintenance
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ✅ Tagesprotokoll 2026-04-15 analysiert
+- ✅ Archiv-Check: Keine Dateien >30 Tage (älteste: 2026-04-02 = 14 Tage)
+- ✅ MEMORY.md aktualisiert mit Erkenntnissen aus 2026-04-14/15
+- OpenClaw v2026.4.11 läuft stabil
+
+### 2026-04-15 - Daily Memory-Maintenance
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ✅ Tagesprotokoll vom 2026-04-14 analysiert
+- ✅ Archiv-Check: Keine Dateien >30 Tage (älteste: 2026-04-02 = 13 Tage)
+- ✅ Tagesprotokoll 2026-04-15 erstellt
+- OpenClaw v2026.4.11 läuft stabil
+
+### 2026-04-14 - Daily Maintenance
+- ✅ Memory-Maintenance Cron ausgeführt (07:01 CET)
+- ✅ Tagesprotokoll 2026-04-14 erstellt
+- ✅ Archiv-Check: Keine Dateien >30 Tage zum Verschieben
+- OpenClaw v2026.4.11 läuft stabil
+
+---
+
+## 🔧 Externe Dienste & Konfigurationen
+
+### OpenRouter (AI Provider)
+**URL:** https://openrouter.ai/workspaces/default/plugins
+
+**Aktivierte Plugins (2026-04-06):**
+- ✅ **Response Healing** - Korrigiert automatisch defekte JSON-Antworten von LLMs
+- ✅ **Web Search** - Echtzeit-Web-Suche für Antworten
+- ✅ **PDF Inputs** - PDF-Inhaltsextraktion
+
+**Auswirkungen auf meine Arbeit:**
+- JSON-Outputs werden automatisch validiert/repariert
+- Minimale Latenz (~10-50ms) durch Parsing
+- Bessere Zuverlässigkeit bei API-Responses
+- Keine manuelle JSON-Fehlerbehandlung nötig
+
+**Hinweis:** Wenn Debug-Informationen über originale JSON-Struktur benötigt werden, muss beachtet werden dass Response Healing das JSON möglicherweise modifiziert hat.
+
+---
+
+## 🖥️ OpenClaw Infrastruktur
+
+### Stand: 2026-04-12
+| Komponente | Status |
+|------------|--------|
+| Gateway (Node 1) | ✅ OpenClaw 2026.4.10, WireGuard VPN |
+| Node 2 (Netcup) | ✅ Node Mode, WireGuard 10.10.0.2, v2026.4.9, Xvfb, Playwright |
+| Node 3 (xNetX) | ✅ Node Mode, SSH-Tunnel v2026.4.10, Xvfb, Playwright |
+| Node 4 (Webhosting) | ✅ Shared Hosting, xstoragex.de, Let's Encrypt |
+| Node 5 (Redmi) | ✅ Node Mode, WireGuard, v2026.4.10 |
+| Node 6 (Lenovo) | ✅ Node Mode, Windows 11, v2026.4.10 |
+| WireGuard VPN | ✅ Gateway ↔ Node 2/5 |
+| SSH-Tunnel | ✅ Node 3 über Port 18794 |
+| SSL/HTTPS | ⏳ Domain + Certbot auf Node 1 |
+| Dokumentation | ✅ Vollständig, in Memory indiziert |
+
+**Update 2026-04-11 (Major Infrastructure Update):**
+- **OpenClaw Update:** Gateway v2026.4.10, alle Nodes aktualisiert
+- **Context Limit Fix:** `reserveTokensFloor` auf 50000 gesetzt
+- **Xvfb Standardisierung:** Alle Nodes mit systemd-Service auf Display :99
+- **Playwright/Chromium:** Auf Gateway, Node 2 & Node 3 installiert
+- **Node 6 (Lenovo):** Neu hinzugefügt — Windows 11, AMD Ryzen 5, 8GB RAM
+- **Skills bereinigt:** discord/oracle/model-usage deaktiviert (fehlende Tokens)
+- **clawhub CLI:** Global installiert
+
+**Update 2026-04-10:**
+- **Node 4 / Node 5 korrigiert:**
+  - Node 4 = Webhosting (xstoragex.de)
+  - Node 5 = Redmi Note 11 (Mobile) — WireGuard IP 10.10.0.5
+- Xvfb Installation auf Node 2 & Node 3 verifiziert
+- Tailscale DNS deaktiviert
+- UFW Port 853/tcp freigegeben
+
+**Update 2026-04-09:**
+- Node 5 (Redmi Note 11S) erfolgreich gepairt und aktiv
+- SSH-Key Setup für Remote-Exec vorbereitet
+- Xvfb für Node 2 & 3 installiert (Playwright-Chromium Support)
+- Altes VNC auf Node 3 entfernt
+- Caps erweitert: Screen-Cap für Node 2/3, alle Caps für Node 5
+
+**Wichtige Details:**
+- Node 3 hat keinen WireGuard Kernel-Support (Kernel 4.18.0-301), nutzt SSH-Tunnel als Fallback
+- Alle 3 Nodes im Node Mode verbunden (`openclaw nodes status` = 3/3)
+- Remote-Exec aktiviert via `gateway.nodes.allowCommands`
+
+### SSH-Keys (Stand 2026-04-11)
+- Key: `~/.ssh/id_ed25519` (openclaw@gateway)
+- Node 2: SSH via WireGuard 10.10.0.2 ✅
+- Node 3: SSH via Reverse-Tunnel Port 18794 ✅
+- Node 5: Kein SSH (OpenClaw Node via WireGuard)
+- Node 6: Kein SSH (Windows Node via OpenClaw)
+
+### Zentrale Credential-Dateien
+- `/home/openclaw/.config/openclaw/env` — API-Keys, Tokens
+- `/home/openclaw/.config/openclaw/pws` — Root-Passwörter pro Node
+- `/home/openclaw/.config/openclaw/sud` — Sudo-User pro Node
+- Rechte: 400 (nur Owner lesen)
+- Dokumentation: `PASSWORD.md`
+
+### Fail2Ban (Stand 2026-04-10)
+- Node 3: sshd Jail — maxretry=2, findtime=60, bantime=720h
+- Node 3: sshd-tailscale Jail — maxretry=3, findtime=60, bantime=3h, ignoreip=100.64.0.0/10
+- Node 1/2: Ausstehend
+
+---
+
+## 🤖 Model-Usage Skill
+
+**Status:** ✅ Konfiguriert — 2026-04-11
+**Pfad:** `workspace/skills/model-usage/`
+
+**Zweck:** Zentrale Modell-Verwaltung für OpenRouter
+
+**Konfiguration:**
+- **Primärmodell:** `openrouter/auto`
+- **Fallback:** `moonshotai/kimi-k2.5`
+- **Context Limit Fix:** `reserveTokensFloor` auf 50000 gesetzt
+
+**Verfügbare Modelle:**
+| Modell | Prompt | Completion | Context |
+|--------|--------|------------|---------|
+| `openrouter/auto` | Auto | Auto | Variabel |
+| `moonshotai/kimi-k2.5` | $0.57 | $2.30 | 131K |
+| `meta-llama/llama-4-maverick` | $0.15 | $0.60 | 1M |
+| `openai/gpt-4.1` | $2.00 | $8.00 | 1M |
+| `deepseek/deepseek-r1-0528` | $0.45 | $2.15 | 164K |
+| `anthropic/claude-opus-4` | $15.00 | $75.00 | 200K |
+| `qwen/qwen3-235b-a22b-2507` | $0.07 | $0.10 | 131K |
+
+**Task-Empfehlungen:**
+| Task | Primär | Fallback |
+|------|--------|----------|
+| Simple Tasks | kimi-k2.5 | llama-4-maverick |
+| Long Context | llama-4-maverick | gpt-4.1 |
+| Complex Logic | deepseek-r1 | claude-opus-4 |
+| Web-Agents | kimi-k2.5 | qwen3-235b |
+
+**Thinking-Modus:**
+- `off` — Für Standard-Completion (kimi-k2.5, llama-4, gpt-4.1)
+- `on/stream` — Für Reasoning-Modelle (deepseek-r1, claude-opus-4)
+
+---
+
+## 📺 TikTok Live Stream Extraction
+
+**Status:** ✅ Skill verfügbar — `tiktok-live`
+**Pfad:** `~/.openclaw/skills/tiktok-live/`
+
+**Letzter erfolgreicher Einsatz:** 2026-04-06 10:42 CET
+
+**Verifizierte Arbeitsmethode:**
+1. Playwright + Chromium (keine APIs — visuelle Erkennung)
+2. DSGVO-Banner **zuerst** schließen (sonst blockiert er Live-Indikatoren)
+3. Warten auf vollständiges Seitenladen (3-5s) bis "Erneute Veröffentlichungen" erscheint
+4. Mehrere Live-Indikatoren prüfen: Badge, roter Rahmen, Live-Link
+5. Bei Live: `/live` Seite aufrufen, Netzwerk-Traffic monitoren für `.flv` URLs
+6. **Kritisch:** Browser vollständig schließen für saubere nächste Session
+
+**Skill-Struktur:**
+```
+~/.openclaw/skills/tiktok-live/
+├── SKILL.md                           # Hauptdokumentation
+├── scripts/
+│   ├── tiktok-check-profile.js        # Live-Status prüfen
+│   └── tiktok-get-stream.js           # VLC-kompatible FLV-URL extrahieren
+└── references/
+    └── TIKTOK.md                      # Vollständige Referenz
+```
+
+**Verwendung:**
+```bash
+# Live-Status prüfen
+node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
+
+# Stream-URL extrahieren  
+node ~/.openclaw/skills/tiktok-live/scripts/tiktok-get-stream.js <username>
+```
+
+**Learnings aus AGENTS.md:**
+- TikTok API liefert konsistent falsche OFFLINE-Status → Nur visuelle Erkennung zuverlässig
+- Stream-URLs haben 2-4h TTL (Signatur-basiert)
+- Roter Rahmen + LIVE-Badge = verlässlichste Kombination
+
+---
+
+## 📁 Dokumentationsstruktur
+
+| Datei | Zweck | Status |
+|-------|-------|--------|
+| SYSTEM.md | System-Übersicht & Cron-Jobs | ✅ Aktuell |
+| MEMORY.md | Diese Datei — Langzeitspeicher | ✅ Aktuell |
+| TIKTOK.md | TikTok Live — Master-Doku | ✅ Aktuell |
+| FIREWALL.md | UFW Konfiguration | ✅ Neu |
+| INFRASTRUCTURE.md | Komplette Infrastruktur | ⚠️ Prüfen |
+| README.md | Schnellübersicht | ⚠️ Prüfen |
+| TUNNELS.md | SSH Tunnel & Ports | ⚠️ Prüfen |
+| HEARTBEAT.md | Periodische Checks | ✅ Aktuell |
+
+**Memory-Protokolle:**
+| Datei | Zweck |
+|-------|-------|
+| `memory/MAINTENANCE.md` | Cron-Jobs & Wartung |
+| `memory/tiktok-checks.md` | TikTok Check-Log |
+| `memory/tiktok-health.md` | TikTok Status |
+| `memory/2026-04-06.md` | Tagesprotokoll |
+
+---
+
+## 🤖 Model-Konfiguration & Fallbacks
+
+**Stand:** 2026-04-11  
+**Primärmodell:** `openrouter/auto` (OpenRouter Auto-Routing)
+**Fallback:** `moonshotai/kimi-k2.5`
+
+### Context Limit Konfiguration (2026-04-11)
+**Problem:** Context limit exceeded Fehler bei langen Konversationen
+
+**Lösung implementiert:**
+```bash
+# Compaction Reserve Token Floor erhöht
+openclaw config set agents.defaults.compaction.reserveTokensFloor 50000
+
+# Prüfen des Wertes
+openclaw config get agents.defaults.compaction.reserveTokensFloor
+
+# Gateway-Neustart erforderlich für Aktivierung
+openclaw gateway restart
+```
+
+**Status:** ✅ reserveTokensFloor auf 50000 gesetzt (14:23 GMT+2)
+
+### Konfiguration
+
+OpenRouter wählt automatisch das passende Modell basierend auf Prompt-Analyse. Bei Fehlfall wird auf kimi-k2.5 zurückgegriffen.
+
+### Task-basierte Modell-Empfehlungen
+
+Für explizite Steuerung (manuell oder via Pre-Prompt):
+
+| Task-Typ | Primär | Fallback | Preis/1M Tokens |
+|----------|--------|----------|-----------------|
+| **Simple Tasks** (Wetter, Zeit) | `moonshotai/kimi-k2.5` | `meta-llama/llama-4-maverick` | $2.87 / $0.75 |
+| **Long Context** (RAG, Dokumente) | `meta-llama/llama-4-maverick` | `openai/gpt-4.1` | $0.75 / $10.00 |
+| **Complex Logic** (Code, Reasoning) | `deepseek/deepseek-r1-0528` | `anthropic/claude-opus-4` | $2.60 / $90.00 |
+| **Web-Agents/Tool-Use** | `moonshotai/kimi-k2.5` | `qwen/qwen3-235b-a22b-2507` | $2.87 / $0.18 |
+
+### Verifizierte Modell-Preise (OpenRouter)
+
+| Modell | Context | Prompt | Completion |
+|--------|---------|--------|------------|
+| `moonshotai/kimi-k2.5` | 131K | $0.57 | $2.30 |
+| `meta-llama/llama-4-maverick` | 1M | $0.15 | $0.60 |
+| `openai/gpt-4.1` | 1M | $2.00 | $8.00 |
+| `deepseek/deepseek-r1-0528` | 164K | $0.45 | $2.15 |
+| `anthropic/claude-opus-4` | 200K | $15.00 | $75.00 |
+| `qwen/qwen3-235b-a22b-2507` | 131K | $0.07 | $0.10 |
+| `openrouter/auto` | Variabel | Auto | Auto |
+
+### Anmerkungen
+
+- **GPT-5.4** und **Claude Opus 4.6** existieren nicht (falsche Bezeichnungen in alter Config)
+- **Claude Opus 4** (nicht 4.6) ist die aktuellste Version
+- **Qwen3-235b-a22b-2507** ist extrem günstig für Simple Tasks (-96% vs. kimi-k2.5)
+- **DeepSeek R1** unterstützt Reasoning/Thinking Mode
+
+**Änderung 2026-04-11:** Umstellung auf `openrouter/auto` als Primärmodell mit task-basierten Empfehlungen
+
+---
+
+## 📝 Zu beachten
+
+1. **Response Healing aktiv:** JSON-Outputs sind automatisch korrigiert
+2. **Node 3 Kernel:** WireGuard Kernel-Modul fehlt (SSH-Tunnel funktioniert)
+3. **Memory Index:** Alle Dokumentationen sind vektorisiert (`openclaw memory index`)
+4. **Node 4:** Redmi Note 11 — QR gescannt 2026-04-06, manuelle WireGuard-Config-Eingabe in App ausstehend (PrivateKey, IP 10.10.0.4/24)
+5. **Node 5:** Redmi Note (2.) — WireGuard-Profil erstellt 2026-04-08, Setup ausstehend
+6. **Tunnel-Automatisierung:** 🔴 **KRITISCH** — 3 Systemd-Services für SSH-Tunnel (Node 2 API/GW, Node 3 GW) ausstehend seit 2026-04-03. Blockiert sicheren Gateway-Neustart.
+7. **tmux PATH-Issue:** `openclaw` nicht im PATH innerhalb tmux-Sessions auf Remote-Nodes → Verwende vollen Pfad oder installiere OpenClaw auf dem Node
+
+---
+
+## 🔐 SSH-Key Konfiguration & Remote-Exec
+
+**Stand:** 2026-04-09
+
+### SSH-Keys für Node-Zugriff
+
+**Gateway Key:**
+- Path: `~/.ssh/id_ed25519`
+- Type: ED25519
+- Fingerprint: `SHA256:6W5lJWbIUtnn09kz10RPVOi0IQ7bWk7aCks/ODhoCxI`
+- Public Key: `ssh-ed25519 AAAAC3NzaC...RXCd0/H openclaw@gateway`
+
+**SSH Config (`~/.ssh/config`):**
+```
+Host node2
+    HostName 10.10.0.2
+    User openclaw
+    IdentityFile ~/.ssh/id_ed25519
+    StrictHostKeyChecking no
+
+Host node3
+    HostName 127.0.0.1
+    Port 18794    # WICHTIG: Port 18792 war FALSCH (OpenClaw-Port)
+    User root
+    IdentityFile ~/.ssh/id_ed25519
+    StrictHostKeyChecking no
+```
+
+### SSH-Tunnel Konfiguration Node 3 (Stand: 2026-04-11)
+
+**Problem:**
+- Direkte SSH zu 5.45.105.20:22 hat Timeout (Firewall/Provider)
+- Port 18792 war falsch konfiguriert (führte zu OpenClaw statt SSH)
+
+**Lösung implementiert:**
+1. Neuer Reverse-SSH-Tunnel auf Port 18794:
+   ```bash
+   # AUF NODE 3 (als root)
+   ssh -f -N -R 18794:localhost:22 -o ServerAliveInterval=30 -o StrictHostKeyChecking=no root@152.53.145.65
+   ```
+2. SSH-Config auf Gateway angepasst (Port 18794)
+3. ✅ SSH-Verbindung funktioniert: `ssh node3`
+
+**Aktive Tunnel auf Node 3:**
+- Port 18792 → 18789 (OpenClaw)
+- Port 18794 → 22 (SSH) [NEU]
+
+**WICHTIG:** Bei SSH-Befehlen IMMER `-f` für Background angeben!
+
+**Status:**
+- Node 2: SSH-Key Deployment ausstehend (Passwort-Auth erforderlich)
+- Node 3: SSH-Key Deployment ausstehend (Tunnel aktiv, Auth ausstehend)
+
+### Remote-Exec Konfiguration
+
+**Aktiviert in:** `~/.openclaw/openclaw.json`
+
+### Playwright/Chromium auf Nodes (Stand: 2026-04-11)
+
+**Gateway/Node 1:**
+- ✅ Playwright installiert (native)
+- ✅ Chromium Browser vorhanden
+- ✅ Xvfb als systemd-Service (User=openclaw) [NEU 16:30]
+- ✅ Display :99 verfügbar
+
+**Node 2 (Netcup):**
+- ✅ Playwright installiert (v1.59.1 in /tmp)
+- ✅ Chromium Browser installiert (headless)
+- ✅ Alle Abhängigkeiten installiert (libatk, libgtk, etc.)
+- ✅ Xvfb als systemd-Service (User=openclaw korrigiert 16:30)
+- ✅ TikTok Live-Checks erfolgreich getestet
+
+**Node 3 (xNetX):**
+- ✅ OpenClaw v2026.4.9 läuft stabil
+- ✅ Verbunden über OpenClaw Node Mode
+- ✅ Playwright installiert (v1.59.x in /tmp)
+- ✅ Chromium Browser installiert (v147.0.7727.15)
+- ✅ Chrome Headless Shell installiert
+- ✅ FFmpeg installiert
+- ✅ Xvfb als systemd-Service (User=root → openclaw pending)
+- ⚠️ OS nicht offiziell unterstützt (Fallback Ubuntu 24.04 Build)
+
+**Verwendung für TikTok-Checks:**
+```bash
+# Auf Node 2
+ssh node2 "cd /tmp && export DISPLAY=:99 && node tiktok-check-profile.js USERNAME"
+```
+
+```json
+{
+  "gateway": {
+    "nodes": {
+      "denyCommands": [...],
+      "allowCommands": [
+        "system.run",
+        "system.exec",
+        "screen.record",
+        "browser.open"
+      ]
+    }
+  }
+}
+```
+
+**Erlaubte Remote-Befehle:**
+- `system.run` - Shell-Befehle ausführen
+- `system.exec` - Programme starten
+- `screen.record` - Screen-Capture (Node 2/3 mit Xvfb)
+- `browser.open` - Browser-Automation
+
+**Verwendung:**
+```bash
+# Befehl auf Node 2 ausführen
+openclaw nodes exec v2202603104722445775 -- <command>
+
+# Befehl auf Node 3 ausführen
+openclaw nodes exec xnetx -- <command>
+
+# Befehl auf Node 5 ausführen
+openclaw nodes exec localhost -- <command>
+```
+
+---
+
+## 📝 Feature Requests & Ideen
+
+### Lokale Embeddings via Ollama
+**Status:** ⏸️ On Hold — Warten auf offizielle Unterstützung
+
+**Problem:** Ollama nutzt eigenes API-Format (`/api/embeddings`) statt OpenAI-kompatibel (`/v1/embeddings`)
+
+**Risiko eigener Implementation:**
+- Fragmentierung der Embedding-Pipeline
+- Zukünftige Inkompatibilität mit OpenClaw-Updates
+- Wartungsaufwand bei Ollama-API-Änderungen
+
+**Alternativen:**
+1. OpenRouter Embeddings (API-kompatibel, günstiger als OpenAI)
+2. Offizieller Support durch OpenClaw (Feature Request)
+
+**Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.

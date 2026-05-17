@@ -1,0 +1,1 @@
+skills/worker-node/SKILL.md

@@ -1,0 +1,1 @@
+skills/script-abstractions-manager/scripts/abstractions_manager.py

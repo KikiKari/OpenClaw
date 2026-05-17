@@ -1,0 +1,25 @@
+{
+  "name": "cluster-management",
+  "version": "1.0.0",
+  "description": "Generic cluster topology and resource management for OpenClaw deployments with Sub-Agent and Worker delegation patterns",
+  "main": "SKILL.md",
+  "templates": [
+    "TEMPLATE-SYSTEM.md"
+  ],
+  "openclaw": {
+    "skill": true,
+    "category": "infrastructure",
+    "references": [
+      {
+        "path": "tools/SUB-AGENTS-WORKERS.md",
+        "type": "master",
+        "description": "Sub-Agent delegation patterns"
+      },
+      {
+        "path": "tools/SYSTEM.md",
+        "type": "master",
+        "description": "System configuration details"
+      }
+    ]
+  }
+}

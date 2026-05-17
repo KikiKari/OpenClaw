@@ -1,0 +1,1 @@
+skills/log-collector/SKILL.md

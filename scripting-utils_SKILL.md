@@ -1,0 +1,1 @@
+skills/scripting-utils/SKILL.md

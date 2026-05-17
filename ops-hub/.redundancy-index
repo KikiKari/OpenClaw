@@ -1,0 +1,32 @@
+# Redundanz-Index für docs/ops-hub/
+
+Diese Datei dient als schneller Index für alle redundanten Dokumentationen.
+
+## Redundanz-Matrix
+
+| Dokument | Primär (docs/ops-hub/) | Sekundär (Root-Level) | Letzte Sync |
+|----------|------------------------|----------------------|-------------|
+| Skill | `~/.openclaw/skills/ops-hub/SKILL.md` | `OPS-HUB-SKILL.md` | 2026-04-17 05:27 |
+| Agent-Doku | `ops-hub.md` | `OPS-HUB-AGENT.md` | 2026-04-17 04:26 |
+| Audits | `audits.md` | `OPS-HUB-AUDITS.md` | 2026-04-17 04:26 |
+| Reports | `reports.md` | `OPS-HUB-REPORTS.md` | 2026-04-17 04:26 |
+| Cluster-Reports | `cluster-reports.md` | `OPS-HUB-CLUSTER-REPORTS.md` | 2026-04-17 05:18 |
+| E-Mail-Integration | `email-integration.md` | `OPS-HUB-EMAIL-INTEGRATION.md` | 2026-04-17 05:20 |
+| Registratur | `registratur.md` | `OPS-HUB-REGISTRATUR.md` | 2026-04-17 04:26 |
+| System Files | `system-files.md` | - | 2026-04-17 04:26 |
+| README | `README.md` | - | - |
+
+## Sync-Prozess
+
+1. Änderungen immer zuerst in Primär-Datei vornehmen
+2. Danach Sekundär-Datei aktualisieren
+3. `.redundancy-index` aktualisieren
+4. Git-Commit durchführen
+
+## Automatischer Sync-Status
+
+- [x] Initial erstellt: 2026-04-17 04:00 CET
+- [x] System Files Monitoring hinzugefügt: 2026-04-17 04:26 CET
+
+---
+*Diese Index-Datei ermöglicht schnelle Wiederherstellung bei Datenverlust.*
