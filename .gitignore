@@ -234,3 +234,40 @@ memory/dreaming/
 memory/.dreams/
 \"reports*
 "reports*
+
+# =====================================================
+# Riesige Config-Dumps (GitHub-Limit: 100 MB)
+# =====================================================
+vscode/compare/local-gateway-config.md
+vscode/compare/transfer/local-gateway-config.md
+**/local-gateway-config.md
+
+# Backup-Archive die als .md getarnt sind
+vscode/compare/transfer/openclaw-backup.tar.gz
+**/openclaw-backup.tar.gz
+
+# =====================================================
+# Status-Dumps mit Secrets - komplett raus
+# =====================================================
+vscode/ENV-STATUS_*
+vscode/IST-ZUSTAND_*
+vscode/OPENCLAW-CONFIG-SNAPSHOT_*
+vscode/ARTEFAKT-INVENTAR_*
+**/ENV-STATUS_*
+**/IST-ZUSTAND_*
+**/MEMORY-EMBEDDING-FIX-*
+
+# =====================================================
+# Status-/Config-Dumps mit Secrets - komplette Ordner raus
+# =====================================================
+vscode/
+important/
+
+# Spezifische Risiko-Dateinamen
+**/SLACK.md
+**/Tailscale-VPN-Integration.md
+**/NVIDIA-NIM-Integration.md
+**/OPENROUTER_CONFIG.md
+**/OPENAI-KEY-*
+**/PASSWORD.md
+**/WEBSEARCH_CONFIG.md
