@@ -1,5 +1,0 @@
-.tools.web.search = $target[0]["tools.web.search"] |
-.plugins.entries.perplexity = $target[0]["plugins.entries.perplexity"] |
-.mcp.servers.perplexity = $target[0]["mcp.servers.perplexity"] |
-.commands.mcp = $target[0]["commands.mcp"] |
-.skills.entries["perplexity-pro-search"] = $target[0]["skills.entries.perplexity-pro-search"]
