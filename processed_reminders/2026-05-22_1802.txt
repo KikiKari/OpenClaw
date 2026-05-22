@@ -1,0 +1,8 @@
+Processed reminder at 2026-05-22 18:02 CET:
+Portiere Scripte aus /home/openclaw/.openclaw/workspace/skills/ und /home/openclaw/.openclaw/workspace/scripts/ in alternative.
+Sprachen - Perl5, Raku, JS, Python, Bash, PowerShell, Tcl, Ruby, Lua, Go.
+Priorität: High (skill-creator, json-utils, scripting-utils), Medium (workspace scripts), Low (Rest).
+Referenz-Script: /home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py.
++ Git-Commits nach jedem Batch.
+
+Reminder handled internally.

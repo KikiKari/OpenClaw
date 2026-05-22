@@ -64,11 +64,19 @@ def create_backup(source: Path, skill_name: str):
 # Hash-Vergleich
 def get_file_hash(file_path: Path) -> str:
     """SHA256-Hash einer Datei"""
+    # Ensure the path points to a regular file (skip directories or symlinks to dirs)
+    if not file_path.is_file():
+        log(f"Skipping non-file for hash: {file_path}", "WARN")
+        return ""
     hasher = hashlib.sha256()
-    with open(file_path, 'rb') as f:
-        while chunk := f.read(4096):
-            hasher.update(chunk)
-    return hasher.hexdigest()
+    try:
+        with open(file_path, 'rb') as f:
+            while chunk := f.read(4096):
+                hasher.update(chunk)
+        return hasher.hexdigest()
+    except Exception as e:
+        log(f"Failed to hash {file_path}: {e}", "ERROR")
+        return ""
 
 # Sync Richtung ClawHub → Git
 def sync_to_git(skill_name: str, dry_run: bool = True):

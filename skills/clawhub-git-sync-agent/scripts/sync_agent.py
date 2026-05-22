@@ -28,7 +28,9 @@ def load_state():
 
 def save_state(state):
     """Speichert den Sync-State"""
-    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    # Ensure the parent directory exists (handle symlink to existing directory)
+    if not STATE_FILE.parent.is_dir():
+        STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(STATE_FILE, 'w') as f:
         json.dump(state, f, indent=2)
 
