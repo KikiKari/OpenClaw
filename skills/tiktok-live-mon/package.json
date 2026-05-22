@@ -6,5 +6,8 @@
   "openclaw": {
     "skill": true,
     "category": "media"
+  },
+  "dependencies": {
+    "playwright": "^1.60.0"
   }
 }

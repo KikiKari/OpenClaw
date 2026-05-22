@@ -15,7 +15,7 @@ from datetime import datetime
 CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
 BACKUP_DIR = Path("/home/openclaw/.openclaw/workspace/backups/sync")
-LOG_FILE = Path("/home/openclaw/.openclaw/workspace/logs/sync.log")
+LOG_FILE = Path("/home/openclaw/.openclaw/workspace/logs/sync-agent.log")
 
 # Erstelle Verzeichnisse
 GIT_DIR.mkdir(parents=True, exist_ok=True)

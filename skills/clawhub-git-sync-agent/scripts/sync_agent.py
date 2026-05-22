@@ -121,12 +121,21 @@ def get_hashes(skill_dir: Path):
     return hashes
 
 def main():
-    """Hauptfunktion des Sync-Agents"""
+    """Hauptfunktion des Sync-Agents mit Dry-Run Phase"""
     log("=== ClawHub ↔ Git Sync Agent gestartet ===")
     
+    # Load previous state
     state = load_state()
     all_skills = get_all_skills()
     log(f"Gefundene Skills: {len(all_skills)}")
+    
+    # Dry-Run Phase: only report changes, no actual modifications
+    log("--- Dry-Run Phase Start ---")
+    for skill in sorted(all_skills):
+        # Perform dry-run sync in both directions to capture potential changes
+        sync_to_git(skill, dry_run=True)
+        sync_to_clawhub(skill, dry_run=True)
+    log("--- Dry-Run Phase End ---")
     
     results = {
         "synced_to_git": [],
@@ -137,6 +146,7 @@ def main():
         "errors": []
     }
     
+    # Actual Sync Phase
     for skill in sorted(all_skills):
         try:
             result = sync_skill_bidirectional(skill)
