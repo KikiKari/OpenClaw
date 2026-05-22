@@ -14,6 +14,9 @@ const { chromium } = require('playwright');
 const path = require('path');
 const util = require('util');
 const execPromise = util.promisify(require('child_process').exec);
+// Optional extra wait (ms) to allow Playwright to capture FLV requests
+const PLAYWRIGHT_CAPTURE_MS = parseInt(process.env.PLAYWRIGHT_CAPTURE_MS, 10) || 0;
+
 
 function humanDelay(min = 2000, max = 4000) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -132,6 +135,11 @@ async function extractWithPlaywright(username, qualityPreference) {
 
         // Warte auf FLV-URLs (Stream muss laden)
         await page.waitForTimeout(humanDelay(8000, 12000));
+        // Optionaler, längerer Capture-Wait, wenn durch PLAYWRIGHT_CAPTURE_MS gesetzt
+        if (PLAYWRIGHT_CAPTURE_MS && PLAYWRIGHT_CAPTURE_MS > 0) {
+            console.log(`Playwright: extra capture wait ${PLAYWRIGHT_CAPTURE_MS} ms`);
+            await page.waitForTimeout(PLAYWRIGHT_CAPTURE_MS);
+        }
 
         // Zweiter Versuch Popups zu schließen (können nach Delay erscheinen)
         await handlePopups(page);

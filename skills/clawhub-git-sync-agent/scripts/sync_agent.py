@@ -48,7 +48,7 @@ def init_git_repo(skill_path: Path, skill_name: str):
         subprocess.run(["git", "commit", "-m", f"Initial commit: {skill_name} skill"], capture_output=True)
         log(f"Git initialized for {skill_name}")
 
-def sync_skill_bidirectional(skill_name: str):
+def sync_skill_bidirectional(skill_name: str, dry_run: bool = False):
     """Bidirektionale Synchronisation eines Skills"""
     clawhub_path = CLAWHUB_DIR / skill_name
     git_path = GIT_DIR / skill_name
