@@ -1,0 +1,2 @@
+Reminder processed: Portiere Scripte aus /home/openclaw/.openclaw/workspace/skills/ und /home/openclaw/.openclaw/workspace/scripts/ in alternative. Priorität: High (skill-creator, json-utils, scripting-utils), Medium (workspace scripts), Low (Rest). Reference script: /home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py. Git commits after each batch.
+Processed at 2026-05-23 18:02 Europe/Berlin.

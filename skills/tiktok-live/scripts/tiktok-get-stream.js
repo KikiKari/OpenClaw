@@ -19,9 +19,9 @@ async function getStreamUrl(username) {
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     });
     const page = await context.newPage();
-    
+
     const flvUrls = [];
-    
+
     // Monitor network traffic for FLV streams
     page.on('request', request => {
         const url = request.url();
@@ -33,40 +33,40 @@ async function getStreamUrl(username) {
             });
         }
     });
-    
+
     try {
         // Navigate to live page
         await page.goto(`https://www.tiktok.com/@${username}/live`, { 
-            waitUntil: 'networkidle',
-            timeout: 30000 
+            waitUntil: 'load', 
+            timeout: 60000 
         });
-        
+
         // Wait for potential DSGVO/consent dialogs
         await page.waitForTimeout(3000);
-        
+
         // Accept cookies if present
         const acceptButton = await page.$('button[data-e2e="cookie-banner-accept"]');
         if (acceptButton) {
             await acceptButton.click();
             await page.waitForTimeout(1000);
         }
-        
+
         // Wait for stream to load (5-10 seconds typically)
         await page.waitForTimeout(8000);
-        
+
         // Try to trigger video play if needed
         const video = await page.$('video');
         if (video) {
             await video.evaluate(v => v.play()).catch(() => {});
             await page.waitForTimeout(3000);
         }
-        
+
         await browser.close();
-        
+
         if (flvUrls.length > 0) {
             // Deduplicate URLs
             const uniqueUrls = [...new Map(flvUrls.map(item => [item.url, item])).values()];
-            
+
             // Sort by quality indicator (if present in URL)
             uniqueUrls.sort((a, b) => {
                 const getQuality = url => {
@@ -75,7 +75,7 @@ async function getStreamUrl(username) {
                 };
                 return getQuality(b.url) - getQuality(a.url);
             });
-            
+
             console.log(JSON.stringify({
                 username,
                 isLive: true,
@@ -92,7 +92,7 @@ async function getStreamUrl(username) {
                 timestamp: new Date().toISOString()
             }));
         }
-        
+
     } catch (error) {
         await browser.close();
         console.error(JSON.stringify({

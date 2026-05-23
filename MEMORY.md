@@ -12,6 +12,16 @@
 - ✅ Archiv-Check: Ausstehend (Exec-Approval erforderlich)
 - **Kritische Erkenntnisse:** Keine
 
+### 2026-05-23 - Daily Memory-Maintenance & Erkenntnisse vom 22.05.
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ✅ Analysierte memory/2026-05-22.md (Gestern)
+- ✅ Extrahierte Entscheidungen, Projekte, ToDos
+- **Entscheidungen:** TikTok‑Service‑Unit bleibt im Workspace; Installation/Systemd‑Timer erst nach Nutzer‑Bestätigung.
+- **Projekte:** TikTok‑Monitoring‑API, optionales Systemd‑Timer‑Wrapper‑Skript.
+- **ToDos:** Auf Nutzer‑Bestätigung warten, ggf. Cron‑Job für Service‑Installation anlegen.
+- **Archiv‑Check:** Dateien >30 Tage noch nicht archiviert (Exec‑Approval erforderlich).
+- **Kritische Erkenntnisse:** Keine
+
 
 ### 2026-04-22 - Daily Memory-Maintenance & Erkenntnisse vom 21.04.
 - ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
