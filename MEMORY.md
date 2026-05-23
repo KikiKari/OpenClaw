@@ -1,3 +1,12 @@
 # MEMORY.md
 
 *No entries yet. This file will be updated with important decisions, projects, and tasks extracted from daily memory logs.*
+
+## Promoted From Short-Term Memory (2026-05-23)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:18:21 -->
+- Continue the task if needed, then reply to the user in a helpful way. If it succeeded, share the relevant output. If it failed, explain what went wrong. user: [Sun 2026-05-17 02:15 GMT+2] An async command the user already approved has completed. [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:22:24 -->
+- Do not run the command again. If the task requires more steps, continue from this result before replying to the user. Only ask the user for help if you are actually blocked. [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:22-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:26:27 -->
+- Exact completion details: Exec finished (gateway id=1faef2c7-ae69-4324-93e4-d0e155186217, session=lucky-dune, code 0) [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:26-27]
