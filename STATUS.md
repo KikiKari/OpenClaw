@@ -1,16 +1,17 @@
 # Script Abstractions - Status Report
 
-**Letzte Aktualisierung:** 2026-05-23 18:04
+**Letzte Aktualisierung:** 2026-05-24 00:04
 
-- Aktuelle Priorität: medium
+- Aktuelle Priorität: high
 - Verarbeitete Scripts: 0
-- Abstraktionen gesamt: 70
+- Abstraktionen gesamt: 122
 
 ## Abstraktionen pro Sprache
 
-- javascript: 14
-- perl5: 14
-- python: 14
+- javascript: 27
+- perl5: 27
+- powershell: 13
+- python: 27
 - shell: 14
 - tcl: 14
 
