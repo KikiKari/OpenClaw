@@ -1,10 +1,17 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-04-22 (07:00 CET)
+**Letzte Aktualisierung:** 2026-05-24 (07:00 CET)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-05-24 - Daily Memory-Maintenance & Erkenntnisse vom 23.05.
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ✅ Analysierte memory/2026-05-23.md (Gestern)
+- ✅ Extrahierte Entscheidungen, Projekte, ToDos (keine neuen Einträge)
+- **Archiv‑Check:** Dateien >30 Tage noch nicht archiviert (Exec‑Approval erforderlich)
+- **Kritische Erkenntnisse:** Keine
 
 ### 2026-05-22 - Daily Memory-Maintenance & Erkenntnisse vom 21.05.
 - ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
@@ -550,19 +557,11 @@ openclaw nodes exec localhost -- <command>
 
 ## Promoted From Short-Term Memory (2026-05-24)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:9:12 -->
-- user: [OpenClaw heartbeat poll] user: [Tue 2026-05-19 21:42 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:13:13 -->
-- Only ask the user for help if you are actually blocked. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:15:17 -->
-- Exact completion details: Exec finished (gateway id=60d6d2ab-64b9-4149-87a9-298b8d9f1d46, session=clear-coral, code 0) [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:15-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:19:22 -->
-- Continue the task if needed, then reply to the user in a helpful way. If it succeeded, share the relevant output. If it failed, explain what went wrong. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:19-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:24:24 -->
-- Given these persistent problems, I am unable to proceed with checking the live status for `@luiisamour` using this skill. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:24-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:11:11 -->
-- Since we are not actively pursuing the TikTok live status check due to the unresolved skill issue, and I am awaiting your next instructions, I will simply note this update. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:11-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:13:16 -->
-- Please let me know what you'd like to do next. user: [Tue 2026-05-19 22:09 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:17:17 -->
-- Only ask the user for help if you are actually blocked. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:19:21 -->
+- Exact completion details: Exec finished (gateway id=268da5b2-0392-4102-8060-3b222e900bab, session=kind-gulf, code 0) total used free shared buff/cache available Mem: 15Gi 3,7Gi 9,5Gi 4,2Mi 2,6Gi 11Gi Swap: 0B 0B 0B [score=0.832 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:19-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2214.md:9:9 -->
+- user: [Retry after the previous model attempt failed or timed out] [score=0.832 recalls=0 avg=0.620 source=memory/2026-05-19-2214.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2214.md:16:18 -->
+- Exact completion details: Exec finished (gateway id=6b395c26-2deb-4ffd-9fdc-443d97efadc2, session=briny-shoal, code 1) [score=0.832 recalls=0 avg=0.620 source=memory/2026-05-19-2214.md:16-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:9:12 -->
+- assistant: The commands `openclaw nodes status && openclaw node list` did not run because they require explicit approval, and the approval request timed out. user: [Wed 2026-05-20 23:08 GMT+2] An async command did not run. Do not run the command again. [score=0.801 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:9-11]
