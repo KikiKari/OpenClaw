@@ -548,11 +548,21 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-05-23)
+## Promoted From Short-Term Memory (2026-05-24)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2214.md:11:14 -->
-- [Tue 2026-05-19 22:10 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.839 recalls=0 avg=0.620 source=memory/2026-05-19-2214.md:11-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:9:9 -->
-- assistant: Acknowledged. The completed commands indicate successful execution for some cron jobs, while others encountered errors related to retrieving session overviews. [score=0.825 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:9-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2214.md:20:23 -->
-- Continue the task if needed, then reply to the user in a helpful way. If it succeeded, share the relevant output. If it failed, explain what went wrong. [score=0.805 recalls=0 avg=0.620 source=memory/2026-05-19-2214.md:20-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:9:12 -->
+- user: [OpenClaw heartbeat poll] user: [Tue 2026-05-19 21:42 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:13:13 -->
+- Only ask the user for help if you are actually blocked. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:15:17 -->
+- Exact completion details: Exec finished (gateway id=60d6d2ab-64b9-4149-87a9-298b8d9f1d46, session=clear-coral, code 0) [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:15-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:19:22 -->
+- Continue the task if needed, then reply to the user in a helpful way. If it succeeded, share the relevant output. If it failed, explain what went wrong. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:19-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2146.md:24:24 -->
+- Given these persistent problems, I am unable to proceed with checking the live status for `@luiisamour` using this skill. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2146.md:24-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:11:11 -->
+- Since we are not actively pursuing the TikTok live status check due to the unresolved skill issue, and I am awaiting your next instructions, I will simply note this update. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:11-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:13:16 -->
+- Please let me know what you'd like to do next. user: [Tue 2026-05-19 22:09 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:17:17 -->
+- Only ask the user for help if you are actually blocked. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:17-17]
