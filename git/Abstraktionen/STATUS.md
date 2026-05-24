@@ -1,8 +1,8 @@
 # Script Abstractions - Status Report
 
-**Letzte Aktualisierung:** 2026-05-24 00:04
+**Letzte Aktualisierung:** 2026-05-24 12:08
 
-- Aktuelle Priorität: high
+- Aktuelle Priorität: medium
 - Verarbeitete Scripts: 0
 - Abstraktionen gesamt: 122
 

@@ -2,6 +2,14 @@
 
 *No entries yet. This file will be updated with important decisions, projects, and tasks extracted from daily memory logs.*
 
+## 2026-05-24 Updates
+
+- **Decision:** Prioritize porting scripts from `skills/` and `scripts/` into alternative languages. High priority: `skill-creator`, `json-utils`, `scripting-utils`. Medium priority: other workspace scripts. Low priority: remaining scripts.
+- **Project:** Port scripts to alternative languages (Perl5, Raku, JS, Python, Bash, PowerShell, Tcl, Ruby, Lua, Go).
+- **ToDo:** Schedule and execute script porting; track progress; commit changes to repository.
+- **Cron Job Added:** Archive old memory files (>30 days) daily at 02:00 Europe/Berlin.
+
+
 ## Recent Updates (2026-05-22-23)
 
 - **Project:** Initiated manual run of `clawhub-git-sync` cron job to perform bidirectional sync between ClawHub and Git. (2026-05-22)
