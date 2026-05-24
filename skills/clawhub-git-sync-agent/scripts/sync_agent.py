@@ -8,6 +8,8 @@ import os
 import sys
 import json
 import subprocess
+import shutil
+import argparse
 from pathlib import Path
 from datetime import datetime
 
@@ -18,6 +20,9 @@ from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, 
 CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
 STATE_FILE = Path("/home/openclaw/.openclaw/workspace/db/sync_state.json")
+
+# Root directory for backups
+BACKUP_ROOT = Path("/home/openclaw/.openclaw/workspace/backups/sync_agent")
 
 def load_state():
     """Lädt den Sync-State"""
@@ -48,28 +53,45 @@ def init_git_repo(skill_path: Path, skill_name: str):
         subprocess.run(["git", "commit", "-m", f"Initial commit: {skill_name} skill"], capture_output=True)
         log(f"Git initialized for {skill_name}")
 
+def backup_skill_dir(skill_path: Path, skill_name: str):
+    """Creates a timestamped tar.gz backup of a skill directory."""
+    if not skill_path.exists():
+        return
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    backup_dir = BACKUP_ROOT / timestamp
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    archive_name = f"{skill_name}_{timestamp}.tar.gz"
+    archive_path = backup_dir / archive_name
+    shutil.make_archive(str(archive_path.with_suffix('')), 'gztar', root_dir=skill_path)
+    log(f"Backup created for {skill_name} at {archive_path}")
+
 def sync_skill_bidirectional(skill_name: str, dry_run: bool = False):
     """Bidirektionale Synchronisation eines Skills"""
     clawhub_path = CLAWHUB_DIR / skill_name
     git_path = GIT_DIR / skill_name
-    
+
+    # Backup before any potential changes (skip for dry-run)
+    if not dry_run:
+        backup_skill_dir(clawhub_path, f"{skill_name}_clawhub")
+        backup_skill_dir(git_path, f"{skill_name}_git")
+
     # Fall 1: Nur in ClawHub → zu Git
     if clawhub_path.exists() and not git_path.exists():
         log(f"NEW in ClawHub: {skill_name} → syncing to Git")
         if sync_to_git(skill_name, dry_run=False):
             init_git_repo(git_path, skill_name)
             return "synced_to_git"
-    
+
     # Fall 2: Nur in Git → zu ClawHub
     elif git_path.exists() and not clawhub_path.exists():
         log(f"NEW in Git: {skill_name} → syncing to ClawHub")
         if sync_to_clawhub(skill_name, dry_run=False):
             return "synced_to_clawhub"
-    
+
     # Fall 3: In beiden vorhanden → Vergleiche Timestamps
     elif clawhub_path.exists() and git_path.exists():
         # --- MODIFIZIERTE LOGIK: Robusterer Datei-Hash-Vergleich ---
-        
+
         # Stelle sicher, dass beide als gültige Skills validiert werden
         if not validate_skill(clawhub_path):
             log(f"Validation failed for ClawHub skill: {skill_name}", "ERROR")
@@ -84,13 +106,13 @@ def sync_skill_bidirectional(skill_name: str, dry_run: bool = False):
 
         if clawhub_hashes != git_hashes:
             log(f"Content difference detected for: {skill_name}")
-            
+
             # Einfache (aber oft ausreichende) Logik: Wenn clawhub neuer ist, lade hoch.
             # Eine detailliertere Strategie (z.B. welche Version von Git übernehmen)
             # könnte hier implementiert werden, falls nötig.
             # Für jetzt: Wenn sie sich unterscheiden, priorisieren wir ClawHub > Git
             # und aktualisieren Git.
-            
+
             log(f"UPDATE: {skill_name} ClawHub content is newer or different → syncing to Git")
             if sync_to_git(skill_name, dry_run=False):
                 # Git commit (optional, sync_to_git macht das bereits, aber zur Sicherheit)
@@ -104,7 +126,7 @@ def sync_skill_bidirectional(skill_name: str, dry_run: bool = False):
         else:
             log(f"Content is identical for: {skill_name}")
             return "no_change"
-    
+
     return "no_change"
 
 # --- Hinzufügen dieser Hilfsfunktion ---
@@ -122,12 +144,16 @@ def get_hashes(skill_dir: Path):
 
 def main():
     """Hauptfunktion des Sync-Agents"""
-    log("=== ClawHub ↔ Git Sync Agent gestartet ===")
-    
+    parser = argparse.ArgumentParser(description="ClawHub ↔ Git Sync Agent")
+parser.add_argument('--dry-run', action='store_true', help='Perform a dry run without making changes.')
+args = parser.parse_args()
+DRY_RUN = args.dry_run
+log("=== ClawHub ↔ Git Sync Agent gestartet ===")
+
     state = load_state()
     all_skills = get_all_skills()
     log(f"Gefundene Skills: {len(all_skills)}")
-    
+
     results = {
         "synced_to_git": [],
         "synced_to_clawhub": [],
@@ -136,15 +162,15 @@ def main():
         "no_change": [],
         "errors": []
     }
-    
+
     for skill in sorted(all_skills):
         try:
-            result = sync_skill_bidirectional(skill)
+            result = sync_skill_bidirectional(skill, dry_run=DRY_RUN)
             results[result].append(skill)
         except Exception as e:
             log(f"ERROR syncing {skill}: {e}", "ERROR")
             results["errors"].append(skill)
-    
+
     # Zusammenfassung
     log("\n=== SYNC ZUSAMMENFASSUNG ===")
     log(f"Neu in Git: {len(results['synced_to_git'])} - {results['synced_to_git']}")
@@ -153,7 +179,7 @@ def main():
     log(f"ClawHub aktualisiert: {len(results['updated_clawhub'])} - {results['updated_clawhub']}")
     log(f"Keine Änderung: {len(results['no_change'])}")
     log(f"Fehler: {len(results['errors'])} - {results['errors']}")
-    
+
     # State speichern
     if "sync_history" not in state:
         state["sync_history"] = []
@@ -164,7 +190,7 @@ def main():
     # Nur letzte 100 Einträge behalten
     state["sync_history"] = state["sync_history"][-100:]
     save_state(state)
-    
+
     log("=== Sync Agent beendet ===\n")
 
 if __name__ == "__main__":

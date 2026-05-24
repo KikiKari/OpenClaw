@@ -15,3 +15,10 @@
 - Do not run the command again. If the task requires more steps, continue from this result before replying to the user. Only ask the user for help if you are actually blocked. [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:22-24]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:26:27 -->
 - Exact completion details: Exec finished (gateway id=1faef2c7-ae69-4324-93e4-d0e155186217, session=lucky-dune, code 0) [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:26-27]
+
+## Promoted From Short-Term Memory (2026-05-24)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:9:12 -->
+- user: [Sun 2026-05-17 02:15 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:9-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:14:16 -->
+- Exact completion details: Exec finished (gateway id=27f05cdc-2b52-4c15-be41-aef6a5d2c82e, session=quick-summit, code 0) /home/openclaw/.openclaw/logs: commands.log config-audit.jsonl config-health.json gateway-restart.log [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:14-16]
