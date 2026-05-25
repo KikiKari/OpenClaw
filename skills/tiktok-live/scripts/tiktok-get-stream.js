@@ -53,6 +53,8 @@ async function getStreamUrl(username) {
         
         // Wait for stream to load (5-10 seconds typically)
         await page.waitForTimeout(8000);
+        // Additional wait to allow network requests for FLV URLs to be captured
+        await page.waitForTimeout(10000);
         
         // Try to trigger video play if needed
         const video = await page.$('video');

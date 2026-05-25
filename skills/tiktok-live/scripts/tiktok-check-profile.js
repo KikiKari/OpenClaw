@@ -81,10 +81,25 @@ async function checkLiveStatus(username) {
         // Method 1: data-e2e="live-icon"
         const liveIcon = await page.$('[data-e2e="live-icon"]');
         
-        // Method 2: LIVE text/badge
-        const liveBadge = await page.locator('text=/^LIVE$/i').first();
-        const liveBadgeVisible = await liveBadge.isVisible().catch(() => false);
-        
+        // Method 2: LIVE text/badge (scoped to profile header/avatar)
+        let liveBadgeVisible = false;
+        const profileHeader = await page.$('[data-e2e="profile-avatar"], [data-e2e="creator-page-header"], [data-e2e="user-bio"], header');
+        if (profileHeader) {
+            const pb = await profileHeader.$('text=/^LIVE$/i');
+            if (pb) {
+                try {
+                    liveBadgeVisible = await pb.evaluate(el => {
+                        const rect = el.getBoundingClientRect();
+                        return !!(rect.width || rect.height || el.offsetParent);
+                    });
+                } catch (e) {
+                    liveBadgeVisible = true;
+                }
+            } else {
+                liveBadgeVisible = false;
+            }
+        }
+
         // Method 3: Roter Rahmen um Profilbild - mehrere Selektoren
         const profileSelectors = [
             'img[alt*="profile"]',
@@ -138,7 +153,7 @@ async function checkLiveStatus(username) {
         }
         
         // Method 4: Check für Live-Link oder Live-Button
-        const liveLink = await page.$('a[href*="/live"]');
+        const liveLink = await page.$(`a[href*="/@${username}/live"]`);
         const hasLiveLink = liveLink !== null;
         
         // Method 5: Check für pulsierenden roten Punkt (Live-Indikator)
