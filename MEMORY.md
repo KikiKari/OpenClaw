@@ -12,6 +12,12 @@
 
 ## Recent Updates (2026-05-22-23)
 
+## 2026-05-25 Updates
+
+- **Decision:** Created cron job "Portiere_Scripte" to run every 6 hours for script porting.
+- **Project:** Script porting automation via abstractions_manager.py.
+- **ToDo:** Monitor cron job execution; ensure Git commits after each batch.
+
 - **Project:** Initiated manual run of `clawhub-git-sync` cron job to perform bidirectional sync between ClawHub and Git. (2026-05-22)
 - **Task:** Pending execution of `abstractions_manager.py` script and subsequent Git commit for porting scripts. (2026-05-23)
 
