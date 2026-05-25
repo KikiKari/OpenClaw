@@ -555,13 +555,15 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-05-24)
+## Promoted From Short-Term Memory (2026-05-25)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2212.md:19:21 -->
-- Exact completion details: Exec finished (gateway id=268da5b2-0392-4102-8060-3b222e900bab, session=kind-gulf, code 0) total used free shared buff/cache available Mem: 15Gi 3,7Gi 9,5Gi 4,2Mi 2,6Gi 11Gi Swap: 0B 0B 0B [score=0.832 recalls=0 avg=0.620 source=memory/2026-05-19-2212.md:19-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2214.md:9:9 -->
-- user: [Retry after the previous model attempt failed or timed out] [score=0.832 recalls=0 avg=0.620 source=memory/2026-05-19-2214.md:9-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-19-2214.md:16:18 -->
-- Exact completion details: Exec finished (gateway id=6b395c26-2deb-4ffd-9fdc-443d97efadc2, session=briny-shoal, code 1) [score=0.832 recalls=0 avg=0.620 source=memory/2026-05-19-2214.md:16-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:9:12 -->
-- assistant: The commands `openclaw nodes status && openclaw node list` did not run because they require explicit approval, and the approval request timed out. user: [Wed 2026-05-20 23:08 GMT+2] An async command did not run. Do not run the command again. [score=0.801 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:9-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-04-04.md:1:40 -->
+- # Session Log - 2026-04-04 ## TikTok Live System - Critical Fix **Zeitraum:** 21:00 - 22:10 **Nutzer:** @dieanonyme_196 ### Problem - API-Check (`tiktok-live-connector`) lieferte `OFFLINE` - Nutzer war tatsächlich LIVE - Visueller Check (Playwright) bestätigte Live-Status ### Lösung implementiert 1. Playwright + Chromium installiert (`npx playwright install chromium`) 2. Profil-Check-Skript erstellt (`check-profile.js`) 3. Stream-Extraktion-Skript erstellt (`get-stream.js`) 4. Netzwerk-Monitoring für FLV-URLs implementiert ### Ergebnis ✅ **VLC-Link erfolgreich extrahiert:** ``` https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4442595906643297149_hd.flv?... ``` ### Gelernte Lektion - `tiktok-live-connector` API ist unzuverlässig für Live-Status - Visueller Browser-Check ist einzige verlässliche Methode - DSGVO-Consent muss akzeptiert werden - Netzwerk-Traffic-Monitoring erforderlich für Stream-URLs ### Dateien erstellt/aktualisiert - `/home/openclaw/tiktok-live-app/DOKUMENTATION.md` - `/home/openclaw/tiktok-live-app/PROTOKOLL.md` - `/home/openclaw/tiktok-live-app/check-profile.js` - `/home/openclaw/tiktok-live-app/get-stream.js` - `/home/openclaw/.openclaw/workspace/AGENTS.md` (TikTok Learnings hinzugefügt) ### System-Status ✅ TikTok Live Checker - VOLL FUNKTIONSFÄHIG [score=0.840 recalls=7 avg=0.446 source=memory/2026-04-04.md:1-40]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:13:13 -->
+- Do not mention, summarize, or reuse output from any earlier run in this session. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:15:16 -->
+- Exact completion details: Exec denied (gateway id=92cf1116-c3b8-4b2e-b5c9-60e17130bd98, approval-timeout): openclaw sessions [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:15-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:18:21 -->
+- Reply to the user in a helpful way. Explain that the command did not run and why. Do not claim there is new command output. assistant: The `openclaw sessions` command did not run because it requires explicit approval, and the approval request timed out. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:22:25 -->
+- user: [Wed 2026-05-20 23:08 GMT+2] An async command did not run. Do not run the command again. There is no new command output. Do not mention, summarize, or reuse output from any earlier run in this session. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:22-25]
