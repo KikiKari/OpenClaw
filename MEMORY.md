@@ -12,6 +12,13 @@
 
 ## Recent Updates (2026-05-22-23)
 
+## 2026-05-26 Updates
+
+- **Decision:** Continue script porting task; prioritize high‑priority items (`skill-creator`, `json‑utils`, `scripting‑utils`).
+- **Project:** Run cron job "Portiere_Scripte" every 6 hours to execute `abstractions_manager.py` and advance script porting to alternative languages (Perl5, Raku, JS, Python, Bash, PowerShell, Tcl, Ruby, Lua, Go).
+- **ToDo:** Monitor cron job execution, ensure Git commits after each batch, and report any failures.
+
+
 ## 2026-05-25 Updates
 
 - **Decision:** Created cron job "Portiere_Scripte" to run every 6 hours for script porting.
