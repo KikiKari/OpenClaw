@@ -9,3 +9,8 @@
 - ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) assistant: [[reply_to:4b291d59-7289-47ac-b274-5561733aad29]]Audio reply [score=0.857 recalls=0 avg=0.620 source=memory/2026-05-21-2010.md:17-20]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-21-2010.md:21:21 -->
 - assistant: [[reply_to:f5bc9368-8d67-4f67-a0d9-12030af35c01]]Audio reply [score=0.844 recalls=0 avg=0.620 source=memory/2026-05-21-2010.md:21-21]
+
+## Promoted From Short-Term Memory (2026-05-26)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-21-2010.md:9:12 -->
+- assistant: ⚙️ Reasoning visibility enabled. assistant: 🦞 OpenClaw 2026.5.19 (a185ca2) ⏱️ Uptime: gateway 1h 38m · system 1d 13h 🧠 Model: anthropic/claude-opus-4-7 · 🔑 oauth (anthropic:claude-cli) [score=0.893 recalls=0 avg=0.620 source=memory/2026-05-21-2010.md:9-12]
