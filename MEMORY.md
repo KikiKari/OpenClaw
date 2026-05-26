@@ -555,15 +555,13 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-05-25)
+## Promoted From Short-Term Memory (2026-05-26)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-04-04.md:1:40 -->
-- # Session Log - 2026-04-04 ## TikTok Live System - Critical Fix **Zeitraum:** 21:00 - 22:10 **Nutzer:** @dieanonyme_196 ### Problem - API-Check (`tiktok-live-connector`) lieferte `OFFLINE` - Nutzer war tatsächlich LIVE - Visueller Check (Playwright) bestätigte Live-Status ### Lösung implementiert 1. Playwright + Chromium installiert (`npx playwright install chromium`) 2. Profil-Check-Skript erstellt (`check-profile.js`) 3. Stream-Extraktion-Skript erstellt (`get-stream.js`) 4. Netzwerk-Monitoring für FLV-URLs implementiert ### Ergebnis ✅ **VLC-Link erfolgreich extrahiert:** ``` https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4442595906643297149_hd.flv?... ``` ### Gelernte Lektion - `tiktok-live-connector` API ist unzuverlässig für Live-Status - Visueller Browser-Check ist einzige verlässliche Methode - DSGVO-Consent muss akzeptiert werden - Netzwerk-Traffic-Monitoring erforderlich für Stream-URLs ### Dateien erstellt/aktualisiert - `/home/openclaw/tiktok-live-app/DOKUMENTATION.md` - `/home/openclaw/tiktok-live-app/PROTOKOLL.md` - `/home/openclaw/tiktok-live-app/check-profile.js` - `/home/openclaw/tiktok-live-app/get-stream.js` - `/home/openclaw/.openclaw/workspace/AGENTS.md` (TikTok Learnings hinzugefügt) ### System-Status ✅ TikTok Live Checker - VOLL FUNKTIONSFÄHIG [score=0.840 recalls=7 avg=0.446 source=memory/2026-04-04.md:1-40]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:13:13 -->
-- Do not mention, summarize, or reuse output from any earlier run in this session. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:15:16 -->
-- Exact completion details: Exec denied (gateway id=92cf1116-c3b8-4b2e-b5c9-60e17130bd98, approval-timeout): openclaw sessions [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:15-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:18:21 -->
-- Reply to the user in a helpful way. Explain that the command did not run and why. Do not claim there is new command output. assistant: The `openclaw sessions` command did not run because it requires explicit approval, and the approval request timed out. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-20-2330.md:22:25 -->
-- user: [Wed 2026-05-20 23:08 GMT+2] An async command did not run. Do not run the command again. There is no new command output. Do not mention, summarize, or reuse output from any earlier run in this session. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-20-2330.md:22-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-21-2220.md:9:10 -->
+- assistant: ✅ Session reset. assistant: ⚙️ Reasoning visibility enabled. [score=0.864 recalls=0 avg=0.620 source=memory/2026-05-21-2220.md:9-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-21-2345.md:9:11 -->
+- assistant: ✅ Session reset. assistant: ⚙️ Reasoning visibility enabled. user: Use the "tiktok-live" skill for this request. [score=0.864 recalls=0 avg=0.620 source=memory/2026-05-21-2345.md:9-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-21-2219.md:9:9 -->
+- assistant: I'm using the **nvidia/nemotron-3-super-120b-a12b** model (NVIDIA Nemotron 3 Super 120B) with reasoning enabled. My fallbacks include openai/gpt-5-mini, gemini-2.0-flash, and others as shown in the status. [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-21-2219.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-21-2219.md:11:11 -->
+- Regarding @rabiabaysal's TikTok status: The live detection skill uses **visual detection via Playwright/Chromium** (not the unreliable TikTok API), which checks for: [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-21-2219.md:11-11]
