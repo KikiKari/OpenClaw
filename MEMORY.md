@@ -43,3 +43,11 @@
 - user: [Sun 2026-05-17 02:15 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:9-11]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:14:16 -->
 - Exact completion details: Exec finished (gateway id=27f05cdc-2b52-4c15-be41-aef6a5d2c82e, session=quick-summit, code 0) /home/openclaw/.openclaw/logs: commands.log config-audit.jsonl config-health.json gateway-restart.log [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:14-16]
+## Archive: 2026-05-27 (automated)
+
+- 2026-05-25 09:37 — TikTok extraction session: attempted to extract direct stream for `@marry_live`; no FLV URL found. Likely causes: age/region restrictions, short capture window, or creator privacy settings. Recommended next steps: retry with a longer capture window, run with logged-in TikTok cookies, or open the `/live` page directly (e.g., `mpv "https://www.tiktok.com/@marry_live/live"`). Note: visual live-badge checks can be false positives; augment with network or yt-dlp checks.
+
+- 2026-05-25 — Created cron job `Portiere_Scripte` to run every 6 hours, executing `abstractions_manager.py` to orchestrate script-porting work.
+
+- 2026-05-26 — Handled internal reminder to port scripts across multiple languages (Perl5, Raku, JS, Python, Bash, PowerShell, Tcl, Ruby, Lua, Go). Priorities: High — `skill-creator`, `json-utils`, `scripting-utils`; Medium — workspace scripts; Low — others. Commits will be made after each batch. Reference: `./skills/script-abstractions-manager/scripts/abstractions_manager.py`.
+

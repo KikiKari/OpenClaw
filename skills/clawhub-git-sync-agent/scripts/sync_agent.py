@@ -145,10 +145,10 @@ def get_hashes(skill_dir: Path):
 def main():
     """Hauptfunktion des Sync-Agents"""
     parser = argparse.ArgumentParser(description="ClawHub ↔ Git Sync Agent")
-parser.add_argument('--dry-run', action='store_true', help='Perform a dry run without making changes.')
-args = parser.parse_args()
-DRY_RUN = args.dry_run
-log("=== ClawHub ↔ Git Sync Agent gestartet ===")
+    parser.add_argument('--dry-run', action='store_true', help='Perform a dry run without making changes.')
+    args = parser.parse_args()
+    DRY_RUN = args.dry_run
+    log("=== ClawHub ↔ Git Sync Agent gestartet ===")
 
     state = load_state()
     all_skills = get_all_skills()
