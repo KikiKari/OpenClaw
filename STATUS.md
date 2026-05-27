@@ -1,8 +1,8 @@
 # Script Abstractions - Status Report
 
-**Letzte Aktualisierung:** 2026-05-26 18:06
+**Letzte Aktualisierung:** 2026-05-27 00:32
 
-- Aktuelle Priorität: medium
+- Aktuelle Priorität: high
 - Verarbeitete Scripts: 0
 - Abstraktionen gesamt: 122
 
@@ -34,6 +34,6 @@
 
 ### Job-Verteilung
 
-- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)
+- **Heavy Jobs** (>50 KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)
 - **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)
 - **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)
