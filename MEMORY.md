@@ -11,6 +11,11 @@
 - ❌ Keine Datei memory/2026-05-25.md gefunden – keine neuen Einträge zu Entscheidungen, Projekten, ToDos.
 - ❓ Archiv‑Check: Dateien >30 Tage konnten nicht automatisch geprüft werden (Exec‑Approval fehlt). Bitte manuell prüfen oder Cron‑Job anlegen.
 
+### 2026-05-28 - Daily Memory-Maintenance & Erkenntnisse vom 27.05.
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ❌ Keine Datei memory/2026-05-27.md gefunden – keine neuen Einträge zu Entscheidungen, Projekten, ToDos.
+- ❓ Archiv‑Check: Dateien >30 Tage konnten nicht automatisch geprüft werden (Exec‑Approval fehlt). Bitte manuell prüfen oder Cron‑Job anlegen.
+
 ### 2026-05-24 - Daily Memory-Maintenance & Erkenntnisse vom 23.05.
 - ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
 - ✅ Analysierte memory/2026-05-23.md (Gestern)

@@ -16,6 +16,7 @@ CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
 BACKUP_DIR = Path("/home/openclaw/.openclaw/workspace/backups/sync")
 LOG_FILE = Path("/home/openclaw/.openclaw/workspace/logs/sync-agent.log")
+IGNORED_NAMES = {".git", ".clawhub", "node_modules", "__pycache__"}
 
 # Erstelle Verzeichnisse
 GIT_DIR.mkdir(parents=True, exist_ok=True)
@@ -38,6 +39,30 @@ def validate_skill(skill_dir: Path) -> bool:
         return False
     return True
 
+def _is_ignored_path(path: Path) -> bool:
+    return any(part in IGNORED_NAMES for part in path.parts) or path.suffix == ".pyc"
+
+def iter_sync_files(root: Path):
+    """Yield files that should participate in sync comparisons."""
+    for current_root, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in IGNORED_NAMES and not d.startswith("__pycache__")]
+        rel_root = Path(current_root).relative_to(root)
+        if _is_ignored_path(rel_root):
+            continue
+        for file in files:
+            if file in IGNORED_NAMES or file.endswith(".pyc"):
+                continue
+            file_path = Path(current_root) / file
+            rel_path = file_path.relative_to(root)
+            if _is_ignored_path(rel_path):
+                continue
+            if not file_path.is_file():
+                continue
+            yield file_path, rel_path
+
+def _copy_ignore(_path, names):
+    return [name for name in names if name in IGNORED_NAMES or name.endswith(".pyc")]
+
 # Backup
 def create_backup(source: Path, skill_name: str):
     """Erstellt Backup eines Skills"""
@@ -54,7 +79,7 @@ def create_backup(source: Path, skill_name: str):
             return False
             
     try:
-        shutil.copytree(source, backup_path)
+        shutil.copytree(source, backup_path, ignore=_copy_ignore)
         log(f"Backup created: {backup_path}")
         return True
     except Exception as e:
@@ -64,9 +89,8 @@ def create_backup(source: Path, skill_name: str):
 # Hash-Vergleich
 def get_file_hash(file_path: Path) -> str:
     """SHA256-Hash einer Datei"""
-    # Ensure the path points to a regular file (skip directories or symlinks to dirs)
+    # Ensure the path points to a regular file.
     if not file_path.is_file():
-        log(f"Skipping non-file for hash: {file_path}", "WARN")
         return ""
     hasher = hashlib.sha256()
     try:
@@ -93,18 +117,12 @@ def sync_to_git(skill_name: str, dry_run: bool = True):
     
     # Änderungen erkennen
     changes = []
-    for root, dirs, files in os.walk(source):
-        rel_path = Path(root).relative_to(source)
-        
-        for file in files:
-            src_file = source / rel_path / file
-            tgt_file = target / rel_path / file
-            
-            # Vergleich
-            if not tgt_file.exists():
-                changes.append(f"ADD {rel_path}/{file}")
-            elif get_file_hash(src_file) != get_file_hash(tgt_file):
-                changes.append(f"UPDATE {rel_path}/{file}")
+    for src_file, rel_path in iter_sync_files(source):
+        tgt_file = target / rel_path
+        if not tgt_file.exists():
+            changes.append(f"ADD {rel_path}")
+        elif get_file_hash(src_file) != get_file_hash(tgt_file):
+            changes.append(f"UPDATE {rel_path}")
     
     # Dry-Run Report
     if dry_run:
@@ -116,9 +134,9 @@ def sync_to_git(skill_name: str, dry_run: bool = True):
     # Echte Synchronisation
     log(f"SYNC: {skill_name} - Applying {len(changes)} changes")
     if target.exists():
-        shutil.copytree(source, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('.git'))
+        shutil.copytree(source, target, dirs_exist_ok=True, ignore=_copy_ignore)
     else:
-        shutil.copytree(source, target, ignore=shutil.ignore_patterns('.git'))
+        shutil.copytree(source, target, ignore=_copy_ignore)
     log(f"SYNC: {skill_name} - Complete")
     return True
 
@@ -137,17 +155,12 @@ def sync_to_clawhub(skill_name: str, dry_run: bool = True):
 
     # Änderungen erkennen (gleiche Logik wie oben)
     changes = []
-    for root, dirs, files in os.walk(source):
-        rel_path = Path(root).relative_to(source)
-
-        for file in files:
-            src_file = source / rel_path / file
-            tgt_file = target / rel_path / file
-
-            if not tgt_file.exists():
-                changes.append(f"ADD {rel_path}/{file}")
-            elif get_file_hash(src_file) != get_file_hash(tgt_file):
-                changes.append(f"UPDATE {rel_path}/{file}")
+    for src_file, rel_path in iter_sync_files(source):
+        tgt_file = target / rel_path
+        if not tgt_file.exists():
+            changes.append(f"ADD {rel_path}")
+        elif get_file_hash(src_file) != get_file_hash(tgt_file):
+            changes.append(f"UPDATE {rel_path}")
 
     # Dry-Run Report
     if dry_run:
@@ -159,9 +172,9 @@ def sync_to_clawhub(skill_name: str, dry_run: bool = True):
     # Echte Synchronisation
     log(f"SYNC: {skill_name} - Applying {len(changes)} changes")
     if target.exists():
-        shutil.copytree(source, target, dirs_exist_ok=True, ignore=shutil.ignore_patterns('.git'))
+        shutil.copytree(source, target, dirs_exist_ok=True, ignore=_copy_ignore)
     else:
-        shutil.copytree(source, target, ignore=shutil.ignore_patterns('.git'))
+        shutil.copytree(source, target, ignore=_copy_ignore)
     log(f"SYNC: {skill_name} - Complete")
     return True
 

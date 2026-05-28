@@ -13,7 +13,7 @@ from datetime import datetime
 
 # Import sync functions
 sys.path.append('/home/openclaw/.openclaw/workspace/scripts')
-from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, get_file_hash
+from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, get_file_hash, iter_sync_files
 
 CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
@@ -34,8 +34,16 @@ def save_state(state):
 
 def get_all_skills():
     """Findet alle Skills in beiden Verzeichnissen"""
-    clawhub_skills = {d.name for d in CLAWHUB_DIR.iterdir() if d.is_dir() and not d.name.startswith('.')}
-    git_skills = {d.name for d in GIT_DIR.iterdir() if d.is_dir() and not d.name.startswith('.')}
+    clawhub_skills = {
+        d.name
+        for d in CLAWHUB_DIR.iterdir()
+        if d.is_dir() and not d.name.startswith('.') and (d / "SKILL.md").exists()
+    }
+    git_skills = {
+        d.name
+        for d in GIT_DIR.iterdir()
+        if d.is_dir() and not d.name.startswith('.') and (d / "SKILL.md").exists()
+    }
     return clawhub_skills.union(git_skills)
 
 def init_git_repo(skill_path: Path, skill_name: str):
@@ -111,13 +119,8 @@ def sync_skill_bidirectional(skill_name: str):
 def get_hashes(skill_dir: Path):
     """Erzeugt ein Dictionary von Datei-Hashes für einen Skill-Ordner."""
     hashes = {}
-    for root, _, files in os.walk(skill_dir):
-        for file in files:
-            file_path = Path(root) / file
-            # Ignoriere .git Verzeichnisse
-            if '.git' in str(file_path):
-                continue
-            hashes[str(file_path.relative_to(skill_dir))] = get_file_hash(file_path)
+    for file_path, rel_path in iter_sync_files(skill_dir):
+        hashes[str(rel_path)] = get_file_hash(file_path)
     return hashes
 
 def main():

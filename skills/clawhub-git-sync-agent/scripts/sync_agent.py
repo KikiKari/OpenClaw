@@ -13,7 +13,7 @@ from datetime import datetime
 
 # Import sync functions
 sys.path.append('/home/openclaw/.openclaw/workspace/scripts')
-from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, get_file_hash
+from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, get_file_hash, iter_sync_files
 
 CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
@@ -36,8 +36,16 @@ def save_state(state):
 
 def get_all_skills():
     """Findet alle Skills in beiden Verzeichnissen"""
-    clawhub_skills = {d.name for d in CLAWHUB_DIR.iterdir() if d.is_dir() and not d.name.startswith('.')}
-    git_skills = {d.name for d in GIT_DIR.iterdir() if d.is_dir() and not d.name.startswith('.')}
+    clawhub_skills = {
+        d.name
+        for d in CLAWHUB_DIR.iterdir()
+        if d.is_dir() and not d.name.startswith('.') and (d / "SKILL.md").exists()
+    }
+    git_skills = {
+        d.name
+        for d in GIT_DIR.iterdir()
+        if d.is_dir() and not d.name.startswith('.') and (d / "SKILL.md").exists()
+    }
     return clawhub_skills.union(git_skills)
 
 def init_git_repo(skill_path: Path, skill_name: str):
@@ -68,11 +76,8 @@ def sync_skill_bidirectional(skill_name: str):
         if sync_to_clawhub(skill_name, dry_run=False):
             return "synced_to_clawhub"
     
-    # Fall 3: In beiden vorhanden → Vergleiche Timestamps
+    # Fall 3: In beiden vorhanden
     elif clawhub_path.exists() and git_path.exists():
-        # --- MODIFIZIERTE LOGIK: Robusterer Datei-Hash-Vergleich ---
-        
-        # Stelle sicher, dass beide als gültige Skills validiert werden
         if not validate_skill(clawhub_path):
             log(f"Validation failed for ClawHub skill: {skill_name}", "ERROR")
             return "error"
@@ -80,32 +85,47 @@ def sync_skill_bidirectional(skill_name: str):
             log(f"Validation failed for Git skill: {skill_name}", "ERROR")
             return "error"
 
-        # Berechne Hashes für clawhub und git
-        clawhub_hashes = get_hashes(clawhub_path)
-        git_hashes = get_hashes(git_path)
+        clawhub_changes = preview_changes(clawhub_path, git_path)
+        git_changes = preview_changes(git_path, clawhub_path)
 
-        if clawhub_hashes != git_hashes:
+        if not clawhub_changes and not git_changes:
+            log(f"Content is identical for: {skill_name}")
+            return "no_change"
+
+        if clawhub_changes and not git_changes:
             log(f"Content difference detected for: {skill_name}")
-            
-            # Einfache (aber oft ausreichende) Logik: Wenn clawhub neuer ist, lade hoch.
-            # Eine detailliertere Strategie (z.B. welche Version von Git übernehmen)
-            # könnte hier implementiert werden, falls nötig.
-            # Für jetzt: Wenn sie sich unterscheiden, priorisieren wir ClawHub > Git
-            # und aktualisieren Git.
-            
             log(f"UPDATE: {skill_name} ClawHub content is newer or different → syncing to Git")
             if sync_to_git(skill_name, dry_run=False):
-                # Git commit (optional, sync_to_git macht das bereits, aber zur Sicherheit)
                 os.chdir(git_path)
                 subprocess.run(["git", "add", "."], capture_output=True)
                 subprocess.run(["git", "commit", "-m", f"Sync from ClawHub content diff: {datetime.now().strftime('%Y-%m-%d %H:%M')}"], capture_output=True)
                 return "updated_git"
-            else:
-                log(f"Failed to sync {skill_name} to Git after content diff", "ERROR")
-                return "error"
+            log(f"Failed to sync {skill_name} to Git after content diff", "ERROR")
+            return "error"
+
+        if git_changes and not clawhub_changes:
+            log(f"Content difference detected for: {skill_name}")
+            log(f"UPDATE: {skill_name} Git content is newer or different → syncing to ClawHub")
+            if sync_to_clawhub(skill_name, dry_run=False):
+                return "updated_clawhub"
+            log(f"Failed to sync {skill_name} to ClawHub after content diff", "ERROR")
+            return "error"
+
+        log(f"Content difference detected for: {skill_name}")
+        if newest_mtime(clawhub_path) >= newest_mtime(git_path):
+            log(f"UPDATE: {skill_name} ClawHub content is newer or different → syncing to Git")
+            if sync_to_git(skill_name, dry_run=False):
+                os.chdir(git_path)
+                subprocess.run(["git", "add", "."], capture_output=True)
+                subprocess.run(["git", "commit", "-m", f"Sync from ClawHub content diff: {datetime.now().strftime('%Y-%m-%d %H:%M')}"], capture_output=True)
+                return "updated_git"
         else:
-            log(f"Content is identical for: {skill_name}")
-            return "no_change"
+            log(f"UPDATE: {skill_name} Git content is newer or different → syncing to ClawHub")
+            if sync_to_clawhub(skill_name, dry_run=False):
+                return "updated_clawhub"
+
+        log(f"Failed to resolve content diff for {skill_name}", "ERROR")
+        return "error"
     
     return "no_change"
 
@@ -113,14 +133,25 @@ def sync_skill_bidirectional(skill_name: str):
 def get_hashes(skill_dir: Path):
     """Erzeugt ein Dictionary von Datei-Hashes für einen Skill-Ordner."""
     hashes = {}
-    for root, _, files in os.walk(skill_dir):
-        for file in files:
-            file_path = Path(root) / file
-            # Ignoriere .git Verzeichnisse
-            if '.git' in str(file_path):
-                continue
-            hashes[str(file_path.relative_to(skill_dir))] = get_file_hash(file_path)
+    for file_path, rel_path in iter_sync_files(skill_dir):
+        hashes[str(rel_path)] = get_file_hash(file_path)
     return hashes
+
+def preview_changes(source_dir: Path, target_dir: Path):
+    """Berechnet Sync-Änderungen in einer Richtung, ohne zu schreiben."""
+    changes = []
+    for src_file, rel_path in iter_sync_files(source_dir):
+        tgt_file = target_dir / rel_path
+        if not tgt_file.exists():
+            changes.append(f"ADD {rel_path}")
+        elif get_file_hash(src_file) != get_file_hash(tgt_file):
+            changes.append(f"UPDATE {rel_path}")
+    return changes
+
+def newest_mtime(skill_dir: Path) -> float:
+    """Ermittelt die neueste mtime über alle relevanten Dateien."""
+    mtimes = [file_path.stat().st_mtime for file_path, _ in iter_sync_files(skill_dir)]
+    return max(mtimes) if mtimes else 0.0
 
 def main():
     """Hauptfunktion des Sync-Agents mit Dry-Run Phase"""

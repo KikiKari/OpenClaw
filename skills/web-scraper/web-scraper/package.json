@@ -1,0 +1,10 @@
+{
+  "name": "web-scraper",
+  "version": "1.0.0",
+  "description": "Targeted web data extraction and scraping - not just crawling",
+  "main": "SKILL.md",
+  "openclaw": {
+    "skill": true,
+    "category": "web"
+  }
+}
