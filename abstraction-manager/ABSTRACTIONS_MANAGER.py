@@ -10,7 +10,7 @@ Verwendung:
 
 Konfiguration:
     Alle Pfade und Einstellungen werden über Umgebungsvariablen aus der
-    zentralen .env bezogen. OPENCLAW_WORKSPACE muss gesetzt sein.
+    Der Workspace-Pfad ist hardcoded: /home/openclaw/.openclaw/workspace
 """
 
 import os
@@ -28,7 +28,7 @@ from logging.handlers import RotatingFileHandler
 # Konfiguration
 # ---------------------------------------------------------------------------
 
-WORKSPACE: Path = Path(os.environ.get("OPENCLAW_WORKSPACE", "/home/openclaw/.openclaw/workspace"))
+WORKSPACE: Path = Path("/home/openclaw/.openclaw/workspace")
 ABSTRACTIONS_REPO: Path = WORKSPACE / "git" / "Abstraktionen"
 LOG_DIR: Path = WORKSPACE / "logs" / "abstractions-manager"
 STATE_FILE: Path = WORKSPACE / "db" / "abstractions_state.json"

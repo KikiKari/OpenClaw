@@ -70,10 +70,10 @@ Alle Werte werden aus Umgebungsvariablen bezogen:
 
 | Variable | Beschreibung | Standard |
 |----------|--------------|---------|
-| `OPENCLAW_WORKSPACE` | Absoluter Workspace-Pfad | `/home/openclaw/.openclaw/workspace` |
+
 | `ABSTRACTIONS_LOG_LEVEL` | Log-Level (DEBUG/INFO/WARNING/ERROR) | `INFO` |
 
-Abgeleitete Pfade (nicht überschreibbar, aus `OPENCLAW_WORKSPACE`):
+Abgeleitete Pfade (hardcoded, Basis: `/home/openclaw/.openclaw/workspace`):
 
 | Pfad | Verwendung |
 |------|-----------|
@@ -202,7 +202,7 @@ chmod 750 /home/openclaw/.openclaw/workspace/logs/abstractions-manager
 
 ## db_manager.py
 
-Erstellt und befüllt zwei SQLite-Datenbanken unter `$OPENCLAW_WORKSPACE/db/`.
+Erstellt und befüllt zwei SQLite-Datenbanken unter `/home/openclaw/.openclaw/workspace/db/`.
 
 Das DB-Verzeichnis wird in `main()` angelegt — nicht auf Modulebene.
 

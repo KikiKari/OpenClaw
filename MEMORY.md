@@ -560,9 +560,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-05-27)
+## Promoted From Short-Term Memory (2026-05-28)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-04-13-dream-memory.md:51:58 -->
-- # Session Log - 2026-04-04 ## TikTok Live System - Critical Fix **Zeitraum:** 21:00 - 22:10 **Nutzer:** @dieanonyme_196 ### Problem - API-Check (`tiktok-live-connector`) lieferte `OFFLINE` - Nutzer war tatsächlich LIVE - Visueller Check (Playwright) bestätigte Live-Status ### Lösung implementiert 1. Playwright + Chromium installiert (`npx playwright install chromium`) 2. Profil-Check-Skript erstellt (`check-profile.js`) 3. Stream-Extraktion-Skript erstellt (`get-stream.js`) 4. Netzwerk-Monitoring für FLV-URLs implementiert ### Ergebnis ✅ **VLC-Link erfolgreich extrahiert:** ``` https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4442595906643297149_hd.flv?... ``` ### Gelernt memory/2026-04-04.md:1-40 2 signale · 2 recall live 6. Zusätzlich 2 Sekunden für TikTok-interne Live-Prüfung ### 3. Live-Indikatoren (Reihenfolge der Zuverlässigkeit) 1. **LIVE-Badge** (`text=/^LIVE$/i`) — zuverlässigste Methode 2. **Roter Rahmen** um Profilbild — prüfe `borderColor` + `boxShadow` 3. **Live-Link** (`a[href*="/live"]`) — fallback ### 4. Browser-Cleanup - **Kritisch:** Browser muss vollständig geschlossen werden (`browser.close()`) - Ohne sauberes Cleanup: Session-Cookies/Cache beeinflussen nächste Abfrage - Frische Instanz für jeden Check erforderlich (kein Reuse) --- ## Skill-Erstellung: tiktok-live **Zeit:** 2026-04-06 11:00-12:00 CET **Status:** ✅ Vollständig dokumentiert **Pfad:** `~/.openclaw/skills/tiktok-live/` memory/2026-04-06.md:40-94 2 signale · 2 recall live [score=0.868 recalls=7 avg=0.572 source=memory/2026-04-13-dream-memory.md:51-58]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-21-2219.md:16:16 -->
-- The last check showed: [score=0.856 recalls=0 avg=0.620 source=memory/2026-05-21-2219.md:16-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22.md:3:3 -->
+- Context: Work on TikTok monitoring API and tiktok-live skills on the gateway. [score=0.888 recalls=0 avg=0.620 source=memory/2026-05-22.md:3-3]
