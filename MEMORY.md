@@ -2,6 +2,8 @@
 
 *No entries yet. This file will be updated with important decisions, projects, and tasks extracted from daily memory logs.*
 
+[2026-05-28] Executed ARCHIVE_MEMORY reminder: logged archiving timestamp and noted completion. Future archiving will compress older daily logs (>30 days) into archive folder.
+
 ## 2026-05-24 Updates
 
 - **Decision:** Prioritize porting scripts from `skills/` and `scripts/` into alternative languages. High priority: `skill-creator`, `json-utils`, `scripting-utils`. Medium priority: other workspace scripts. Low priority: remaining scripts.

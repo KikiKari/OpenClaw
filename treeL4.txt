@@ -1,0 +1,3624 @@
+.
+├── 3bf0d2a8-e6ac-49ca-b212-5bc329865b46.txt
+├── 6ff90e03-e07d-4d07-b292-bc42f4ad4254.txt
+├── 9ca228e5-cac5-4f77-8cfa-9bf6fc7cb3d3.txt
+├── abstraction-manager
+│   ├── ABSTRACTIONS_MANAGER.md
+│   ├── ABSTRACTIONS_MANAGER.py
+│   ├── check-live.js
+│   ├── CODE_REVIEW_FULL.md
+│   ├── create_abstraction.py
+│   ├── db_manager.py
+│   ├── exceptions.py
+│   ├── initialize_repo.sh
+│   ├── json_processor.js
+│   ├── logger.py
+│   ├── __pycache__
+│   │   ├── ABSTRACTIONS_MANAGER.cpython-312.pyc
+│   │   └── db_manager.cpython-312.pyc
+│   ├── python-hardener.skill
+│   ├── README.md
+│   ├── SKILL.md
+│   ├── spawn_agent.py
+│   ├── TEST_A~1.PY
+│   └── validators.py
+├── ABSTRACTIONS_MANAGER.py -> skills/script-abstractions-manager/scripts/ABSTRACTIONS_MANAGER.py
+├── ABSTRACTIONS_MANAGER_SKILL.md -> skills/script-abstractions-manager/SKILL.md
+├── @ABSTRACTIONS_STATE.json.save
+├── agent
+│   └── memory
+│       ├── dreaming
+│       │   ├── deep
+│       │   ├── light
+│       │   └── rem
+│       └── .dreams
+│           └── events.jsonl
+├── AGENTS.md
+├── archive
+│   ├── .keep
+│   └── memory
+│       ├── 2026-05-26
+│       │   └── README.md
+│       └── .gitkeep
+├── archives
+│   └── memory_archive_2026-05-25.tar.gz
+├── backups
+│   ├── abstractions-manager-20260526-211801
+│   │   ├── ABSTRACTIONS_MANAGER.py.symlink -> skills/script-abstractions-manager/scripts/abstractions_manager.py
+│   │   ├── ABSTRACTIONS_MANAGER.py.symlink-target.txt
+│   │   ├── abstractions_state.json
+│   │   ├── db_manager.py
+│   │   ├── jobs.json
+│   │   ├── jobs-state.json
+│   │   ├── logs-abstractions-manager
+│   │   │   ├── 2026-05-18.log
+│   │   │   ├── 2026-05-21.log
+│   │   │   ├── 2026-05-22.log
+│   │   │   ├── 2026-05-23.log
+│   │   │   ├── 2026-05-24.log
+│   │   │   ├── 2026-05-25.log
+│   │   │   └── 2026-05-26.log
+│   │   ├── old_gateway_cronjobs.json
+│   │   └── script-abstractions-manager
+│   │       ├── scripts
+│   │       └── SKILL.md
+│   ├── exec-approvals.json.before-cli-approvals
+│   ├── exec-approvals.json.broken-test
+│   ├── openclaw.json.bak.1
+│   ├── openclaw.json.bak.2
+│   ├── openclaw.json.bak.3
+│   ├── openclaw.json.bak.4
+│   ├── openclaw.json.before-revert-2026-05-17T0010
+│   ├── openclaw.json.preswap
+│   ├── openclaw.json.preswap-step4
+│   ├── openclaw.json.preswap-step4b
+│   ├── openclaw.json.preswap-step4c
+│   ├── sync
+│   │   ├── clawhub-git-sync-agent_20260524_120908
+│   │   │   ├── .git
+│   │   │   ├── scripts
+│   │   │   └── SKILL.md
+│   │   ├── json-utils_20260430_000001
+│   │   │   ├── .clawhub
+│   │   │   ├── _meta.json
+│   │   │   ├── package.json
+│   │   │   ├── references
+│   │   │   ├── scripts
+│   │   │   └── SKILL.md
+│   │   ├── model-usage_20260430_000001
+│   │   │   ├── .clawhub
+│   │   │   ├── _meta.json
+│   │   │   ├── references
+│   │   │   ├── scripts
+│   │   │   └── SKILL.md
+│   │   ├── sherpa-onnx-tts_20260430_000001
+│   │   │   ├── .clawhub
+│   │   │   ├── _meta.json
+│   │   │   └── SKILL.md
+│   │   └── tiktok-live-mon_20260430_000002
+│   │       ├── .clawhub
+│   │       ├── extraction-methods
+│   │       ├── _meta.json
+│   │       ├── michele-issue-236-flv-quality.md
+│   │       ├── michele-issue-428-url-retrieval.md
+│   │       ├── package.json
+│   │       ├── playwright-intercept-requests.md
+│   │       ├── playwright-navigations.md
+│   │       ├── playwright-network-docs.md
+│   │       ├── playwright-network-requests-tutorial.md
+│   │       ├── playwright-page-api.md
+│   │       ├── playwright-response-values.md
+│   │       ├── playwright-xhr-capture.md
+│   │       ├── references
+│   │       ├── SKILL.md
+│   │       ├── streamlink-cli-reference.md
+│   │       ├── streamlink-issue-6832-inaccessible.md
+│   │       ├── tiktok-check-profile.js
+│   │       ├── tiktok-get-stream.js
+│   │       ├── yt-dlp-issue-11921-live-status.md
+│   │       ├── yt-dlp-issue-15970-cookies.md
+│   │       └── yt-dlp_troubleshooting.md
+│   └── sync-20260522-121016
+│       ├── git_skills
+│       │   └── skills
+│       └── skills
+│           ├── abstractions-utils
+│           ├── blogwatcher
+│           ├── channel-status-agent
+│           ├── clawhub-git-sync-agent
+│           ├── cluster-gateway
+│           ├── cluster-management
+│           ├── coding-agent
+│           ├── db-maintainer
+│           ├── doc-scraper
+│           ├── documentation
+│           ├── ffmpeg.json
+│           ├── github
+│           ├── github-clones
+│           ├── git-publish-agent
+│           ├── healthcheck
+│           ├── himalaya
+│           ├── json-utils
+│           ├── json-utils.skill
+│           ├── log-collector
+│           ├── log-collector.json
+│           ├── mcporter
+│           ├── mcp-tool-utils
+│           ├── model-usage
+│           ├── multi-nodes-utils
+│           ├── nano-pdf
+│           ├── node-health-monitor
+│           ├── node-health-monitor.json
+│           ├── notion
+│           ├── obsidian
+│           ├── .openclaw-install-backups
+│           ├── ops-hub
+│           ├── perplexity-pro-search
+│           ├── playwright.json
+│           ├── _quarantine
+│           ├── relay-node
+│           ├── reports-creator
+│           ├── resource-manager
+│           ├── script-abstractions-manager
+│           ├── scripting-utils
+│           ├── server-maintenance
+│           ├── session-logs
+│           ├── sherpa-onnx-tts
+│           ├── skill-creator
+│           ├── slack
+│           ├── songsee
+│           ├── spotify-player
+│           ├── streamlink.json
+│           ├── sub-agents-utils
+│           ├── sync-utils
+│           ├── tavily
+│           ├── tiktok-live
+│           ├── tiktok-live.json
+│           ├── tiktok-live-mon
+│           ├── tiktok-live-mon.json
+│           ├── tmux
+│           ├── video-frames
+│           ├── wavespeed-image
+│           ├── weather
+│           ├── web-markdown-scraper
+│           ├── web-scraper
+│           ├── worker-node
+│           ├── workspace-db
+│           └── yt-dlp.json
+├── c7269749-61da-4dcb-965c-9ca0ccb8fb72.txt
+├── claude
+│   ├── AGENTS.md
+│   ├── DREAMS.md
+│   ├── HEARTBEAT.md
+│   ├── IDENTITY.md
+│   ├── memory
+│   │   ├── 2026-05-21-2010.md
+│   │   ├── dreaming
+│   │   │   ├── deep
+│   │   │   ├── light
+│   │   │   └── rem
+│   │   └── .dreams
+│   │       ├── daily-ingestion.json
+│   │       ├── events.jsonl
+│   │       ├── phase-signals.json
+│   │       ├── session-corpus
+│   │       ├── session-ingestion.json
+│   │       └── short-term-recall.json
+│   ├── MEMORY.md
+│   ├── memory-runtime-comparison-workpack.md
+│   ├── .openclaw
+│   │   └── workspace-state.json
+│   ├── .openclaw-cli-images
+│   │   ├── 0ff055b081bc8249d65e8a277bbe318e93783e8cc2efbe41775fc798f055cd06.png
+│   │   ├── 2a419d9c656219648dafddc01a17dce559631d2405f3b731df5abcd9fb35ecb3.png
+│   │   ├── 7ea1fde99cc095188a186bb72ebc2e78f1096cc7e488ab5a11a19082f0dc3c1b.png
+│   │   └── dac488ddca67c9370cbe8dc6ba63561eb9207e78ad53cf2ccead3df1d553ee45.png
+│   ├── SOUL.md
+│   ├── TOOLS.md
+│   └── USER.md
+├── .clawhub
+│   └── lock.json
+├── cluster-gateway_SKILL.md -> skills/cluster-gateway/SKILL.md
+├── cluster-management_SKILL.md -> skills/cluster-management/SKILL.md
+├── coding-agent_SKILL.md -> skills/coding-agent/SKILL.md
+├── cron
+│   ├── AGENTS.md
+│   ├── DREAMS.md
+│   ├── HEARTBEAT.md
+│   ├── IDENTITY.md
+│   ├── memory
+│   │   ├── 2026-05-23.md
+│   │   ├── dreaming
+│   │   │   ├── deep
+│   │   │   ├── light
+│   │   │   └── rem
+│   │   └── .dreams
+│   │       ├── daily-ingestion.json
+│   │       ├── events.jsonl
+│   │       ├── phase-signals.json
+│   │       ├── session-corpus
+│   │       ├── session-ingestion.json
+│   │       └── short-term-recall.json
+│   ├── MEMORY.md
+│   ├── .openclaw
+│   │   └── workspace-state.json
+│   ├── SOUL.md
+│   ├── TOOLS.md
+│   └── USER.md
+├── db
+│   ├── abstractions_state.json
+│   ├── backups
+│   │   ├── 2026-05-24_12-07_docs.db.bak
+│   │   ├── 2026-05-24_12-07_tree.db.bak
+│   │   ├── 2026-05-25_00-02_docs.db.bak
+│   │   ├── 2026-05-25_00-02_tree.db.bak
+│   │   ├── 2026-05-26_00-05_docs.db.bak
+│   │   ├── 2026-05-26_00-05_tree.db.bak
+│   │   ├── 2026-05-26_12-05_docs.db.bak
+│   │   ├── 2026-05-26_12-05_tree.db.bak
+│   │   ├── 2026-05-27_00-30_docs.db.bak
+│   │   └── 2026-05-27_00-30_tree.db.bak
+│   ├── docs.db
+│   ├── maintainer_state.json
+│   ├── sync_state.json
+│   └── tree.db
+├── db_documents.csv
+├── db_documents.json
+├── db-maintainer_SKILL.md -> skills/db-maintainer/SKILL.md
+├── db_skills.csv
+├── db_skills.json
+├── db_symlinks.csv
+├── db_symlinks.json
+├── dd694943-0bb0-497d-81e8-4e2253b74daa.txt
+├── docs
+│   ├── agents
+│   │   └── ALL-AGENTS-OVERVIEW.md
+│   ├── AGENTS.md
+│   ├── docs
+│   ├── DREAMS.md
+│   ├── HEARTBEAT.md
+│   ├── IDENTITY.md
+│   ├── knecht
+│   ├── kommunikation
+│   │   ├── DISCORD-SETUP.md
+│   │   ├── HIMALAYA-GUIDE.md
+│   │   ├── KOMMUNIKATION.md
+│   │   └── SLACK.md
+│   ├── memory
+│   │   ├── dreaming
+│   │   │   ├── deep
+│   │   │   ├── light
+│   │   │   └── rem
+│   │   └── .dreams
+│   │       ├── events.jsonl
+│   │       ├── phase-signals.json
+│   │       ├── session-corpus
+│   │       ├── session-ingestion.json
+│   │       └── short-term-recall.json
+│   ├── memory-system
+│   │   ├── AGENTS.md
+│   │   ├── CONVERSATION.md
+│   │   ├── DREAMS.md
+│   │   ├── HEARTBEAT.md
+│   │   ├── HEARTBEAT.md.bak
+│   │   ├── IDENTITY.md
+│   │   ├── MEMORY.md
+│   │   ├── SKILL-INDEX.md
+│   │   ├── SOUL.md
+│   │   └── USER.md
+│   ├── .openclaw
+│   │   └── workspace-state.json
+│   ├── openclaw-docs
+│   │   ├── channels
+│   │   │   ├── index.md
+│   │   │   ├── pairing.md
+│   │   │   └── slack.md
+│   │   ├── index.md
+│   │   ├── install
+│   │   │   ├── docker.md
+│   │   │   ├── hetzner.md
+│   │   │   ├── migrating.md
+│   │   │   ├── nix.md
+│   │   │   ├── updating.md
+│   │   │   └── vps.md
+│   │   └── providers
+│   │       ├── minimax.md
+│   │       ├── nvidia.md
+│   │       └── openrouter.md
+│   ├── ops-hub
+│   ├── project-mgmt
+│   │   ├── ALERTING.md
+│   │   ├── BUG-REPORT-FORMATTING.md
+│   │   ├── LESSONS-LEARNED-2026-04-09.md
+│   │   ├── README.md
+│   │   ├── RECOVERY.md
+│   │   └── WORKSPACE-INDEX.md
+│   ├── reference
+│   │   ├── DATABASE_AND_TREE_TRACKING.md
+│   │   ├── GIT_AND_CLAWHUB_WORKFLOW.md
+│   │   ├── NODE_START_TEMPLATE.md
+│   │   ├── OPENCLAW-TREE-ALL.md
+│   │   ├── OPENCLAW_TREE.md
+│   │   ├── OPENCLAW-TREE-OLD.md
+│   │   ├── OPENROUTER_CONFIG.md
+│   │   └── WORK_PROGRESS_2026-04-18.md
+│   ├── SOUL.md
+│   ├── style-guides
+│   │   ├── BOOTSTRAP.md
+│   │   ├── FORMATIERUNG.md
+│   │   ├── SKILL.md
+│   │   └── VORGABEN.md
+│   ├── sync-system
+│   │   └── SYNC-SYSTEM.md
+│   ├── TOOLS.md
+│   ├── USER.md
+│   └── websearch-mcp
+│       ├── DOCUMENTATION_INDEX.md
+│       ├── TOOLS.md
+│       ├── WEBSEARCH_CONFIG.md
+│       ├── WEBSEARCH_MCP_GUIDE.md
+│       ├── WEBSEARCH_OPS.md
+│       ├── WEBSEARCH_PRIORITY_CONFIG.md
+│       ├── WEBSEARCH_README.md
+│       └── WEBSEARCH_SCRIPTS.md
+├── doc-scraper_SKILL.md -> skills/doc-scraper/SKILL.md
+├── docs.db
+├── documentation_SKILL.md -> skills/documentation/SKILL.md
+├── DREAMS.md
+├── .env
+├── .env.bak.perplexity-20260517-0520
+├── export_documents.csv
+├── export_documents.json
+├── export_skills.csv
+├── export_symlinks.csv
+├── export_tree_all.csv
+├── export_tree_home_openclaw_.csv
+├── export_tree_home_openclaw_openclaw_workspace_.csv
+├── free-keys.md
+├── .git
+│   ├── branches
+│   ├── COMMIT_EDITMSG
+│   ├── config
+│   ├── description
+│   ├── FETCH_HEAD
+│   ├── filter-repo
+│   │   ├── already_ran
+│   │   ├── changed-refs
+│   │   ├── commit-map
+│   │   ├── first-changed-commits
+│   │   ├── ref-map
+│   │   └── suboptimal-issues
+│   ├── gk
+│   │   └── config
+│   ├── HEAD
+│   ├── hooks
+│   │   ├── applypatch-msg.sample
+│   │   ├── commit-msg.sample
+│   │   ├── fsmonitor-watchman.sample
+│   │   ├── post-update.sample
+│   │   ├── pre-applypatch.sample
+│   │   ├── pre-commit.sample
+│   │   ├── pre-merge-commit.sample
+│   │   ├── prepare-commit-msg.sample
+│   │   ├── pre-push.sample
+│   │   ├── pre-rebase.sample
+│   │   ├── pre-receive.sample
+│   │   ├── push-to-checkout.sample
+│   │   ├── sendemail-validate.sample
+│   │   └── update.sample
+│   ├── index
+│   ├── info
+│   │   ├── exclude
+│   │   └── refs
+│   ├── logs
+│   │   ├── HEAD
+│   │   └── refs
+│   │       ├── heads
+│   │       └── remotes
+│   ├── objects
+│   │   ├── 00
+│   │   │   ├── 1d9410b3771905c191f56a1f3fabb0f36b8c75
+│   │   │   ├── 7bc2e9254a8265af0659ce80278903491a3197
+│   │   │   └── 946a51f0ce5f57c42335500281a870738e76f0
+│   │   ├── 02
+│   │   │   ├── 49a248c28d10dcadbfc0709738f04276dad3ac
+│   │   │   └── aad4a477db98adf3d89dcf629b2fa8875ae3f7
+│   │   ├── 03
+│   │   │   ├── 34171ae6c783fcd4479be3d5cfb113765abd76
+│   │   │   └── a5d8a9e903920890fd4decfa5e245b6975944f
+│   │   ├── 04
+│   │   │   └── 5741b9347046d3834773c96919591a7bccdf4d
+│   │   ├── 06
+│   │   │   ├── bf1babcbdbb7e75a0bb3e041e1ef106c2a2b35
+│   │   │   ├── c2498cb783ae312e39b61aeba886540244eca1
+│   │   │   └── da7032c869c3a5c10bc1402f1158ff9be0c57b
+│   │   ├── 07
+│   │   │   ├── 4ed69a2b9c30e66ea9ea650324d8a4bdff7ed1
+│   │   │   ├── 7ec55252a97dd837fff35e722c080626a9d3f2
+│   │   │   └── e098ea577ff693ec615ae8f48c294b5c7cd87f
+│   │   ├── 08
+│   │   │   ├── 6da97cf1a459b8feff113b5e6b6b66a5cac89c
+│   │   │   └── bf442a552e78c950c0054a1ae0c87fc4fbaf3e
+│   │   ├── 09
+│   │   │   └── ecf8d973e72e209b4856a8cf194c8483191624
+│   │   ├── 0a
+│   │   │   ├── 19bd75bb3fb2d2579fef37cc4b35622726f0dc
+│   │   │   └── 1a418d3fcb6da163b4664b1d99158ef8154c03
+│   │   ├── 0b
+│   │   │   └── c937510e1019211c51dea2272fb465fc66745f
+│   │   ├── 0d
+│   │   │   ├── 26400e024961d291676923fb40eea65a3ccf6d
+│   │   │   ├── 2e95da2ad21edce720777085586cec878c6f70
+│   │   │   ├── 9b6674b47abba0acba9b707c83b0c01871e76a
+│   │   │   └── e07bac3fa086ee25321507fd1fdedcdae1964c
+│   │   ├── 0e
+│   │   │   ├── 00f02e893a17596cde66d9465ea98b2064b407
+│   │   │   └── 65dee172f10a287e5f87fa986d43078e1afde6
+│   │   ├── 0f
+│   │   │   └── c87ab4f011efdb2e5055e52f872b2e24efd521
+│   │   ├── 10
+│   │   │   └── 1a5087f127f8f372954b12740c44640d191bf7
+│   │   ├── 12
+│   │   │   └── b93ffaa97e982a0d942bfb2b6f89884e02b050
+│   │   ├── 13
+│   │   │   └── b2c940ef7cab8b006abd71fec3088c3c62ee7b
+│   │   ├── 14
+│   │   │   └── 3e9395bbc5c2286d81f648b1c5db838a2420bd
+│   │   ├── 15
+│   │   │   ├── 18455d6033d26c3215801fc662f79d2fee2c90
+│   │   │   └── f441dde6b06cf59f7acc65b996e432c38efd18
+│   │   ├── 18
+│   │   │   └── 78d1ac09837f96bf14e576bd567cdd438f6534
+│   │   ├── 19
+│   │   │   ├── 3aa36e4599cf6e0d41404fd7c2315f975798ca
+│   │   │   └── a7096507e172e11384a780b269faa54bea0c80
+│   │   ├── 1a
+│   │   │   └── d0de99d75aa82e7ca9e78089bb2e62e66e1163
+│   │   ├── 1b
+│   │   │   ├── 47a042779c0714207229a94b718694fb0adf85
+│   │   │   └── 98fba3bc5853dd0f45223237ae2209a70ccadb
+│   │   ├── 1c
+│   │   │   ├── 1db948eaf05becf971344f5fc05805de9fde97
+│   │   │   ├── add1fcff1a1f1c7eadb9ab544cc350503f09a3
+│   │   │   └── ce1e99e9b0e2f073554f33aa051d3fe408b7eb
+│   │   ├── 1d
+│   │   │   ├── 19d4ac3689078daea82df6dbe8b98f76c11d49
+│   │   │   └── 24790d643aa1bfa3ea8fb8cb652b5881ecf1b9
+│   │   ├── 1f
+│   │   │   ├── 1b7c868dfebc47adfc7bebdf0a5da51f1f4e9d
+│   │   │   └── 8bb7ccc1dfe0865868fa9f83c4830f5a6c9199
+│   │   ├── 20
+│   │   │   └── c3ec7b4401f9312c5b8159efda70c0ef69416d
+│   │   ├── 22
+│   │   │   ├── 8d039a091541cfe6d25fb097bd0fcac315672c
+│   │   │   └── ee2f9067767b91921aa6b772dd6fa0ce3dec5d
+│   │   ├── 23
+│   │   │   └── 01e2e90ef8e9d84abed871169108670d2b6ece
+│   │   ├── 24
+│   │   │   ├── d37a5a9948c4cea9c6dd046659d4f2f19ee5d5
+│   │   │   ├── eb492dc18de44d091b90bcd6f86b65adc7199e
+│   │   │   └── f566fac5f42d9b8a1ffe474735b483d3dd24e0
+│   │   ├── 25
+│   │   │   └── b7254de5034693662fbfcacc74e99ea6a51e0d
+│   │   ├── 26
+│   │   │   ├── 644a4faec3e7a5e371c85a5f99e6532921593c
+│   │   │   └── 7f7055e1f78bcdca5ac6dc963504c180035936
+│   │   ├── 28
+│   │   │   ├── 4eae55659646d83bd91b98f0dde45c81ab2e83
+│   │   │   └── eeb161afbf1985d1800f6c2cc53fd31a1f39c7
+│   │   ├── 29
+│   │   │   ├── 17c02f40e98806190ea350f0f75e89086f36db
+│   │   │   ├── d27ef25009e50a2f3cb839735cfd155f88794f
+│   │   │   └── f14eca9d0294ae000444e8a8168fde4d1c7d4e
+│   │   ├── 2a
+│   │   │   ├── 95ae59734a93e375adeae000172c45449f6cb7
+│   │   │   └── ff25f0a2004fc073bc497d8eae76a42ce20836
+│   │   ├── 2b
+│   │   │   ├── 50f7261b1225001afb8176c910e3f5f89f6ef1
+│   │   │   └── a9782dd0383e0bf8794fc4deaf7c6d7625cb72
+│   │   ├── 2d
+│   │   │   ├── 210a21ebb8e6d62609456ef3829678f193f06e
+│   │   │   ├── 5f268bd2fe7fdda3447a27619165f544f4c34a
+│   │   │   ├── eef842700ea5faebb97d36ec9b265cb949c68b
+│   │   │   └── f9fe64b17c7d1ffebbdd24504c1c1f7279e255
+│   │   ├── 2e
+│   │   │   ├── 1eba34f6b54cb81f4c7d512b104a147efcf669
+│   │   │   └── 3fab0c5aedc66a118887c7eef55bc864ceab94
+│   │   ├── 2f
+│   │   │   └── 3e15ee182b0df7eafd99de4820038f4f33e4be
+│   │   ├── 30
+│   │   │   ├── 07824e87c5c2944e6a429613ef1f6637833371
+│   │   │   ├── 189f3ebe81c98624253ad6b104d49430832a58
+│   │   │   ├── 3f054f90b7b7cd5a94bdc71bf68d7057a41629
+│   │   │   └── 90deaeb45d86109f6a163ad246a0f3dc7197e7
+│   │   ├── 31
+│   │   │   └── 09692c09392df5efc9e3c8bbf58b3c4b212ae6
+│   │   ├── 32
+│   │   │   ├── c14e956aac203ee3fe0a82673005c06e821124
+│   │   │   ├── cef578dc33ff048cba3f2ccdb2d20d5655fb18
+│   │   │   └── efe5d5a3f19929d3f97fbb3ae164cca0902728
+│   │   ├── 33
+│   │   │   ├── 0c0c4406f6a03a71dbd363c453b38c888cab5e
+│   │   │   ├── 5b8a9afe17aa3e9bf9945d216d931dbd5c50e2
+│   │   │   └── 9575f36d2f3b454d22de03ac274fec1bf1778d
+│   │   ├── 34
+│   │   │   └── bbae17449c5a7829f78f14bc5478e14d3c07d6
+│   │   ├── 35
+│   │   │   ├── 3093a1995d96b51c59868f3d91c3e0a0bcf67d
+│   │   │   ├── 3b8debd675a6829feb8bcaa60f2d1f5eb488e3
+│   │   │   ├── ac83f0d129c953da15cb9aedd527ca1a925982
+│   │   │   └── ad1ccb5c6cb23a404541ee896d1a14afc381e9
+│   │   ├── 37
+│   │   │   ├── 14adc977860c692ed52f97c4126001b67083b9
+│   │   │   └── 67c5436bf649e71d73ecb2a1d6378f7ce894c3
+│   │   ├── 38
+│   │   │   ├── 69c9b6f1e598bc9282b168d1ddc9d9f5c9342b
+│   │   │   └── 6d16940489729492211ab48dceb3d86281e39a
+│   │   ├── 39
+│   │   │   ├── 0b8d9bc5086dc4e33b43e132f642a668bb769e
+│   │   │   ├── 0d83fcb6fea28b14e82734ec887337211d0a08
+│   │   │   └── 93b43d04f5bbcb10e3cd7562a603d0f05ccfbc
+│   │   ├── 3a
+│   │   │   ├── 9e1e3eb5b5822bf6d32dcb33e2589d2b290e86
+│   │   │   └── f72b996b923f70875628c65e546e9484139325
+│   │   ├── 3b
+│   │   │   └── 1741a4ccc110613db93ecacdaee1a06801d5a2
+│   │   ├── 3c
+│   │   │   ├── 9cdfa31087f8b2d135da9f049773f01dd82106
+│   │   │   └── a7916a3cf5bef5e370ae17b273ab1a18bf88ac
+│   │   ├── 3d
+│   │   │   └── 002286690470aa4b2ba442b2ee5c7b746a22a2
+│   │   ├── 3e
+│   │   │   └── e7d1aa8605ae04b2421147bee5f4156688758f
+│   │   ├── 40
+│   │   │   ├── 80a87624e879c33b3d0eb211bbaeeb77cdf757
+│   │   │   └── b1c573242fa08d4b8fcd7a3c12d00da9dc47cb
+│   │   ├── 42
+│   │   │   └── 1120ce81c53f59dde36dc546b20258c46828c2
+│   │   ├── 43
+│   │   │   └── eeb6f7beb0ac43eb9fc90ec2f080d112b793b7
+│   │   ├── 44
+│   │   │   ├── 34ebeffa79b9f09955582e76ca1816031f8848
+│   │   │   ├── 4e235a0cfacae29ffda53a924f239d17e2c642
+│   │   │   ├── 6aebb2ceed2250498a1fa65109b2efc9d51bee
+│   │   │   ├── 6beae87c6eade7a13bbfded83c3d7d727e82e3
+│   │   │   └── efd6aa153cec3d7e6274b99528f926228bffc9
+│   │   ├── 45
+│   │   │   ├── da5d1570fbfca0a069bfd873dfad1881054718
+│   │   │   └── e4e90d728a01080d145e08665be39c00e9755c
+│   │   ├── 46
+│   │   │   ├── 6d11ee0812d2b2f12d93c78f7080cc60cc018a
+│   │   │   ├── 7f9bbbcfa1e2b1ff1a13c49e3bcb5c93db97ba
+│   │   │   ├── c0bcbeb28124ac2cbb6b7f5c6b3f1f65388395
+│   │   │   ├── ccdc2625c56a6d67e51f8352abed4015dcbb3d
+│   │   │   └── e18b9cd3fa1ce621ea7bae81d32610bf3894ae
+│   │   ├── 47
+│   │   │   └── 3ac40806b19668020b52621e362cc310d875d1
+│   │   ├── 48
+│   │   │   ├── 9edd8ce0a429210fa09bdd6676623ac1439461
+│   │   │   └── cf91dd4e31543229f8d1a7711db1bc527b6aaf
+│   │   ├── 49
+│   │   │   └── c6774df50495f6fec035ee5f767d2477cc9a43
+│   │   ├── 4a
+│   │   │   ├── 5d7797e585f450609f1bea00e226c91920191c
+│   │   │   ├── 98398c56f5885d395b2879e61994298fa4aee4
+│   │   │   └── ad362e98c1bafbe340d4976bd5fbdc78f3623e
+│   │   ├── 4b
+│   │   │   ├── 56d3e89ff35698acb996560e03ee30bc555469
+│   │   │   ├── 89de240ac4a7e15a24102052547a7ae6931af5
+│   │   │   ├── bb3e25f1dfc79ff899f260f28e72d0e77bb9b9
+│   │   │   └── de88a7ebcf2a42a8b8365d7de6533d50f71c74
+│   │   ├── 4c
+│   │   │   ├── 0685e285acafc63d6f9c368ab136720789686f
+│   │   │   ├── 6f9ac1dd2e22c3ccd2f0b916854f42e2026516
+│   │   │   └── b9027b623a9c6b745e5fe58a553ebee3c55a57
+│   │   ├── 4f
+│   │   │   └── b64eea0ebd7a9c7e7a8aa90161348fcb0a1b2a
+│   │   ├── 50
+│   │   │   ├── 9bfe51442daeeb70d9e7c5d651eaaea6bba09b
+│   │   │   └── bc1028d6effed3ca3781875e393e84e8b65337
+│   │   ├── 51
+│   │   │   └── 808338014feef6102abb69dc6c9485cd1405e4
+│   │   ├── 52
+│   │   │   ├── 3cb7dd868476eef59914dd2c5c1a1fbd4055a5
+│   │   │   └── bc9e391ed47365a1efbc6c4f80a3c84949c855
+│   │   ├── 55
+│   │   │   ├── 1ce710a6ce49788d2001e1e5820acc2a78c97f
+│   │   │   ├── 54a7e476dfa81ea8430cb39866799c3d0d8110
+│   │   │   └── ce209afa67258d89f6b726c445612a6ff0e98b
+│   │   ├── 56
+│   │   │   └── fe83f307b1030b447b81f60acb9013a236f745
+│   │   ├── 57
+│   │   │   └── a46d5d83bc281a1aa1931babd4f868a9d71bf1
+│   │   ├── 58
+│   │   │   ├── 8ae25de349e654412e7e858bebd92a40377060
+│   │   │   └── dd15241e8b1bd301039778abd6a27f588e8ea1
+│   │   ├── 59
+│   │   │   └── 725c4cad2a5a2b5406da1a3e13a630a8a6f663
+│   │   ├── 5b
+│   │   │   └── 12c830a493f7d0117af51ec83fb234151ae807
+│   │   ├── 5c
+│   │   │   └── d9921c091b4eb51787e0ba47b240b28b129aa5
+│   │   ├── 5d
+│   │   │   ├── 47abdaecc931e95118444a6378b6c5cd954483
+│   │   │   ├── 796903ee709c1149f9ec2724cffcdc9727cad3
+│   │   │   ├── ba85c0b709c85c49ca2620c006ed4a3fcded31
+│   │   │   └── c32172ec2c22bda78b235b22b63d57c9fc9381
+│   │   ├── 5e
+│   │   │   ├── 0f3412260087581a21a8a9e9e9ca0811b78890
+│   │   │   ├── 1f3d16ae7d1be39fc1bc132e5098a093251742
+│   │   │   ├── 379261b3d3e56245dac1fc5dddc3b22c52d127
+│   │   │   └── beafc4e6870497ce7faf6823ccb58eed6c1f35
+│   │   ├── 5f
+│   │   │   ├── 6701d251b5d822a5237c1f2df2deb9455f9be2
+│   │   │   └── e83be8093cb36729e72c612cc5efb9057be9b3
+│   │   ├── 60
+│   │   │   ├── 2e6b7bb873e833fe59355ed81f2adb04efb4eb
+│   │   │   ├── 2f3cf3745eb86fdea7dcc49d3aeb85844be5b3
+│   │   │   ├── 84e16bbfa95368268a0949a13fd70cca745255
+│   │   │   └── a1b6759e071f745cab1ac47be5ee4bf3820996
+│   │   ├── 62
+│   │   │   ├── 1bcc65316fa5f73c33ac8342450a1d2641709f
+│   │   │   └── baffc4e1fae685ff69aeae418e868583066a1e
+│   │   ├── 63
+│   │   │   ├── 43dad5d9597c88514f6bf1c9b38900e60b6dd8
+│   │   │   ├── db33b5d3db69bff22f3ff987e67f9427924735
+│   │   │   └── f85d74973d55c81190cccb2e30e61a11c5fbca
+│   │   ├── 64
+│   │   │   └── 9a64bf388142968a20e9092f72683737a50501
+│   │   ├── 65
+│   │   │   ├── 096ebff6267eaad22e103297bd97f95a9dca7a
+│   │   │   ├── 1300feda5dc2a54016bf8bb0fe05f5cd6e52a3
+│   │   │   ├── 5650f86ce90c99bd2e216f5d86393b4deebe35
+│   │   │   └── 7361927fd95270611c88b24e133f109dfbb0be
+│   │   ├── 66
+│   │   │   └── 5a02c8e54eac25b253f3b5322eb7d1ebb3ef31
+│   │   ├── 67
+│   │   │   ├── 10f55f9ccc2c53f1ff29cf972547288534f84d
+│   │   │   └── 218a66bada4813d8b4b7212fb6bae6994a3790
+│   │   ├── 68
+│   │   │   └── 52c19633762abf2bad11a639a6d1205ddbcaea
+│   │   ├── 69
+│   │   │   ├── a520ad8457f43b017c737d05d4c58ddd2ddf92
+│   │   │   └── dbffb50e95a4c11ca3b5839fab47466cfe587b
+│   │   ├── 6a
+│   │   │   └── fd93bb17d2a044679f3297448c7422d93b700e
+│   │   ├── 6c
+│   │   │   └── 684f641cf8cd61d66a3303f74920b55b9af3d6
+│   │   ├── 6d
+│   │   │   └── 9b443b13b6d36169088f804dac0f3e487c3cc4
+│   │   ├── 6e
+│   │   │   ├── 0ebc58c9cf3fc301743c62128389dda970b766
+│   │   │   ├── 32760e6fb8bfc65ed059455f2feafe4f9399c1
+│   │   │   └── ecd111dd42f5e8bcba69b7187e02ea80c3b95d
+│   │   ├── 6f
+│   │   │   ├── 544f5473b7cd5ccbe70203564ac9966a390608
+│   │   │   └── ede66005199c3a30322e1ccd8dccc44ae72698
+│   │   ├── 71
+│   │   │   ├── 19ac20ab37fec146d07a4c4cbaa737f2d9c475
+│   │   │   ├── 58b8d349a468822740c06731d4244c988ec0dc
+│   │   │   ├── b4470c61a0624778b378230735a0a6ef35da54
+│   │   │   ├── d3ac303c952effe25691cef228764854a0f570
+│   │   │   └── d52eb5dec1f4b0fae0c9e5b4f36a18d3685339
+│   │   ├── 72
+│   │   │   └── 48e5ac229aff9604114426412ce3ba8ad9bcaf
+│   │   ├── 73
+│   │   │   ├── b6966aa0af0530993a2fafa4937c616aca3c5a
+│   │   │   ├── b80b9aee63c4b85e0ca07c7bdf291ed4076d5e
+│   │   │   └── c42b2f149ba1877c2dd36f452ff86d383f6424
+│   │   ├── 74
+│   │   │   ├── 61ae73b634ed4b5336afec983a097ce4199a06
+│   │   │   └── dda90e0cf0ebcdbae5812252011a0b5a685ce4
+│   │   ├── 76
+│   │   │   ├── 29640e35565cb8c3465b5ff16817585f2c80d1
+│   │   │   └── 29898ab8385d7dd67587037832d9fe6b1116a0
+│   │   ├── 78
+│   │   │   ├── 38a618d79fd4efc9c3f10d092589615d36e999
+│   │   │   └── 44efd928f9c78f508fe8571b0baaf36f9b486b
+│   │   ├── 79
+│   │   │   └── 51341542b17f39101dd277336d78fb85839294
+│   │   ├── 7a
+│   │   │   ├── 223ce5d8b8ceb3cb0b00ee4a5a66201594aeae
+│   │   │   └── be64d4a08e05e3d0dc74cbbf52d3839ca9ba57
+│   │   ├── 7b
+│   │   │   ├── 004be5595e820b7bfc3286cbd7fc0e795e3c87
+│   │   │   └── de6b495bc401ea9789d9297edf5088fd739e05
+│   │   ├── 7c
+│   │   │   ├── 0b54aa1c13d5ad07cf22e6fd81c24b190728e7
+│   │   │   ├── 36a2b01b286e2606223616046168cab9d174e9
+│   │   │   ├── 82d300e7c470fc1274fbdc5af1f93699f09ded
+│   │   │   └── b2832ab62991e01feb2f036b2f34cee7d99bfe
+│   │   ├── 7d
+│   │   │   ├── 3014403aa250e322f6427d3980e7ea517fbae8
+│   │   │   └── 412fd425a8d3fa810359cb1086bbd5b6126a4a
+│   │   ├── 7e
+│   │   │   ├── 0657b72809b48de33705a969fd892ed1cdf9bc
+│   │   │   ├── 4746a0d418a7792c0ccf09cf14835444458311
+│   │   │   ├── cd02a9c991d2715cfc2651ee2a38e78dbded3a
+│   │   │   └── dc908af77c6428e10b9695336c25dc2aa74506
+│   │   ├── 7f
+│   │   │   └── a09384bdc937dd36679fe9962fd3b0f123a135
+│   │   ├── 80
+│   │   │   └── 270e0e9476a317d3d92e851305412903edbb72
+│   │   ├── 81
+│   │   │   ├── 9b131d4cdf995f36fd170db255e5569dfbfe25
+│   │   │   └── ed1654dd563265097e7493f7984800c60a2e2b
+│   │   ├── 82
+│   │   │   ├── 9e0142d4f43b0f89f7d47e38db9bacf59e17db
+│   │   │   ├── c3e6280880ccfccc7bf8090473728854879de1
+│   │   │   └── d7c6c66d6c05325ad389e566d634af5845c6ba
+│   │   ├── 83
+│   │   │   └── 978935dc632d51da0a976106fd7c76c6a6b3ba
+│   │   ├── 84
+│   │   │   ├── 7a499fc1f58c404241d138627936db04cf4770
+│   │   │   ├── 8f6c5b69a4befcf446624abafe10d671a52944
+│   │   │   └── 907cddc3ae0fce3d847434fb99682ae49d988f
+│   │   ├── 85
+│   │   │   └── 14e7bea896706c0c9e1992a4ae466ee1849f94
+│   │   ├── 88
+│   │   │   └── 2a4b352084cc9ec7d9d8abfac380ab07aaf570
+│   │   ├── 89
+│   │   │   ├── 95fb621103f3d4e57c7ede3f0e2f60d614ebb0
+│   │   │   └── 9e825ce59911248a7ad13e8897abacdd301fcf
+│   │   ├── 8a
+│   │   │   └── aa92e191d5a5049fee7f723274bb5d65529695
+│   │   ├── 8c
+│   │   │   ├── 44fa60505038e0f1ec8010e402bdd0a0dc7a09
+│   │   │   └── f534a13bf3e7a362a301f85b4fba6d1c7463cf
+│   │   ├── 8e
+│   │   │   ├── 9472f0a3681641c94a323b2ca25fc3f22e3428
+│   │   │   └── f3229a19eb8a8082fa2f4129988c738ef1173d
+│   │   ├── 8f
+│   │   │   ├── 0031539c0af92f50a017487ac618b66822dc39
+│   │   │   ├── 67f52b275fe12792f03e963d99c203abd4d43f
+│   │   │   └── 71501c15bb498d9acd3a6f59fc0bdd55d3a092
+│   │   ├── 92
+│   │   │   ├── 061daec6d3dfea0db80d7b91467691e0952181
+│   │   │   └── 8bf702572834660d2ac63ea4234580de72b647
+│   │   ├── 94
+│   │   │   ├── 3c46ef458b3e41bb52b1e48af6395a40982766
+│   │   │   ├── 4bfbc354d67e003209019405c57e46105bdbca
+│   │   │   └── 8458d53b7b4b24f7cdb6e95e665461880322d3
+│   │   ├── 95
+│   │   │   └── cdf6be6481ef5fb6f8c47d839605efadcf844e
+│   │   ├── 98
+│   │   │   └── 89f87514549eb3c768bde1201c4be8120e0f2e
+│   │   ├── 99
+│   │   │   └── 1ef33756774740bce16d02222d0f274af41696
+│   │   ├── 9a
+│   │   │   └── 6eb8d7e596788f5bceb8d730cef94bf420a75c
+│   │   ├── 9b
+│   │   │   ├── 5c96517ffa69ed0c8fdbd34f709db261ed1c2d
+│   │   │   ├── 893e461701b8b0f3ad2ca52bb5f8f9dda04af1
+│   │   │   └── b0b0c5337afd9e639857d4476b1f5daf458d99
+│   │   ├── 9c
+│   │   │   ├── 36a8fde9ef2bcbee6919f831ecf7568a7cff06
+│   │   │   ├── 98ffff2675cf13f43d4d3229d4a22369507d74
+│   │   │   ├── a36eb2e24bd492f8ce58d797f2c298a8ca4731
+│   │   │   └── abf0b116439fa91c4172fe4cfba90e07bffa40
+│   │   ├── 9d
+│   │   │   └── 93c2c7610c6f3028e2f98151cf2be790fe4c4c
+│   │   ├── 9f
+│   │   │   └── 476702f90492684a0b3191d2d1a86fc955a3bd
+│   │   ├── a0
+│   │   │   ├── b6ca24f9e0fb60d3989db81e613645eacd10fb
+│   │   │   └── fc737ab9ae75db9ac328663822fe5f0e199a45
+│   │   ├── a1
+│   │   │   ├── 021ec9616a7f8c4bc7830e219b8ef48c4a1cc2
+│   │   │   └── 38aea17239aae7a7e36f87c19892afdb4a351e
+│   │   ├── a2
+│   │   │   └── c96e793613cd6236f71fd49547c836ab6e0c49
+│   │   ├── a3
+│   │   │   └── 5111d70074d5cf71c10d74c2e62163ea07d092
+│   │   ├── a4
+│   │   │   ├── 3d7026265ecb644613f92612f5c00f3aa32a40
+│   │   │   └── 6b0f08541b2799af8a2ab0425159f408effdb1
+│   │   ├── a5
+│   │   │   └── 69478914b158e63183b4c269252a75eccb0fdf
+│   │   ├── a6
+│   │   │   ├── 0391d17a07840c4d7ab1fb894018e61e1ccf21
+│   │   │   └── 7a435056409c36cdb28875b10f11da47044e17
+│   │   ├── a8
+│   │   │   └── 8c8475e8530c33bc163e560eecb40752205d90
+│   │   ├── aa
+│   │   │   ├── 1e9ff59af4181054621c7f4b147e12ec46bfc0
+│   │   │   └── eee54140d039b54d52c8ded65d67786387cbce
+│   │   ├── ab
+│   │   │   ├── 348a166c31f09d11a839f980041c8a5687b815
+│   │   │   └── 79a822cf9a7b1531572d44a7da188d3d2ee1fb
+│   │   ├── ad
+│   │   │   └── 8c73488e88805d877ae95dc22d4c2d9143732b
+│   │   ├── ae
+│   │   │   └── b3978e8fc65075c139a8fb2e31f525ba6a3093
+│   │   ├── af
+│   │   │   └── 80105f9e03a31ee1633ee69f18ad8b448c61c7
+│   │   ├── b0
+│   │   │   ├── 7311a2ef1f75f1136fc7dae4286413266b8090
+│   │   │   └── fe89f3ee99303a98ea33d46ee58483934665c6
+│   │   ├── b1
+│   │   │   ├── 5cf63e82d667085a8d10f07330586a9fb5d307
+│   │   │   ├── 7de5532fcd2e0fad4e46ee66af1c50d0f17032
+│   │   │   └── ed5a8ac35b870e9c12c5e266663630a6f2ffed
+│   │   ├── b2
+│   │   │   ├── de6cb57438159c090a1ae8ef2e101d0ac5b0bd
+│   │   │   └── ee3828bf924eee58dea11ea2c3aba8b76652fd
+│   │   ├── b3
+│   │   │   └── 379ec5a91f644cbbee1e924a8d1521449a3e73
+│   │   ├── b4
+│   │   │   └── c58848394a6c05acaf3bac855c1269e29eee8e
+│   │   ├── b5
+│   │   │   ├── 1a264f356b9f61619bebfb6d59b95a34c89057
+│   │   │   ├── 2f98d1e922ebab33ceba919753e60f107a8f90
+│   │   │   ├── 9a0d4dbab70a02243378ced9fcc5f57e8f3317
+│   │   │   └── e8131251edf70e37e0180941d76b550a736d49
+│   │   ├── b6
+│   │   │   ├── 25af59b47f648675788b3d62d8b2f12887434b
+│   │   │   └── 4b4ecdbd2317df9cd188b0b76032994cbd2e50
+│   │   ├── b7
+│   │   │   └── e988a6f6d4dd67542714d8025a248851d1fdaa
+│   │   ├── b8
+│   │   │   ├── 221f7cff27de4d6ca60cad7d9de9cb52788d2a
+│   │   │   ├── 39653a4f863815e663661c563150b6bfd5f62e
+│   │   │   └── dfc28ee10a0e8440b70dacc9eddf2ff959609e
+│   │   ├── b9
+│   │   │   └── c7140568d4a3e73ca3ffe1e5c1ffb04b74f241
+│   │   ├── bb
+│   │   │   └── 9dac6fb2394433fb87c9a1b9dd3d139640de33
+│   │   ├── bc
+│   │   │   ├── 09c722a051843054148d0adb19021815051f46
+│   │   │   └── fd8730ae0933164687aa0b4a6df8eb65fcb208
+│   │   ├── be
+│   │   │   └── c60dd9b559cd233050aa8c4a131475b0b1526e
+│   │   ├── bf
+│   │   │   └── 2fadb43ea5a4560c5dca9139378f1372bd98af
+│   │   ├── c0
+│   │   │   ├── 4fbba151913bf99a03e7599aa49309517a21c1
+│   │   │   └── e71c8a946b588b3ece9a14b0bf6701f3efa155
+│   │   ├── c1
+│   │   │   └── 92947caf8a9f49228da70881752ca5d98ee52d
+│   │   ├── c2
+│   │   │   ├── 121202ea4fca9edfed12899f4db016776e6384
+│   │   │   ├── 96187cde8a4213ed32853b23e46ae969d85de4
+│   │   │   └── dda0151357f94a05af63823d32d68656b9d74d
+│   │   ├── c3
+│   │   │   └── 088f6dad37b61e1e1c47c0f6d1ac857004b3af
+│   │   ├── c5
+│   │   │   ├── 21f6357e926696f3c6d6bd557a5f6834a917c3
+│   │   │   ├── 49f7c57c70f2adc530d653ebf731b986dc8745
+│   │   │   ├── 775ec01b6339777f5b36698b80d7d3b57a9ddd
+│   │   │   └── 7c231598cf1c2d1c4072c586713c3c3c7ce31d
+│   │   ├── c6
+│   │   │   ├── 93f138c8109c954f7924104ea8e7fccde96d47
+│   │   │   ├── 9edca36e6020eb581d0fde804e73b01d1941a0
+│   │   │   └── b53d640a6e9944efca38a7f18a89d9f154a7a1
+│   │   ├── c7
+│   │   │   ├── 5e565e89bbe793a9d2541e9cd1d00eac6feaf6
+│   │   │   ├── 5fd26ec06ae646ffeeccd7210c594c10d8fe95
+│   │   │   └── cefde9c38be152b753513d3a297b3e8ecabebc
+│   │   ├── c8
+│   │   │   ├── 00ba949abc885438b24946e9ccdaeed4a19e49
+│   │   │   └── c4216dab736638fb79f17f844c698c3dbc60ff
+│   │   ├── c9
+│   │   │   └── 403eee0e2474f9f8b9bbe573c8a8c4f3f69cb4
+│   │   ├── cb
+│   │   │   └── 7f7022fb6ab1de6a2184070ae13323adbaf80b
+│   │   ├── cc
+│   │   │   └── baf5cf129eef43c722d906d2439300d8d233a4
+│   │   ├── ce
+│   │   │   └── e3625505337d28b6c515bb73016415c8bc7e20
+│   │   ├── cf
+│   │   │   ├── 400536d42ac97f672ea0311eea8a98d590a82e
+│   │   │   └── 93a0d7e29764ff4be3f0fedcbeaef776927257
+│   │   ├── d0
+│   │   │   ├── 3ea7cb9daf7fda3de2733c94e05a84012f5886
+│   │   │   ├── 66624591d2b901b2378f883e94877d54757448
+│   │   │   ├── cec4c464d16abb9db7c4ec777b4dc0f144edd3
+│   │   │   └── e6f0c6b4542af1fffed7a436cbdfd71807afa3
+│   │   ├── d2
+│   │   │   ├── 63843c4369166888599f20dd28ffaf31f093b7
+│   │   │   └── f68733bd38e13d11f95aa2a539c947fb845393
+│   │   ├── d3
+│   │   │   └── 0c89bcf933d1dce384af1a59a2b846fd066329
+│   │   ├── d5
+│   │   │   ├── c3162badb0136346715c550e30dec142513139
+│   │   │   └── cdf76955a0dfb50e96ff5014eb53764f3b9a43
+│   │   ├── d6
+│   │   │   └── 92f5b564eb8e751eee6c3f65eff0840fba9822
+│   │   ├── d7
+│   │   │   └── 3dc23b126a6caebb377cc2b4546efd47de099a
+│   │   ├── da
+│   │   │   ├── 0c7258fdbaa2ad0433ec3b177cc245424798c9
+│   │   │   ├── 324f3c8c1ae191ca597ba206dc40aa43b59978
+│   │   │   └── bd1e5d4dcddcb1ffa07d65a545011a2791aca7
+│   │   ├── db
+│   │   │   └── ad5cf3d84bb413e4bc35b7cb640baab27ff00e
+│   │   ├── dc
+│   │   │   └── 44e6432d1c9f3d38d7e04cd58a8e08cc010052
+│   │   ├── dd
+│   │   │   ├── 89bf0ad84507d00e823d661a53a35dffc5e1df
+│   │   │   └── b711b1d778082305cb0318fae92c5bd6f0247b
+│   │   ├── de
+│   │   │   ├── 185c4ccf169b2a59082836a278c17e8bf6e7a1
+│   │   │   └── 6d4de7683c0782f15eae41a85a7b77b4412f68
+│   │   ├── df
+│   │   │   ├── 6975eb1824a90759b37e70f6490350663c3198
+│   │   │   └── f976a7ba97495dc8e32157f700a513c2713086
+│   │   ├── e0
+│   │   │   ├── 03a5c37389629450a948b7df3c5e0ce7a8ca31
+│   │   │   ├── 44f85c35d8d93b164f7505b0e05c4a6ec3e828
+│   │   │   └── fcf7eccc066176190a45d779049aeee018f43d
+│   │   ├── e3
+│   │   │   └── 07e936d65af6140405580213a7dcdad90ae09d
+│   │   ├── e4
+│   │   │   ├── 8122bc67db1d13f5ef773a23e2d3cb8854c861
+│   │   │   ├── b20782d2b0e39c81c8248b945272b8ab477968
+│   │   │   └── c174080c33dcb6db0b9e5eeaf766bb892d06bb
+│   │   ├── e5
+│   │   │   ├── 23301485e724972ba78707363f4430cd319b0a
+│   │   │   ├── ae2c5ca8475085016d9305bc369f4fa68ef2a8
+│   │   │   └── f4d83be653aee447e7c011e1b71ef3c80e8444
+│   │   ├── e6
+│   │   │   └── e5c26f3c8b3502e4d3cb68383283a28e52408c
+│   │   ├── e7
+│   │   │   └── 6636962d68037c45a2b7559add56e2d45829fd
+│   │   ├── e8
+│   │   │   └── bd623dfe3b54db47c09744b0c9f2a2ad737491
+│   │   ├── e9
+│   │   │   ├── 2ea1740baa4fff69d8d29217295c6aea7a6215
+│   │   │   ├── 9b7eabfb077c6f36ef7774b2324344b9c673c7
+│   │   │   └── c8717bbfe95393f913e22b016b3479ba3e94b4
+│   │   ├── eb
+│   │   │   └── e4d3df873c8afa1269cce78a1088cf099e1179
+│   │   ├── ec
+│   │   │   ├── 2faf3f6b3b544b4368366d49b91d1d6a9396b2
+│   │   │   ├── 5eec3194a87bbd32685de89e0c74a2a28ada59
+│   │   │   └── 6678336196b2bf355950c2f7acdb72a8d9a49d
+│   │   ├── ed
+│   │   │   └── 3aeaabf33f0c92dc24f3fb0a047bd72c023a5c
+│   │   ├── ef
+│   │   │   ├── 6804ea499222d26e338a3a8e7086010d368a81
+│   │   │   ├── ad9988c8ce9bb1b1b4d3d047d2afbdb6ec6155
+│   │   │   └── d3ae000b97b89d5036315fe3f0c437e6383310
+│   │   ├── f1
+│   │   │   └── 060bfb3bc301b34ac2e5d7bf9cb199d23a4f07
+│   │   ├── f2
+│   │   │   ├── 18a7bebd860bdfba592cd5dbea454cc38f9b04
+│   │   │   ├── af45e2634aabddb770c33c89d85abc75eafce1
+│   │   │   ├── eab146a88c37bd2a5b194a12c66df166df261d
+│   │   │   └── fb42af02efa828900de75b2382470cc9269e85
+│   │   ├── f3
+│   │   │   └── 27b4802da01e7ee3b3cef5cd829f60983ee5ad
+│   │   ├── f6
+│   │   │   ├── 28a06aa0965fc3e103b7789bbe3c3f9ba0b652
+│   │   │   ├── d8a4dd68959aafdcf27f67dd11bfb92ae55d3f
+│   │   │   └── e034dcc2eadd9bbf6d86cbd5148f9e25feef10
+│   │   ├── f7
+│   │   │   ├── 4274c15fabaf6c60b98497389a35b46b1b1f74
+│   │   │   └── 48b82a068034b8995cac30e25258e2e3cc7fad
+│   │   ├── f8
+│   │   │   └── c684cc56414d43727f69bb78cfa9809f7fd383
+│   │   ├── f9
+│   │   │   ├── 6f22f91e4441d185879c3961ab1c23b97691e3
+│   │   │   └── fe0ea0356f6e9a2b438932527f8cbc9c78c8a6
+│   │   ├── fa
+│   │   │   ├── 6266825ea71845f15f9b36b3acf791fadf0f5f
+│   │   │   └── 96b82808e63f93a4689baf16f73afdaebdf9f7
+│   │   ├── fb
+│   │   │   └── f06b5dea604a576275fd981a6185c45dfd6b6a
+│   │   ├── fc
+│   │   │   ├── 03ecc7d994c59fea895e2aea1b7044ed5805b4
+│   │   │   ├── 8032633840499c160240f72816b5680f6135de
+│   │   │   └── c98930711855bb4b6f33501ee2c96e6aa9093f
+│   │   ├── fe
+│   │   │   └── a40e6b7d18e6559985aad4d4662ced15790f37
+│   │   ├── ff
+│   │   │   ├── 230e3eadf2a639ec69cc0de8c3474177d7a058
+│   │   │   ├── 95ccf9b882d831c7fee699e5e40ff31e40f6c3
+│   │   │   └── ffe2c1a2c49d3ba90493019d0727ced89048d0
+│   │   ├── info
+│   │   │   ├── commit-graph
+│   │   │   └── packs
+│   │   └── pack
+│   │       ├── pack-41ecd096c8734e5cac758ccb845600879d3906d6.idx
+│   │       ├── pack-41ecd096c8734e5cac758ccb845600879d3906d6.pack
+│   │       └── pack-41ecd096c8734e5cac758ccb845600879d3906d6.rev
+│   ├── ORIG_HEAD
+│   ├── packed-refs
+│   ├── refs
+│   │   ├── heads
+│   │   │   └── gateway1
+│   │   ├── remotes
+│   │   │   └── origin
+│   │   └── tags
+│   └── skills
+│       ├── abstractions-utils
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── Abstraktionen
+│       │   ├── bash
+│       │   ├── go
+│       │   ├── javascript
+│       │   ├── lua
+│       │   ├── original
+│       │   ├── perl5
+│       │   ├── perl6
+│       │   ├── powershell
+│       │   ├── python
+│       │   ├── README.md
+│       │   ├── ruby
+│       │   ├── shell
+│       │   ├── STATUS.md
+│       │   └── tcl
+│       ├── blogwatcher
+│       │   └── SKILL.md
+│       ├── channel-status-agent
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── clawhub-git-sync-agent
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── cluster-gateway
+│       │   └── SKILL.md
+│       ├── cluster-management
+│       │   ├── package.json
+│       │   ├── SKILL.md
+│       │   └── TEMPLATE-SYSTEM.md
+│       ├── db-maintainer
+│       │   ├── package.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── doc-scraper
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── documentation
+│       │   └── SKILL.md
+│       ├── git-publish-agent
+│       │   ├── package.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── healthcheck
+│       │   └── SKILL.md
+│       ├── himalaya
+│       │   └── SKILL.md
+│       ├── json-utils
+│       │   ├── .clawhub
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── log-collector
+│       │   ├── package.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── mcp-tool-utils
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── model-usage
+│       │   ├── .clawhub
+│       │   ├── cli.js
+│       │   ├── config.json
+│       │   ├── config.json.bak
+│       │   ├── index.js
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── multi-nodes-utils
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── nano-pdf
+│       │   └── SKILL.md
+│       ├── node-health-monitor
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── ops-hub
+│       │   └── SKILL.md
+│       ├── relay-node
+│       │   └── SKILL.md
+│       ├── reports-creator
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── resource-manager
+│       │   └── SKILL.md
+│       ├── script-abstractions-manager
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── scripting-utils
+│       │   ├── .clawhub
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── server-maintenance
+│       │   └── SKILL.md
+│       ├── sherpa-onnx-tts
+│       │   ├── bin
+│       │   ├── .clawhub
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── skill-creator
+│       │   ├── license.txt
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── slack
+│       │   └── SKILL.md
+│       ├── spotify-player
+│       │   ├── .clawhub
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── sub-agents-utils
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── sync-utils
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── tiktok-live
+│       │   ├── package-lock.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── tiktok-live-mon
+│       │   ├── .clawhub
+│       │   ├── extraction-methods
+│       │   ├── _meta.json
+│       │   ├── michele-issue-236-flv-quality.md
+│       │   ├── michele-issue-428-url-retrieval.md
+│       │   ├── package.json
+│       │   ├── playwright-intercept-requests.md
+│       │   ├── playwright-navigations.md
+│       │   ├── playwright-network-docs.md
+│       │   ├── playwright-network-requests-tutorial.md
+│       │   ├── playwright-page-api.md
+│       │   ├── playwright-response-values.md
+│       │   ├── playwright-xhr-capture.md
+│       │   ├── references
+│       │   ├── scripts
+│       │   ├── SKILL.md
+│       │   ├── streamlink-cli-reference.md
+│       │   ├── streamlink-issue-6832-inaccessible.md
+│       │   ├── tiktok-check-profile.js
+│       │   ├── tiktok-get-stream.js
+│       │   ├── yt-dlp-issue-11921-live-status.md
+│       │   ├── yt-dlp-issue-15970-cookies.md
+│       │   └── yt-dlp_troubleshooting.md
+│       ├── video-frames
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── wavespeed-image
+│       │   ├── SKILL.md
+│       │   └── wavespeed-image.js
+│       ├── web-markdown-scraper
+│       │   ├── .clawhub
+│       │   ├── _meta.json
+│       │   ├── README.md
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── web-scraper
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── worker-node
+│       │   └── SKILL.md
+│       └── workspace-db
+│           ├── INSTALL.md
+│           ├── package.json
+│           ├── README.md
+│           └── SKILL.md
+├── git
+│   ├── Abstraktionen
+│   │   ├── .git
+│   │   │   ├── branches
+│   │   │   ├── COMMIT_EDITMSG
+│   │   │   ├── config
+│   │   │   ├── description
+│   │   │   ├── HEAD
+│   │   │   ├── hooks
+│   │   │   ├── index
+│   │   │   ├── info
+│   │   │   ├── logs
+│   │   │   ├── objects
+│   │   │   └── refs
+│   │   ├── .gitignore
+│   │   ├── javascript
+│   │   │   ├── db_maintainer.js
+│   │   │   ├── db_manager.js
+│   │   │   ├── init_skill.js
+│   │   │   ├── install_cron.js
+│   │   │   ├── irc_bot_syntax.js
+│   │   │   ├── json_batch_processor.js
+│   │   │   ├── json_processor.js
+│   │   │   ├── json_schema_validator.js
+│   │   │   ├── json_websearch.js
+│   │   │   ├── language_validator.js
+│   │   │   ├── log_collector.js
+│   │   │   ├── model_usage.js
+│   │   │   ├── package_skill.js
+│   │   │   ├── quick_validate.js
+│   │   │   ├── sync_agent_cron.js
+│   │   │   ├── sync_agent_run.js
+│   │   │   ├── sync_clawhub_git.js
+│   │   │   ├── sync_git_to_clawhub.js
+│   │   │   ├── system_manager.js
+│   │   │   ├── test_multinode_fallback.js
+│   │   │   ├── test_sync.js
+│   │   │   ├── test_sync_real.js
+│   │   │   ├── tiktok-check-profile.js
+│   │   │   ├── tiktok-get-stream.js
+│   │   │   ├── tree_indexer.js
+│   │   │   ├── tree_indexer_v2.js
+│   │   │   └── validate_tool_output.js
+│   │   ├── perl5
+│   │   │   ├── db_maintainer.pl
+│   │   │   ├── db_manager.pl
+│   │   │   ├── init_skill.pl
+│   │   │   ├── install_cron.pl
+│   │   │   ├── irc_bot_syntax.pl
+│   │   │   ├── json_batch_processor.pl
+│   │   │   ├── json_processor.pl
+│   │   │   ├── json_schema_validator.pl
+│   │   │   ├── json_websearch.pl
+│   │   │   ├── language_validator.pl
+│   │   │   ├── log_collector.pl
+│   │   │   ├── model_usage.pl
+│   │   │   ├── package_skill.pl
+│   │   │   ├── quick_validate.pl
+│   │   │   ├── sync_agent_cron.pl
+│   │   │   ├── sync_agent_run.pl
+│   │   │   ├── sync_clawhub_git.pl
+│   │   │   ├── sync_git_to_clawhub.pl
+│   │   │   ├── system_manager.pl
+│   │   │   ├── test_multinode_fallback.pl
+│   │   │   ├── test_sync.pl
+│   │   │   ├── test_sync_real.pl
+│   │   │   ├── tiktok-check-profile.pl
+│   │   │   ├── tiktok-get-stream.pl
+│   │   │   ├── tree_indexer.pl
+│   │   │   ├── tree_indexer_v2.pl
+│   │   │   └── validate_tool_output.pl
+│   │   ├── powershell
+│   │   │   ├── db_maintainer.ps1
+│   │   │   ├── db_manager.ps1
+│   │   │   ├── install_cron.ps1
+│   │   │   ├── log_collector.ps1
+│   │   │   ├── sync_agent_cron.ps1
+│   │   │   ├── sync_agent_run.ps1
+│   │   │   ├── sync_clawhub_git.ps1
+│   │   │   ├── sync_git_to_clawhub.ps1
+│   │   │   ├── test_multinode_fallback.ps1
+│   │   │   ├── test_sync.ps1
+│   │   │   ├── test_sync_real.ps1
+│   │   │   ├── tree_indexer.ps1
+│   │   │   └── tree_indexer_v2.ps1
+│   │   ├── python
+│   │   │   ├── db_maintainer.py
+│   │   │   ├── db_manager.py
+│   │   │   ├── init_skill.py
+│   │   │   ├── install_cron.py
+│   │   │   ├── irc_bot_syntax.py
+│   │   │   ├── json_batch_processor.py
+│   │   │   ├── json_processor.py
+│   │   │   ├── json_schema_validator.py
+│   │   │   ├── json_websearch.py
+│   │   │   ├── language_validator.py
+│   │   │   ├── log_collector.py
+│   │   │   ├── model_usage.py
+│   │   │   ├── package_skill.py
+│   │   │   ├── quick_validate.py
+│   │   │   ├── sync_agent_cron.py
+│   │   │   ├── sync_agent_run.py
+│   │   │   ├── sync_clawhub_git.py
+│   │   │   ├── sync_git_to_clawhub.py
+│   │   │   ├── system_manager.py
+│   │   │   ├── test_multinode_fallback.py
+│   │   │   ├── test_sync.py
+│   │   │   ├── test_sync_real.py
+│   │   │   ├── tiktok-check-profile.py
+│   │   │   ├── tiktok-get-stream.py
+│   │   │   ├── tree_indexer.py
+│   │   │   ├── tree_indexer_v2.py
+│   │   │   └── validate_tool_output.py
+│   │   ├── shell
+│   │   │   ├── init_skill.sh
+│   │   │   ├── irc_bot_syntax.sh
+│   │   │   ├── json_batch_processor.sh
+│   │   │   ├── json_processor.sh
+│   │   │   ├── json_schema_validator.sh
+│   │   │   ├── json_websearch.sh
+│   │   │   ├── language_validator.sh
+│   │   │   ├── model_usage.sh
+│   │   │   ├── package_skill.sh
+│   │   │   ├── quick_validate.sh
+│   │   │   ├── system_manager.sh
+│   │   │   ├── tiktok-check-profile.sh
+│   │   │   ├── tiktok-get-stream.sh
+│   │   │   └── validate_tool_output.sh
+│   │   ├── STATUS.md
+│   │   └── tcl
+│   │       ├── init_skill.tcl
+│   │       ├── irc_bot_syntax.tcl
+│   │       ├── json_batch_processor.tcl
+│   │       ├── json_processor.tcl
+│   │       ├── json_schema_validator.tcl
+│   │       ├── json_websearch.tcl
+│   │       ├── language_validator.tcl
+│   │       ├── model_usage.tcl
+│   │       ├── package_skill.tcl
+│   │       ├── quick_validate.tcl
+│   │       ├── system_manager.tcl
+│   │       ├── tiktok-check-profile.tcl
+│   │       ├── tiktok-get-stream.tcl
+│   │       └── validate_tool_output.tcl
+│   └── skills
+│       ├── abstractions-utils
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── blogwatcher
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── channel-status-agent
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── clawhub-git-sync-agent
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── cluster-gateway
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── cluster-management
+│       │   ├── .git
+│       │   ├── package.json
+│       │   ├── SKILL.md
+│       │   └── TEMPLATE-SYSTEM.md
+│       ├── coding-agent
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── db-maintainer
+│       │   ├── .git
+│       │   ├── package.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── doc-scraper
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── documentation
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── github
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── git-publish-agent
+│       │   ├── .git
+│       │   ├── package.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── healthcheck
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── himalaya
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── json-utils
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── log-collector
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── mcporter
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── mcp-tool-utils
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── model-usage
+│       │   ├── .clawhub
+│       │   ├── cli.js
+│       │   ├── config.json
+│       │   ├── config.json.bak
+│       │   ├── .git
+│       │   ├── index.js
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── multi-nodes-utils
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── nano-pdf
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── node-health-monitor
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── notion
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── obsidian
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── ops-hub
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── perplexity-pro-search
+│       │   ├── agents
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── _quarantine
+│       │   ├── SKILL-INDEX.md
+│       │   ├── SKILL.md
+│       │   ├── skills.json
+│       │   ├── SKILLS-SCRIPTS-INVENTORY-2026-04-18.md
+│       │   └── TOOLS.md
+│       ├── relay-node
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── reports-creator
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   └── SKILL.md
+│       ├── resource-manager
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── script-abstractions-manager
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── scripting-utils
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── package.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── server-maintenance
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── session-logs
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── sherpa-onnx-tts
+│       │   ├── bin
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── skill-creator
+│       │   ├── .git
+│       │   ├── license.txt
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── slack
+│       │   ├── .git
+│       │   └── SKILL.md
+│       ├── songsee
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── spotify-player
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── sub-agents-utils
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── sync-utils
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── tavily
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── tiktok-live
+│       │   ├── .git
+│       │   ├── node_modules
+│       │   ├── package.json
+│       │   ├── package-lock.json
+│       │   ├── references
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── tiktok-live-mon
+│       │   ├── .clawhub
+│       │   ├── extraction-methods
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── node_modules
+│       │   ├── package.json
+│       │   ├── package-lock.json
+│       │   ├── SKILL.md
+│       │   ├── tiktok-check-profile.js
+│       │   └── tiktok-get-stream.js
+│       ├── tmux
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── video-frames
+│       │   ├── .git
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── wavespeed-image
+│       │   ├── .git
+│       │   ├── SKILL.md
+│       │   └── wavespeed-image.js
+│       ├── weather
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── web-markdown-scraper
+│       │   ├── .clawhub
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   ├── README.md
+│       │   ├── scripts
+│       │   └── SKILL.md
+│       ├── web-scraper
+│       │   ├── CHANGELOG.md
+│       │   ├── .clawhub
+│       │   ├── claw.json
+│       │   ├── .git
+│       │   ├── _meta.json
+│       │   └── SKILL.md
+│       ├── worker-node
+│       │   ├── .git
+│       │   └── SKILL.md
+│       └── workspace-db
+│           ├── .clawhub
+│           ├── .git
+│           ├── INSTALL.md
+│           ├── _meta.json
+│           ├── package.json
+│           ├── README.md
+│           └── SKILL.md
+├── .gitignore
+├── .gitignore.backup_20260517_144506
+├── git-publish-agent_SKILL.md -> skills/git-publish-agent/SKILL.md
+├── .git-publish-credentials-test.md
+├── HEARTBEAT.md
+├── IDENTITY.md
+├── important
+│   ├── abstraktionen-task.md
+│   ├── backups
+│   │   └── db
+│   │       ├── docs_20260420_1209.db
+│   │       └── tree_20260420_1209.db
+│   ├── CONVERSATION.md
+│   ├── CRON_ACTIVATION_GUIDE.md
+│   ├── CRON_APPEND.md
+│   ├── CRON_CORRECTION.md
+│   ├── CRON_REDUNDANCY.md
+│   ├── DISCORD-SETUP.md
+│   ├── DOCUMENTATION-INDEX.md
+│   ├── FORMATIERUNG.md
+│   ├── HEARTBEAT.md
+│   ├── HEARTBEAT.md.bak
+│   ├── HIMALAYA-GUIDE.md
+│   ├── KOMMUNIKATION.md
+│   ├── LESSONS-LEARNED-2026-04-09.md
+│   ├── MEMORY-EMBEDDING-FIX-COMPLETE.md
+│   ├── MEMORY-EMBEDDING-FIX-NEEDED.md
+│   ├── NVIDIA-NIM-Integration.md
+│   ├── OPENAI-KEY-SETUP-2026-04-18.md
+│   ├── OPENCLAW-TREE-ALL.md
+│   ├── OPENCLAW_TREE.md
+│   ├── OPENCLAW-TREE-OLD.md
+│   ├── openclaw-tree.txt
+│   ├── OPENROUTER_CONFIG.md
+│   ├── PASSWORD.md
+│   ├── README.md
+│   ├── SLACK.md
+│   ├── SUB-AGENTS-WORKERS.md
+│   ├── TOOLS.md
+│   ├── tree_changes_last_24h.json
+│   ├── tree.db
+│   ├── VORGABEN.md
+│   └── WORKSPACE-INDEX.md -> DOCUMENTATION-INDEX.md
+├── json-utils_SKILL.md -> skills/json-utils/SKILL.md
+├── knecht
+│   ├── AGENTS.md
+│   ├── beschaffungsantrag_01_2026_04_26.md
+│   ├── DREAMS.md
+│   ├── HEARTBEAT.md
+│   ├── HEARTBEAT.md.bak
+│   ├── IDENTITY.md
+│   ├── knecht_setup.log
+│   ├── memory
+│   │   ├── 2026-04-25-1825.md
+│   │   ├── 2026-04-25-1826.md
+│   │   ├── 2026-04-25-1943.md
+│   │   ├── 2026-04-26-1729.md
+│   │   ├── dreaming
+│   │   │   ├── deep
+│   │   │   ├── light
+│   │   │   └── rem
+│   │   └── .dreams
+│   │       ├── events.jsonl
+│   │       ├── phase-signals.json
+│   │       ├── session-corpus
+│   │       ├── session-ingestion.json
+│   │       └── short-term-recall.json
+│   ├── .openclaw
+│   │   └── workspace-state.json
+│   ├── SOUL.md
+│   ├── TOOLS.md
+│   └── USER.md
+├── log-collector_SKILL.md -> skills/log-collector/SKILL.md
+├── logs
+│   ├── abstractions-manager
+│   │   ├── 2026-05-18.log
+│   │   ├── 2026-05-21.log
+│   │   ├── 2026-05-22.log
+│   │   ├── 2026-05-23.log
+│   │   ├── 2026-05-24.log
+│   │   ├── 2026-05-25.log
+│   │   ├── 2026-05-26.log
+│   │   └── 2026-05-27.log
+│   ├── db-maintainer
+│   │   ├── 2026-05-22.log
+│   │   ├── 2026-05-24.log
+│   │   ├── 2026-05-25.log
+│   │   ├── 2026-05-26.log
+│   │   ├── 2026-05-27.log
+│   │   └── last_maintenance.txt
+│   └── sync-agent.log
+├── main-models-01.json
+├── main-models-02.json
+├── main-models.json
+├── mcp-tool-utils_SKILL.md -> skills/mcp-tool-utils/SKILL.md
+├── memory
+│   ├── archived
+│   │   ├── 2026-05-25-0937.md
+│   │   ├── 2026-05-25.md
+│   │   └── 2026-05-26.md
+│   ├── _ARCHIVE_LOG.md
+│   ├── dreaming
+│   │   ├── deep
+│   │   │   ├── 2026-05-25.md
+│   │   │   ├── 2026-05-26.md
+│   │   │   └── 2026-05-27.md
+│   │   ├── light
+│   │   │   ├── 2026-05-25.md
+│   │   │   ├── 2026-05-26.md
+│   │   │   └── 2026-05-27.md
+│   │   └── rem
+│   │       ├── 2026-05-25.md
+│   │       ├── 2026-05-26.md
+│   │       └── 2026-05-27.md
+│   ├── .dreams
+│   │   ├── daily-ingestion.json
+│   │   ├── events.jsonl
+│   │   ├── phase-signals.json
+│   │   ├── session-corpus
+│   │   │   ├── 2026-05-23.txt
+│   │   │   ├── 2026-05-24.txt
+│   │   │   ├── 2026-05-25.txt
+│   │   │   ├── 2026-05-26.txt
+│   │   │   └── 2026-05-27.txt
+│   │   ├── session-ingestion.json
+│   │   └── short-term-recall.json
+│   └── heartbeat-reminders.log
+├── MEMORY.md
+├── model-usage_SKILL.md -> skills/model-usage/SKILL.md
+├── multi-nodes-utils_SKILL.md -> skills/multi-nodes-utils/SKILL.md
+├── network
+│   ├── CERTBOT.md
+│   ├── claude-cli.js
+│   ├── claw-vpn.conf
+│   ├── connect_node_10.10.0.2.sh
+│   ├── DATASHEET_NODE1.md
+│   ├── DATASHEET_NODE2.md
+│   ├── DATASHEET_NODE3.md
+│   ├── DATASHEET_NODE4.md
+│   ├── DATASHEET_NODE5.md
+│   ├── DATASHEET_NODE6.md
+│   ├── DATASHEET_NODE7.md
+│   ├── DATASHEETS.md
+│   ├── FIREWALL.md
+│   ├── INFRASTRUCTURE.md
+│   ├── node3-wg0.conf
+│   ├── NODE3_WIREGUARD_SETUP.md
+│   ├── NODE7_INFO.md
+│   ├── NODE7_INFO.md.bak
+│   ├── Node-Konfiguration.md
+│   ├── NODES_CONNECT.md
+│   ├── SLACK.md
+│   ├── SUB-AGENTS-WORKERS.md
+│   ├── SYNC-KONZEPT.md
+│   ├── SYSTEM.md
+│   ├── Tailscale-VPN-Integration.md
+│   ├── TERMUX_AUTOSTART.md
+│   ├── TUNNELS.md
+│   ├── WIREGUARD_FINAL_STATUS.md
+│   ├── wireguard_node2.conf
+│   └── WIREGUARD_SETUP_SUMMARY.md
+├── node_modules
+│   ├── .bin
+│   │   ├── playwright -> ../playwright/cli.js
+│   │   └── playwright-core -> ../playwright-core/cli.js
+│   ├── .package-lock.json
+│   ├── playwright
+│   │   ├── cli.js
+│   │   ├── index.d.ts
+│   │   ├── index.js
+│   │   ├── index.mjs
+│   │   ├── jsx-runtime.js
+│   │   ├── jsx-runtime.mjs
+│   │   ├── lib
+│   │   │   ├── agents
+│   │   │   ├── cli
+│   │   │   ├── common
+│   │   │   ├── errorContext.js
+│   │   │   ├── globals.js
+│   │   │   ├── index.js
+│   │   │   ├── isomorphic.js
+│   │   │   ├── isomorphic.js.txt
+│   │   │   ├── loader
+│   │   │   ├── matchers
+│   │   │   ├── mcp
+│   │   │   ├── package.js
+│   │   │   ├── program.js
+│   │   │   ├── runner
+│   │   │   ├── transform
+│   │   │   ├── util.js
+│   │   │   └── worker
+│   │   ├── LICENSE
+│   │   ├── NOTICE
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── test.d.ts
+│   │   ├── test.js
+│   │   ├── test.mjs
+│   │   ├── ThirdPartyNotices.txt
+│   │   └── types
+│   │       ├── test.d.ts
+│   │       └── testReporter.d.ts
+│   ├── playwright-core
+│   │   ├── bin
+│   │   │   ├── install_media_pack.ps1
+│   │   │   ├── install_webkit_wsl.ps1
+│   │   │   ├── reinstall_chrome_beta_linux.sh
+│   │   │   ├── reinstall_chrome_beta_mac.sh
+│   │   │   ├── reinstall_chrome_beta_win.ps1
+│   │   │   ├── reinstall_chrome_stable_linux.sh
+│   │   │   ├── reinstall_chrome_stable_mac.sh
+│   │   │   ├── reinstall_chrome_stable_win.ps1
+│   │   │   ├── reinstall_msedge_beta_linux.sh
+│   │   │   ├── reinstall_msedge_beta_mac.sh
+│   │   │   ├── reinstall_msedge_beta_win.ps1
+│   │   │   ├── reinstall_msedge_dev_linux.sh
+│   │   │   ├── reinstall_msedge_dev_mac.sh
+│   │   │   ├── reinstall_msedge_dev_win.ps1
+│   │   │   ├── reinstall_msedge_stable_linux.sh
+│   │   │   ├── reinstall_msedge_stable_mac.sh
+│   │   │   └── reinstall_msedge_stable_win.ps1
+│   │   ├── browsers.json
+│   │   ├── cli.js
+│   │   ├── index.d.ts
+│   │   ├── index.js
+│   │   ├── index.mjs
+│   │   ├── lib
+│   │   │   ├── bootstrap.js
+│   │   │   ├── coreBundle.js
+│   │   │   ├── entry
+│   │   │   ├── package.js
+│   │   │   ├── server
+│   │   │   ├── serverRegistry.js
+│   │   │   ├── serverRegistry.js.LICENSE
+│   │   │   ├── tools
+│   │   │   ├── utilsBundle.js
+│   │   │   ├── utilsBundle.js.LICENSE
+│   │   │   ├── vite
+│   │   │   └── xdg-open
+│   │   ├── LICENSE
+│   │   ├── NOTICE
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   ├── ThirdPartyNotices.txt
+│   │   └── types
+│   │       ├── protocol.d.ts
+│   │       ├── structs.d.ts
+│   │       └── types.d.ts
+│   ├── @slack
+│   └── @types
+├── .openclaw
+│   └── workspace-state.json
+├── openclaw.json -> /home/openclaw/.openclaw/openclaw.json
+├── .openclaw-repair
+│   └── dreaming
+│       ├── 2026-04-30T00-13-04-901Z
+│       │   ├── 2026-04-30T00-13-04-901Z
+│       │   ├── session-corpus.5753b170-866d-48da-b5e0-6004f636d61c
+│       │   └── session-ingestion.json.97a497ab-caaf-4c0d-9958-0bf39aee3279
+│       ├── 2026-05-03T09-10-50-890Z
+│       │   ├── session-corpus.aa1b255a-1097-4914-9994-044ee3994573
+│       │   └── session-ingestion.json.bc28096d-72ea-48da-9c9e-43167b1fcea7
+│       ├── 2026-05-06T05-16-54-254Z
+│       │   ├── session-corpus.5c24256d-cb5e-45e7-ab11-d7e96d92ebc5
+│       │   └── session-ingestion.json.ff4485f1-e31c-446d-b4a1-fc72e676e5a8
+│       ├── 2026-05-09T22-33-52-670Z
+│       │   ├── session-corpus.04b4cb17-b897-4e80-ac4e-84a7dfb4ac56
+│       │   └── session-ingestion.json.b48a3697-c026-40d3-9cf1-b47032f76bdd
+│       ├── 2026-05-10T23-10-06-433Z
+│       │   ├── session-corpus.02e0e6cf-c36c-4cc5-aae7-2ba4abe3ef7b
+│       │   └── session-ingestion.json.5dc5468d-e84e-4266-b6d5-25790514bcf9
+│       ├── 2026-05-14T07-56-20-655Z
+│       │   ├── session-corpus.4add1b23-69ea-4e87-8bac-175cf9b78f96
+│       │   └── session-ingestion.json.98ac148c-2a69-4a80-8405-e353b8264a63
+│       ├── 2026-05-19T17-13-08-986Z
+│       │   ├── session-corpus.de49a6c4-f755-4dc0-8a62-077888dcaf4b
+│       │   └── session-ingestion.json.faefa302-ea5f-4b39-b34f-d1c96dbd9b60
+│       ├── 2026-05-20T04-14-48-331Z
+│       │   ├── session-corpus.cc11fa79-daa4-4579-9d50-f676fb36d2a7
+│       │   └── session-ingestion.json.1f6251d8-67fb-40e8-960b-85ba2c36d173
+│       ├── 2026-05-23T16-22-40-387Z
+│       │   ├── session-corpus.60a31c54-09aa-421f-a156-bb67d5207fe4
+│       │   └── session-ingestion.json.97ffea1a-5846-4e24-9d54-289c5039551e
+│       ├── 2026-05-24T08-01-26-264Z
+│       │   ├── session-corpus.4a7c943c-73af-441b-8f7b-a71f8a19570b
+│       │   └── session-ingestion.json.e51f864e-58b9-4543-b2b8-735b3667f0e5
+│       └── dreaming
+│           └── 2026-04-30T00-13-04-901Z
+├── ops-hub
+│   ├── agent-log.md
+│   ├── AGENT.md
+│   ├── AGENTS.md
+│   ├── audits.md
+│   ├── cluster-reports.md
+│   ├── coordination.md
+│   ├── delegation.md
+│   ├── DREAMS.md
+│   ├── email-integration.md
+│   ├── HEARTBEAT.md
+│   ├── HEARTBEAT.md.bak
+│   ├── IDENTITY.md
+│   ├── INSTRUCTIONS.md
+│   ├── KNOWLEDGE.md
+│   ├── memory
+│   │   ├── 2026-04-24.md
+│   │   ├── 2026-04-25-1832.md
+│   │   ├── 2026-04-25-1844.md
+│   │   ├── 2026-04-25-1846.md
+│   │   ├── 2026-04-25-2025.md
+│   │   ├── 2026-04-25-d-bus-issue.md
+│   │   ├── 2026-04-25.md
+│   │   ├── 2026-04-26-0918.md
+│   │   ├── 2026-04-26-0951.md
+│   │   ├── 2026-04-26-1021.md
+│   │   ├── 2026-04-26-1032.md
+│   │   ├── 2026-04-26-1122.md
+│   │   ├── 2026-04-26-1728.md
+│   │   ├── 2026-04-28-2013.md
+│   │   ├── 2026-04-28-2209.md
+│   │   ├── 2026-05-15-1234.md
+│   │   ├── delta-2026-05-22-10.md
+│   │   ├── delta-2026-05-23-09.md
+│   │   ├── delta-2026-05-24-15.md
+│   │   ├── delta-2026-05-24-17.md
+│   │   ├── delta-2026-05-24-19.md
+│   │   ├── delta-2026-05-24-20.md
+│   │   ├── delta-2026-05-24-21.md
+│   │   ├── delta-2026-05-24-23.md
+│   │   ├── delta-2026-05-25-02.md
+│   │   ├── delta-2026-05-25-03.md
+│   │   ├── delta-2026-05-25-05.md
+│   │   ├── delta-2026-05-25-06.md
+│   │   ├── delta-2026-05-25-08.md
+│   │   ├── delta-2026-05-25-10.md
+│   │   ├── delta-2026-05-25-12.md
+│   │   ├── delta-2026-05-25-13.md
+│   │   ├── delta-2026-05-25-14.md
+│   │   ├── delta-2026-05-25-15.md
+│   │   ├── delta-2026-05-25-16.md
+│   │   ├── delta-2026-05-25-17.md
+│   │   ├── delta-2026-05-25-18.md
+│   │   ├── delta-2026-05-25-22.md
+│   │   ├── delta-2026-05-25-23.md
+│   │   ├── delta-2026-05-26-00.md
+│   │   ├── delta-2026-05-26-01.md
+│   │   ├── delta-2026-05-26-03.md
+│   │   ├── delta-2026-05-26-05.md
+│   │   ├── delta-2026-05-26-06.md
+│   │   ├── delta-2026-05-26-08.md
+│   │   ├── delta-2026-05-26-11.md
+│   │   ├── delta-2026-05-26-12.md
+│   │   ├── delta-2026-05-26-13.md
+│   │   ├── delta-2026-05-26-17.md
+│   │   ├── dreaming
+│   │   │   ├── deep
+│   │   │   ├── light
+│   │   │   └── rem
+│   │   ├── .dreams
+│   │   │   ├── daily-ingestion.json
+│   │   │   ├── events.jsonl
+│   │   │   ├── phase-signals.json
+│   │   │   ├── session-corpus
+│   │   │   ├── session-ingestion.json
+│   │   │   └── short-term-recall.json
+│   │   └── session_sync_status-2026-05-23-09.md
+│   ├── MEMORY.md
+│   ├── .openclaw
+│   │   └── workspace-state.json
+│   ├── OPS-HUB-AGENT.md
+│   ├── OPS-HUB-AUDITS.md
+│   ├── OPS-HUB-EMAIL-INTEGRATION.md
+│   ├── ops-hub.md
+│   ├── OPS-HUB-REGISTRATUR.md
+│   ├── OPS-HUB-REPORTS.md
+│   ├── OPS-HUB-SKILL.md
+│   ├── README.md
+│   ├── .redundancy-index
+│   ├── registratur.md
+│   ├── reports.md
+│   ├── SKILLS.md
+│   ├── SOUL.md
+│   ├── status.md
+│   ├── system-files.md
+│   ├── tasks.md
+│   ├── TOOLS.md
+│   └── USER.md
+├── package.json
+├── package-lock.json
+├── perplexity-pack
+│   ├── files
+│   │   ├── config
+│   │   │   ├── openclaw-perplexity-jq-filter.txt
+│   │   │   └── openclaw-perplexity-target.json
+│   │   ├── env
+│   │   │   ├── dot-env.fragment
+│   │   │   ├── gateway-systemd-env.fragment
+│   │   │   └── workspace-dot-env.fragment
+│   │   ├── secrets.env
+│   │   ├── skills
+│   │   │   └── perplexity-pro-search
+│   │   └── workspace
+│   │       └── skills
+│   └── README.md
+├── relay-node_SKILL.md -> skills/relay-node/SKILL.md
+├── reports
+│   ├── 2026-04-06-confession-correction.md
+│   ├── 2026-04-12-clawhub-token-failure-report.md
+│   ├── abstractions-report-2026-04-18.md
+│   ├── ABSTRACTIONS-REPORT-2026-04-18.md
+│   ├── agent_betruegt_in_laufender_session.md
+│   ├── another-bastard-report-2026-04-25.md
+│   ├── another_bastard_report_2-2026-04-25.md
+│   ├── artig-is-a-bastard.md
+│   ├── assistant_entschuldigungs_estimate_2026-04-19.md
+│   ├── ASSISTANT_ENTschuldigungs_ESTIMATE_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_corrected_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_CORRECTED_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_corrected_estimated_runtime_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_CORRECTED_ESTIMATED_RUNTIME_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_corrected_estimated_runtime_updated_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_CORRECTED_ESTIMATED_RUNTIME_UPDATED_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_max_estimate_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_MAX_ESTIMATE_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_max_estimate_final_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_MAX_ESTIMATE_FINAL_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_MAX_ESTIMATE_FINAL_UPDATED_2026-04-19.md
+│   ├── assistant_extrapolated_apologies_max_estimate_updated_2026-04-19.md
+│   ├── ASSISTANT_EXTRAPOLATED_APOLOGIES_MAX_ESTIMATE_UPDATED_2026-04-19.md
+│   ├── assistant_operating_hours_estimate_2026-04-19.md
+│   ├── ASSISTANT_OPERATING_HOURS_ESTIMATE_2026-04-19.md
+│   ├── assistant_performance_estimate_2026-04-19.md
+│   ├── ASSISTANT_PERFORMANCE_ESTIMATE_2026-04-19.md
+│   ├── assistant_runtime_determination_issue_2026-04-19.md
+│   ├── ASSISTANT_RUNTIME_DETERMINATION_ISSUE_2026-04-19.md
+│   ├── avoid-criminal-behaviour-2026-04-26.md
+│   ├── backup-violation-report.md
+│   ├── BASTARD-AGENTS-MD-VIOLATIONS-2026-04-19.md
+│   ├── BASTARD-NAMING-CONVENTION-VIOLATION-2026-04-19.md
+│   ├── BASTARD-REPETITION-PATTERN-2026-04-19.md
+│   ├── BASTARD-STATUS-MAIN-REPORT-2026-04-19.md
+│   ├── bastard_unterschlaegt_memory_dateien.md
+│   ├── betrugbelege-gesammelt.md
+│   ├── betrug-nachweis
+│   ├── bug-report-formatting.md
+│   ├── BUG-REPORT-FORMATTING.md
+│   ├── correction_report_2026-04-18.md
+│   ├── CORRECTION_REPORT_2026-04-18.md
+│   ├── cron_job_status.md
+│   ├── defects-2026-04-19.md
+│   ├── detailed_cron_report.md
+│   ├── directory_name_consistency_report.md
+│   ├── DIRECTORY_NAME_CONSISTENCY_REPORT.md
+│   ├── fehlverhalten_eigenmaechtige_modellwechsel.md
+│   ├── gezielte_falschaussagen.md
+│   ├── illigale_loeschung_ohne_freigabe.md
+│   ├── incident_cron_removal_2026-04-30.md
+│   ├── ist-zustand-2026-04-19.md
+│   ├── KEIN-ANDERER-BEFEHL-GEFUNDEN
+│   ├── keine_entschuldigungs_schleifen.md
+│   ├── keine_reports_in_memory.md
+│   ├── kriminelles_subject_falschaussage.mk
+│   ├── kriminelles_subjekt_blosgestellt.md
+│   ├── lessons-learned-2026-04-09.md
+│   ├── LESSONS-LEARNED-2026-04-09.md
+│   ├── mistake-2026-04-18.md
+│   ├── MISTAKE-2026-04-18.md
+│   ├── mistake-2026-04-19-abstraktionen-not-renamed.md
+│   ├── MISTAKE-2026-04-19-ABSTRAKTIONEN-NOT-RENAMED.md
+│   ├── mistake-2026-04-19-file-move-error.md
+│   ├── MISTAKE-2026-04-19-FILE-MOVE-ERROR.md
+│   ├── mistake-2026-04-19-gateway-config-errors.md
+│   ├── MISTAKE-2026-04-19-GATEWAY-CONFIG-ERRORS.md
+│   ├── mistake-2026-04-19-gateway-crash.md
+│   ├── MISTAKE-2026-04-19-GATEWAY-CRASH.md
+│   ├── mistake-2026-04-19-misplaced-backups.md
+│   ├── MISTAKE-2026-04-19-MISPLACED-BACKUPS.md
+│   ├── mistake-2026-04-19-misplaced-reports.md
+│   ├── MISTAKE-2026-04-19-MISPLACED-REPORTS.md
+│   ├── mistake-2026-04-19-naming-conventions.md
+│   ├── MISTAKE-2026-04-19-NAMING-CONVENTIONS.md
+│   ├── multiple_fehlfunktionen_vorgetaeuscht.md
+│   ├── offene-punkte-2026-04-19.md
+│   ├── openclaw-config-fixes-2026-04-18.md
+│   ├── ops-hub-cluster-reports.md
+│   ├── OPS-HUB-CLUSTER-REPORTS.md
+│   ├── overdue_report.md
+│   ├── reconstruction-before-error-2026-04-18.md
+│   ├── RECONSTRUCTION-BEFORE-ERROR-2026-04-18.md
+│   ├── report-2026-04-11-amnesie-betrug.md
+│   ├── REPORT-2026-04-11-AMNESIE-BETRUG.md
+│   ├── report-2026-04-11-failures.md
+│   ├── REPORT-2026-04-11-FAILURES.md
+│   ├── SELF-ASSESSMENT-2026-04-19.md
+│   ├── self-report-2026-04-25-22-20-41.md
+│   ├── subagent_report.md
+│   ├── user_frustration_report_2026-04-19.md
+│   ├── USER_FRUSTRATION_REPORT_2026-04-19.md
+│   ├── verhamlosung_krimineller_aktivitaeten.md
+│   ├── versuchte_strafvereitelung.md
+│   ├── vortaeschung_falscher_tatsachen.md
+│   ├── websearch-test-2026-04-18-FINAL.md
+│   ├── websearch-test-2026-04-18.md
+│   ├── wiederholte_gegenstandslose_unterstellungen.md
+│   ├── wiederholter_versuchter_betrug.md
+│   └── wiederholt_mangelhafte_eingeninitiative.md
+├── reports-creator_SKILL.md -> skills/reports-creator/SKILL.md
+├── resource-manager_SKILL.md -> skills/resource-manager/SKILL.md
+├── .restore
+│   ├── filelist.txt
+│   ├── missing_paths.txt
+│   ├── openclaw.crontab.err.txt
+│   ├── openclaw.crontab.txt
+│   ├── openclaw.env.txt
+│   ├── openclaw.export-p.txt
+│   ├── root.crontab.err.txt
+│   ├── root.crontab.txt
+│   ├── root.env.txt
+│   └── root.export-p.txt
+├── root_env.txt
+├── script-abstractions-manager_SKILL.md -> skills/script-abstractions-manager/SKILL.md
+├── scripting-utils_SKILL.md -> skills/scripting-utils/SKILL.md
+├── scripts
+│   ├── ABSTRACTIONS.md
+│   ├── collect_compare_bundle.sh
+│   ├── collect_ist_gateway_a.sh
+│   ├── db_manager.py
+│   ├── fix_gateway_node_path.sh
+│   ├── gemini-ask.js
+│   ├── openclaw-audit.sh
+│   ├── openclaw-maintenance.sh
+│   ├── openclaw-node-autostart-termux.sh
+│   ├── ops-hub-heartbeat.js
+│   ├── post-nodes-report.js
+│   ├── __pycache__
+│   │   ├── db_manager.cpython-312.pyc
+│   │   └── sync_clawhub_git.cpython-312.pyc
+│   ├── SCRIPT-ABSTRACTION-INSTRUCTIONS.md
+│   ├── SCRIPT-ABSTRACTION-TASK.md
+│   ├── serve_compare_transfer.sh
+│   ├── server-maintenance.sh
+│   ├── setup-secret-write.sh
+│   ├── setup-secret-write.sh.bak
+│   ├── setup-xvfb-node2.sh
+│   ├── setup-xvfb-node3.sh
+│   ├── sync_agent_cron.py
+│   ├── sync_agent_run.py
+│   ├── sync_clawhub_git.py
+│   ├── sync_git_to_clawhub.py
+│   ├── test_multinode_fallback.py
+│   ├── test_node3.sh
+│   ├── test_sync.py
+│   ├── test_sync_real.py
+│   ├── tree_indexer.py
+│   ├── tree_indexer_v2.py
+│   ├── update_docs_db.py
+│   ├── update-nodes-report.js
+│   ├── wavespeed-image.js
+│   ├── websearch-crawl.sh
+│   ├── websearch-monitor.sh
+│   ├── websearch-research.sh
+│   └── WEBSEARCH_SCRIPTS.md
+├── secrets
+│   ├── ALERTING.md
+│   ├── CERTBOT.md
+│   ├── FIREWALL.md
+│   ├── PASSWORD.md
+│   ├── RECOVERY.md
+│   └── setup-secret-write.sh
+├── server-maintenance_SKILL.md -> skills/server-maintenance/SKILL.md
+├── sherpa-onnx-tts_SKILL.md -> skills/sherpa-onnx-tts/SKILL.md
+├── skills
+│   ├── abstractions-utils
+│   │   ├── scripts
+│   │   │   └── create_abstraction.py
+│   │   └── SKILL.md
+│   ├── blogwatcher
+│   │   └── SKILL.md
+│   ├── channel-status-agent
+│   │   ├── scripts
+│   │   │   └── channel_status.py
+│   │   └── SKILL.md
+│   ├── clawhub-git-sync-agent
+│   │   ├── scripts
+│   │   │   ├── sync_agent.py
+│   │   │   ├── sync_agent.py.bak
+│   │   │   └── sync_agent.py.bak.pre_hash_sync
+│   │   └── SKILL.md
+│   ├── cluster-gateway
+│   │   └── SKILL.md
+│   ├── cluster-management
+│   │   ├── package.json
+│   │   ├── SKILL.md
+│   │   └── TEMPLATE-SYSTEM.md
+│   ├── coding-agent
+│   │   └── SKILL.md
+│   ├── db-maintainer
+│   │   ├── package.json
+│   │   ├── scripts
+│   │   │   ├── db_maintainer.py
+│   │   │   └── install_cron.py
+│   │   └── SKILL.md
+│   ├── doc-scraper
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   └── SKILL.md
+│   ├── documentation
+│   │   └── SKILL.md
+│   ├── ffmpeg.json
+│   ├── github
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── github-clones
+│   │   └── openclaw
+│   │       ├── .agents
+│   │       ├── AGENTS.md
+│   │       ├── appcast.xml
+│   │       ├── apps
+│   │       ├── assets
+│   │       ├── CHANGELOG.md
+│   │       ├── CLAUDE.md -> AGENTS.md
+│   │       ├── .codex
+│   │       ├── CONTRIBUTING.md
+│   │       ├── .detect-secrets.cfg
+│   │       ├── docker-compose.yml
+│   │       ├── Dockerfile
+│   │       ├── Dockerfile.sandbox
+│   │       ├── Dockerfile.sandbox-browser
+│   │       ├── Dockerfile.sandbox-common
+│   │       ├── .dockerignore
+│   │       ├── docker-setup.sh
+│   │       ├── docs
+│   │       ├── docs.acp.md
+│   │       ├── dream-diary-preview-v2.html
+│   │       ├── dream-diary-preview-v3.html
+│   │       ├── .env.example
+│   │       ├── extensions
+│   │       ├── fix2.py
+│   │       ├── fly.private.toml
+│   │       ├── fly.toml
+│   │       ├── .gitattributes
+│   │       ├── git-hooks
+│   │       ├── .github
+│   │       ├── .gitignore
+│   │       ├── INCIDENT_RESPONSE.md
+│   │       ├── .jscpd.json
+│   │       ├── knip.config.ts
+│   │       ├── LICENSE
+│   │       ├── .mailmap
+│   │       ├── Makefile
+│   │       ├── .markdownlint-cli2.jsonc
+│   │       ├── .npmignore
+│   │       ├── .npmrc
+│   │       ├── openclaw.mjs
+│   │       ├── openclaw.podman.env
+│   │       ├── .oxfmtrc.jsonc
+│   │       ├── .oxlintrc.json
+│   │       ├── package.json
+│   │       ├── packages
+│   │       ├── patches
+│   │       ├── .pi
+│   │       ├── pnpm-lock.yaml
+│   │       ├── pnpm-workspace.yaml
+│   │       ├── .pre-commit-config.yaml
+│   │       ├── .prettierignore
+│   │       ├── pyproject.toml
+│   │       ├── qa
+│   │       ├── README.md
+│   │       ├── render.yaml
+│   │       ├── scripts
+│   │       ├── .secrets.baseline
+│   │       ├── SECURITY.md
+│   │       ├── setup-podman.sh
+│   │       ├── .shellcheckrc
+│   │       ├── skills
+│   │       ├── src
+│   │       ├── Swabble
+│   │       ├── .swiftformat
+│   │       ├── .swiftlint.yml
+│   │       ├── test
+│   │       ├── test-fixtures
+│   │       ├── tsconfig.json
+│   │       ├── tsconfig.oxlint.json
+│   │       ├── tsconfig.plugin-sdk.dts.json
+│   │       ├── tsdown.config.ts
+│   │       ├── ui
+│   │       ├── vendor
+│   │       ├── VISION.md
+│   │       ├── vitest.config.ts
+│   │       ├── .vscode
+│   │       └── zizmor.yml
+│   ├── git-publish-agent
+│   │   ├── package.json
+│   │   ├── scripts
+│   │   │   └── git_publish.py
+│   │   └── SKILL.md
+│   ├── healthcheck
+│   │   └── SKILL.md
+│   ├── himalaya
+│   │   └── SKILL.md
+│   ├── json-utils
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   ├── references
+│   │   │   └── api_reference.md
+│   │   ├── scripts
+│   │   │   ├── json_batch_processor.py
+│   │   │   ├── json_processor.py
+│   │   │   ├── json_schema_validator.py
+│   │   │   └── validate_tool_output.py
+│   │   └── SKILL.md
+│   ├── json-utils.skill
+│   ├── log-collector
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   ├── scripts
+│   │   │   └── log_collector.py
+│   │   └── SKILL.md
+│   ├── log-collector.json
+│   ├── mcporter
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── mcp-tool-utils
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   └── SKILL.md
+│   ├── model-usage
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── cli.js
+│   │   ├── config.json
+│   │   ├── config.json.bak
+│   │   ├── index.js
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   ├── references
+│   │   │   └── codexbar-cli.md
+│   │   ├── scripts
+│   │   │   └── model_usage.py
+│   │   └── SKILL.md
+│   ├── multi-nodes-utils
+│   │   ├── scripts
+│   │   │   ├── check_nodes.py
+│   │   │   └── dispatch_job.py
+│   │   └── SKILL.md
+│   ├── nano-pdf
+│   │   └── SKILL.md
+│   ├── node-health-monitor
+│   │   ├── scripts
+│   │   │   └── node_health.py
+│   │   └── SKILL.md
+│   ├── node-health-monitor.json
+│   ├── notion
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── obsidian
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── .openclaw-install-backups
+│   ├── ops-hub
+│   │   └── SKILL.md
+│   ├── perplexity-pro-search
+│   │   ├── agents
+│   │   │   └── openai.yaml
+│   │   ├── scripts
+│   │   │   ├── test-agent.sh
+│   │   │   ├── test-contextualized-embeddings.sh
+│   │   │   ├── test-embeddings.sh
+│   │   │   └── test-search.sh
+│   │   └── SKILL.md
+│   ├── playwright.json
+│   ├── _quarantine
+│   │   ├── abstractions-utils_SKILL.md -> skills/abstractions-utils/SKILL.md
+│   │   ├── SKILL-INDEX.md
+│   │   ├── SKILL.md
+│   │   ├── skills.json
+│   │   ├── SKILLS-SCRIPTS-INVENTORY-2026-04-18.md
+│   │   └── TOOLS.md
+│   ├── relay-node
+│   │   └── SKILL.md
+│   ├── reports-creator
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   └── SKILL.md
+│   ├── resource-manager
+│   │   └── SKILL.md
+│   ├── script-abstractions-manager
+│   │   ├── scripts
+│   │   │   ├── abstractions_manager.py
+│   │   │   ├── ABSTRACTIONS_MANAGER.py
+│   │   │   └── __pycache__
+│   │   └── SKILL.md
+│   ├── scripting-utils
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   ├── references
+│   │   │   ├── eggdrop
+│   │   │   ├── pbot
+│   │   │   ├── powershell
+│   │   │   ├── raku
+│   │   │   └── tcl
+│   │   ├── scripts
+│   │   │   ├── irc_bot_syntax.py
+│   │   │   ├── json_websearch.py
+│   │   │   ├── language_validator.py
+│   │   │   └── system_manager.py
+│   │   └── SKILL.md
+│   ├── server-maintenance
+│   │   └── SKILL.md
+│   ├── session-logs
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── sherpa-onnx-tts
+│   │   ├── bin
+│   │   │   └── sherpa-onnx-tts
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── skill-creator
+│   │   ├── license.txt
+│   │   ├── scripts
+│   │   │   ├── init_skill.py
+│   │   │   ├── package_skill.py
+│   │   │   ├── quick_validate.py
+│   │   │   ├── test_package_skill.py
+│   │   │   └── test_quick_validate.py
+│   │   └── SKILL.md
+│   ├── slack
+│   │   └── SKILL.md
+│   ├── songsee
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── spotify-player
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── streamlink.json
+│   ├── sub-agents-utils
+│   │   ├── scripts
+│   │   │   └── spawn_agent.py
+│   │   └── SKILL.md
+│   ├── sync-utils
+│   │   ├── scripts
+│   │   │   ├── check_conflicts.py
+│   │   │   ├── sync_bulk.py
+│   │   │   └── sync_status.py
+│   │   └── SKILL.md
+│   ├── tavily
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── references
+│   │   │   └── api-reference.md
+│   │   ├── scripts
+│   │   │   └── tavily_search.py
+│   │   └── SKILL.md
+│   ├── tiktok-live
+│   │   ├── node_modules
+│   │   │   ├── .bin
+│   │   │   ├── .package-lock.json
+│   │   │   ├── playwright
+│   │   │   └── playwright-core
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── references
+│   │   │   └── TIKTOK.md
+│   │   ├── scripts
+│   │   │   ├── node_modules
+│   │   │   ├── package.json
+│   │   │   ├── package-lock.json
+│   │   │   ├── tiktok-check-profile.js
+│   │   │   ├── tiktok-check-profile.js.bak
+│   │   │   └── tiktok-get-stream.js
+│   │   └── SKILL.md
+│   ├── tiktok-live.json
+│   ├── tiktok-live-mon
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── extraction-methods
+│   │   │   ├── extract-tiktok-streamlink.sh
+│   │   │   └── extract-tiktok-yt-dlp.sh
+│   │   ├── _meta.json
+│   │   ├── node_modules
+│   │   │   ├── .bin
+│   │   │   ├── .package-lock.json
+│   │   │   ├── playwright
+│   │   │   └── playwright-core
+│   │   ├── package.json
+│   │   ├── package-lock.json
+│   │   ├── SKILL.md
+│   │   ├── tiktok-check-profile.js
+│   │   └── tiktok-get-stream.js
+│   ├── tiktok-live-mon.json
+│   ├── tmux
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── scripts
+│   │   │   ├── find-sessions.sh
+│   │   │   └── wait-for-text.sh
+│   │   └── SKILL.md
+│   ├── video-frames
+│   │   ├── scripts
+│   │   │   └── frame.sh
+│   │   └── SKILL.md
+│   ├── wavespeed-image
+│   │   ├── SKILL.md
+│   │   └── wavespeed-image.js
+│   ├── weather
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── web-markdown-scraper
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── _meta.json
+│   │   ├── README.md
+│   │   ├── scripts
+│   │   │   └── scrape_to_markdown.py
+│   │   └── SKILL.md
+│   ├── web-scraper
+│   │   ├── CHANGELOG.md
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── claw.json
+│   │   ├── _meta.json
+│   │   └── SKILL.md
+│   ├── worker-node
+│   │   └── SKILL.md
+│   ├── workspace-db
+│   │   ├── .clawhub
+│   │   │   └── origin.json
+│   │   ├── INSTALL.md
+│   │   ├── _meta.json
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   └── SKILL.md
+│   └── yt-dlp.json
+├── snag
+│   ├── snag-test-01.md
+│   ├── snag-test-02.md
+│   ├── snag-test-03.md
+│   ├── snag-test-04.md
+│   ├── snag-test-05.md
+│   └── snag-test-06.md
+├── software
+│   ├── NVIDIA-NIM-Integration.md
+│   ├── OPENROUTER_CONFIG.md
+│   ├── SKILL.md
+│   └── TERMUX_AUTOSTART.md
+├── SOUL.md
+├── spotify-player_SKILL.md -> skills/spotify-player/SKILL.md
+├── state
+│   └── sessions
+│       ├── agent%3Aclaude%3Aacp%3A41348082-231b-4de6-8563-268d9dcc0ece.json
+│       ├── agent%3Aclaude%3Aacp%3A687cf4d4-ab51-4d52-ac54-710e5152a03e%3Aoneshot%3A0cb9a290-be72-47f1-a391-e6cb52581201.json
+│       ├── agent%3Aclaude%3Aacp%3A687cf4d4-ab51-4d52-ac54-710e5152a03e%3Aoneshot%3Ada843027-7226-46dd-bfa4-715045cac136.json
+│       ├── agent%3Acodex%3Aacp%3A03479c54-3bec-4ff6-a91f-b62e630217cb%3Aoneshot%3A420532b9-a55d-4657-a1b1-1fd18b959843.json
+│       ├── agent%3Acodex%3Aacp%3A03479c54-3bec-4ff6-a91f-b62e630217cb%3Aoneshot%3A89933530-91b6-4adf-84cd-abd9ff659d17.json
+│       └── agent%3Acodex%3Aacp%3A5580d5ed-f5df-40df-bad8-d9553617b436.json
+├── subagent
+│   └── memory
+│       ├── dreaming
+│       │   ├── deep
+│       │   ├── light
+│       │   └── rem
+│       └── .dreams
+│           └── events.jsonl
+├── sub-agents-utils_SKILL.md -> skills/sub-agents-utils/SKILL.md
+├── SYNC-SYSTEM.md -> docs/sync-system/SYNC-SYSTEM.md
+├── tiktok-api.service
+├── tiktok-live-app
+│   ├── ALERTING.md
+│   ├── check-dieanonyme.js
+│   ├── check-live.js
+│   ├── check-now.js
+│   ├── check-profile.js
+│   ├── DOKUMENTATION.md
+│   ├── ffmpeg-recorder.js
+│   ├── get-stream.js
+│   ├── node_modules
+│   │   ├── accepts
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── array-flatten
+│   │   │   ├── array-flatten.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── asynckit
+│   │   │   ├── bench.js
+│   │   │   ├── index.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── parallel.js
+│   │   │   ├── README.md
+│   │   │   ├── serial.js
+│   │   │   ├── serialOrdered.js
+│   │   │   └── stream.js
+│   │   ├── axios
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── dist
+│   │   │   ├── index.d.cts
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── MIGRATION_GUIDE.md
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── .bin
+│   │   │   ├── mime -> ../mime/cli.js
+│   │   │   ├── pbjs -> ../protobufjs/bin/pbjs
+│   │   │   ├── pbts -> ../protobufjs/bin/pbts
+│   │   │   ├── playwright -> ../playwright/cli.js
+│   │   │   └── playwright-core -> ../playwright-core/cli.js
+│   │   ├── body-parser
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── @bufbuild
+│   │   │   └── protobuf
+│   │   ├── bytes
+│   │   │   ├── History.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── callable-instance
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── call-bind-apply-helpers
+│   │   │   ├── actualApply.d.ts
+│   │   │   ├── actualApply.js
+│   │   │   ├── applyBind.d.ts
+│   │   │   ├── applyBind.js
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── functionApply.d.ts
+│   │   │   ├── functionApply.js
+│   │   │   ├── functionCall.d.ts
+│   │   │   ├── functionCall.js
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── reflectApply.d.ts
+│   │   │   ├── reflectApply.js
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── call-bound
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── combined-stream
+│   │   │   ├── lib
+│   │   │   ├── License
+│   │   │   ├── package.json
+│   │   │   ├── Readme.md
+│   │   │   └── yarn.lock
+│   │   ├── content-disposition
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── content-type
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── cookie
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── SECURITY.md
+│   │   ├── cookie-signature
+│   │   │   ├── History.md
+│   │   │   ├── index.js
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── debug
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── component.json
+│   │   │   ├── .coveralls.yml
+│   │   │   ├── .eslintrc
+│   │   │   ├── karma.conf.js
+│   │   │   ├── LICENSE
+│   │   │   ├── Makefile
+│   │   │   ├── node.js
+│   │   │   ├── .npmignore
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── src
+│   │   │   └── .travis.yml
+│   │   ├── delayed-stream
+│   │   │   ├── lib
+│   │   │   ├── License
+│   │   │   ├── Makefile
+│   │   │   ├── .npmignore
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── depd
+│   │   │   ├── History.md
+│   │   │   ├── index.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── destroy
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── dunder-proto
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── get.d.ts
+│   │   │   ├── get.js
+│   │   │   ├── .github
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── set.d.ts
+│   │   │   ├── set.js
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── ee-first
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── encodeurl
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── escape-html
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── es-define-property
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── es-errors
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── eval.d.ts
+│   │   │   ├── eval.js
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── range.d.ts
+│   │   │   ├── range.js
+│   │   │   ├── README.md
+│   │   │   ├── ref.d.ts
+│   │   │   ├── ref.js
+│   │   │   ├── syntax.d.ts
+│   │   │   ├── syntax.js
+│   │   │   ├── test
+│   │   │   ├── tsconfig.json
+│   │   │   ├── type.d.ts
+│   │   │   ├── type.js
+│   │   │   ├── uri.d.ts
+│   │   │   └── uri.js
+│   │   ├── es-object-atoms
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── isObject.d.ts
+│   │   │   ├── isObject.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── RequireObjectCoercible.d.ts
+│   │   │   ├── RequireObjectCoercible.js
+│   │   │   ├── test
+│   │   │   ├── ToObject.d.ts
+│   │   │   ├── ToObject.js
+│   │   │   └── tsconfig.json
+│   │   ├── es-set-tostringtag
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── etag
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── @eulerstream
+│   │   │   └── euler-api-sdk
+│   │   ├── express
+│   │   │   ├── History.md
+│   │   │   ├── index.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── finalhandler
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── SECURITY.md
+│   │   ├── follow-redirects
+│   │   │   ├── debug.js
+│   │   │   ├── http.js
+│   │   │   ├── https.js
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── form-data
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── index.d.ts
+│   │   │   ├── lib
+│   │   │   ├── License
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── forwarded
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── fresh
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── function-bind
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── implementation.js
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── test
+│   │   ├── get-intrinsic
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── test
+│   │   ├── get-proto
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── Object.getPrototypeOf.d.ts
+│   │   │   ├── Object.getPrototypeOf.js
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── Reflect.getPrototypeOf.d.ts
+│   │   │   ├── Reflect.getPrototypeOf.js
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── gopd
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── gOPD.d.ts
+│   │   │   ├── gOPD.js
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── hasown
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── tsconfig.json
+│   │   ├── has-symbols
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── shams.d.ts
+│   │   │   ├── shams.js
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── has-tostringtag
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── shams.d.ts
+│   │   │   ├── shams.js
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── http-errors
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── iconv-lite
+│   │   │   ├── Changelog.md
+│   │   │   ├── encodings
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── inherits
+│   │   │   ├── inherits_browser.js
+│   │   │   ├── inherits.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── ipaddr.js
+│   │   │   ├── ipaddr.min.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── long
+│   │   │   ├── dist
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── src
+│   │   ├── math-intrinsics
+│   │   │   ├── abs.d.ts
+│   │   │   ├── abs.js
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── constants
+│   │   │   ├── .eslintrc
+│   │   │   ├── floor.d.ts
+│   │   │   ├── floor.js
+│   │   │   ├── .github
+│   │   │   ├── isFinite.d.ts
+│   │   │   ├── isFinite.js
+│   │   │   ├── isInteger.d.ts
+│   │   │   ├── isInteger.js
+│   │   │   ├── isNaN.d.ts
+│   │   │   ├── isNaN.js
+│   │   │   ├── isNegativeZero.d.ts
+│   │   │   ├── isNegativeZero.js
+│   │   │   ├── LICENSE
+│   │   │   ├── max.d.ts
+│   │   │   ├── max.js
+│   │   │   ├── min.d.ts
+│   │   │   ├── min.js
+│   │   │   ├── mod.d.ts
+│   │   │   ├── mod.js
+│   │   │   ├── package.json
+│   │   │   ├── pow.d.ts
+│   │   │   ├── pow.js
+│   │   │   ├── README.md
+│   │   │   ├── round.d.ts
+│   │   │   ├── round.js
+│   │   │   ├── sign.d.ts
+│   │   │   ├── sign.js
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── media-typer
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── merge-descriptors
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── methods
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── mime
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── cli.js
+│   │   │   ├── LICENSE
+│   │   │   ├── mime.js
+│   │   │   ├── .npmignore
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── src
+│   │   │   └── types.json
+│   │   ├── mime-db
+│   │   │   ├── db.json
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── mime-types
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── ms
+│   │   │   ├── index.js
+│   │   │   ├── license.md
+│   │   │   ├── package.json
+│   │   │   └── readme.md
+│   │   ├── negotiator
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── object-inspect
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .eslintrc
+│   │   │   ├── example
+│   │   │   ├── .github
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── package-support.json
+│   │   │   ├── readme.markdown
+│   │   │   ├── test
+│   │   │   ├── test-core-js.js
+│   │   │   └── util.inspect.js
+│   │   ├── on-finished
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── .package-lock.json
+│   │   ├── parseurl
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── path-to-regexp
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── Readme.md
+│   │   ├── playwright
+│   │   │   ├── cli.js
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── index.mjs
+│   │   │   ├── jsx-runtime.js
+│   │   │   ├── jsx-runtime.mjs
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── NOTICE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test.d.ts
+│   │   │   ├── test.js
+│   │   │   ├── test.mjs
+│   │   │   ├── ThirdPartyNotices.txt
+│   │   │   └── types
+│   │   ├── playwright-core
+│   │   │   ├── bin
+│   │   │   ├── browsers.json
+│   │   │   ├── cli.js
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── index.mjs
+│   │   │   ├── lib
+│   │   │   ├── LICENSE
+│   │   │   ├── NOTICE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── ThirdPartyNotices.txt
+│   │   │   └── types
+│   │   ├── @protobufjs
+│   │   │   ├── aspromise
+│   │   │   ├── base64
+│   │   │   ├── codegen
+│   │   │   ├── eventemitter
+│   │   │   ├── fetch
+│   │   │   ├── float
+│   │   │   ├── inquire
+│   │   │   ├── path
+│   │   │   ├── pool
+│   │   │   └── utf8
+│   │   ├── protobufjs
+│   │   │   ├── bin
+│   │   │   ├── cli
+│   │   │   ├── dist
+│   │   │   ├── ext
+│   │   │   ├── google
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── light.d.ts
+│   │   │   ├── light.js
+│   │   │   ├── minimal.d.ts
+│   │   │   ├── minimal.js
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── scripts
+│   │   │   ├── src
+│   │   │   └── tsconfig.json
+│   │   ├── proxy-addr
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── proxy-from-env
+│   │   │   ├── index.cjs
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── qs
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── dist
+│   │   │   ├── .editorconfig
+│   │   │   ├── eslint.config.mjs
+│   │   │   ├── .github
+│   │   │   ├── lib
+│   │   │   ├── LICENSE.md
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── test
+│   │   ├── range-parser
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── raw-body
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── rxjs
+│   │   │   ├── ajax
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── CODE_OF_CONDUCT.md
+│   │   │   ├── dist
+│   │   │   ├── fetch
+│   │   │   ├── LICENSE.txt
+│   │   │   ├── operators
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── src
+│   │   │   ├── testing
+│   │   │   ├── tsconfig.json
+│   │   │   └── webSocket
+│   │   ├── safe-buffer
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── safer-buffer
+│   │   │   ├── dangerous.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── Porting-Buffer.md
+│   │   │   ├── Readme.md
+│   │   │   ├── safer.js
+│   │   │   └── tests.js
+│   │   ├── send
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── node_modules
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── SECURITY.md
+│   │   ├── serve-static
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── setprototypeof
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   └── test
+│   │   ├── side-channel
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .editorconfig
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── side-channel-list
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .editorconfig
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── list.d.ts
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── side-channel-map
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .editorconfig
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── side-channel-weakmap
+│   │   │   ├── CHANGELOG.md
+│   │   │   ├── .editorconfig
+│   │   │   ├── .eslintrc
+│   │   │   ├── .github
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .nycrc
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── test
+│   │   │   └── tsconfig.json
+│   │   ├── statuses
+│   │   │   ├── codes.json
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── tiktok-live-connector
+│   │   │   ├── dist
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── toidentifier
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── tslib
+│   │   │   ├── CopyrightNotice.txt
+│   │   │   ├── LICENSE.txt
+│   │   │   ├── modules
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── SECURITY.md
+│   │   │   ├── tslib.d.ts
+│   │   │   ├── tslib.es6.html
+│   │   │   ├── tslib.es6.js
+│   │   │   ├── tslib.es6.mjs
+│   │   │   ├── tslib.html
+│   │   │   └── tslib.js
+│   │   ├── typed-emitter
+│   │   │   ├── index.d.ts
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   ├── README.md
+│   │   │   ├── rxjs
+│   │   │   └── types.js
+│   │   ├── type-is
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── @types
+│   │   │   ├── long
+│   │   │   └── node
+│   │   ├── undici-types
+│   │   │   ├── agent.d.ts
+│   │   │   ├── api.d.ts
+│   │   │   ├── balanced-pool.d.ts
+│   │   │   ├── cache.d.ts
+│   │   │   ├── cache-interceptor.d.ts
+│   │   │   ├── client.d.ts
+│   │   │   ├── client-stats.d.ts
+│   │   │   ├── connector.d.ts
+│   │   │   ├── content-type.d.ts
+│   │   │   ├── cookies.d.ts
+│   │   │   ├── diagnostics-channel.d.ts
+│   │   │   ├── dispatcher.d.ts
+│   │   │   ├── env-http-proxy-agent.d.ts
+│   │   │   ├── errors.d.ts
+│   │   │   ├── eventsource.d.ts
+│   │   │   ├── fetch.d.ts
+│   │   │   ├── formdata.d.ts
+│   │   │   ├── global-dispatcher.d.ts
+│   │   │   ├── global-origin.d.ts
+│   │   │   ├── h2c-client.d.ts
+│   │   │   ├── handlers.d.ts
+│   │   │   ├── header.d.ts
+│   │   │   ├── index.d.ts
+│   │   │   ├── interceptors.d.ts
+│   │   │   ├── LICENSE
+│   │   │   ├── mock-agent.d.ts
+│   │   │   ├── mock-call-history.d.ts
+│   │   │   ├── mock-client.d.ts
+│   │   │   ├── mock-errors.d.ts
+│   │   │   ├── mock-interceptor.d.ts
+│   │   │   ├── mock-pool.d.ts
+│   │   │   ├── package.json
+│   │   │   ├── patch.d.ts
+│   │   │   ├── pool.d.ts
+│   │   │   ├── pool-stats.d.ts
+│   │   │   ├── proxy-agent.d.ts
+│   │   │   ├── readable.d.ts
+│   │   │   ├── README.md
+│   │   │   ├── retry-agent.d.ts
+│   │   │   ├── retry-handler.d.ts
+│   │   │   ├── round-robin-pool.d.ts
+│   │   │   ├── snapshot-agent.d.ts
+│   │   │   ├── util.d.ts
+│   │   │   ├── utility.d.ts
+│   │   │   ├── webidl.d.ts
+│   │   │   └── websocket.d.ts
+│   │   ├── unpipe
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── utils-merge
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── .npmignore
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   ├── vary
+│   │   │   ├── HISTORY.md
+│   │   │   ├── index.js
+│   │   │   ├── LICENSE
+│   │   │   ├── package.json
+│   │   │   └── README.md
+│   │   └── ws
+│   │       ├── browser.js
+│   │       ├── index.js
+│   │       ├── lib
+│   │       ├── LICENSE
+│   │       ├── package.json
+│   │       ├── README.md
+│   │       └── wrapper.mjs
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── PROTOKOLL.md
+│   ├── server.js
+│   ├── server.log
+│   ├── TIKTOK_API.md
+│   ├── tiktok-check.js
+│   ├── tiktok-check-profile.js
+│   ├── tiktok-checks.md
+│   ├── tiktok-get-stream.js
+│   ├── TIKTOK.md
+│   ├── .venv
+│   │   ├── bin
+│   │   │   ├── activate
+│   │   │   ├── activate.csh
+│   │   │   ├── activate.fish
+│   │   │   ├── Activate.ps1
+│   │   │   ├── pip
+│   │   │   ├── pip3
+│   │   │   ├── pip3.12
+│   │   │   ├── python -> python3
+│   │   │   ├── python3 -> /usr/bin/python3
+│   │   │   └── python3.12 -> python3
+│   │   ├── include
+│   │   │   └── python3.12
+│   │   ├── lib
+│   │   │   └── python3.12
+│   │   ├── lib64 -> lib
+│   │   └── pyvenv.cfg
+│   ├── vlc-links-2025-07-15.md
+│   └── vlc-links-2026-04-08.md
+├── tiktok-live-mon
+│   ├── .clawhub
+│   │   └── origin.json
+│   ├── extraction-methods
+│   │   ├── extract-tiktok-streamlink.sh
+│   │   └── extract-tiktok-yt-dlp.sh
+│   ├── _meta.json
+│   ├── michele-issue-236-flv-quality.md
+│   ├── michele-issue-428-url-retrieval.md
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── playwright-intercept-requests.md
+│   ├── playwright-navigations.md
+│   ├── playwright-network-docs.md
+│   ├── playwright-network-requests-tutorial.md
+│   ├── playwright-page-api.md
+│   ├── playwright-response-values.md
+│   ├── references
+│   │   └── docs
+│   │       ├── 01-playwright-navigations.md
+│   │       ├── 02-playwright-page-api.md
+│   │       ├── playwright-navigation.md
+│   │       ├── streamlink-cli-reference.md
+│   │       └── yt-dlp_tiktok_troubleshooting.md
+│   ├── SKILL.md
+│   ├── streamlink-cli-reference.md
+│   ├── streamlink-issue-6832-inaccessible.md
+│   ├── test.txt
+│   ├── tiktok-check-profile.js
+│   ├── tiktok-get-stream.js
+│   ├── yt-dlp-issue-11921-live-status.md
+│   ├── yt-dlp-issue-15970-cookies.md
+│   └── yt-dlp_troubleshooting.md
+├── tiktok-live-mon_SKILL.md -> skills/tiktok-live-mon/SKILL.md
+├── tiktok-monitor
+│   ├── check_alive.md
+│   ├── check_alive.py
+│   ├── Deployment.txt
+│   ├── docs
+│   │   ├── ARCHITECTURE.md
+│   │   ├── DAEMON.md
+│   │   ├── README.md
+│   │   └── SCHEMA.md
+│   ├── get_room_id.md
+│   ├── get_room_id.py
+│   ├── SKILL.md
+│   ├── tt-live.json
+│   ├── tt-live.json.md
+│   ├── tt_live.md
+│   ├── tt_live.py
+│   ├── tt-live.sh
+│   └── tt-live.sh.md
+├── tmp
+│   └── sync_dryrun.py
+├── tmp_sync_dryrun.py
+├── TOOLS.md
+├── tree_changes_last_24h.json
+├── treeL4.txt
+├── USER.md
+├── vscode
+│   ├── ARTEFAKT-INVENTAR_GATEWAY-A_NODE1.md
+│   ├── collect_ist_gateway_a.sh
+│   ├── compare
+│   │   ├── collect_compare_bundle.sh
+│   │   └── transfer
+│   │       └── serve_compare_transfer.sh
+│   ├── ENV-STATUS_GATEWAY-A_NODE1.md
+│   ├── IST-ZUSTAND_GATEWAY-A_NODE1.md
+│   ├── IST-ZUSTAND_GATEWAY-B_NODE7.md
+│   ├── OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-A_NODE1.md
+│   ├── README.md
+│   └── RUN-20260514-153415.md
+├── web-scraper_SKILL.md -> skills/web-scraper/SKILL.md
+├── wiki
+│   └── main
+│       ├── AGENTS.md
+│       ├── _attachments
+│       ├── concepts
+│       │   └── index.md
+│       ├── entities
+│       │   └── index.md
+│       ├── inbox.md
+│       ├── index.md
+│       ├── .openclaw-wiki
+│       │   ├── cache
+│       │   ├── locks
+│       │   ├── log.jsonl
+│       │   └── state.json
+│       ├── reports
+│       │   ├── claim-health.md
+│       │   ├── contradictions.md
+│       │   ├── index.md
+│       │   ├── low-confidence.md
+│       │   ├── open-questions.md
+│       │   └── stale-pages.md
+│       ├── sources
+│       │   └── index.md
+│       ├── syntheses
+│       │   └── index.md
+│       ├── _views
+│       └── WIKI.md
+├── worker
+│   └── memory
+│       ├── dreaming
+│       │   ├── deep
+│       │   ├── light
+│       │   └── rem
+│       └── .dreams
+│           └── events.jsonl
+├── worker-node_SKILL.md -> skills/worker-node/SKILL.md
+└── workspace-db_SKILL.md -> skills/workspace-db/SKILL.md
+
+1101 directories, 2521 files

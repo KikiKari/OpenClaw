@@ -1,533 +1,155 @@
+#!/usr/bin/env python3
 """
-create_abstraction.py — Erstellt eine einzelne Script-Portierung.
-
-Portiert ein Quell-Script in eine Zielsprache mithilfe eines KI-Modells
-und speichert das Ergebnis im Abstraktions-Repository.
-
-Sicherheitsmaßnahmen:
-    - Path-Traversal-Schutz via validate_source_file_path()
-    - Zielsprachen-Allowlist via validate_target_language()
-    - Atomisches Schreiben der Ausgabedatei
-    - Hash-basierte Änderungserkennung (kein Re-Processing unveränderter Files)
-
-Verwendung (CLI)::
-
-    python3 create_abstraction.py \\
-        --source /path/to/db_maintainer.py \\
-        --target-lang perl5
-
-    python3 create_abstraction.py \\
-        --source /path/to/json_processor.py \\
-        --target-lang javascript \\
-        --model openrouter/anthropic/claude-3-5-sonnet-20241022 \\
-        --dry-run
-
-Author: OpenClaw Team
-Version: 1.0.0
+Schnelle Abstraktion eines einzelnen Scripts
 """
-
 import argparse
-import hashlib
-import json
-import logging
-import os
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
+from datetime import datetime
 
-from dotenv import load_dotenv
-
-from exceptions import PortationError, ValidationError, StateFileError
-from validators import (
-    validate_source_file_path,
-    validate_target_language,
-    validate_ai_model_name,
-    load_and_validate_api_key,
-    ALLOWED_TARGET_LANGUAGES,
-)
-from logger import configure_application_logging
-
-load_dotenv()
-
-logger = logging.getLogger(__name__)
-
-# ---------------------------------------------------------------------------
-# Pfade
-# ---------------------------------------------------------------------------
-
-_WORKSPACE_BASE = Path("/home/openclaw/.openclaw/workspace")
-_ABSTRACTIONS_REPO = _WORKSPACE_BASE / "git" / "Abstraktionen"
-_STATE_FILE = _WORKSPACE_BASE / "db" / "abstractions_state.json"
-_LOG_DIRECTORY = _WORKSPACE_BASE / "logs" / "abstractions-manager"
-
-_DEFAULT_MODEL = "openrouter/anthropic/claude-3-5-sonnet-20241022"
-
-#: Datei-Endungen je Zielsprache
-LANGUAGE_FILE_EXTENSIONS: dict[str, str] = {
-    "perl5":       ".pl",
-    "perl6":       ".raku",
-    "javascript":  ".js",
-    "python":      ".py",
-    "bash":        ".sh",
-    "powershell":  ".ps1",
-    "tcl":         ".tcl",
-    "ruby":        ".rb",
-    "lua":         ".lua",
-    "go":          ".go",
+# Template-Definitionen
+TEMPLATES = {
+    "perl5": {
+        "ext": ".pl",
+        "shebang": "#!/usr/bin/env perl",
+        "header": "use strict;\nuse warnings;\nuse feature 'say';\n",
+        "main_block": "sub main {\n    # TODO: Implementiere Funktionalität\n}\n\nmain();\n",
+    },
+    "perl6": {
+        "ext": ".raku",
+        "shebang": "#!/usr/bin/env raku",
+        "header": "use v6;\n",
+        "main_block": "sub MAIN() {\n    # TODO: Implementiere Funktionalität\n}\n",
+    },
+    "javascript": {
+        "ext": ".js",
+        "shebang": "#!/usr/bin/env node",
+        "header": "const fs = require('fs');\nconst path = require('path');\n",
+        "main_block": "function main() {\n    // TODO: Implementiere Funktionalität\n}\n\nmain();\n",
+    },
+    "python": {
+        "ext": ".py",
+        "shebang": "#!/usr/bin/env python3",
+        "header": "import sys\nimport os\nfrom pathlib import Path\n",
+        "main_block": "def main():\n    # TODO: Implementiere Funktionalität\n    pass\n\nif __name__ == '__main__':\n    main()\n",
+    },
+    "shell": {
+        "ext": ".sh",
+        "shebang": "#!/bin/bash",
+        "header": "set -euo pipefail\n",
+        "main_block": "main() {\n    # TODO: Implementiere Funktionalität\n    :\n}\n\nmain \"$@\"\n",
+    },
+    "powershell": {
+        "ext": ".ps1",
+        "shebang": "#!/usr/bin/env pwsh",
+        "header": "#Requires -Version 7\n",
+        "main_block": "function Main {\n    # TODO: Implementiere Funktionalität\n}\n\nMain\n",
+    },
+    "tcl": {
+        "ext": ".tcl",
+        "shebang": "#!/usr/bin/env tclsh",
+        "header": "package require Tcl 8.6\n",
+        "main_block": "proc main {} {\n    # TODO: Implementiere Funktionalität\n}\n\nmain\n",
+    },
+    "ruby": {
+        "ext": ".rb",
+        "shebang": "#!/usr/bin/env ruby",
+        "header": "require 'json'\nrequire 'fileutils'\n",
+        "main_block": "def main\n  # TODO: Implementiere Funktionalität\nend\n\nmain if __FILE__ == $PROGRAM_NAME\n",
+    },
+    "lua": {
+        "ext": ".lua",
+        "shebang": "#!/usr/bin/env lua",
+        "header": "",
+        "main_block": "local function main()\n    -- TODO: Implementiere Funktionalität\nend\n\nmain()\n",
+    },
+    "go": {
+        "ext": ".go",
+        "shebang": "// +build ignore",
+        "header": "package main\n\nimport (\n    \"fmt\"\n    \"os\"\n)\n",
+        "main_block": "func main() {\n    // TODO: Implementiere Funktionalität\n    _ = fmt.Sprintf\n    _ = os.Args\n}\n",
+    },
 }
 
-
-# ---------------------------------------------------------------------------
-# Hash / State
-# ---------------------------------------------------------------------------
-
-def compute_file_sha256(file_path: Path) -> str:
-    """Berechnet den SHA-256 Hash einer Datei (streaming, speicherschonend).
-
-    Args:
-        file_path: Pfad zur Datei.
-
-    Returns:
-        Hex-String des SHA-256 Hashes.
-
-    Raises:
-        FileNotFoundError: Wenn die Datei nicht existiert.
-        PermissionError: Wenn keine Leseberechtigung vorhanden ist.
-    """
-    sha256 = hashlib.sha256()
-    with file_path.open("rb") as file_handle:
-        for chunk in iter(lambda: file_handle.read(65536), b""):
-            sha256.update(chunk)
-    return sha256.hexdigest()
+REPO_PATH = Path("/home/openclaw/.openclaw/workspace/git/Abstraktionen")
 
 
-def load_abstraction_state(state_file_path: Path) -> dict:
-    """Lädt den persistierten Abstraktions-State aus der JSON-Datei.
-
-    Args:
-        state_file_path: Pfad zur State-JSON-Datei.
-
-    Returns:
-        State-Dictionary. Leeres Dictionary wenn Datei nicht existiert.
-
-    Raises:
-        StateFileError: Bei Parse-Fehlern in der State-Datei.
-    """
-    if not state_file_path.exists():
-        logger.info("State-Datei nicht gefunden — starte mit leerem State.")
-        return {}
-
-    try:
-        with state_file_path.open("r", encoding="utf-8") as state_file:
-            return json.load(state_file)
-    except json.JSONDecodeError as parse_error:
-        raise StateFileError(
-            str(state_file_path), "parse", parse_error
-        ) from parse_error
-
-
-def save_abstraction_state_atomically(
-    state_file_path: Path,
-    updated_state: dict,
-) -> None:
-    """Speichert den Abstraktions-State atomar (Race-Condition-sicher).
-
-    Schreibt in eine temporäre Datei und ersetzt die Zieldatei dann
-    atomar via ``os.replace()`` (POSIX-garantiert atomar).
-
-    Args:
-        state_file_path: Pfad zur State-JSON-Datei.
-        updated_state: Der zu persistierende State.
-
-    Raises:
-        StateFileError: Bei Schreibfehlern.
-    """
-    state_file_path.parent.mkdir(parents=True, exist_ok=True)
-
-    try:
-        with tempfile.NamedTemporaryFile(
-            mode="w",
-            dir=state_file_path.parent,
-            suffix=".tmp",
-            delete=False,
-            encoding="utf-8",
-        ) as temp_file:
-            json.dump(updated_state, temp_file, indent=2, ensure_ascii=False)
-            temp_file_path = Path(temp_file.name)
-
-        os.replace(temp_file_path, state_file_path)
-        logger.debug("State-Datei atomar geschrieben: %s", state_file_path)
-
-    except OSError as write_error:
-        raise StateFileError(
-            str(state_file_path), "write", write_error
-        ) from write_error
-
-
-def has_source_file_changed(
-    file_path: Path,
-    hash_cache: dict,
-) -> bool:
-    """Prüft ob eine Quelldatei seit dem letzten Lauf geändert wurde.
-
-    Args:
-        file_path: Pfad zur zu prüfenden Datei.
-        hash_cache: Dictionary mit ``{dateipfad: letzter_hash}``.
-
-    Returns:
-        ``True`` wenn Datei neu oder geändert ist, sonst ``False``.
-    """
-    current_hash = compute_file_sha256(file_path)
-    cached_hash = hash_cache.get(str(file_path))
-    file_changed = current_hash != cached_hash
-
-    if file_changed:
-        logger.debug("Änderung erkannt: %s", file_path.name)
-    else:
-        logger.debug("Keine Änderung: %s (übersprungen)", file_path.name)
-
-    return file_changed
-
-
-# ---------------------------------------------------------------------------
-# Portierungs-Logik
-# ---------------------------------------------------------------------------
-
-def create_single_abstraction(
-    source_file_path: Path,
-    target_language: str,
-    ai_model_name: str = _DEFAULT_MODEL,
-    output_repository_path: Path = _ABSTRACTIONS_REPO,
-    dry_run: bool = False,
-) -> Path:
-    """Portiert ein einzelnes Script in eine Zielsprache.
-
-    Liest das Quell-Script, generiert via KI-Modell eine Portierung und
-    speichert das Ergebnis im Ziel-Repository mit einem Git-Commit.
-
-    Args:
-        source_file_path: Validierter Pfad zum Quell-Script.
-        target_language: Validierte Zielsprache (z. B. ``"perl5"``).
-        ai_model_name: KI-Modell für die Portierung.
-        output_repository_path: Pfad zum Abstraktions-Repository.
-        dry_run: Wenn ``True``, wird kein Commit gemacht und die
-            Ausgabedatei hat den Suffix ``.dryrun``.
-
-    Returns:
-        Pfad zur erstellten Portierungs-Datei.
-
-    Raises:
-        PortationError: Wenn die KI-Portierung fehlschlägt.
-        OSError: Bei Dateisystem-Fehlern.
-
-    Example:
-        >>> output = create_single_abstraction(
-        ...     source_file_path=Path("/workspace/scripts/db_maintainer.py"),
-        ...     target_language="perl5",
-        ... )
-        >>> print(output)
-        /workspace/git/Abstraktionen/perl5/db_maintainer.pl
-    """
-    file_extension = LANGUAGE_FILE_EXTENSIONS[target_language]
-    output_stem = source_file_path.stem
-    output_directory = output_repository_path / target_language
-    output_file_path = output_directory / f"{output_stem}{file_extension}"
-
-    if dry_run:
-        output_file_path = output_directory / f"{output_stem}{file_extension}.dryrun"
-
-    output_directory.mkdir(parents=True, exist_ok=True)
-
-    logger.info(
-        "Starte Portierung: %s → %s (%s)",
-        source_file_path.name,
-        target_language,
-        output_file_path.name,
-    )
-
-    # Quellcode lesen
-    try:
-        source_code = source_file_path.read_text(encoding="utf-8")
-    except OSError as read_error:
-        raise PortationError(
-            source_file_path.name, target_language, read_error
-        ) from read_error
-
-    # Portierung via KI (Platzhalter — hier echten API-Call einsetzen)
-    try:
-        ported_code = _call_ai_portation_api(
-            source_code=source_code,
-            source_language=_detect_source_language(source_file_path),
-            target_language=target_language,
-            ai_model_name=ai_model_name,
-        )
-    except Exception as api_error:
-        raise PortationError(
-            source_file_path.name, target_language, api_error
-        ) from api_error
-
-    # Ausgabedatei atomisch schreiben
-    _write_file_atomically(output_file_path, ported_code)
-
-    if not dry_run:
-        _commit_portation_to_git(
-            repository_path=output_repository_path,
-            file_path=output_file_path,
-            source_script_name=source_file_path.name,
-            target_language=target_language,
-        )
-
-    logger.info(
-        "Portierung abgeschlossen: %s → %s",
-        source_file_path.name,
-        output_file_path,
-    )
-    return output_file_path
-
-
-def _write_file_atomically(file_path: Path, content: str) -> None:
-    """Schreibt eine Textdatei atomar via temporäre Zwischendatei.
-
-    Args:
-        file_path: Zielpfad der Ausgabedatei.
-        content: Zu schreibender Inhalt.
-
-    Raises:
-        OSError: Bei Schreibfehlern.
-    """
-    with tempfile.NamedTemporaryFile(
-        mode="w",
-        dir=file_path.parent,
-        suffix=".tmp",
-        delete=False,
-        encoding="utf-8",
-    ) as temp_file:
-        temp_file.write(content)
-        temp_path = Path(temp_file.name)
-
-    os.replace(temp_path, file_path)
-
-
-def _detect_source_language(file_path: Path) -> str:
-    """Erkennt die Quellsprache anhand der Datei-Extension.
-
-    Args:
-        file_path: Pfad zur Quelldatei.
-
-    Returns:
-        Erkannte Sprache als String (z. B. ``"python"``).
-    """
-    extension_to_language = {
-        ".py": "python",
-        ".js": "javascript",
-        ".sh": "bash",
-        ".pl": "perl5",
-        ".raku": "perl6",
-        ".rb": "ruby",
-        ".go": "go",
-        ".lua": "lua",
-        ".tcl": "tcl",
-        ".ps1": "powershell",
+def get_source_lang(script_path: Path) -> str:
+    ext_map = {
+        "py": "Python", "js": "JavaScript", "sh": "Shell",
+        "pl": "Perl", "rb": "Ruby", "ps1": "PowerShell"
     }
-    return extension_to_language.get(file_path.suffix.lower(), "unknown")
+    return ext_map.get(script_path.suffix[1:], "Unknown")
 
 
-def _call_ai_portation_api(
-    source_code: str,
-    source_language: str,
-    target_language: str,
-    ai_model_name: str,
-) -> str:
-    """Ruft die KI-API auf um eine Code-Portierung zu erstellen.
+def create_stub(source_path: Path, target_lang: str) -> Path:
+    if target_lang not in TEMPLATES:
+        raise ValueError(f"Unknown language: {target_lang}")
 
-    Args:
-        source_code: Quellcode als String.
-        source_language: Sprache des Quellcodes.
-        target_language: Zielsprache der Portierung.
-        ai_model_name: KI-Modell für die Portierung.
+    template = TEMPLATES[target_lang]
+    source_lang = get_source_lang(source_path)
 
-    Returns:
-        Portierter Code als String.
+    try:
+        with open(source_path, 'r', encoding='utf-8', errors='ignore') as f:
+            preview_lines = f.read().split('\n')[:10]
+    except Exception as e:
+        preview_lines = [f"# Error reading: {e}"]
 
-    Raises:
-        Exception: Bei API-Fehlern (wird von Aufrufer in PortationError gewrappt).
-    """
-    # Hier echten API-Call implementieren (Anthropic/OpenAI SDK)
-    # Beispiel-Prompt-Template:
-    prompt = (
-        f"Port the following {source_language} code to {target_language}. "
-        f"Preserve all functionality, add proper error handling, "
-        f"and include docstrings/comments. Return only the code.\n\n"
-        f"```{source_language}\n{source_code}\n```"
-    )
-    logger.debug(
-        "KI-API-Aufruf: model=%s, source=%s, target=%s, prompt_len=%d",
-        ai_model_name, source_language, target_language, len(prompt),
-    )
-    # TODO: Implementiere echten API-Call
-    raise NotImplementedError(
-        "KI-API-Integration muss implementiert werden. "
-        "Verwende das Anthropic oder OpenAI SDK."
-    )
+    target_dir = REPO_PATH / target_lang
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target_file = target_dir / f"{source_path.stem}{template['ext']}"
 
+    if target_file.exists():
+        print(f"⚠️  Already exists: {target_file}")
+        return target_file
 
-def _commit_portation_to_git(
-    repository_path: Path,
-    file_path: Path,
-    source_script_name: str,
-    target_language: str,
-) -> None:
-    """Commitet eine Portierung ins Git-Repository.
+    comment = "#" if target_lang not in ("javascript", "go") else "//"
+    preview = f"\n{comment} ".join(preview_lines)
 
-    Args:
-        repository_path: Pfad zum Git-Repository.
-        file_path: Pfad zur neu erstellten Portierungs-Datei.
-        source_script_name: Name des Original-Scripts.
-        target_language: Zielsprache der Portierung.
-
-    Raises:
-        subprocess.CalledProcessError: Bei Git-Fehlern.
-    """
-    commit_message = (
-        f"Add {target_language} version of {source_script_name}"
+    content = (
+        f"{template['shebang']}\n"
+        f"{comment} {source_path.stem} - {target_lang.title()} Version\n"
+        f"{comment} Portiert von {source_lang}\n"
+        f"{comment} Original: {source_path}\n"
+        f"{comment} Erstellt: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+        f"{comment}\n"
+        f"{template['header']}\n"
+        f"{comment} === ORIGINAL PREVIEW ===\n"
+        f"{comment} {preview}\n"
+        f"{comment} === END PREVIEW ===\n\n"
+        f"{template['main_block']}"
     )
 
-    git_add_command = ["git", "-C", str(repository_path), "add", str(file_path)]
-    git_commit_command = [
-        "git", "-C", str(repository_path),
-        "commit", "-m", commit_message,
-    ]
+    with open(target_file, 'w') as f:
+        f.write(content)
 
-    for git_command in [git_add_command, git_commit_command]:
-        result = subprocess.run(
-            git_command,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            logger.error(
-                "Git-Fehler: %s\nStdout: %s\nStderr: %s",
-                " ".join(git_command),
-                result.stdout,
-                result.stderr,
-            )
-            raise subprocess.CalledProcessError(
-                result.returncode, git_command, result.stdout, result.stderr
-            )
-
-    logger.info("Git-Commit: '%s'", commit_message)
+    print(f"✅ Created: {target_file}")
+    return target_file
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-def _build_argument_parser() -> argparse.ArgumentParser:
-    """Erstellt den CLI-Argument-Parser für create_abstraction.py.
-
-    Returns:
-        Konfigurierter ``ArgumentParser``.
-    """
-    parser = argparse.ArgumentParser(
-        description="Erstellt eine einzelne Script-Portierung in eine Zielsprache.",
-    )
-    parser.add_argument(
-        "--source",
-        required=True,
-        help="Pfad zum Original-Script (muss im Workspace liegen).",
-    )
-    parser.add_argument(
-        "--target-lang",
-        required=True,
-        choices=sorted(ALLOWED_TARGET_LANGUAGES),
-        help="Zielsprache der Portierung.",
-    )
-    parser.add_argument(
-        "--model",
-        default=_DEFAULT_MODEL,
-        help=f"KI-Modell (Standard: {_DEFAULT_MODEL}).",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        default=False,
-        help="Erstellt .dryrun-Datei ohne Git-Commit.",
-    )
-    parser.add_argument(
-        "--force",
-        action="store_true",
-        default=False,
-        help="Auch portieren wenn keine Änderung erkannt wurde.",
-    )
-    return parser
-
-
-def main() -> int:
-    """CLI-Hauptfunktion für create_abstraction.py.
-
-    Returns:
-        Exit-Code: 0 bei Erfolg, 1 bei Fehler.
-    """
-    configure_application_logging(log_directory=_LOG_DIRECTORY)
-    parser = _build_argument_parser()
+def main():
+    parser = argparse.ArgumentParser(description="Create script abstraction")
+    parser.add_argument("--source", "-s", required=True, help="Source script path")
+    parser.add_argument("--target-lang", "-l", required=True, help="Target language")
+    parser.add_argument("--use-model", "-m", help="Use AI model for generation")
     args = parser.parse_args()
 
-    try:
-        # Eingaben validieren
-        validated_source = validate_source_file_path(args.source)
-        validated_language = validate_target_language(args.target_lang)
-        validated_model = validate_ai_model_name(args.model)
+    source_path = Path(args.source)
+    if not source_path.exists():
+        print(f"❌ Source not found: {source_path}")
+        sys.exit(1)
 
-        # Change-Detection (überspringen wenn --force)
-        if not args.force:
-            state = load_abstraction_state(_STATE_FILE)
-            hash_cache = state.get("file_hashes", {})
-            if not has_source_file_changed(validated_source, hash_cache):
-                logger.info(
-                    "Keine Änderung erkannt — überspringe %s. "
-                    "Nutze --force zum Erzwingen.",
-                    validated_source.name,
-                )
-                return 0
+    target_file = create_stub(source_path, args.target_lang)
 
-        # Portierung durchführen
-        output_path = create_single_abstraction(
-            source_file_path=validated_source,
-            target_language=validated_language,
-            ai_model_name=validated_model,
-            dry_run=args.dry_run,
-        )
+    if args.use_model:
+        print(f"🤖 Model generation with {args.use_model} - not yet implemented")
 
-        # State aktualisieren
-        if not args.dry_run:
-            state = load_abstraction_state(_STATE_FILE)
-            state.setdefault("file_hashes", {})[str(validated_source)] = (
-                compute_file_sha256(validated_source)
-            )
-            save_abstraction_state_atomically(_STATE_FILE, state)
-
-        print(f"Portierung erstellt: {output_path}")
-        return 0
-
-    except (ValidationError, FileNotFoundError) as input_error:
-        logger.error("Eingabefehler: %s", input_error)
-        print(f"Fehler: {input_error}", file=sys.stderr)
-        return 1
-
-    except PortationError as portation_error:
-        logger.error("Portierungsfehler: %s", portation_error, exc_info=True)
-        print(f"Fehler: {portation_error}", file=sys.stderr)
-        return 1
-
-    except Exception as unexpected_error:
-        logger.critical(
-            "Unerwarteter Fehler: %s", unexpected_error, exc_info=True
-        )
-        print(f"Unerwarteter Fehler: {unexpected_error}", file=sys.stderr)
-        return 1
+    print(f"\n📁 Abstraction ready at: {target_file}")
+    print(f"📝 Next steps:")
+    print(f"   1. Edit {target_file}")
+    print(f"   2. Implement functionality")
+    print(f"   3. Test with: {TEMPLATES[args.target_lang]['shebang'].split()[-1]} {target_file}")
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
