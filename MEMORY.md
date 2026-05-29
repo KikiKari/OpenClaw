@@ -565,7 +565,9 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-05-28)
+## Promoted From Short-Term Memory (2026-05-29)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-22.md:3:3 -->
-- Context: Work on TikTok monitoring API and tiktok-live skills on the gateway. [score=0.888 recalls=0 avg=0.620 source=memory/2026-05-22.md:3-3]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0019.md:9:9 -->
+- assistant: ✅ Session reset. [score=0.896 recalls=0 avg=0.620 source=memory/2026-05-22-0019.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0021.md:9:9 -->
+- assistant: ✅ Session reset. [score=0.896 recalls=0 avg=0.620 source=memory/2026-05-22-0021.md:9-9]
