@@ -57,5 +57,7 @@
 
 ## 2026-05-28 Updates
 
-- No new decisions, projects, or ToDos extracted from memory logs.
+- **Decision:** Execution of `abstractions-publish-gateway` script pending due to missing approval.
+- **Project:** Publish abstractions to gateway.
+- **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
