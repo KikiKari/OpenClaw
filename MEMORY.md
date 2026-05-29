@@ -1,5 +1,7 @@
 # MEMORY.md
 
+[2026-05-29] ARCHIVE_MEMORY reminder handled: old memory files (>30 days) should be archived. (Manual archiving pending)
+
 *No entries yet. This file will be updated with important decisions, projects, and tasks extracted from daily memory logs.*
 
 [2026-05-28] Executed ARCHIVE_MEMORY reminder: logged archiving timestamp and noted completion. Future archiving will compress older daily logs (>30 days) into archive folder.
