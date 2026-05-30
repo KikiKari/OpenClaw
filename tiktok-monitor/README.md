@@ -1,11 +1,7 @@
-mkdir -p ~/.openclaw/workspace
-cd ~/.openclaw/workspace
-tar -xzf /tmp/tiktok-monitor.tar.gz   # entpackt nach ./tiktok-monitor/
-
-# Test:
+# Beschreibung und Test mit:
 ~/.openclaw/workspace/tiktok-monitor/tt-live.sh help
 
-# Sub-Agent ruft ab jetzt:
+# Aufruf und Verwendung mit:
 ~/.openclaw/workspace/tiktok-monitor/tt-live.sh check <user>
 ~/.openclaw/workspace/tiktok-monitor/tt-live.sh url <user>
 ~/.openclaw/workspace/tiktok-monitor/tt-live.sh daemon <user> --hours 12
