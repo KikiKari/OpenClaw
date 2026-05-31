@@ -571,9 +571,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-05-29)
+## Promoted From Short-Term Memory (2026-05-31)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0019.md:9:9 -->
-- assistant: ✅ Session reset. [score=0.896 recalls=0 avg=0.620 source=memory/2026-05-22-0019.md:9-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0021.md:9:9 -->
-- assistant: ✅ Session reset. [score=0.896 recalls=0 avg=0.620 source=memory/2026-05-22-0021.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0936.md:16:16 -->
+- /approve node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js marry_live [score=0.883 recalls=0 avg=0.620 source=memory/2026-05-25-0936.md:16-16]
