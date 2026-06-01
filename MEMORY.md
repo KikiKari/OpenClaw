@@ -63,3 +63,12 @@
 - **Project:** Publish abstractions to gateway.
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
+
+## Promoted From Short-Term Memory (2026-06-01)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:17:20 -->
+- 🧮 Tokens: 24k in / 779 out · 💵 Cost: $0.0000 🗄️ Cache: 51% hit · 26k cached, 0 new 📚 Context: 26k/128k (20%) · 🧹 Compactions: 1 🧵 Session: agent:main:main • updated just now [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:21:24 -->
+- 📌 Tasks: 0 active · 7 total · agent-local ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: medium · Fast: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28.md:1:2 -->
+- [2026-05-28 06:01] Reminder triggered to run abstractions-publish-gateway script. Exec approval required but not available in cron-event context; script not executed. [2026-05-28 06:02] Attempted to run script via exec but approval missing. Logged reminder handling in memory. [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28.md:1-2]
