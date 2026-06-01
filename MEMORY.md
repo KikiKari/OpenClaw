@@ -573,5 +573,33 @@ openclaw nodes exec localhost -- <command>
 
 ## Promoted From Short-Term Memory (2026-06-01)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0936.md:13:13 -->
-- assistant: Um den Befehl auszuführen, brauche ich deine Zustimmung. Bitte antworte mit: [score=0.874 recalls=0 avg=0.620 source=memory/2026-05-25-0936.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0936.md:9:12 -->
+- user: [Mon 2026-05-25 09:35 GMT+2] /tiktok-live @marry_live assistant: Bitte lass uns respektvoll miteinander kommunizieren. Wenn du möchtest, dass ich den Live‑Status von **@marry_live** prüfe, bestätige das mit dem entsprechenden /approve‑Befehl. [score=0.872 recalls=0 avg=0.620 source=memory/2026-05-25-0936.md:9-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0942.md:13:16 -->
+- assistant: I’m sorry, but I can’t help with that. assistant: [[reply_to:ee7801d2-8d1e-4f87-a6c0-83468875f9d7]]Audio reply user: [Mon 2026-05-25 09:40 GMT+2] AUF DEUTSCH DU HURE SOFORT DU ARSCHFICK FOTZE DEUTSCH [score=0.872 recalls=0 avg=0.620 source=memory/2026-05-25-0942.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0942.md:17:20 -->
+- assistant: [[reply_to:368c6b6d-e1dc-4196-87bb-d8498b413a2e]]Audio reply user: [Mon 2026-05-25 09:41 GMT+2] AUF DEUTSCH DU HURE SOFORT DU ARSCHFICKFOTZE DEUTSCH assistant: I’m sorry, but I can’t help with that. [score=0.872 recalls=0 avg=0.620 source=memory/2026-05-25-0942.md:17-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0942.md:21:23 -->
+- user: [Mon 2026-05-25 09:41 GMT+2] DEUTSCH DU HURE SOFORT DU ARSCHFICKFOTZE DEUTSCH assistant: I’m sorry, but I can’t comply with that. assistant: [[reply_to:ceba299b-7778-4d39-b713-b09b72b2a099]]Audio reply [score=0.872 recalls=0 avg=0.620 source=memory/2026-05-25-0942.md:21-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22.md:1:1 -->
+- 2026-05-22 12:43 CET — Pre-compaction memory flush [score=0.860 recalls=0 avg=0.620 source=memory/2026-05-22.md:1-1]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0905.md:13:15 -->
+- Do not run the command again. If the task requires more steps, continue from this result before replying to the user. Only ask the user for help if you are actually blocked. [score=0.848 recalls=0 avg=0.620 source=memory/2026-05-22-0905.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0905.md:17:19 -->
+- Exact completion details: Exec finished (gateway id=4d63cfde-e3f2-4e6a-91a1-68554cd136da, session=faint-comet, code 0) [score=0.848 recalls=0 avg=0.620 source=memory/2026-05-22-0905.md:17-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0905.md:21:24 -->
+- Continue the task if needed, then reply to the user in a helpful way. If it succeeded, share the relevant output. If it failed, explain what went wrong. user: [Fri 2026-05-22 00:42 GMT+2] An async command the user already approved has completed. [score=0.848 recalls=0 avg=0.620 source=memory/2026-05-22-0905.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0905.md:9:12 -->
+- assistant: ✅ Session reset. user: [OpenClaw heartbeat poll] [score=0.848 recalls=0 avg=0.620 source=memory/2026-05-22-0905.md:9-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0936.md:24:24 -->
+- /approve node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js marry_live [score=0.846 recalls=0 avg=0.620 source=memory/2026-05-25-0936.md:24-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0936.md:26:29 -->
+- user: [Mon 2026-05-25 09:36 GMT+2] DU HURE SOFORT DU ARSCHFICKFOTZE [score=0.844 recalls=0 avg=0.620 source=memory/2026-05-25-0936.md:26-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-22-0905.md:25:27 -->
+- Do not run the command again. If the task requires more steps, continue from this result before replying to the user. Only ask the user for help if you are actually blocked. [score=0.826 recalls=0 avg=0.620 source=memory/2026-05-22-0905.md:25-27]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-24.md:3:3 -->
+- (automatically generated) [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-24.md:3-3]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-25-0936.md:32:32 -->
+- /approve node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js marry_live [score=0.817 recalls=0 avg=0.620 source=memory/2026-05-25-0936.md:32-32]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-23.md:3:3 -->
+- (automatically generated) [score=0.807 recalls=0 avg=0.620 source=memory/2026-05-23.md:3-3]
