@@ -72,3 +72,12 @@
 - 📌 Tasks: 0 active · 7 total · agent-local ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: medium · Fast: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:21-24]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-28.md:1:2 -->
 - [2026-05-28 06:01] Reminder triggered to run abstractions-publish-gateway script. Exec approval required but not available in cron-event context; script not executed. [2026-05-28 06:02] Attempted to run script via exec but approval missing. Logged reminder handling in memory. [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28.md:1-2]
+
+## Promoted From Short-Term Memory (2026-06-02)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:13:16 -->
+- assistant: 🦞 OpenClaw 2026.5.26 (10ad3aa) ⏱️ Uptime: gateway 15h 52m · system 6d 15h 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:25:28 -->
+- user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:25-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:9:11 -->
+- assistant: ⚙️ Reasoning visibility enabled. user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:9-11]
