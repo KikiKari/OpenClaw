@@ -70,8 +70,8 @@
 
 | Datei | Pfad | Beschreibung |
 |-------|------|--------------|
-| **tiktok-check-profile.js** | ~/.openclaw/skills/tiktok-live/scripts/ | Live-Status Check |
-| **tiktok-get-stream.js** | ~/.openclaw/skills/tiktok-live/scripts/ | Stream-URL Extraktion |
+| **tiktok-check-profile.js** | ~/.openclaw/workspace/skills/tiktok-live/scripts/ | Live-Status Check |
+| **tiktok-get-stream.js** | ~/.openclaw/workspace/skills/tiktok-live/scripts/ | Stream-URL Extraktion |
 | **connect_node_*.sh** | Verschiedene | Node-Verbindungsskripte |
 | **setup-secret-write.sh** | Workspace | Secret-Store Setup |
 

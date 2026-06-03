@@ -33,6 +33,9 @@
    - `openclaw nodes status`
    - `openclaw gateway status`
    - SSH-Test wenn nötig
+   - `dir_list`, `file_fetch`, `dir_fetch` nur für gepairte Nodes aus `openclaw nodes status` verwenden
+   - `gateway`, `localhost`, `local`, `host` oder `self` nie als Node-Namen raten
+   - Für lokale Gateway-Dateien lokale Read/Exec-Tools nutzen
 
 3. **USER BESTÄTIGEN LASSEN**
    - Jede Änderung explizit bestätigen

@@ -5,6 +5,9 @@ description: Extract TikTok live stream URLs and check live status using Playwri
 
 # TikTok Live Stream Extraction
 
+**Aktueller Installationspfad:** `~/.openclaw/workspace/skills/tiktok-live/`
+**Stale Pfad:** `~/.openclaw/skills/tiktok-live/` nicht verwenden.
+
 Extract live stream URLs from TikTok using Playwright-based visual detection. Replaces unreliable API-based methods.
 
 ## Overview
@@ -33,7 +36,7 @@ sudo ufw allow out 443/tcp
 ### Check Live Status
 
 ```bash
-node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
+node ~/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
 ```
 
 **Output:** JSON with `isLive` boolean and detection indicators
@@ -41,7 +44,7 @@ node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
 ### Extract Stream URL
 
 ```bash
-node ~/.openclaw/skills/tiktok-live/scripts/tiktok-get-stream.js <username>
+node ~/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js <username>
 ```
 
 **Output:** Nackte URL (eine Zeile), z.B.:
@@ -81,7 +84,7 @@ Das Skript gibt nur die nackte URL aus. Zum Abspielen:
 
 ```bash
 # VLC
-vlc "$(node ~/.openclaw/skills/tiktok-live/scripts/tiktok-get-stream.js username)"
+vlc "$(node ~/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js username)"
 
 # MPV (mit Cache)
 mpv --cache=yes --cache-secs=30 "URL"

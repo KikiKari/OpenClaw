@@ -72,7 +72,7 @@ Dieses Dokument enthält ein vollständiges Inhaltsverzeichnis aller internen un
 | Skill | Zweck | Pfad |
 |-------|-------|------|
 | blogwatcher | RSS/Atom Feed Monitoring | `~/.openclaw/skills/blogwatcher/` |
-| tiktok-live | TikTok Livestream Extraktion | `~/.openclaw/skills/tiktok-live/` |
+| tiktok-live | TikTok Livestream Extraktion | `~/.openclaw/workspace/skills/tiktok-live/` |
 | healthcheck | Sicherheitsprüfungen | `~/.openclaw/skills/healthcheck/` |
 
 ---

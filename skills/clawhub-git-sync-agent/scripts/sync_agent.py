@@ -13,7 +13,7 @@ from datetime import datetime
 
 # Import sync functions
 sys.path.append('/home/openclaw/.openclaw/workspace/scripts')
-from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, get_file_hash, iter_sync_files
+from sync_clawhub_git import sync_to_git, sync_to_clawhub, log, validate_skill, get_file_hash, iter_sync_files, RESERVED_SKILL_NAMES
 
 CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
@@ -39,12 +39,12 @@ def get_all_skills():
     clawhub_skills = {
         d.name
         for d in CLAWHUB_DIR.iterdir()
-        if d.is_dir() and not d.name.startswith('.') and (d / "SKILL.md").exists()
+        if d.is_dir() and not d.name.startswith('.') and d.name not in RESERVED_SKILL_NAMES and (d / "SKILL.md").exists()
     }
     git_skills = {
         d.name
         for d in GIT_DIR.iterdir()
-        if d.is_dir() and not d.name.startswith('.') and (d / "SKILL.md").exists()
+        if d.is_dir() and not d.name.startswith('.') and d.name not in RESERVED_SKILL_NAMES and (d / "SKILL.md").exists()
     }
     return clawhub_skills.union(git_skills)
 

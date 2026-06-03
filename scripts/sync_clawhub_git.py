@@ -16,7 +16,9 @@ CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
 GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
 BACKUP_DIR = Path("/home/openclaw/.openclaw/workspace/backups/sync")
 LOG_FILE = Path("/home/openclaw/.openclaw/workspace/logs/sync-agent.log")
-IGNORED_NAMES = {".git", ".clawhub", "node_modules", "__pycache__"}
+IGNORED_NAMES = {".git", ".clawhub", "node_modules", "__pycache__", ".pytest_cache"}
+RESERVED_SKILL_NAMES = {"github-clones", "skills", "backups", ".restore", "git", "Abstraktionen"}
+PRESERVED_TARGET_NAMES = IGNORED_NAMES
 
 # Erstelle Verzeichnisse
 GIT_DIR.mkdir(parents=True, exist_ok=True)
@@ -34,6 +36,9 @@ def log(message, level="INFO"):
 # Validierung
 def validate_skill(skill_dir: Path) -> bool:
     """Prüft Skill-Struktur - SKILL.md required, scripts/ optional"""
+    if skill_dir.name in RESERVED_SKILL_NAMES:
+        log(f"Validation failed: {skill_dir.name} is reserved and must not be synced as a skill", "ERROR")
+        return False
     if not (skill_dir / "SKILL.md").exists():
         log(f"Validation failed: {skill_dir.name} missing SKILL.md", "ERROR")
         return False
@@ -42,11 +47,28 @@ def validate_skill(skill_dir: Path) -> bool:
 def _is_ignored_path(path: Path) -> bool:
     return any(part in IGNORED_NAMES for part in path.parts) or path.suffix == ".pyc"
 
+def _is_generated_duplicate_path(root: Path, rel_path: Path) -> bool:
+    """Detect generated duplicate folders such as <skill>/<skill> or scripts/scripts."""
+    parts = rel_path.parts
+    if not parts:
+        return False
+    if parts[0] == root.name:
+        return True
+    return any(parts[i] == parts[i - 1] for i in range(1, len(parts)))
+
 def iter_sync_files(root: Path):
     """Yield files that should participate in sync comparisons."""
     for current_root, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in IGNORED_NAMES and not d.startswith("__pycache__")]
         rel_root = Path(current_root).relative_to(root)
+        kept_dirs = []
+        for directory in dirs:
+            if directory in IGNORED_NAMES or directory.startswith("__pycache__"):
+                continue
+            rel_dir = rel_root / directory
+            if _is_generated_duplicate_path(root, rel_dir):
+                continue
+            kept_dirs.append(directory)
+        dirs[:] = kept_dirs
         if _is_ignored_path(rel_root):
             continue
         for file in files:
@@ -56,12 +78,34 @@ def iter_sync_files(root: Path):
             rel_path = file_path.relative_to(root)
             if _is_ignored_path(rel_path):
                 continue
+            if _is_generated_duplicate_path(root, rel_path):
+                continue
+            if file == "SKILL.md" and rel_path != Path("SKILL.md"):
+                continue
             if not file_path.is_file():
                 continue
             yield file_path, rel_path
 
 def _copy_ignore(_path, names):
     return [name for name in names if name in IGNORED_NAMES or name.endswith(".pyc")]
+
+def reset_sync_target(target: Path):
+    """Remove stale synced content before copying, preserving local-only metadata."""
+    target.mkdir(parents=True, exist_ok=True)
+    for child in target.iterdir():
+        if child.name in PRESERVED_TARGET_NAMES:
+            continue
+        if child.is_dir() and not child.is_symlink():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+
+def copy_sync_files(source: Path, target: Path):
+    reset_sync_target(target)
+    for src_file, rel_path in iter_sync_files(source):
+        dest_file = target / rel_path
+        dest_file.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src_file, dest_file)
 
 # Backup
 def create_backup(source: Path, skill_name: str):
@@ -133,10 +177,7 @@ def sync_to_git(skill_name: str, dry_run: bool = True):
     
     # Echte Synchronisation
     log(f"SYNC: {skill_name} - Applying {len(changes)} changes")
-    if target.exists():
-        shutil.copytree(source, target, dirs_exist_ok=True, ignore=_copy_ignore)
-    else:
-        shutil.copytree(source, target, ignore=_copy_ignore)
+    copy_sync_files(source, target)
     log(f"SYNC: {skill_name} - Complete")
     return True
 
@@ -171,10 +212,7 @@ def sync_to_clawhub(skill_name: str, dry_run: bool = True):
 
     # Echte Synchronisation
     log(f"SYNC: {skill_name} - Applying {len(changes)} changes")
-    if target.exists():
-        shutil.copytree(source, target, dirs_exist_ok=True, ignore=_copy_ignore)
-    else:
-        shutil.copytree(source, target, ignore=_copy_ignore)
+    copy_sync_files(source, target)
     log(f"SYNC: {skill_name} - Complete")
     return True
 

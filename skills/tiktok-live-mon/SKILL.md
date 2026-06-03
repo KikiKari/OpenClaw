@@ -18,10 +18,10 @@ Automated TikTok Live stream monitoring with Playwright-based visual detection.
 
 ```bash
 # Check if user is live
-node check-profile.js @username
+node ~/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-check-profile.js <username>
 
 # Get stream URL
-node get-stream.js @username
+node ~/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-get-stream.js <username>
 ```
 
 ## Requirements

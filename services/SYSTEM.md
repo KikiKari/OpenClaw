@@ -79,7 +79,7 @@ coding-agent, **tiktok-live** (NEU)
 
 **Status:** ✅ Playwright-basiert — Port 5001 DEFEKT
 
-**Skill-Pfad:** `~/.openclaw/skills/tiktok-live/`
+**Skill-Pfad:** `~/.openclaw/workspace/skills/tiktok-live/`
 
 **Skripte:**
 - `scripts/tiktok-check-profile.js` — Live-Status
