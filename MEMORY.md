@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-05-24 (07:00 CET)
+**Letzte Aktualisierung:** 2026-06-03 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-06-03 - Daily Memory-Maintenance & Erkenntnisse vom 02.06./03.06.
+- ✅ `memory/2026-06-02.md` war leer; analysiert wurden außerdem `memory/2026-06-02-2131.md`, `memory/2026-06-02-2145.md`, `memory/2026-06-02-2351.md` und `memory/2026-06-03-0038.md`.
+- ✅ Aus dem gestrigen Material keine neuen produktrelevanten Entscheidungen, Projekte oder offenen ToDos; der Inhalt war überwiegend Loganalyse, Skill-/Gateway-Status und Eskalationskontext.
+- ✅ Aus dem heutigen Material: `@laafatooo` wurde als live erkannt, und die Stream-URL wurde extrahiert.
+- ⚠️ Offenes ToDo aus dem heutigen Material: Approval für `node /home/openclaw/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-check-profile.js tweety27.2` wurde angefragt, aber noch nicht bestätigt.
+- ✅ Archiv-Check: 245 alte `memory/*.md`-Dateien wurden in `memory/archive/2026-06-03/` verschoben.
+- **Kritische Erkenntnisse:** Keine neuen kritischen Systemprobleme im gelesenen Material.
 
 ### 2026-05-26 - Daily Memory-Maintenance & Erkenntnisse vom 25.05.
 
