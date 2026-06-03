@@ -37,8 +37,8 @@ async function getStreamUrl(username) {
     try {
         // Navigate to live page
         await page.goto(`https://www.tiktok.com/@${username}/live`, { 
-            waitUntil: 'networkidle',
-            timeout: 30000 
+            waitUntil: 'load',
+            timeout: 60000 
         });
         
         // Wait for potential DSGVO/consent dialogs
