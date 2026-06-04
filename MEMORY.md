@@ -97,3 +97,10 @@
 - user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:25-26]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:9:11 -->
 - assistant: ⚙️ Reasoning visibility enabled. user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:9-11]
+
+## Promoted From Short-Term Memory (2026-06-04)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:3:5 -->
+- Session: 2026-05-28 17:19:45 GMT+2: **Session Key**: agent:main:main; **Session ID**: ac42c806-c4d2-440d-8329-110528024c6d; **Source**: webchat [score=0.869 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:3:5 -->
+- Session: 2026-05-30 16:16:11 GMT+2: **Session Key**: agent:main:main; **Session ID**: ac42c806-c4d2-440d-8329-110528024c6d; **Source**: webchat [score=0.831 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:3-5]
