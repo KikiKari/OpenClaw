@@ -1,21 +1,56 @@
-# Security Policy
+# Security Policy — OpenClaw Cluster
 
-## Supported Versions
+## Geltungsbereich
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+Diese Richtlinie gilt für alle Branches dieses Repositories und
+insbesondere für die Script-Verarbeitungs-Pipeline des Abstraction Managers.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Implementierte Sicherheitsmaßnahmen
 
-## Reporting a Vulnerability
+### Eingabevalidierung (`validators.py`)
 
-Use this section to tell people how to report a vulnerability.
+- **Path-Traversal-Schutz:** `Path.resolve()` + Allowlist für Quellverzeichnisse
+- **Shell-Injection-Prävention:** Allowlist-basierte Zeichenprüfung für Task-Beschreibungen
+- **Modell-Allowlist:** Nur explizit freigegebene KI-Modell-Namen werden akzeptiert
+- **Timeout-Grenzen:** Eingaben werden auf erlaubte Wertebereiche geprüft
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+### Prozess-Spawning (`spawn_agent.py`)
+
+- `subprocess.run()` wird ausschließlich mit Argument-Liste aufgerufen (`shell=False`)
+- Kein Shell-Interpreter in der Prozesskette — keine Shell-Injection möglich
+
+### Fehlerbehandlung (`exceptions.py`)
+
+- Anwendungsspezifische Exceptions verhindern Info-Leakage bei Crashes
+- Sensible Werte werden in Exception-Messages nicht eingebettet
+
+### Logging (`logger.py`)
+
+- Strukturiertes JSON-Logging in Produktion
+- API-Schlüssel und Secrets dürfen nicht in Logfiles erscheinen
+- Rotierende Log-Dateien (max. 10 MB, 7 Backups)
+
+### API-Schlüssel
+
+- Ausschließlich über Umgebungsvariablen (`.env`), nie hartcodiert
+- Validierung auf Vorhandensein und Mindestlänge beim Start
+
+## Bekannte Findings (Stand: 2026-05-26)
+
+Vollständige Analyse in `CODE_REVIEW_FULL.md` (Branch `gateway2`):
+
+| ID | Schwachstelle | Kritikalität | Status |
+| --- | -------------- | -------------- | ------ |
+| S1 | Shell-Injection via `--task` | KRITISCH | ✅ Behoben in `spawn_agent.py` |
+| S2 | Path-Traversal via `--source` | KRITISCH | ✅ Behoben in `validators.py` |
+| S3 | Unkontrollierter `--model`-Parameter | HOCH | ✅ Behoben in `validators.py` |
+| S4 | Cron-Log world-readable | HOCH | ⚠️ Offen — `chmod 640` + logrotate |
+| S5 | API-Schlüssel-Management | HOCH | ✅ Behoben via `.env` |
+| S6 | Fehlende Timeout-Limits | MITTEL | ✅ Behoben in `validators.py` |
+| S7 | Git-Commits ohne GPG-Signierung | MITTEL | ⚠️ Offen |
+
+## Sicherheitslücken melden
+
+Sicherheitsprobleme bitte ausschließlich über
+[GitHub Security Advisories](../../security/advisories/new) melden —
+nicht als öffentliches Issue.
