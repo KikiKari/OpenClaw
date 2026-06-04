@@ -579,15 +579,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-03)
+## Promoted From Short-Term Memory (2026-06-04)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:13:16 -->
-- 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) [score=0.856 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:17:20 -->
-- 📚 Context: 33k/128k (26%) · 🧹 Compactions: 1 🧵 Session: agent:main:main • updated just now 📌 Tasks: 0 active · 2 total · agent-local ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: medium · Fast: off · Reasoning: on [score=0.856 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:21:24 -->
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.856 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:25:26 -->
-- user: [OpenClaw heartbeat poll] assistant: Usage: /approve <id> <decision> (see the pending approval message for available decisions) [score=0.856 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:25-26]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:9:12 -->
-- assistant: ⚙️ Reasoning visibility enabled. user: [OpenClaw heartbeat poll] assistant: 🦞 OpenClaw 2026.5.26 (10ad3aa) ⏱️ Uptime: gateway 15h 59m · system 5d 5h [score=0.856 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1549.md:9:9 -->
+- assistant: [[reply_to:72a3b2c2-95e3-4027-9959-209f1591157a]]Audio reply [score=0.806 recalls=0 avg=0.620 source=memory/2026-05-30-1549.md:9-9]
