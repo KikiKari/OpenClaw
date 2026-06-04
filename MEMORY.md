@@ -581,5 +581,7 @@ openclaw nodes exec localhost -- <command>
 
 ## Promoted From Short-Term Memory (2026-06-04)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1549.md:9:9 -->
-- assistant: [[reply_to:72a3b2c2-95e3-4027-9959-209f1591157a]]Audio reply [score=0.806 recalls=0 avg=0.620 source=memory/2026-05-30-1549.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:3:5 -->
+- Session: 2026-05-28 17:19:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: c5eba52b-af71-4ef0-9071-c2e86661aa97; **Source**: webchat [score=0.870 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1549.md:3:5 -->
+- Session: 2026-05-30 15:49:27 GMT+2: **Session Key**: agent:main:main; **Session ID**: eb84df81-7207-4567-869d-87f263f1e134; **Source**: webchat [score=0.802 recalls=0 avg=0.620 source=memory/2026-05-30-1549.md:3-5]
