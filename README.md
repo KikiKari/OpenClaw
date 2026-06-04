@@ -23,18 +23,7 @@ Systemmechanik und nginx Load-Balancer als Worker- und Relay-Nodes eingesetzt.
 
 ## Netzwerk-Topologie
 
-```mermaid
-graph TD
-    NET([Internet]) --> GW1["Gateway 1"]
-    NET --> GW2["Gateway 2"]
-    GW1 <-.->|"Tailscale / WireGuard"| GW2
-    GW1 --> N2["Node 2"]
-    GW1 --> N36["Node 3–6"]
-    GW2 --> N2
-    GW2 --> N78["Node 7–8 (Docker)"]
-    N2 --> D["Docker-Container<br/>für schwere Jobs"]
-    N78 --> D
-```
+![OpenClaw Cluster — isometrische Netzwerk-Topologie](assets/network-topology.svg)
 
 Beide Gateways können **Nodes 2–8** als Worker- oder Relay-Nodes verwenden —
 je nach aktueller Erreichbarkeit, Verfügbarkeit und Priorität.

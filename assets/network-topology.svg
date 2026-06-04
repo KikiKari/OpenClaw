@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-205.3 -105.6 410.6 378.8" width="411" height="379" role="img" aria-label="Isometrische 3D-Netzwerk-Topologie des OpenClaw Clusters">
+  <rect x="-205.3" y="-105.6" width="410.6" height="378.8" fill="#0d1117" rx="8"/>
+  <text x="-195.3" y="-89.6" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#c9d1d9">OpenClaw Cluster — Netzwerk-Topologie</text><text x="-195.3" y="-71.6" font-family="Segoe UI, Arial, sans-serif" font-size="10" fill="#8b949e">Beide Gateways nutzen Node-Pool 2–8 · <tspan fill="#d29922">— — Tailscale / WireGuard</tspan></text>
+<line x1="0.0" y1="-2.3" x2="79.7" y2="62.1" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="0.0" y1="-2.3" x2="-79.7" y2="62.1" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="79.7" y1="62.1" x2="-79.7" y2="62.1" stroke="#d29922" stroke-width="2.4" stroke-dasharray="6 5" stroke-linecap="round"/>
+  <line x1="79.7" y1="62.1" x2="119.5" y2="135.7" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="79.7" y1="62.1" x2="0.0" y2="135.7" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="-79.7" y1="62.1" x2="-119.5" y2="135.7" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="-79.7" y1="62.1" x2="0.0" y2="135.7" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="119.5" y1="135.7" x2="0.0" y2="184.0" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="-119.5" y1="135.7" x2="0.0" y2="184.0" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <polygon points="-43.8,18.4 0.0,43.7 0.0,23.0 -43.8,-2.3" fill="#1b5fc0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="43.8,18.4 0.0,43.7 0.0,23.0 43.8,-2.3" fill="#2f80ed" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="0.0,-27.6 43.8,-2.3 0.0,23.0 -43.8,-2.3" fill="#4c9aff" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="19.9,92.0 79.7,126.5 79.7,96.6 19.9,62.1" fill="#1f7a34" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="139.4,92.0 79.7,126.5 79.7,96.6 139.4,62.1" fill="#2ea043" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="79.7,27.6 139.4,62.1 79.7,96.6 19.9,62.1" fill="#57d38c" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-139.4,92.0 -79.7,126.5 -79.7,96.6 -139.4,62.1" fill="#1f7a34" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-19.9,92.0 -79.7,126.5 -79.7,96.6 -19.9,62.1" fill="#2ea043" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-79.7,27.6 -19.9,62.1 -79.7,96.6 -139.4,62.1" fill="#57d38c" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="67.7,161.0 119.5,190.9 119.5,165.6 67.7,135.7" fill="#6a3fc0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="171.3,161.0 119.5,190.9 119.5,165.6 171.3,135.7" fill="#8957e5" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="119.5,105.8 171.3,135.7 119.5,165.6 67.7,135.7" fill="#b88cf0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-51.8,161.0 0.0,190.9 0.0,165.6 -51.8,135.7" fill="#6a3fc0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="51.8,161.0 0.0,190.9 0.0,165.6 51.8,135.7" fill="#8957e5" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="0.0,105.8 51.8,135.7 0.0,165.6 -51.8,135.7" fill="#b88cf0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-171.3,161.0 -119.5,190.9 -119.5,165.6 -171.3,135.7" fill="#6a3fc0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-67.7,161.0 -119.5,190.9 -119.5,165.6 -67.7,135.7" fill="#8957e5" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-119.5,105.8 -67.7,135.7 -119.5,165.6 -171.3,135.7" fill="#b88cf0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-55.8,207.0 0.0,239.2 0.0,216.2 -55.8,184.0" fill="#a8761a" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="55.8,207.0 0.0,239.2 0.0,216.2 55.8,184.0" fill="#d29922" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="0.0,151.8 55.8,184.0 0.0,216.2 -55.8,184.0" fill="#f0b352" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <text x="0.0" y="36.8" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#d29922">VPN</text>
+  <text x="0.0" y="-5.3" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Internet</text>
+  <text x="79.7" y="59.1" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Gateway 1</text>
+  <text x="-79.7" y="59.1" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Gateway 2</text>
+  <text x="119.5" y="132.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Node 2</text>
+  <text x="119.5" y="146.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" fill="#eaeef2">Worker</text>
+  <text x="0.0" y="132.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Node 3–6</text>
+  <text x="0.0" y="146.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" fill="#eaeef2">Worker</text>
+  <text x="-119.5" y="132.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Node 7–8</text>
+  <text x="-119.5" y="146.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" fill="#eaeef2">Docker</text>
+  <text x="0.0" y="181.0" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#ffffff">Docker</text>
+  <text x="0.0" y="195.0" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9.5" fill="#eaeef2">Heavy Jobs</text>
+</svg>
