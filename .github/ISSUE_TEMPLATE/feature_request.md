@@ -1,20 +1,35 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+name: Feature Request
+about: Neue Funktion für Gateway, Node, Abstraction Manager oder Skills vorschlagen
+title: '[FEATURE] '
+labels: 'enhancement'
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Betroffene Komponente
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+- [ ] Gateway (1 / 2 / beide)
+- [ ] Node / Worker-Node
+- [ ] Abstraction Manager
+- [ ] Skill / ClawHub
+- [ ] Cron / Sync-System
+- [ ] VPN / Netzwerk
+- [ ] Sonstiges: ___
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## Problem / Motivation
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+<!-- Welches Problem soll die neue Funktion lösen?
+     Welcher Workflow ist umständlich oder fehlt komplett? -->
+
+## Gewünschte Lösung
+
+<!-- Wie soll die Funktion konkret funktionieren?
+     Was soll sich ändern oder neu hinzukommen? -->
+
+## Alternativen
+
+<!-- Welche anderen Ansätze wurden überlegt? Warum wurden sie verworfen? -->
+
+## Zusätzlicher Kontext
+
+<!-- Abhängigkeiten zu anderen Komponenten, Links, Skizzen -->

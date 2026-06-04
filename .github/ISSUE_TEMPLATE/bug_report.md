@@ -1,38 +1,52 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
+name: Bug Report
+about: Fehler in Gateway, Node, Abstraction Manager oder Skills melden
+title: '[BUG] '
+labels: 'bug'
 assignees: ''
-
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+> ⚠️ **Sicherheitslücke?** Bitte KEIN öffentliches Issue erstellen —
+> stattdessen [Security Advisory](../security/advisories/new) nutzen (siehe [SECURITY.md](../../security/policy)).
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## Betroffene Komponente
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+- [ ] Gateway 1
+- [ ] Gateway 2
+- [ ] Node (Nummer: ___)
+- [ ] Abstraction Manager
+- [ ] Script / Skill
+- [ ] Cron / Sync
+- [ ] VPN (Tailscale / WireGuard)
+- [ ] Sonstiges: ___
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+## Fehlerbeschreibung
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+<!-- Was ist passiert? Kurze, klare Beschreibung. -->
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+## Schritte zur Reproduktion
 
-**Additional context**
-Add any other context about the problem here.
+1.
+2.
+3.
+
+## Erwartetes Verhalten
+
+<!-- Was hätte passieren sollen? -->
+
+## Log-Ausgabe / Fehlermeldung
+
+```
+<!-- Relevante Logs hier einfügen (keine Secrets/API-Keys!) -->
+```
+
+## Systemkontext
+
+- **Branch:** `gateway1` / `gateway2` / `*-abstractions`
+- **Node:** node___ (Server / Redmi Note 11S / Docker)
+- **Sync-Status:** letzter erfolgreicher Sync: ___
+- **Betriebssystem:** ___
+
+## Zusätzlicher Kontext
+
+<!-- Screenshots, Links, weitere Infos -->
