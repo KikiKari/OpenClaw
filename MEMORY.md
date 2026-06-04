@@ -88,3 +88,12 @@
 - 🧮 Tokens: 24k in / 779 out · 💵 Cost: $0.0000 🗄️ Cache: 51% hit · 26k cached, 0 new 📚 Context: 26k/128k (20%) · 🧹 Compactions: 1 🧵 Session: agent:main:main • updated just now [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:17-20]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:21:24 -->
 - 📌 Tasks: 0 active · 7 total · agent-local ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: medium · Fast: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:21-24]
+
+## Promoted From Short-Term Memory (2026-06-04)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:13:16 -->
+- assistant: 🦞 OpenClaw 2026.5.26 (10ad3aa) ⏱️ Uptime: gateway 15h 52m · system 6d 15h 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:25:28 -->
+- user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:25-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:9:11 -->
+- assistant: ⚙️ Reasoning visibility enabled. user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:9-11]
