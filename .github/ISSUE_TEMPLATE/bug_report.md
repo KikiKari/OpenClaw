@@ -36,7 +36,7 @@ assignees: ''
 
 ## Log-Ausgabe / Fehlermeldung
 
-```
+```text
 <!-- Relevante Logs hier einfügen (keine Secrets/API-Keys!) -->
 ```
 

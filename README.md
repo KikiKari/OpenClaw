@@ -1,5 +1,11 @@
 # OpenClaw Cluster
 
+![Gateways](https://img.shields.io/badge/Gateways-2-1f6feb)
+![Nodes](https://img.shields.io/badge/Nodes-2--8-1f6feb)
+![ClawHub Skills](https://img.shields.io/badge/ClawHub_Skills-10-2ea043)
+![Abstraktionen](https://img.shields.io/badge/Abstraktionen-122-8957e5)
+![VPN](https://img.shields.io/badge/VPN-Tailscale_%2F_WireGuard-d29922)
+
 Dieses Repository enthält die synchronisierten Workspaces der OpenClaw AI Gateways
 (openclaw.ai). Die Gateways arbeiten als KI/AI-Gateways im Clusterverbund innerhalb
 einer bestehenden Netzwerkinfrastruktur. Verbundene OpenClaw Nodes werden über interne
@@ -17,22 +23,17 @@ Systemmechanik und nginx Load-Balancer als Worker- und Relay-Nodes eingesetzt.
 
 ## Netzwerk-Topologie
 
-```text
-                        INTERNET
-                            │
-           ┌────────────────┴────────────────┐
-           │                                 │
-       Gateway 1                         Gateway 2
-           │                                 │
-           └──────────┬──────────────────────┘
-                      │  Tailscale VPN (Fallback: WireGuard)
-          ┌───────────┼───────────────────────┐
-          │           │                       │
-       Node 2      Node 3–6             Node 7–8
-    (Worker/Relay) (Worker/Relay)     (Worker/Relay)
-          │
-   [Docker Container]
-   für schwere Jobs
+```mermaid
+graph TD
+    NET([Internet]) --> GW1["Gateway 1"]
+    NET --> GW2["Gateway 2"]
+    GW1 <-.->|"Tailscale / WireGuard"| GW2
+    GW1 --> N2["Node 2"]
+    GW1 --> N36["Node 3–6"]
+    GW2 --> N2
+    GW2 --> N78["Node 7–8 (Docker)"]
+    N2 --> D["Docker-Container<br/>für schwere Jobs"]
+    N78 --> D
 ```
 
 Beide Gateways können **Nodes 2–8** als Worker- oder Relay-Nodes verwenden —
@@ -58,6 +59,9 @@ Verteilt Jobs nach Gewicht auf die verfügbaren Nodes.
 | javascript | `.js` | ruby | `.rb` |
 | python | `.py` | lua | `.lua` |
 | shell | `.sh` | go | `.go` |
+
+> Der Manager unterstützt 10 Zielsprachen; aktuell sind 6 davon generiert
+> (js, perl5, python, powershell, shell, tcl — siehe `*-abstractions`-Branches).
 
 **Job-Gewicht → Node-Auswahl:**
 
@@ -167,12 +171,17 @@ der als OAuth-2.1-gesicherter Proxy vor der Perplexity-API sitzt.
 | **Tunnel** | Cloudflare Named Tunnel (öffentlich) + Tailscale (interne Clients) |
 | **Status** | 🔧 In Entwicklung |
 
-```text
-MCP Client (ChatGPT / Claude / VS Code)
-  → POST /mcp  [Bearer Token]
-  → Auth-Middleware (JWT RS256 validieren)
-  → Tool-Router (perplexity.ask / .search / .research)
-  → Perplexity API (Key aus .env)
+```mermaid
+sequenceDiagram
+    participant C as MCP Client<br/>(ChatGPT / Claude / VS Code)
+    participant A as Auth-Middleware
+    participant R as Tool-Router
+    participant P as Perplexity API
+    C->>A: POST /mcp [Bearer Token]
+    A->>A: JWT RS256 validieren
+    A->>R: tools/call
+    R->>P: perplexity.ask / .search / .research
+    P-->>C: Response
 ```
 
 ### coding-agent
