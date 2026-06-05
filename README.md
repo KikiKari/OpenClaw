@@ -25,6 +25,17 @@ Systemmechanik und nginx Load-Balancer als Worker- und Relay-Nodes eingesetzt.
 
 ![OpenClaw Cluster — isometrische Netzwerk-Topologie](assets/network-topology.svg)
 
+<details>
+<summary>🔄 Rotierende 3D-Ansicht (animiertes GIF)</summary>
+
+![Rotierende 3D-Topologie des OpenClaw Clusters](assets/network-topology.gif)
+
+</details>
+
+> 🧊 **[Interaktive 3D-Ansicht öffnen](https://kikikari.github.io/OpenClaw/)** — drehbar & zoombar (three.js, Branch [`gh-pages`](../../tree/gh-pages); GitHub Pages muss dafür aktiviert sein).
+>
+> Diagramme reproduzierbar via [`assets/gen_topology.py`](assets/gen_topology.py) (SVG) und [`assets/gen_topology_gif.py`](assets/gen_topology_gif.py) (GIF).
+
 Beide Gateways können **Nodes 2–8** als Worker- oder Relay-Nodes verwenden —
 je nach aktueller Erreichbarkeit, Verfügbarkeit und Priorität.
 Auf den Nodes vorbereitete Docker-Container werden für rechenintensive

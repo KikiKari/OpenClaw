@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-205.3 -105.6 410.6 378.8" width="411" height="379" role="img" aria-label="Isometrische 3D-Netzwerk-Topologie des OpenClaw Clusters">
   <rect x="-205.3" y="-105.6" width="410.6" height="378.8" fill="#0d1117" rx="8"/>
   <text x="-195.3" y="-89.6" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#c9d1d9">OpenClaw Cluster — Netzwerk-Topologie</text><text x="-195.3" y="-71.6" font-family="Segoe UI, Arial, sans-serif" font-size="10" fill="#8b949e">Beide Gateways nutzen Node-Pool 2–8 · <tspan fill="#d29922">— — Tailscale / WireGuard</tspan></text>
-<line x1="0.0" y1="-2.3" x2="79.7" y2="62.1" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="0.0" y1="-2.3" x2="79.7" y2="62.1" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
   <line x1="0.0" y1="-2.3" x2="-79.7" y2="62.1" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
   <line x1="79.7" y1="62.1" x2="-79.7" y2="62.1" stroke="#d29922" stroke-width="2.4" stroke-dasharray="6 5" stroke-linecap="round"/>
   <line x1="79.7" y1="62.1" x2="119.5" y2="135.7" stroke="#8b949e" stroke-width="1.8" stroke-linecap="round"/>
