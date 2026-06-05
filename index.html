@@ -14,6 +14,11 @@
     .overlay h1 { font-size:18px; font-weight:700; }
     .overlay p { font-size:12px; color:var(--muted); margin-top:3px; }
     .overlay .vpn { color:var(--accent); }
+    .nav { position:fixed; right:18px; top:16px; z-index:6; display:flex; gap:8px; }
+    .nav a { pointer-events:auto; font-size:12px; text-decoration:none; color:var(--fg);
+      background:#161b22; border:1px solid #30363d; border-radius:6px; padding:5px 10px; }
+    .nav a.active { border-color:var(--accent); color:var(--accent); }
+    .nav a:hover { border-color:var(--accent); }
     .hint { position:fixed; left:18px; bottom:14px; font-size:12px; color:var(--muted); z-index:5; }
     .hint kbd { background:#21262d; border:1px solid #30363d; border-radius:4px;
       padding:1px 6px; font-size:11px; }
@@ -37,6 +42,10 @@
     <h1>OpenClaw Cluster — 3D-Topologie</h1>
     <p>Beide Gateways nutzen Node-Pool 2–8 · <span class="vpn">— — Tailscale / WireGuard VPN</span></p>
   </div>
+  <nav class="nav">
+    <a href="index.html" class="active">🧊 Topologie</a>
+    <a href="mcp-flow.html">🔀 MCP-Flow</a>
+  </nav>
   <div class="hint"><kbd>Ziehen</kbd> drehen · <kbd>Scrollen</kbd> zoomen · <kbd>Rechtsklick</kbd> verschieben</div>
 
   <script type="module">

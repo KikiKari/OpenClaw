@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP-OAuth-Proxy — Interaktiver 3D-Flow</title>
+  <style>
+    :root { --bg:#0d1117; --fg:#c9d1d9; --muted:#8b949e; --accent:#d29922; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; background:var(--bg); color:var(--fg);
+      font-family:'Segoe UI', system-ui, Arial, sans-serif; overflow:hidden; }
+    #app { position:fixed; inset:0; }
+    .overlay { position:fixed; left:18px; top:16px; pointer-events:none; z-index:5; }
+    .overlay h1 { font-size:18px; font-weight:700; }
+    .overlay p { font-size:12px; color:var(--muted); margin-top:3px; }
+    .overlay .vpn { color:var(--accent); }
+    .nav { position:fixed; right:18px; top:16px; z-index:6; display:flex; gap:8px; }
+    .nav a { pointer-events:auto; font-size:12px; text-decoration:none; color:var(--fg);
+      background:#161b22; border:1px solid #30363d; border-radius:6px; padding:5px 10px; }
+    .nav a.active { border-color:var(--accent); color:var(--accent); }
+    .nav a:hover { border-color:var(--accent); }
+    .hint { position:fixed; left:18px; bottom:14px; font-size:12px; color:var(--muted); z-index:5; }
+    .hint kbd { background:#21262d; border:1px solid #30363d; border-radius:4px; padding:1px 6px; font-size:11px; }
+    .label { color:#fff; font-size:12.5px; font-weight:700; text-shadow:0 1px 3px #000,0 0 2px #000;
+      pointer-events:none; white-space:nowrap; text-align:center; }
+    .label small { display:block; font-weight:400; font-size:10px; color:#eaeef2; }
+  </style>
+  <script type="importmap">
+  { "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  } }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="overlay">
+    <h1>MCP-OAuth-Proxy — 3D-Flow</h1>
+    <p>OAuth 2.1 + PKCE · <span class="vpn">— — Response (zurück zum Client)</span></p>
+  </div>
+  <nav class="nav">
+    <a href="index.html">🧊 Topologie</a>
+    <a href="mcp-flow.html" class="active">🔀 MCP-Flow</a>
+  </nav>
+  <div class="hint"><kbd>Ziehen</kbd> drehen · <kbd>Scrollen</kbd> zoomen · <kbd>Rechtsklick</kbd> verschieben</div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    const BLUE=0x2f80ed, GREEN=0x2ea043, PURPLE=0x8957e5, ORANGE=0xd29922;
+    const stages = [
+      { id:'client', x:-6, color:BLUE,   h:1.4, label:'MCP Client',     sub:'ChatGPT · Claude · VSC' },
+      { id:'auth',   x:-2, color:GREEN,  h:1.8, label:'Auth-Middleware', sub:'JWT RS256' },
+      { id:'router', x: 2, color:PURPLE, h:1.6, label:'Tool-Router',     sub:'tools/call' },
+      { id:'pplx',   x: 6, color:ORANGE, h:1.4, label:'Perplexity API',  sub:'ask · search · research' },
+    ];
+    const W = 2.6;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d1117);
+    const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+    camera.position.set(0, 7, 14);
+
+    const renderer = new THREE.WebGLRenderer({ antialias:true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.getElementById('app').appendChild(renderer.domElement);
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(innerWidth, innerHeight);
+    labelRenderer.domElement.style.position = 'fixed';
+    labelRenderer.domElement.style.top = '0';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.getElementById('app').appendChild(labelRenderer.domElement);
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.9); dir.position.set(-6,10,6); scene.add(dir);
+    const grid = new THREE.GridHelper(26, 26, 0x21262d, 0x161b22); scene.add(grid);
+
+    const tops = {};
+    for (const s of stages) {
+      const geo = new THREE.BoxGeometry(W, s.h, W);
+      const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color:s.color, roughness:0.55, metalness:0.05 }));
+      mesh.position.set(s.x, s.h/2, 0); scene.add(mesh);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color:0x0d1117 }));
+      edges.position.copy(mesh.position); scene.add(edges);
+      const el = document.createElement('div'); el.className='label';
+      el.innerHTML = s.label + `<small>${s.sub}</small>`;
+      const lbl = new CSS2DObject(el); lbl.position.set(s.x, s.h + 0.6, 0); scene.add(lbl);
+      tops[s.id] = new THREE.Vector3(s.x, s.h, 0);
+    }
+
+    // Request-Pfeile (3D ArrowHelper)
+    for (let i=0; i<stages.length-1; i++) {
+      const a = stages[i], b = stages[i+1];
+      const y = Math.max(a.h, b.h) * 0.7;
+      const from = new THREE.Vector3(a.x + W/2, y, 0);
+      const to   = new THREE.Vector3(b.x - W/2, y, 0);
+      const d = new THREE.Vector3().subVectors(to, from);
+      const len = d.length();
+      scene.add(new THREE.ArrowHelper(d.clone().normalize(), from, len, 0xc9d1d9, 0.5, 0.32));
+    }
+
+    // Response-Bogen (gestrichelt, über die Pipeline zurück)
+    const arcPts = [
+      tops['pplx'].clone(),
+      new THREE.Vector3(6, 4.2, 0),
+      new THREE.Vector3(-6, 4.2, 0),
+      tops['client'].clone(),
+    ];
+    const curve = new THREE.CatmullRomCurve3(arcPts);
+    const arcGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(60));
+    const arc = new THREE.Line(arcGeo, new THREE.LineDashedMaterial({ color:0xd29922, dashSize:0.35, gapSize:0.25 }));
+    arc.computeLineDistances(); scene.add(arc);
+    const rl = document.createElement('div'); rl.className='label';
+    rl.innerHTML = '<small style="color:#d29922;font-weight:600">Response</small>';
+    const ro = new CSS2DObject(rl); ro.position.set(0, 4.6, 0); scene.add(ro);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.08;
+    controls.autoRotate = true; controls.autoRotateSpeed = 0.9;
+    controls.target.set(0, 1.2, 0); controls.minDistance = 7; controls.maxDistance = 34;
+    controls.addEventListener('start', () => controls.autoRotate = false);
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight); labelRenderer.setSize(innerWidth, innerHeight);
+    });
+    (function animate(){ requestAnimationFrame(animate); controls.update();
+      renderer.render(scene, camera); labelRenderer.render(scene, camera); })();
+  </script>
+</body>
+</html>
