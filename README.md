@@ -285,9 +285,41 @@ MCP Client (ChatGPT / Claude / VS Code)
 
 ### coding-agent
 
-GitHub Project Board für KI-gestützte Entwicklungsaufgaben im OpenClaw-Cluster.
+![Status](https://img.shields.io/badge/coding--agent-aktiv-2ea043)
+![Gateways](https://img.shields.io/badge/Gateways-1_%26_2-1f6feb)
+![Codex](https://img.shields.io/badge/Codex-migriert-8957e5)
+![Workflows](https://img.shields.io/badge/Workflows-7-8b949e)
 
-→ [github.com/users/KikiKari/projects/1](https://github.com/users/KikiKari/projects/1)
+KI-gestützter Coding-Agent auf Basis von **Codex**, migriert und aktiv auf
+**beiden Gateways** (Gateway 1 & Gateway 2). Aufgaben werden über ein
+GitHub Project Board (Kanban) verwaltet und von den Gateways automatisiert
+abgearbeitet — von Issue bis Pull Request.
+
+→ Board: [github.com/users/KikiKari/projects/1](https://github.com/users/KikiKari/projects/1)
+
+```mermaid
+flowchart LR
+    ISSUE["GitHub Issues / PRs"] --> BOARD["Project Board<br/>Todo · In Progress · Done"]
+    BOARD --> GW1["Gateway 1<br/>coding-agent"]
+    BOARD --> GW2["Gateway 2<br/>coding-agent"]
+    CODEX[("Codex CLI")] -.migriert.- GW1
+    CODEX -.migriert.- GW2
+    GW1 --> PR["Commits / Pull Requests"]
+    GW2 --> PR
+    PR --> BOARD
+```
+
+**Aktueller Board-Stand**
+
+| Spalte | Anzahl | Inhalt |
+| --- | --- | --- |
+| 📋 Todo | 1 | OpenClaw #2 — `[BUG] openclaw migrate codex --plugin` Timeout |
+| 🔧 In Progress | 0 | — |
+| ✅ Done | 0 | — |
+
+Beide Gateways teilen sich dasselbe Board und denselben Codex-Migrationsstand;
+Aufgaben werden je nach Verfügbarkeit/Priorität auf Gateway 1 oder 2 ausgeführt
+(siehe [Netzwerk-Topologie](#netzwerk-topologie)).
 
 ## Automatische Synchronisation
 
