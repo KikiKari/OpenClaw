@@ -128,6 +128,41 @@ Erstellt und befüllt zwei SQLite-Datenbanken unter `db/`:
 Beide Datenbanken exportieren via `export_csv()` / `export_json()`.
 Tabellennamen werden gegen ein `frozenset` validiert (SQL-Injection-Schutz).
 
+### spawn_agent.py — Multi-Node Sub-Agenten
+
+Startet **KI-Sub-Agenten** für komplexe Portierungsaufgaben und verteilt sie
+über die Multi-Node-Infrastruktur (Node-Auswahl nach Job-Gewicht, siehe oben).
+Alle Eingaben werden vor der Ausführung validiert.
+
+| Sicherheitsmaßnahme | Umsetzung |
+| --- | --- |
+| Shell-Injection | `subprocess.run()` mit Argument-Liste (kein `shell=True`) |
+| Modell-Wahl | Allowlist erlaubter KI-Modelle (`validators.py`) |
+| Zielsprache | Allowlist unterstützter Sprachen |
+| Timeout | Validierung 1–7200 s (DoS-Schutz) |
+| API-Schlüssel | aus Umgebung geladen, Mindestlänge geprüft |
+
+```bash
+python3 spawn_agent.py \
+    --task "Port db_maintainer.py to Go" \
+    --model openrouter/anthropic/claude-3-5-sonnet-20241022 \
+    --timeout 1800
+```
+
+Programmatisch via `spawn_portation_agent(task, model, timeout)`. Der
+Agent-Runner läuft auf dem nach Job-Gewicht gewählten Node.
+
+### Tests
+
+Sicherheits- und Kernfunktionen sind durch eine pytest-Suite abgedeckt
+(`test_abstractions_manager.py`): Path-Traversal, Shell-Injection, Modell-/
+Sprach-Allowlist, Timeout, API-Schlüssel, Hash-Change-Detection, atomisches
+State-Schreiben.
+
+```bash
+pytest test_abstractions_manager.py -v
+```
+
 ## ClawHub — Veröffentlichte Skills
 
 Die Abstraction Manager beider Gateways veröffentlichen Skills automatisch
