@@ -32,7 +32,48 @@ Systemmechanik und nginx Load-Balancer als Worker- und Relay-Nodes eingesetzt.
 
 </details>
 
-> 🧊 **[Interaktive 3D-Ansicht öffnen](https://kikikari.github.io/OpenClaw/)** — drehbar & zoombar (three.js, Branch [`gh-pages`](../../tree/gh-pages); GitHub Pages muss dafür aktiviert sein).
+<details>
+<summary>🧩 Mermaid-Diagramm (schematisch)</summary>
+
+```mermaid
+graph TD
+    NET([Internet]) --> GW1["Gateway 1"]
+    NET --> GW2["Gateway 2"]
+    GW1 <-.->|"Tailscale / WireGuard"| GW2
+    GW1 --> N2["Node 2"]
+    GW1 --> N36["Node 3–6"]
+    GW2 --> N2
+    GW2 --> N78["Node 7–8 (Docker)"]
+    N2 --> D["Docker-Container<br/>für schwere Jobs"]
+    N78 --> D
+```
+
+</details>
+
+<details>
+<summary>📐 ASCII-Diagramm (Klartext)</summary>
+
+```text
+                        INTERNET
+                            │
+           ┌────────────────┴────────────────┐
+           │                                 │
+       Gateway 1                         Gateway 2
+           │                                 │
+           └──────────┬──────────────────────┘
+                      │  Tailscale VPN (Fallback: WireGuard)
+          ┌───────────┼───────────────────────┐
+          │           │                       │
+       Node 2      Node 3–6             Node 7–8
+    (Worker/Relay) (Worker/Relay)     (Worker/Relay)
+          │
+   [Docker Container]
+   für schwere Jobs
+```
+
+</details>
+
+> 🧊 **[Interaktive 3D-Ansicht öffnen](https://kikikari.github.io/OpenClaw/)** — drehbar & zoombar (three.js, Branch [`gh-pages`](../../tree/gh-pages)).
 >
 > Diagramme reproduzierbar via [`assets/gen_topology.py`](assets/gen_topology.py) (SVG) und [`assets/gen_topology_gif.py`](assets/gen_topology_gif.py) (GIF).
 
