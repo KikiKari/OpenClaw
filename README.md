@@ -309,6 +309,13 @@ flowchart LR
     PR --> BOARD
 ```
 
+<details>
+<summary>🧊 Isometrische 3D-Ansicht</summary>
+
+![coding-agent — isometrischer Flow: Board → Gateways → PR](assets/codeflow.svg)
+
+</details>
+
 **Aktueller Board-Stand**
 
 | Spalte | Anzahl | Inhalt |
