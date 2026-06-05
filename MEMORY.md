@@ -104,3 +104,8 @@
 - Session: 2026-05-28 17:19:45 GMT+2: **Session Key**: agent:main:main; **Session ID**: ac42c806-c4d2-440d-8329-110528024c6d; **Source**: webchat [score=0.869 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:3-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:3:5 -->
 - Session: 2026-05-30 16:16:11 GMT+2: **Session Key**: agent:main:main; **Session ID**: ac42c806-c4d2-440d-8329-110528024c6d; **Source**: webchat [score=0.831 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:3-5]
+
+## Promoted From Short-Term Memory (2026-06-05)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:13:13 -->
+- Conversation Summary: assistant: ⚠️ Uncheckeditems: Disk usage (`df -h`), Cron jobs (`openclaw cron list`), Agents (`openclaw agents list`), Tasks (`openclaw tasks list`), Channels (`openclaw channels list`), Sessions (`openclaw sessions`). [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:13-13]
