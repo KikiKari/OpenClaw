@@ -165,14 +165,40 @@ openclaw skills update --all
 > Sync aktualisiert. / Downloads and security status are updated by the
 > Abstraction Manager on each sync.
 
-### Skills in Entwicklung / Skills in Development
+### Skill: python-hardener — ✅ Fertiggestellt
 
-| Skill | Beschreibung | Benchmark |
+Härtet bestehende Python-Scripts automatisch und liefert zusätzlich eine
+Markdown-Dokumentation der Änderungen. Entwicklung abgeschlossen, durch eine
+Eval-Suite abgesichert.
+
+**Härtungsregeln**
+
+| Schwachstelle / Smell | Korrektur |
+| --- | --- |
+| `shell=True` in subprocess | Argument-Liste, kein Shell-Interpreter |
+| `os.chdir()` (Prozess-CWD-Mutation) | `git -C <pfad>` bzw. `cwd=`-Parameter |
+| bare `except:` | spezifische Exception-Typen + Logging |
+| Logfile bei jedem Aufruf geöffnet | `RotatingFileHandler`, einmalig konfiguriert |
+| nicht-atomares State-Schreiben | `tempfile` + `os.replace()` |
+| SQL-Injection (f-string-Query) | parametrisierte Queries + Tabellen-Allowlist |
+| Verbindung nie geschlossen | Context-Manager / `finally` / `close()` |
+| fehlende Docstrings / Typannotationen | Google-/NumPy-Style Docstrings, Type-Hints |
+
+**Eval-Suite** (`evals.json` — 2 Szenarien, 11 Assertions)
+
+| Eval | Fokus | Assertions |
 | --- | --- | --- |
-| python-hardener | Härtet Python-Scripts: Shell-Injection, `os.chdir()`, bare `except`, `RotatingFileHandler`, atomisches State-Write, Docstrings | 100% Pass (mit Skill) vs. 66,7% (ohne) |
+| `job-runner-full-hardening` | Cron-Runner: Shell-Injection, CWD, Logging, atomarer State | 6 |
+| `report-db-sql-injection-and-connection` | DB-Modul: SQL-Injection, Connection-Cleanup, Docstrings | 5 |
+
+**Benchmark** (Pass-Rate, gemittelt über beide Evals)
+
+| Konfiguration | Pass-Rate |
+| --- | --- |
+| **mit python-hardener** | **100 %** (11/11 Assertions) |
+| Baseline (ohne Skill) | 83 % — `job-runner` 67 %, `report-db` 100 % |
 
 ```bash
-# Sobald veröffentlicht / Once published:
 openclaw skills install python-hardener
 ```
 
@@ -212,6 +238,18 @@ der als OAuth-2.1-gesicherter Proxy vor der Perplexity-API sitzt.
 | **Tunnel** | Cloudflare Named Tunnel (öffentlich) + Tailscale (interne Clients) |
 | **Status** | 🔧 In Entwicklung |
 
+![MCP-OAuth-Proxy — isometrischer Request-Flow](assets/mcp-oauth-flow.svg)
+
+<details>
+<summary>🔄 Rotierende 3D-Ansicht (animiertes GIF)</summary>
+
+![Rotierender 3D-Flow des MCP-OAuth-Proxy](assets/mcp-oauth-flow.gif)
+
+</details>
+
+<details>
+<summary>🧩 Mermaid-Sequenzdiagramm</summary>
+
 ```mermaid
 sequenceDiagram
     participant C as MCP Client<br/>(ChatGPT / Claude / VS Code)
@@ -224,6 +262,26 @@ sequenceDiagram
     R->>P: perplexity.ask / .search / .research
     P-->>C: Response
 ```
+
+</details>
+
+<details>
+<summary>📐 ASCII-Diagramm (Klartext)</summary>
+
+```text
+MCP Client (ChatGPT / Claude / VS Code)
+  → POST /mcp  [Bearer Token]
+  → Auth-Middleware (JWT RS256 validieren)
+  → Tool-Router (perplexity.ask / .search / .research)
+  → Perplexity API (Key aus .env)
+  ← Response
+```
+
+</details>
+
+> 🧊 **[Interaktive 3D-Ansicht öffnen](https://kikikari.github.io/OpenClaw/mcp-flow.html)** — drehbar & zoombar (three.js, Branch [`gh-pages`](../../tree/gh-pages)).
+>
+> Diagramme reproduzierbar via [`assets/gen_mcp_flow.py`](assets/gen_mcp_flow.py) (SVG) und [`assets/gen_mcp_flow_gif.py`](assets/gen_mcp_flow_gif.py) (GIF).
 
 ### coding-agent
 
