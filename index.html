@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Cluster — Interaktive 3D-Topologie</title>
+  <style>
+    :root { --bg:#0d1117; --fg:#c9d1d9; --muted:#8b949e; --accent:#d29922; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; background:var(--bg); color:var(--fg);
+      font-family:'Segoe UI', system-ui, Arial, sans-serif; overflow:hidden; }
+    #app { position:fixed; inset:0; }
+    .overlay { position:fixed; left:18px; top:16px; pointer-events:none; z-index:5; }
+    .overlay h1 { font-size:18px; font-weight:700; }
+    .overlay p { font-size:12px; color:var(--muted); margin-top:3px; }
+    .overlay .vpn { color:var(--accent); }
+    .hint { position:fixed; left:18px; bottom:14px; font-size:12px; color:var(--muted); z-index:5; }
+    .hint kbd { background:#21262d; border:1px solid #30363d; border-radius:4px;
+      padding:1px 6px; font-size:11px; }
+    .label { color:#fff; font-size:12.5px; font-weight:700; text-shadow:0 1px 3px #000,0 0 2px #000;
+      pointer-events:none; white-space:nowrap; }
+    .label small { display:block; font-weight:400; font-size:10px; color:#eaeef2; text-align:center; }
+    a { color:var(--accent); }
+  </style>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="overlay">
+    <h1>OpenClaw Cluster — 3D-Topologie</h1>
+    <p>Beide Gateways nutzen Node-Pool 2–8 · <span class="vpn">— — Tailscale / WireGuard VPN</span></p>
+  </div>
+  <div class="hint"><kbd>Ziehen</kbd> drehen · <kbd>Scrollen</kbd> zoomen · <kbd>Rechtsklick</kbd> verschieben</div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+    // --- Topologie-Daten (identisch zum SVG/GIF-Generator) ---
+    const GREEN = 0x2ea043, PURPLE = 0x8957e5, BLUE = 0x2f80ed, ORANGE = 0xd29922;
+    const nodes = [
+      { id:'net',  cx:0.4, cy:0.4, hw:0.55, h:0.45, color:BLUE,   label:'Internet'  },
+      { id:'gw1',  cx:3.0, cy:1.0, hw:0.75, h:0.65, color:GREEN,  label:'Gateway 1' },
+      { id:'gw2',  cx:1.0, cy:3.0, hw:0.75, h:0.65, color:GREEN,  label:'Gateway 2' },
+      { id:'n2',   cx:5.0, cy:2.0, hw:0.65, h:0.55, color:PURPLE, label:'Node 2',   sub:'Worker' },
+      { id:'n36',  cx:3.5, cy:3.5, hw:0.65, h:0.55, color:PURPLE, label:'Node 3–6', sub:'Worker' },
+      { id:'n78',  cx:2.0, cy:5.0, hw:0.65, h:0.55, color:PURPLE, label:'Node 7–8', sub:'Docker' },
+      { id:'dock', cx:4.5, cy:4.5, hw:0.70, h:0.50, color:ORANGE, label:'Docker',   sub:'Heavy Jobs' },
+    ];
+    const links = [
+      ['net','gw1',false], ['net','gw2',false], ['gw1','gw2',true],
+      ['gw1','n2',false], ['gw1','n36',false], ['gw2','n78',false],
+      ['gw2','n36',false], ['n2','dock',false], ['n78','dock',false],
+    ];
+
+    const SCALE = 2.2;
+    const PX = nodes.reduce((s,n)=>s+n.cx,0)/nodes.length;
+    const PY = nodes.reduce((s,n)=>s+n.cy,0)/nodes.length;
+    const worldX = n => (n.cx - PX) * SCALE;
+    const worldZ = n => (n.cy - PY) * SCALE;
+    const topY   = n => n.h * SCALE;
+
+    // --- Szene ---
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0d1117);
+
+    const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+    camera.position.set(9, 8, 11);
+
+    const renderer = new THREE.WebGLRenderer({ antialias:true });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    document.getElementById('app').appendChild(renderer.domElement);
+
+    const labelRenderer = new CSS2DRenderer();
+    labelRenderer.setSize(innerWidth, innerHeight);
+    labelRenderer.domElement.style.position = 'fixed';
+    labelRenderer.domElement.style.top = '0';
+    labelRenderer.domElement.style.pointerEvents = 'none';
+    document.getElementById('app').appendChild(labelRenderer.domElement);
+
+    // --- Licht ---
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const dir = new THREE.DirectionalLight(0xffffff, 0.9);
+    dir.position.set(-6, 10, 6);
+    scene.add(dir);
+
+    // --- Boden-Grid ---
+    const grid = new THREE.GridHelper(20, 20, 0x21262d, 0x161b22);
+    grid.position.y = 0;
+    scene.add(grid);
+
+    // --- Boxen + Labels ---
+    const pos = {};
+    for (const n of nodes) {
+      const w = n.hw * 2 * SCALE, d = n.hw * 2 * SCALE, hgt = n.h * SCALE;
+      const geo = new THREE.BoxGeometry(w, hgt, d);
+      const mat = new THREE.MeshStandardMaterial({ color:n.color, roughness:0.55, metalness:0.05 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(worldX(n), hgt/2, worldZ(n));
+      scene.add(mesh);
+      // Kanten
+      const edges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geo),
+        new THREE.LineBasicMaterial({ color:0x0d1117 })
+      );
+      edges.position.copy(mesh.position);
+      scene.add(edges);
+      // Label
+      const el = document.createElement('div');
+      el.className = 'label';
+      el.innerHTML = n.label + (n.sub ? `<small>${n.sub}</small>` : '');
+      const lbl = new CSS2DObject(el);
+      lbl.position.set(worldX(n), hgt + 0.5, worldZ(n));
+      scene.add(lbl);
+      pos[n.id] = new THREE.Vector3(worldX(n), hgt, worldZ(n));
+    }
+
+    // --- Verbindungen ---
+    for (const [a, b, dashed] of links) {
+      const pts = [pos[a], pos[b]];
+      const geo = new THREE.BufferGeometry().setFromPoints(pts);
+      let line;
+      if (dashed) {
+        const mat = new THREE.LineDashedMaterial({ color:0xd29922, dashSize:0.28, gapSize:0.22, linewidth:2 });
+        line = new THREE.Line(geo, mat);
+        line.computeLineDistances();
+      } else {
+        line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color:0x8b949e }));
+      }
+      scene.add(line);
+    }
+
+    // --- Steuerung ---
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 0.9;
+    controls.target.set(0, 0.6, 0);
+    controls.minDistance = 6;
+    controls.maxDistance = 28;
+    // Auto-Rotation pausieren, solange der Nutzer interagiert
+    controls.addEventListener('start', () => controls.autoRotate = false);
+
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+      labelRenderer.setSize(innerWidth, innerHeight);
+    });
+
+    (function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+      labelRenderer.render(scene, camera);
+    })();
+  </script>
+</body>
+</html>
