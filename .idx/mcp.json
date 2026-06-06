@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "Perplexity": {
+      "command": "/vscode/bin/linux-x64/6a44c352bd24569c417e530095901b649960f9f8/node",
+      "args": [
+        "/home/codespace/.perplexity-mcp/start.mjs"
+      ],
+      "env": {}
+    }
+  }
+}
