@@ -34,9 +34,26 @@ def fetch_skill(slug):
         return json.loads(r.read())
 
 
-def security_badge(data):
-    state = data.get("moderationState", data.get("moderation_state", "review"))
-    return "✅ Pass" if state in ("approved", "pass") else "🔍 Review"
+def parse_skill(data):
+    skill   = data.get("skill", {})
+    stats   = skill.get("stats", {})
+    version = data.get("latestVersion", {}).get("version", "1.0.0")
+    mod     = data.get("moderation")
+
+    downloads = stats.get("downloads", 0)
+
+    if mod is None:
+        security = "✅ Pass"
+    elif mod.get("isMalwareBlocked"):
+        security = "🚫 Blocked"
+    else:
+        security = "🔍 Review"
+
+    return {
+        "downloads": downloads,
+        "version":   f"v{version}" if not version.startswith("v") else version,
+        "security":  security,
+    }
 
 
 def main():
@@ -45,16 +62,9 @@ def main():
     for name, slug in SKILLS:
         try:
             data = fetch_skill(slug)
-            downloads = data.get("downloads", data.get("download_count", 0))
-            version   = data.get("version", data.get("latest_version", "v1.0.0"))
-            security  = security_badge(data)
-            stats[slug] = {
-                "name":      name,
-                "downloads": downloads,
-                "version":   version,
-                "security":  security,
-            }
-            print(f"  OK  {slug}: {downloads} downloads, {version}, {security}")
+            s = parse_skill(data)
+            stats[slug] = s
+            print(f"  OK  {slug}: {s['downloads']} downloads, {s['version']}, {s['security']}")
         except Exception as exc:
             print(f"  ERR {slug}: {exc}", file=sys.stderr)
             errors += 1
@@ -75,11 +85,11 @@ def main():
         new_content = re.sub(pattern, replacement, content, flags=re.IGNORECASE)
         if new_content != content:
             content = new_content
-            print(f"  Updated row: {name}")
+            print(f"  Updated: {name} -> {dl}")
 
     with open("README.md", "w", encoding="utf-8") as f:
         f.write(content)
-    print(f"README.md updated ({len(stats)} skills, {errors} errors).")
+    print(f"Done: {len(stats)} skills, {errors} errors.")
 
 
 if __name__ == "__main__":
