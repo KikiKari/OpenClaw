@@ -34,21 +34,6 @@
 - **Project:** Initiated manual run of `clawhub-git-sync` cron job to perform bidirectional sync between ClawHub and Git. (2026-05-22)
 - **Task:** Pending execution of `abstractions_manager.py` script and subsequent Git commit for porting scripts. (2026-05-23)
 
-## Promoted From Short-Term Memory (2026-05-23)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:18:21 -->
-- Continue the task if needed, then reply to the user in a helpful way. If it succeeded, share the relevant output. If it failed, explain what went wrong. user: [Sun 2026-05-17 02:15 GMT+2] An async command the user already approved has completed. [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:22:24 -->
-- Do not run the command again. If the task requires more steps, continue from this result before replying to the user. Only ask the user for help if you are actually blocked. [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:22-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:26:27 -->
-- Exact completion details: Exec finished (gateway id=1faef2c7-ae69-4324-93e4-d0e155186217, session=lucky-dune, code 0) [score=0.814 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:26-27]
-
-## Promoted From Short-Term Memory (2026-05-24)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:9:12 -->
-- user: [Sun 2026-05-17 02:15 GMT+2] An async command the user already approved has completed. Do not run the command again. If the task requires more steps, continue from this result before replying to the user. [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:9-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-17-0217.md:14:16 -->
-- Exact completion details: Exec finished (gateway id=27f05cdc-2b52-4c15-be41-aef6a5d2c82e, session=quick-summit, code 0) /home/openclaw/.openclaw/logs: commands.log config-audit.jsonl config-health.json gateway-restart.log [score=0.824 recalls=0 avg=0.620 source=memory/2026-05-17-0217.md:14-16]
 ## Archive: 2026-05-27 (automated)
 
 - 2026-05-25 09:37 — TikTok extraction session: attempted to extract direct stream for `@marry_live`; no FLV URL found. Likely causes: age/region restrictions, short capture window, or creator privacy settings. Recommended next steps: retry with a longer capture window, run with logged-in TikTok cookies, or open the `/live` page directly (e.g., `mpv "https://www.tiktok.com/@marry_live/live"`). Note: visual live-badge checks can be false positives; augment with network or yt-dlp checks.
@@ -63,31 +48,6 @@
 - **Project:** Publish abstractions to gateway.
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
-
-## Promoted From Short-Term Memory (2026-06-01)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:17:20 -->
-- 🧮 Tokens: 24k in / 779 out · 💵 Cost: $0.0000 🗄️ Cache: 51% hit · 26k cached, 0 new 📚 Context: 26k/128k (20%) · 🧹 Compactions: 1 🧵 Session: agent:main:main • updated just now [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:21:24 -->
-- 📌 Tasks: 0 active · 7 total · agent-local ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: medium · Fast: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28.md:1:2 -->
-- [2026-05-28 06:01] Reminder triggered to run abstractions-publish-gateway script. Exec approval required but not available in cron-event context; script not executed. [2026-05-28 06:02] Attempted to run script via exec but approval missing. Logged reminder handling in memory. [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-28.md:1-2]
-
-## Promoted From Short-Term Memory (2026-06-02)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:13:16 -->
-- assistant: 🦞 OpenClaw 2026.5.26 (10ad3aa) ⏱️ Uptime: gateway 15h 52m · system 6d 15h 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:13-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:25:28 -->
-- user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:25-26]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:9:11 -->
-- assistant: ⚙️ Reasoning visibility enabled. user: [OpenClaw heartbeat poll] assistant: <reply_to_current> [score=0.835 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:9-11]
-
-## Promoted From Short-Term Memory (2026-06-03)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:17:20 -->
-- 🧮 Tokens: 24k in / 779 out · 💵 Cost: $0.0000 🗄️ Cache: 51% hit · 26k cached, 0 new 📚 Context: 26k/128k (20%) · 🧹 Compactions: 1 🧵 Session: agent:main:main • updated just now [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1616.md:21:24 -->
-- 📌 Tasks: 0 active · 7 total · agent-local ⚙️ Execution: direct · Runtime: OpenClaw Pi Default · Think: medium · Fast: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) [score=0.803 recalls=0 avg=0.620 source=memory/2026-05-30-1616.md:21-24]
 
 ## Promoted From Short-Term Memory (2026-06-04)
 
@@ -109,3 +69,26 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:13:13 -->
 - Conversation Summary: assistant: ⚠️ Uncheckeditems: Disk usage (`df -h`), Cron jobs (`openclaw cron list`), Agents (`openclaw agents list`), Tasks (`openclaw tasks list`), Channels (`openclaw channels list`), Sessions (`openclaw sessions`). [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:13-13]
+
+## Promoted From Short-Term Memory (2026-06-06)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:15:17 -->
+- Conversation Summary: I need permission to run the diagnostic command so I can gather this data and complete the heartbeat check. Please approve the exec command. user: [OpenClaw heartbeat poll] assistant: ⚠️ Unchecked items: **Disk usage** (`df -h`), **Cron jobs** (`openclaw cron list`), **Agents** (`openclaw agents list`), **Tasks** (`openclaw tasks list`), **Channels** (`openclaw channels list`), and **Sessions** (`openclaw sessions`). [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:15-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:19:19 -->
+- Conversation Summary: Memory and load look healthy (≈ 12 GB free, load ≈ 1.1 on 8 CPU cores). [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:21:24 -->
+- Conversation Summary: Please approve the exec command so I can run the remaining diagnostics and complete the heartbeat check. user: [OpenClaw heartbeat poll] assistant: ⚠️ Unchecked items: **disk usage**, **cron jobs**, **agents**, **tasks**, **channels**, **sessions**. I need exec permission to run the diagnostics and complete the heartbeat check. user: [OpenClaw heartbeat poll] [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:3:5 -->
+- Session: 2026-06-01 06:55:59 GMT+2: **Session Key**: agent:main:main; **Session ID**: 3fbfe4c5-446b-4230-aa47-1b48512bbea2; **Source**: webchat [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0655.md:9:12 -->
+- Conversation Summary: assistant: ⚠️ Unchecked items: Diskusage, memory usage, load average, cron jobs, agents, tasks, channels, and sessions. I need permission to run the system diagnostics (e.g., `df -h`, `free -h`, `uptime`, `openclaw …`) to complete these checks. user: [OpenClaw heartbeat poll] assistant: ⚠️ Unchecked items remain: disk usage, memory usage, load average, cron jobs, agents, tasks, channels, and sessions. I need permission to run the diagnostics (e.g., `df -h`, `free -h`, `uptime`, `openclaw cron list`, etc.) to complete the heartbeat check. Please approve the command so I can gather the required data.... [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-01-0655.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0701.md:13:13 -->
+- Conversation Summary: assistant: ⚠️ Uncheckeditems: Disk usage (`df -h`), Cron jobs (`openclaw cron list`), Agents (`openclaw agents list`), Tasks (`openclaw tasks list`), Channels (`openclaw channels list`), Sessions (`openclaw sessions`). [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-01-0701.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0701.md:15:17 -->
+- Conversation Summary: I need permission to run the diagnostic command so I can gather this data and complete the heartbeat check. Please approve the exec command. user: [OpenClaw heartbeat poll] assistant: ⚠️ Unchecked items: **Disk usage** (`df -h`), **Cron jobs** (`openclaw cron list`), **Agents** (`openclaw agents list`), **Tasks** (`openclaw tasks list`), **Channels** (`openclaw channels list`), and **Sessions** (`openclaw sessions`). [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-01-0701.md:15-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0701.md:19:19 -->
+- Conversation Summary: Memory and load look healthy (≈ 12 GB free, load ≈ 1.1 on 8 CPU cores). [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-01-0701.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0701.md:21:24 -->
+- Conversation Summary: Please approve the exec command so I can run the remaining diagnostics and complete the heartbeat check. user: [OpenClaw heartbeat poll] assistant: ⚠️ Unchecked items: **disk usage**, **cron jobs**, **agents**, **tasks**, **channels**, **sessions**. I need exec permission to run the diagnostics and complete the heartbeat check. user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-01-0701.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-01-0701.md:3:5 -->
+- Session: 2026-06-01 07:01:48 GMT+2: **Session Key**: agent:main:main; **Session ID**: 3fbfe4c5-446b-4230-aa47-1b48512bbea2; **Source**: webchat [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-01-0701.md:3-5]

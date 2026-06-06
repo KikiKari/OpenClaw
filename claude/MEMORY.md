@@ -65,3 +65,10 @@
 - Conversation Summary: task: Read the file /home/openclaw/.openclaw/workspace/tiktok-monitor/README.md and return its full content verbatim. Use cat or your Read tool. Just output the contents and nothing else. status: completed; ready for parent review [score=0.888 recalls=0 avg=0.620 source=memory/2026-05-30-1615.md:15-16]
 <!-- openclaw-memory-promotion:memory:memory/2026-05-30-1615.md:26:27 -->
 - Conversation Summary: No file contents were retrieved. </prompt-data> [score=0.888 recalls=0 avg=0.620 source=memory/2026-05-30-1615.md:26-27]
+
+## Promoted From Short-Term Memory (2026-06-06)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1615.md:29:29 -->
+- Conversation Summary: Stats: runtime 1m17s • tokens 6 (in 6 / out 0) • prompt/cache 38.7k [score=0.940 recalls=0 avg=0.620 source=memory/2026-05-30-1615.md:29-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1615.md:22:22 -->
+- Conversation Summary: Blocker for the requesting agent: [score=0.930 recalls=0 avg=0.620 source=memory/2026-05-30-1615.md:22-22]
