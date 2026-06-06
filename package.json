@@ -1,8 +1,11 @@
 {
-  "name": "codespaces-react",
+  "name": "@kikikari/openclaw-client",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
