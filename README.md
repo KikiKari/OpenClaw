@@ -237,6 +237,30 @@ Eval-Suite abgesichert.
 openclaw skills install python-hardener
 ```
 
+### pplx-tools — ✅ Fertiggestellt
+
+Skriptpaket (`scripts/pplx-tools/`) zur Authentifizierung des Perplexity-MCP-Daemons
+als **Pro** in einem headless Codespace — ohne Browser-/Cloudflare-Login. Statt der
+interaktiven Anmeldung (die an Cloudflare auf der Datacenter-IP scheitert) wird ein
+lokal exportierter Session-Cookie in den Vault injiziert. Entwicklung abgeschlossen,
+End-to-End verifiziert (`✅ authenticated — tier: Pro`).
+
+| Skript | Funktion |
+| --- | --- |
+| `pplx-refresh.sh` | Hauptbefehl: Browser-Setup → Passphrase aus Daemon → Cookie injizieren → Reinit → Verify |
+| `pplx-inject.mjs` | Schreibt den Session-Cookie in `vault.enc` (Token / Cookie-Header / JSON) |
+| `pplx-setup.sh` | Installiert idempotent die zur VS-Code-Extension passende Chromium-Revision |
+| `pplx-status.sh` | Zeigt Auth-Status (`authenticated`, `tier`) + Log-Auszug |
+
+**Kernerkenntnis:** Cloudflare blockt nur *unauthentifizierte* Calls von der
+Datacenter-IP. Mit gültiger Session laufen Suche & Co. über impit (HTTP) durch;
+der Browser wird nur beim Reinit zur Validierung gebraucht.
+
+```bash
+# Session erneuern (Session-Cookie in ~/pplx-cookies.txt ablegen, dann):
+scripts/pplx-tools/pplx-refresh.sh
+```
+
 ## Abstractions Utilities
 
 Wiederverwendbare Utility-Module, die vom Abstraction Manager erzeugt
