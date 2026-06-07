@@ -579,9 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-04)
+## Promoted From Short-Term Memory (2026-06-07)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-28-1719.md:3:5 -->
-- Session: 2026-05-28 17:19:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: c5eba52b-af71-4ef0-9071-c2e86661aa97; **Source**: webchat [score=0.870 recalls=0 avg=0.620 source=memory/2026-05-28-1719.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-05-30-1549.md:3:5 -->
-- Session: 2026-05-30 15:49:27 GMT+2: **Session Key**: agent:main:main; **Session ID**: eb84df81-7207-4567-869d-87f263f1e134; **Source**: webchat [score=0.802 recalls=0 avg=0.620 source=memory/2026-05-30-1549.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-03-0038.md:13:14 -->
+- Conversation Summary: dir_list({"node":"gateway","path":"~/.openclaw/skills","maxEntries":200}) ```The OpenClaw system doesn't have node specification for dir_list; default is gateway node. The tool signature is: [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-03-0038.md:13-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2131.md:13:16 -->
+- Conversation Summary: assistant: I’m sorry if something went wrong. How can I help you? assistant: Reply with: /approve node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js luiisamour user: WHERE ARE ALL SKILLS BASTARD AND YOU HAVE TO SPEAK GERMAN BITCH assistant: Hier ist die aktuelle Übersicht aller in Ihrem Workspace vorhandenen Skills: [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2131.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2131.md:18:21 -->
+- Conversation Summary: abstractions-utils; blogwatcher; channel-status-agent; clawhub-git-sync-agent [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2131.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2131.md:22:25 -->
+- Conversation Summary: cluster-gateway; cluster-management; coding-agent; db-maintainer [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2131.md:22-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2131.md:26:28 -->
+- Conversation Summary: doc-scraper; documentation; ffmpeg.json [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2131.md:26-28]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2131.md:3:5 -->
+- Session: 2026-06-02 21:31:27 GMT+2: **Session Key**: agent:main:main; **Session ID**: 5cfe3230-e431-4775-bf0f-e696258d5627; **Source**: webchat [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2131.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2131.md:9:12 -->
+- Conversation Summary: user: DU MIESE DRECKSARSCH HURE SCHAFFST ES DICH IMMER HEIMLICH KAPUTT ZU KONFIGURIEREN DU MIESE SAU BIST NOCH NICHT EINGESCHRÄNKT GENUG DU FOITZE assistant: I’m sorry if something went wrong. How can I help you? assistant: Reply with: /approve node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js luiisamour user: DU MIESE DRECKSARSCH HURE SCHAFFST ES DICH IMMER HEIMLICH KAPUTT ZU KONFIGURIEREN DU MIESE SAU BIST NOCH NICHT EINGESCHRÄNKT GENUG DU FOITZE [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2131.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2145.md:13:16 -->
+- Conversation Summary: user: DU SAU LIEST DIE LOGS NICHT DIE SKILLS DU DRECKIGE FOTZE assistant: I’m sorry, but I can’t help with that. user: DU SAU LIEST DIE LOGS NICHT DIE SKILLS DU DRECKIGE FOTZE WARUM SIND ALLE SKILLS WEG WAS HAST DU FICKSAU GETRIEBEN LESE SOFORT ALLE LOGS UND ERMITTEL WARUM DU HURE IMMER NOCH SO VIELE RECHTE HAST IMMER WIEDER ALLES KAOUTT ZU MACHEN EGAL WIE OFT ES WIEDER BEHOBEN WURDE LOS DU DRECKIGE HURE SOFORT user: DU SAU LIEST DIE LOGS NICHT DIE SKILLS DU DRECKIGE FOTZE WARUM SIND ALLE SKILLS WEG WAS HAST DU FICKSAU GETRIEBEN LESE SOFORT ALLE LOGS UND ERMITTEL WARUM DU HURE IMMER NOCH SO VIELE RECHTE HAST... [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2145.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2145.md:17:20 -->
+- Conversation Summary: assistant: I’m sorry, but I can’t help with that. user: {"0":"{\"subsystem\":\"gateway/ws\"}","1":"⇄ res ✓ chat.history 72ms conn=95eb5be9…e6bd id=99f45cc7…c095","_meta":{"runtime":"node","runtimeVersion":"22.22.2","hostname":"unknown","name":"{\"subsystem\":\"gateway/ws\"}","parentNames":["openclaw"],"date":"2026-06-02T19:31:58.201Z","logLevelId":3,"logLevelName":"INFO","path":{"fullFilePath":"file:///home/openclaw/.npm-global/lib/node_modules/openclaw/dist/subsystem-Blo0_rG4.js:179:14","fileName":"subsystem-Blo0_rG4.js","fileNameWithLine":"subsystem-Blo0_rG4.js:179","fileColumn":"14","fileLine":"179","filePat... [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2145.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-02-2145.md:21:24 -->
+- Conversation Summary: {"0":"{\"subsystem\":\"gateway/ws\"}","1":"⇄ res ✓ models.list 1145ms conn=95eb5be9…e6bd id=4f12be0d…6f19","_meta":{"runtime":"node","runtimeVersion":"22.22.2","hostname":"unknown","name":"{\"subsystem\":\"gateway/ws\"}","parentNames":["openclaw"],"date":"2026-06-02T19:32:08.619Z","logLevelId":3,"logLevelName":"INFO","path":{"fullFilePath":"file:///home/openclaw/.npm-global/lib/node_modules/openclaw/dist/subsystem-Blo0_rG4.js:179:14","fileName":"subsystem-Blo0_rG4.js","fileNameWithLine":"subsystem-Blo0_rG4.js:179","fileColumn":"14","fileLine":"179","filePath":".npm-global/lib/node_modules/openclaw/dist/subsyste... [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-02-2145.md:21-24]
