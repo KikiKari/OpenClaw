@@ -261,6 +261,49 @@ der Browser wird nur beim Reinit zur Validierung gebraucht.
 scripts/pplx-tools/pplx-refresh.sh
 ```
 
+## Packages
+
+[![npm: pplx-tools](https://github.com/KikiKari/OpenClaw/actions/workflows/npm-publish-pplx-tools.yml/badge.svg)](https://github.com/KikiKari/OpenClaw/actions/workflows/npm-publish-pplx-tools.yml)
+[![Container: extras](https://github.com/KikiKari/OpenClaw/actions/workflows/docker-publish-extras.yml/badge.svg)](https://github.com/KikiKari/OpenClaw/actions/workflows/docker-publish-extras.yml)
+[![Container: openclaw](https://github.com/KikiKari/OpenClaw/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/KikiKari/OpenClaw/actions/workflows/docker-publish.yml)
+[![npm: openclaw-client](https://github.com/KikiKari/OpenClaw/actions/workflows/npm-publish.yml/badge.svg)](https://github.com/KikiKari/OpenClaw/actions/workflows/npm-publish.yml)
+
+Veröffentlicht auf GitHub Packages — Übersicht: **[github.com/KikiKari?tab=packages](https://github.com/KikiKari?tab=packages)**
+
+| Package | Typ | Quelle | Pull / Install |
+| --- | --- | --- | --- |
+| [`openclaw`](https://github.com/KikiKari/OpenClaw/pkgs/container/openclaw) | Container | [`Dockerfile`](Dockerfile) | `docker pull ghcr.io/kikikari/openclaw:latest` |
+| [`@kikikari/openclaw-client`](https://github.com/KikiKari/OpenClaw/pkgs/npm/openclaw-client) | npm | branch [`special-engine`](https://github.com/KikiKari/OpenClaw/tree/special-engine) | `npm i @kikikari/openclaw-client` |
+| [`@kikikari/pplx-tools`](https://github.com/KikiKari/OpenClaw/pkgs/npm/pplx-tools) | npm | [`scripts/pplx-tools/`](scripts/pplx-tools) | `npm i @kikikari/pplx-tools` |
+| [`skill-python-hardener`](https://github.com/KikiKari/OpenClaw/pkgs/container/skill-python-hardener) | Container | [`packages/skill-python-hardener/`](packages/skill-python-hardener) | `docker pull ghcr.io/kikikari/skill-python-hardener:latest` |
+| [`mcp-flow-svg`](https://github.com/KikiKari/OpenClaw/pkgs/container/mcp-flow-svg) | Container | [`packages/mcp-flow-svg/`](packages/mcp-flow-svg) | `docker pull ghcr.io/kikikari/mcp-flow-svg:latest` |
+| [`mcp-flow-gif`](https://github.com/KikiKari/OpenClaw/pkgs/container/mcp-flow-gif) | Container | [`packages/mcp-flow-gif/`](packages/mcp-flow-gif) | `docker pull ghcr.io/kikikari/mcp-flow-gif:latest` |
+
+**Container nutzen / usage:**
+
+```bash
+# SVG bzw. GIF des MCP-OAuth-Flows nach ./out erzeugen / render into ./out
+docker run --rm -v "$PWD/out":/out ghcr.io/kikikari/mcp-flow-svg:latest
+docker run --rm -v "$PWD/out":/out ghcr.io/kikikari/mcp-flow-gif:latest
+
+# python-hardener Skill-Definition anzeigen / print skill definition
+docker run --rm ghcr.io/kikikari/skill-python-hardener:latest
+```
+
+**npm aus GitHub Packages installieren / install** — `.npmrc` im Projekt:
+
+```ini
+@kikikari:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}   # Token mit read:packages
+```
+
+> **Hinweise:** Neue ghcr-Pakete sind anfangs **privat** — Sichtbarkeit je Paket unter
+> *Package settings → Danger Zone → Change visibility → Public*. Container-Paketseiten
+> zeigen als README-**Body** stets die Repo-README (GHCR-Limit bei mehreren Images pro
+> Repo); die paket-spezifische Kurzbeschreibung kommt aus
+> `org.opencontainers.image.description`. Die npm-Pakete zeigen ihre eigene gebündelte
+> README. Updates: `version` in der jeweiligen `package.json` erhöhen.
+
 ## Abstractions Utilities
 
 Wiederverwendbare Utility-Module, die vom Abstraction Manager erzeugt

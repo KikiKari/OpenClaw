@@ -26,10 +26,13 @@ jobs:
         include:
           - name: skill-python-hardener
             dockerfile: packages/skill-python-hardener/Dockerfile
+            description: "python-hardener Claude skill — hardens Python scripts (security review, error handling, logging, docstrings) and emits companion docs. Install: openclaw skills install python-hardener"
           - name: mcp-flow-svg
             dockerfile: packages/mcp-flow-svg/Dockerfile
+            description: "Generates an isometric (2.5D) SVG of the MCP-OAuth proxy flow (assets/gen_mcp_flow.py). Run with -v $PWD/out:/out → out/mcp-oauth-flow.svg"
           - name: mcp-flow-gif
             dockerfile: packages/mcp-flow-gif/Dockerfile
+            description: "Generates a rotating 3D GIF of the MCP-OAuth proxy flow (cairosvg+Pillow). Run with -v $PWD/out:/out → out/mcp-oauth-flow.gif"
     steps:
       - uses: actions/checkout@v4
       - name: Log in to GHCR
@@ -46,6 +49,13 @@ jobs:
           tags: |
             type=raw,value=latest
             type=sha
+          # Override metadata-action's repo-derived title/description so each
+          # package shows its own one-liner (the README body still comes from
+          # the connected repo — a GHCR limitation for multiple images per repo).
+          labels: |
+            org.opencontainers.image.title=${{ matrix.name }}
+            org.opencontainers.image.description=${{ matrix.description }}
+            org.opencontainers.image.licenses=MIT
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
