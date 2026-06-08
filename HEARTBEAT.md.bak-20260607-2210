@@ -33,11 +33,6 @@
 - session Wartung: openclaw sessions cleanup --dry-run
 - agent Wartung: openclaw sessions cleanup --all-agents --dry-run
 
-## OpenClaw-Control-Rueckmeldung
-- Fuer sichtbare Rueckmeldung in der Gateway-Control-UI niemals `channel=heartbeat` verwenden.
-- Wenn eine Meldung aus einer isolierten oder Cron-Session an den Betreiber noetig ist und `sessions_send` verfuegbar ist: `sessions_send(sessionKey="agent:main:main", message="<kurzer Status>", timeoutSeconds=0)`.
-- Keine `sessions_send`-Selbstsendung verwenden, wenn die aktuelle Session bereits `agent:main:main` ist; dann normale sichtbare Antwort bzw. targetless `message(action=send)` verwenden, falls sichtbare Ausgabe via Message-Tool verlangt wird.
-
 ## Abschluss & Stummschaltung
 - Falls KEINE der oben genannten Bedingungen zutrifft und keine kritischen Issues aufgetreten sind:
 - **Antworte ausschließlich mit dem Wort: HEARTBEAT_OK**
