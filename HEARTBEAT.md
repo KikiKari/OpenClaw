@@ -34,5 +34,8 @@
 - agent Wartung: openclaw sessions cleanup --all-agents --dry-run
 
 ## Abschluss & Stummschaltung
+- Fuer Control-UI-Rueckmeldung Status/Heartbeat zusaetzlich via `sessions_send`
+  an `sessionKey="agent:main:main"` mit `timeoutSeconds=0` spiegeln.
+  Provider-Delivery bleibt Slack; `message` nicht fuer Control-UI verwenden.
 - Falls KEINE der oben genannten Bedingungen zutrifft und keine kritischen Issues aufgetreten sind:
 - **Antworte ausschließlich mit dem Wort: HEARTBEAT_OK**
