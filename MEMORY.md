@@ -72,3 +72,12 @@
 - Session: 2026-06-03 20:17:51 GMT+2: **Session Key**: agent:main:main; **Session ID**: c73a5ab7-000a-4c9c-8565-09997890ef02; **Source**: webchat [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-03-2017.md:3-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-03-2017.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-03-2017.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-09)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-04.md:3:5 -->
+- Heartbeat Log: Date: 2026-06-04; Received heartbeat poll.; No pending tasks detected. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-04.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-03.md:1:1 -->
+- Heartbeat poll received. No notable events. [score=0.818 recalls=0 avg=0.620 source=memory/2026-06-03.md:1-1]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-05.md:3:4 -->
+- 2026-06-05 Daily Log: Heartbeat poll received. No pending issues.; Checked scheduled cron jobs; all are on schedule. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-05.md:3-4]

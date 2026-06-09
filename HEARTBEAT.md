@@ -2,12 +2,14 @@
 
 ## Periodische Checks (alle 45min)
 
+- Last run: 2026-06-09 00:02:01 CEST
+
 ### System
 - [x] System: vmstat
 - [x] Prozesse: ps aux | head -n 10
-- [ ] Disk: df -h (< 80%)
-- [ ] Memory: free -h
-- [ ] Load: uptime
+- [x] Disk: df -h (< 80%)
+- [x] Memory: free -h
+- [x] Load: uptime
 - [x] Logs: journalctl -n 200 -q
 - [ ] Crons: openclaw cron list
 - [ ] Agents: openclaw agents list

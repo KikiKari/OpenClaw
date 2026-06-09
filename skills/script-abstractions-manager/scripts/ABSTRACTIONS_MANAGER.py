@@ -137,7 +137,7 @@ TARGET_LANGUAGES: Dict[str, Dict[str, str]] = {
             "def main\n"
             "  # TODO: Implementiere {source_lang} Funktionalität in Ruby\n"
             "end\n\n"
-            "main if __FILE__ == $PROGRAM_NAME\n"
+            f"main if __FILE__ == {chr(36)}PROGRAM_NAME\n"
         ),
     },
     "lua": {
