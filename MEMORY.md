@@ -81,3 +81,8 @@
 - Heartbeat poll received. No notable events. [score=0.818 recalls=0 avg=0.620 source=memory/2026-06-03.md:1-1]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-05.md:3:4 -->
 - 2026-06-05 Daily Log: Heartbeat poll received. No pending issues.; Checked scheduled cron jobs; all are on schedule. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-05.md:3-4]
+
+## Promoted From Short-Term Memory (2026-06-10)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06.md:3:6 -->
+- 2026-06-06 23:03 GMT+2: Async DB maintainer backup cleanup task completed successfully.; Retention policy: 3 days.; No old backups were found to delete.; DB maintainer cycle ended. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-06.md:3-6]
