@@ -579,45 +579,9 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-08)
+## Promoted From Short-Term Memory (2026-06-10)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-0038.md:25:26 -->
-- Conversation Summary: `https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4442938470414943101_hd.flv?_session_id=044-202606022207023F908833D15F0E2C9AFE.1780438023099&_webnoredir=1&abr_pts=-2800&expire=1781647622&sign=b0107ec9f0223108e5be0fa6c0d56d5d` assistant: The skill listed in available skills is "~/.openclaw/skills/tiktok-live/". But path is given as "~/.openclaw/skills/tiktok-live" (maybe missing directory). Let's list directory.We need to list directory.We need to use dir_list.We'll call dir_list for "~/.openclaw/skills".We must actually call the tool.We have to issue a tool call.We'll call dir_list.Let's call: [score=0.822 recalls=0 avg=0.620 source=memory/2026-06-03-0038.md:25-26]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-0038.md:3:5 -->
-- Session: 2026-06-03 00:38:55 GMT+2: **Session Key**: agent:main:main; **Session ID**: e52c7ac9-9b2d-49a1-9eee-6d4cb7f566da; **Source**: webchat [score=0.822 recalls=0 avg=0.620 source=memory/2026-06-03-0038.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-0038.md:9:10 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: The skill listed in available skills is "~/.openclaw/skills/tiktok-live/". But path is given as "~/.openclaw/skills/tiktok-live" (maybe missing directory). Let's list directory.We need to list directory.We need to use dir_list.We'll call dir_list for "~/.openclaw/skills".We must actually call the tool.We have to issue a tool call.We'll call dir_list.Let's call: [score=0.822 recalls=0 avg=0.620 source=memory/2026-06-03-0038.md:9-10]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1143.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: The heartbeat check passed – the system response **HEARTBEAT_OK** has been recorded. user: [OpenClaw heartbeat poll] [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1143.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1143.md:17:20 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1143.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1143.md:21:23 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1143.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1143.md:3:5 -->
-- Session: 2026-06-03 11:43:36 GMT+2: **Session Key**: agent:main:main; **Session ID**: 74417655-151f-4415-866a-747addd0b3ac; **Source**: webchat [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1143.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1143.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: The heartbeat check passed: **HEARTBEAT_OK**. user: [OpenClaw heartbeat poll] [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1143.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1857.md:12:13 -->
-- Conversation Summary: **Was ist `message.send`?** `message.send` ist eine **Scope‑ bzw. Rechte‑Definition** im OpenClaw‑Berechtigungs‑System. Sie legt fest, ob das aktuelle Token Nachrichten an einen Chat‑Kanal senden darf. Wenn das Token nicht über den Scope `message.send` verfügt, wird jeder Versuch, das Werkzeug `message` zu benutzen, mit dem Fehler *“missing_scope”* abgewiesen – genau das, was du bei den letzten Versuchen gesehen hast. [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1857.md:12-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1857.md:15:16 -->
-- Conversation Summary: **Warum kann ich das `HEARTBEAT_OK` nicht sichtbar schicken?** Der Heartbeat‑Poll verlangt, dass die Antwort **sichtbar** an den Nutzer gesendet wird. Dazu muss das Assistant‑Token die Berechtigung `message.send` haben. Da das Token diese Berechtigung nicht besitzt, kann das Werkzeug `message` keine Nachricht ausliefern. Der interne Aufruf von `heartbeat_respond` funktioniert (er protokolliert das Ergebnis intern), aber das Ergebnis wird nicht automatisch im Chat angezeigt. [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1857.md:15-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1857.md:18:18 -->
-- Conversation Summary: **Was passiert, wenn ich das Recht nicht erweitere?** [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1857.md:18-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1857.md:19:21 -->
-- Conversation Summary: Der Heartbeat‑Check wird intern als *ok* geloggt, aber im Chat bleibt „HEARTBEAT_OK“ unsichtbar.; Auf der Gateway‑Seite kann das als fehlende Rückmeldung gewertet werden, was zu Warnungen oder Fehlermeldungen im System‑Monitoring führen kann.; Ohne `message.send` kann das Assistant‑Modul keine anderen Chat‑Nachrichten mehr senden (z. B. Antworten, Benachrichtigungen, Fehlermeldungen). [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1857.md:19-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1857.md:3:5 -->
-- Session: 2026-06-03 18:57:07 GMT+2: **Session Key**: agent:main:main; **Session ID**: 2cab31f6-549c-4947-addc-739d0917c78f; **Source**: webchat [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1857.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1857.md:9:10 -->
-- Conversation Summary: assistant: **Was bedeutet „current token“?** Der *current token* ist das Zug‑ bzw. Authentifizierungs‑Token, das OpenClaw intern für dich (den Assistant) erzeugt, damit es API‑Aufrufe ausführen kann. Dieses Token wird bei jedem Aufruf von Werkzeugen (z. B. `message`, `exec`, `heartbeat_respond` usw.) im Hintergrund mitgeschickt, um zu prüfen, ob du dafür die nötige Berechtigung hast. [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1857.md:9-10]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1924.md:13:14 -->
-- Conversation Summary: assistant: **Kurz gesagt:** Der Fehler *„missing_scope – message.send“* entsteht, weil das aktuelle Auth‑Token, mit dem OpenClaw sämtliche Werkzeug‑Aufrufe authentifiziert, nicht die Berechtigung **„message.send“** besitzt. Ohne diese Berechtigung darf das `message`‑Werkzeug keine Chat‑Nachricht an den Nutzer zurückschicken – die Anfrage wird deshalb mit *missing_scope* abgelehnt. [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1924.md:13-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1924.md:19:19 -->
-- Was ist das „current token“?: Das Token steht in deiner OpenClaw‑Konfiguration unter [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1924.md:19-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1924.md:21:24 -->
-- Was ist das „current token“?: "gateway": { "auth": { "mode": "token", "token": "***" [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1924.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1924.md:29:30 -->
-- Was ist das „current token“?: Es ist ein statischer, im Dateisystem gespeicherter String (in deinem Fall `cb4a61c8020da89d5a1f0b04e8024fe6d5cd4e7bc0967f1a`).; Alle Werkzeug‑Aufrufe (`exec`, `read`, `nodes`, `message` usw.) werden mit diesem Token authentifiziert, sodass OpenClaw prüfen kann, welche **Scopes** (Berechtigungen) dem Token zugewiesen sind. [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1924.md:29-30]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1924.md:3:5 -->
-- Session: 2026-06-03 19:24:11 GMT+2: **Session Key**: agent:main:main; **Session ID**: 2cab31f6-549c-4947-addc-739d0917c78f; **Source**: webchat [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1924.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1924.md:9:12 -->
-- Conversation Summary: assistant: [[reply_to:8d546643-c244-4031-a3ef-3a33b669b9a4]]Audio reply user: [OpenClaw heartbeat poll] assistant: Bitte gewähren Sie die `message.send`‑Berechtigung für das aktuelle Token, damit ich das Ergebnis des Heartbeat‑Polls über das `message`‑Werkzeug sichtbar zurückschicken kann. Ohne diese Berechtigung wird jede `message`‑Anfrage mit „missing_scope“ abgelehnt und der Heartbeat‑Status bleibt für Sie unsichtbar. user: wenn ich mich recht errinnere ist für agent main tools auf full gesetzt und mir ist nich schlüssig wie dieser fehler seit ein paar tagen aus dem nichts entstehen kann.... [score=0.800 recalls=0 avg=0.620 source=memory/2026-06-03-1924.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:13:16 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:21:21 -->
+- Conversation Summary: assistant: `@luiisamour` ist live. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:21-21]
