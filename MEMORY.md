@@ -579,9 +579,13 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-10)
+## Promoted From Short-Term Memory (2026-06-11)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:13:16 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:21:21 -->
-- Conversation Summary: assistant: `@luiisamour` ist live. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:21-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:23:23 -->
+- Conversation Summary: Extracted FLV: [score=0.825 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:23-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:3:5 -->
+- Session: 2026-06-06 19:03:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: 6554a560-be09-4fc3-aff8-aaa414cc6f7a; **Source**: webchat [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:17:20 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:9:12 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:9-12]
