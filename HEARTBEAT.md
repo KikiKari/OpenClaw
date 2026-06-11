@@ -40,7 +40,7 @@
 - Wenn eine Meldung aus einer isolierten oder Cron-Session an den Betreiber noetig ist und `sessions_send` verfuegbar ist: `sessions_send(sessionKey="agent:main:main", message="<kurzer Status>", timeoutSeconds=0)`.
 - Keine `sessions_send`-Selbstsendung verwenden, wenn die aktuelle Session bereits `agent:main:main` ist; dann normale sichtbare Antwort bzw. targetless `message(action=send)` verwenden, falls sichtbare Ausgabe via Message-Tool verlangt wird.
 
-- [ ] Pending script: /home/openclaw/.openclaw/scripts/abstractions-publish-gateway.sh requires manual approval
+- [x] Pending script: /home/openclaw/.openclaw/scripts/abstractions-publish-gateway.sh (completed)
 
 ## Abschluss & Stummschaltung
 - Falls KEINE der oben genannten Bedingungen zutrifft und keine kritischen Issues aufgetreten sind:
