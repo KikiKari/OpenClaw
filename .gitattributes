@@ -1,0 +1,16 @@
+# Force language detection for examples (linguist excludes this dir by default)
+examples/*.js    linguist-detectable=true linguist-documentation=false
+examples/*.go    linguist-detectable=true linguist-documentation=false
+examples/*.java  linguist-detectable=true linguist-documentation=false
+examples/*.rb    linguist-detectable=true linguist-documentation=false
+examples/*.ps1   linguist-detectable=true linguist-documentation=false
+examples/*.lua   linguist-detectable=true linguist-documentation=false
+examples/*.tcl   linguist-detectable=true linguist-documentation=false
+examples/*.raku  linguist-detectable=true linguist-documentation=false
+examples/*.html  linguist-detectable=true linguist-documentation=false
+examples/*.css   linguist-detectable=true linguist-documentation=false
+examples/*.sh    linguist-detectable=true linguist-documentation=false
+examples/*.bat   linguist-detectable=true linguist-documentation=false
+
+# Mark generator scripts as documentation (reduces Python dominance)
+assets/*.py linguist-documentation=true

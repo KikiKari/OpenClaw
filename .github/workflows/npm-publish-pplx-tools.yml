@@ -1,0 +1,29 @@
+name: npm Package (pplx-tools)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/pplx-tools/**"
+      - ".github/workflows/npm-publish-pplx-tools.yml"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@kikikari"
+      - name: Publish to GitHub Packages
+        working-directory: scripts/pplx-tools
+        # Tolerate re-runs: a path change without a version bump would 409.
+        run: npm publish || echo "publish skipped (version may already exist — bump version to release an update)"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
