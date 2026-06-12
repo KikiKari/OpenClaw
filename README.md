@@ -1,172 +1,86 @@
-# OpenClaw Cluster
+# OpenClaw — Codespace Infrastructure
 
-![Gateways](https://img.shields.io/badge/Gateways-2-1f6feb)
-![Nodes](https://img.shields.io/badge/Nodes-2--8-1f6feb)
-![ClawHub Skills](https://img.shields.io/badge/ClawHub_Skills-10-2ea043)
-![Abstraktionen](https://img.shields.io/badge/Abstraktionen-122-8957e5)
-![VPN](https://img.shields.io/badge/VPN-Tailscale_%2F_WireGuard-d29922)
+This branch (`verbose-waddle`) is part of the **OpenClaw Cluster** GitHub infrastructure.
+It was built and optimized using [Claude Code](https://claude.ai/code) and serves as the
+GitHub infrastructure setup and the maintenance base for the `main` default branch —
+repository structure, documentation, gateway configs, and agent rules.
 
-Dieses Repository enthält die synchronisierten Workspaces der OpenClaw AI Gateways
-(openclaw.ai). Die Gateways arbeiten als KI/AI-Gateways im Clusterverbund innerhalb
-einer bestehenden Netzwerkinfrastruktur. Verbundene OpenClaw Nodes werden über interne
-Systemmechanik und nginx Load-Balancer als Worker- und Relay-Nodes eingesetzt.
+→ Main repository: [KikiKari/OpenClaw](https://github.com/KikiKari/OpenClaw)
 
-## Repository-Struktur
+---
 
-| Branch | Beschreibung |
-| ------ | ----------- |
-| `main` | Dieses Dokument, Sicherheitsrichtlinie, Issue-Vorlagen |
-| `gateway1` | Workspace von Gateway 1 — Skills, Scripts, Agents, Memory, Cron |
-| `gateway2` | Workspace von Gateway 2 — Infrastruktur, WireGuard VPN, SSH-Tunnel |
-| `gateway1-abstractions` | Script-Abstraktionen von Gateway 1 (automatisch synchronisiert) |
-| `gateway2-abstractions` | Script-Abstraktionen von Gateway 2 (automatisch synchronisiert) |
+## Codespace Architecture
 
-## Netzwerk-Topologie
+OpenClaw uses two dedicated GitHub Codespaces for development and infrastructure:
 
-![OpenClaw Cluster — isometrische Netzwerk-Topologie](assets/network-topology.svg)
+### verbose-waddle · `KikiKari/OpenClaw` (this branch)
+> GitHub Infrastructure · Main Default · Sandbox
 
-<details>
-<summary>🔄 Rotierende 3D-Ansicht (animiertes GIF)</summary>
+- **Origin:** Created directly from `KikiKari/OpenClaw` (2-core · 8GB RAM)
+- **Role:** Sets up and maintains the `main` default branch — the authoritative
+  source for repository structure, documentation, gateway configs, and agent rules
+- **Contains:** MCP configurations, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`,
+  gateway branch management, security policies, and maintenance scripts
+- **Sandbox:** Used for testing new repository structures before merging to `main`
 
-![Rotierende 3D-Topologie des OpenClaw Clusters](assets/network-topology.gif)
+### special-engine · `github/codespaces-react`
+> Claude Code · GitHub Optimization · Interpolation
 
-</details>
+- **Origin:** Created from `github/codespaces-react` template (4-core · 16GB RAM)
+- **Role:** Claude Code-driven GitHub optimization — builds the frontend client,
+  publishes packages, generates GitHub Actions workflows, and interpolates between
+  the OpenClaw branches and external package registries
+- **Contains:** React/Vite frontend, npm package, Docker image, multi-language
+  code examples, CI/CD pipeline definitions
 
-<details>
-<summary>🧩 Mermaid-Diagramm (schematisch)</summary>
+---
 
-```mermaid
-graph TD
-    NET([Internet]) --> GW1["Gateway 1"]
-    NET --> GW2["Gateway 2"]
-    GW1 <-.->|"Tailscale / WireGuard"| GW2
-    GW1 --> N2["Node 2"]
-    GW1 --> N36["Node 3–6"]
-    GW2 --> N2
-    GW2 --> N78["Node 7–8 (Docker)"]
-    N2 --> D["Docker-Container<br/>für schwere Jobs"]
-    N78 --> D
-```
+## Maintenance & Scripts
 
-</details>
+verbose-waddle maintains the `main` README and repository structure. Helper scripts
+live in [`scripts/`](https://github.com/KikiKari/OpenClaw/tree/main/scripts) on `main`:
 
-<details>
-<summary>📐 ASCII-Diagramm (Klartext)</summary>
-
-```text
-                        INTERNET
-                            │
-           ┌────────────────┴────────────────┐
-           │                                 │
-       Gateway 1                         Gateway 2
-           │                                 │
-           └──────────┬──────────────────────┘
-                      │  Tailscale VPN (Fallback: WireGuard)
-          ┌───────────┼───────────────────────┐
-          │           │                       │
-       Node 2      Node 3–6             Node 7–8
-    (Worker/Relay) (Worker/Relay)     (Worker/Relay)
-          │
-   [Docker Container]
-   für schwere Jobs
-```
-
-</details>
-
-> 🧊 **[Interaktive 3D-Ansicht öffnen](https://kikikari.github.io/OpenClaw/)** — drehbar & zoombar (three.js, Branch [`gh-pages`](../../tree/gh-pages)).
->
-> Diagramme reproduzierbar via [`assets/gen_topology.py`](assets/gen_topology.py) (SVG) und [`assets/gen_topology_gif.py`](assets/gen_topology_gif.py) (GIF).
-
-Beide Gateways können **Nodes 2–8** als Worker- oder Relay-Nodes verwenden —
-je nach aktueller Erreichbarkeit, Verfügbarkeit und Priorität.
-Auf den Nodes vorbereitete Docker-Container werden für rechenintensive
-Jobs, Abstraktionen und andere Aufgaben eingesetzt.
-
-## Abstraction Manager
-
-Jeder Gateway betreibt einen **Abstraction Manager**, der automatisch
-Abstraktionen der verwendeten Scripts und Programme erstellt und in die
-jeweiligen `*-abstractions`-Branches sowie auf ClawHub (Skills) veröffentlicht.
-
-### ABSTRACTIONS_MANAGER.py
-
-Portiert OpenClaw-Scripts alle 6 Stunden per Cron in 10 Zielsprachen.
-Verteilt Jobs nach Gewicht auf die verfügbaren Nodes.
-
-| Zielsprache | Extension | Zielsprache | Extension |
-| --- | --- | --- | --- |
-| perl5 | `.pl` | powershell | `.ps1` |
-| perl6 | `.raku` | tcl | `.tcl` |
-| javascript | `.js` | ruby | `.rb` |
-| python | `.py` | lua | `.lua` |
-| shell | `.sh` | go | `.go` |
-
-> Der Manager unterstützt 10 Zielsprachen; aktuell sind 6 davon generiert
-> (js, perl5, python, powershell, shell, tcl — siehe `*-abstractions`-Branches).
-
-**Job-Gewicht → Node-Auswahl:**
-
-| Gewicht | Bedingung | Bevorzugte Nodes |
-| --- | --- | --- |
-| heavy | `Dateigröße × Sprachen > 50.000` | node7 → node2 → node1 |
-| medium | `Dateigröße × Sprachen > 10.000` | node2 → node1 → node7 |
-| light | sonst | node5 → node1 → node2 |
-
-State-Persistenz: atomisches Schreiben via `tempfile` + `os.replace()` nach
-`db/abstractions_state.json`. Alle subprocess-Aufrufe verwenden Listform
-(`shell=False`). Git-Commits via `git -C <pfad>` ohne `os.chdir()`.
-
-### db_manager.py
-
-Erstellt und befüllt zwei SQLite-Datenbanken unter `db/`:
-
-| Datenbank | Inhalt |
-| --- | --- |
-| `docs.db` | Dokumentenindex (documents, categories, symlinks, skills) |
-| `tree.db` | Verzeichnisbaum-Scan (tree_entries, tree_scans) |
-
-Beide Datenbanken exportieren via `export_csv()` / `export_json()`.
-Tabellennamen werden gegen ein `frozenset` validiert (SQL-Injection-Schutz).
-
-### spawn_agent.py — Multi-Node Sub-Agenten
-
-Startet **KI-Sub-Agenten** für komplexe Portierungsaufgaben und verteilt sie
-über die Multi-Node-Infrastruktur (Node-Auswahl nach Job-Gewicht, siehe oben).
-Alle Eingaben werden vor der Ausführung validiert.
-
-| Sicherheitsmaßnahme | Umsetzung |
-| --- | --- |
-| Shell-Injection | `subprocess.run()` mit Argument-Liste (kein `shell=True`) |
-| Modell-Wahl | Allowlist erlaubter KI-Modelle (`validators.py`) |
-| Zielsprache | Allowlist unterstützter Sprachen |
-| Timeout | Validierung 1–7200 s (DoS-Schutz) |
-| API-Schlüssel | aus Umgebung geladen, Mindestlänge geprüft |
+| Script | Purpose |
+|---|---|
+| `update_readme_stats.py` | Refreshes the badge / stat counts in the `main` README |
+| `pplx-tools/` | Authenticate the Perplexity MCP daemon as **Pro** in a headless Codespace via session-cookie injection (no browser/Cloudflare login) |
 
 ```bash
-python3 spawn_agent.py \
-    --task "Port db_maintainer.py to Go" \
-    --model openrouter/anthropic/claude-3-5-sonnet-20241022 \
-    --timeout 1800
+# Refresh README stats on main
+python3 scripts/update_readme_stats.py
+
+# Re-authenticate the Perplexity MCP session (see scripts/pplx-tools/README.md)
+scripts/pplx-tools/pplx-refresh.sh
 ```
 
-Programmatisch via `spawn_portation_agent(task, model, timeout)`. Der
-Agent-Runner läuft auf dem nach Job-Gewicht gewählten Node.
+---
 
-### Tests
+## Published Packages
 
-Sicherheits- und Kernfunktionen sind durch eine pytest-Suite abgedeckt
-(`test_abstractions_manager.py`): Path-Traversal, Shell-Injection, Modell-/
-Sprach-Allowlist, Timeout, API-Schlüssel, Hash-Change-Detection, atomisches
-State-Schreiben.
+Cluster artifacts are built and distributed from the `special-engine` branch:
 
-```bash
-pytest test_abstractions_manager.py -v
-```
+| Package | Registry | Description |
+|---|---|---|
+| `@kikikari/openclaw-client` | [GitHub Packages (npm)](https://github.com/KikiKari/OpenClaw/packages) | React/JS frontend client |
+| `openclaw-py` | [PyPI](https://pypi.org/project/openclaw-py) | Python gateway client library |
+| `ghcr.io/kikikari/openclaw` | [GitHub Container Registry](https://github.com/KikiKari/OpenClaw/pkgs/container/openclaw) | Docker image |
 
-## ClawHub — Veröffentlichte Skills
+---
 
-Die Abstraction Manager beider Gateways veröffentlichen Skills automatisch
-im öffentlichen OpenClaw Registry auf **[clawhub.ai/@KikiKari](https://clawhub.ai/@KikiKari)**.
+## Branch Overview
+
+| Branch | Description |
+|---|---|
+| `main` | Documentation, security policies, gateway structure |
+| `gateway1` / `gateway2` | Gateway node configurations |
+| `gateway1-abstractions` / `gateway2-abstractions` | Abstraction layers |
+| `gh-pages` | GitHub Pages — [kikikari.github.io/OpenClaw](https://kikikari.github.io/OpenClaw/) |
+| `verbose-waddle` | GitHub infrastructure setup & sandbox |
+| `special-engine` | Claude Code frontend & package distribution |
+
+---
+
+## ClawHub Skills
 
 ### Installation
 
