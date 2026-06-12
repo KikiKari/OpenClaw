@@ -354,7 +354,7 @@ dort entstehen die ausführlichen Projektdokumentationen:
 |---|---|---|---|---|
 | **Development-Ops** | [#2](https://github.com/users/KikiKari/projects/2) | [development-ops](https://linear.app/0penclaw/project/development-ops-78509b425da6) | [Development Ops](https://app.notion.com/p/37d8d8ad3db980e191ceca98e7d5b74d) | Automatisierter DevOps-/PM-Workflow (Perplexity → GitHub → Vercel/Linear/Notion) |
 | **Weather-Check** | [#3](https://github.com/users/KikiKari/projects/3) | [weather-check](https://linear.app/0penclaw/project/weather-check-c8f3e3285648) | [Pflichtenheft](https://app.notion.com/p/3678d8ad3db9813f8a32e6aa63637ca2) · [Architektur](https://app.notion.com/p/37a8d8ad3db9819ca568da9f3bdc7ee6) · [Programmableitung](https://app.notion.com/p/37a8d8ad3db981bd88aff8ad793b9c78) | Lokaler Regen-Check PWA + Android APK (GPS, Bildanalyse, Warnmodus, Sonar-Audio) |
-| **Vision-Check** | [#4](https://github.com/users/KikiKari/projects/4) | [vision-check](https://linear.app/0penclaw/project/vision-check-c9501da64334) | — _(in Arbeit)_ | KI-Biodiversitätserkennung via Smartphone-Kamera (4K) + On-Device-KI + Cloud Vision |
+| **Vision-Check** | [#4](https://github.com/users/KikiKari/projects/4) | [vision-check](https://linear.app/0penclaw/project/vision-check-c9501da64334) | [Vision-Check](https://app.notion.com/p/37d8d8ad3db981448a70d5f2c3e79261) | KI-Biodiversitätserkennung via Smartphone-Kamera (4K) + On-Device-KI + Cloud Vision |
 
 > Board-Items spiegeln den jeweiligen Quell-Stand: Milestones bzw. Architektur-Bausteine
 > als Todo/Done. `coding-agent` (Board [#1](https://github.com/users/KikiKari/projects/1)) ist oben separat beschrieben.
