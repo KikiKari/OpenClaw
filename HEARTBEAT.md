@@ -2,7 +2,7 @@
 
 ## Periodische Checks (alle 45min)
 
-- Last run: 2026-06-09 00:02:01 CEST
+- Last run: 2026-06-12 02:34:00 CEST
 
 ### System
 - [x] System: vmstat
@@ -11,11 +11,11 @@
 - [x] Memory: free -h
 - [x] Load: uptime
 - [x] Logs: journalctl -n 200 -q
-- [ ] Crons: openclaw cron list
-- [ ] Agents: openclaw agents list
-- [ ] Tasks: openclaw tasks list
-- [ ] Channels: openclaw channels list
-- [ ] Sessions: openclaw sessions
+- [x] Crons: openclaw cron list
+- [x] Agents: openclaw agents list
+- [x] Tasks: openclaw tasks list
+- [x] Channels: openclaw channels list
+- [x] Sessions: openclaw sessions
 - [x] Nodes: openclaw nodes status && openclaw node list
 
 
