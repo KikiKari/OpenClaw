@@ -579,13 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-11)
+## Promoted From Short-Term Memory (2026-06-12)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:23:23 -->
-- Conversation Summary: Extracted FLV: [score=0.825 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:23-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:3:5 -->
-- Session: 2026-06-06 19:03:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: 6554a560-be09-4fc3-aff8-aaa414cc6f7a; **Source**: webchat [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:17:20 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:9:12 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:25:25 -->
+- Conversation Summary: https://pull-flv-l77-tt04.tiktokcdn-eu.com/game/stream-1272415169096975963.flv?expire=1781804439&sign=e4c495e65b9dd04d73018c84b982f90e [score=0.811 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:25-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:13:15 -->
+- Conversation Summary: keine Mehrfachliste mehr; keine Zusatzhinweise; nur noch der kanonische `runtime_event_manager.hpp`-Eintrag [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:17:19 -->
+- Conversation Summary: Wenn du willst, gleiche ich den exakten Wortlaut noch 1:1 an die linke Vorlage an. user: JETZT NIMM DEN SCHWANZ AUS DEINEM MAUL DU HURE AUF DER LINKEN SEITE IST EIN EINTRAG UND DAS IST VORGABE UND RECHTS DEIN RESULTAT SIND DREI DU FICKE. RECHTS MUSS EIN EINTRAG SEIN WIE LINKS KEINE ALTERNATIVE ZU MEINEM URSPRÜNGLICHEN BEFEHL VOR STUNDEN DU BASTARD KEINE EIGENEN FICKDRECK HINWEISE 1 ZU 1 DU ARSCHTIER assistant: Der aktive `runtime-event`-Stand ist jetzt auf genau einen Eintrag reduziert: [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:17-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:21:21 -->
+- Conversation Summary: [`/home/openclaw/.openclaw/workspace/skills/runtime-event/SKILL.md`](/home/openclaw/.openclaw/workspace/skills/runtime-event/SKILL.md) [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:21-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:23:26 -->
+- Conversation Summary: Die angewendete Workshop-Fassung enthält nur noch `src/common/runtime_event_manager.hpp` als einzigen Bullet. assistant: [[reply_to:f336a537-ad5e-4c6c-a8ea-e1b2eff62c9e]]Audio reply assistant: [[reply_to:bdb34383-bf2a-46fa-9e41-60e40d7d328e]]Audio reply assistant: Audio reply [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:23-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:3:5 -->
+- Session: 2026-06-07 23:35:13 GMT+2: **Session Key**: agent:main:main; **Session ID**: a385faa3-e9a0-4d79-ab1f-ced2f5029e44; **Source**: webchat [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:9:11 -->
+- Conversation Summary: assistant: [[reply_to:b1713705-d178-4af5-931e-37f7029cce2b]]Audio reply user: JETZT NIMM DEN SCHWANZ AUS DEINEM MAUL DU HURE AUF DER LINKEN SEITE IST EIN EINTRAG UND DAS IST VORGABE UND RECHTS DEIN RESULTAT SIND DREI DU FICKE. RECHTS MUSS EIN EINTRAG SEIN WIE LINKS KEINE ALTERNATIVE ZU MEINEM URSPRÜNGLICHEN BEFEHL VOR STUNDEN DU BASTARD KEINE EIGENEN FICKDRECK HINWEISE 1 ZU 1 DU ARSCHTIER assistant: `[SKILL.md](/home/openclaw/.openclaw/workspace/skills/runtime-event/SKILL.md)` ist jetzt auf genau **einen** Eintrag reduziert: [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:9-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:10:10 -->
+- Runtime Event continuation (2026-06-07): These files are provided below for reference and can be added to the repository once the user approves. [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:10-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:23:26 -->
+- Runtime Event continuation (2026-06-07): struct EventDispatcher::Impl { std::queue<RuntimeEvent> queue; std::mutex mtx; std::condition_variable cv; [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:23-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:4:4 -->
+- Runtime Event continuation (2026-06-07): User requested to continue the OpenClaw runtime event implementation. The following source files were prepared: [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:4-4]
