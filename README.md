@@ -344,6 +344,20 @@ Beide Gateways teilen sich dasselbe Board und denselben Codex-Migrationsstand;
 Aufgaben werden je nach Verfügbarkeit/Priorität auf Gateway 1 oder 2 ausgeführt
 (siehe [Netzwerk-Topologie](#netzwerk-topologie)).
 
+### Project Boards (GitHub ↔ Linear)
+
+Weitere Vorhaben werden als GitHub Project Boards geführt und mit dem jeweiligen
+Linear-Projekt im Workspace `0penClaw` gespiegelt:
+
+| Projekt | GitHub Board | Linear | Kurzbeschreibung |
+|---|---|---|---|
+| **Development-Ops** | [#2](https://github.com/users/KikiKari/projects/2) | [development-ops](https://linear.app/0penclaw/project/development-ops-78509b425da6) | Automatisierter DevOps-/PM-Workflow (Perplexity → GitHub → Vercel/Linear/Notion) |
+| **Weather-Check** | [#3](https://github.com/users/KikiKari/projects/3) | [weather-check](https://linear.app/0penclaw/project/weather-check-c8f3e3285648) | Lokaler Regen-Check PWA + Android APK (GPS, Bildanalyse, Warnmodus, Sonar-Audio) |
+| **Vision-Check** | [#4](https://github.com/users/KikiKari/projects/4) | [vision-check](https://linear.app/0penclaw/project/vision-check-c9501da64334) | KI-Biodiversitätserkennung via Smartphone-Kamera (4K) + On-Device-KI + Cloud Vision |
+
+> Board-Items spiegeln den jeweiligen Quell-Stand: Milestones bzw. Architektur-Bausteine
+> als Todo/Done. `coding-agent` (Board [#1](https://github.com/users/KikiKari/projects/1)) ist oben separat beschrieben.
+
 ## Automatische Synchronisation
 
 | Typ | Zeitpunkte |
