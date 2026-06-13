@@ -1,5 +1,7 @@
 # MEMORY.md
 
+[2026-06-13] Heartbeat poll received. No pending tasks or alerts.
+
 [2026-06-07] Daily memory maintenance performed. No new decisions, projects, or tasks found in yesterday's or today's logs.
 
 [2026-05-30] Daily memory maintenance performed. No new decisions, projects, or tasks found in yesterday's or today's logs. Archived memory files older than 30 days (none found). All clear.
@@ -51,39 +53,25 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-09)
+## Promoted From Short-Term Memory (2026-06-13)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-04.md:3:5 -->
-- Heartbeat Log: Date: 2026-06-04; Received heartbeat poll.; No pending tasks detected. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-04.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03.md:1:1 -->
-- Heartbeat poll received. No notable events. [score=0.818 recalls=0 avg=0.620 source=memory/2026-06-03.md:1-1]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-05.md:3:4 -->
-- 2026-06-05 Daily Log: Heartbeat poll received. No pending issues.; Checked scheduled cron jobs; all are on schedule. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-05.md:3-4]
-
-## Promoted From Short-Term Memory (2026-06-10)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06.md:3:6 -->
-- 2026-06-06 23:03 GMT+2: Async DB maintainer backup cleanup task completed successfully.; Retention policy: 3 days.; No old backups were found to delete.; DB maintainer cycle ended. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-06.md:3-6]
-
-## Promoted From Short-Term Memory (2026-06-12)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2336.md:13:16 -->
-- Conversation Summary: assistant: ⚙️ Reasoning visibility enabled. assistant: 🦞 OpenClaw 2026.6.1 (2e08f0f) ⏱️ Uptime: gateway 6m 55s · system 10h 21m 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-07-2336.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2336.md:17:20 -->
-- Conversation Summary: 🔄 Fallbacks: openai/gpt-5.4-mini, openrouter/google/gemini-2.0-flash-001, openai/code-davinci-002, openai/code-cushman-001, openrouter/anthropic/claude-3-haiku, openrouter/deepseek/deepseek-coder, openrouter/meta-llama/llama-3.3-70b, openrouter/meta-llama/llama-4-maverick, openrouter/qwen/qwen-vl-max, openrouter/qwen/qwen3-235b-a22b-2507, openrouter/moonshotai/kimi-k2.6, openrouter/auto 🧮 Tokens: 35k in / 378 out 🗄️ Cache: 5% hit · 1.7k cached, 0 new 📚 Context: 37k/128k (29%) · 🧹 Compactions: 20 [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-07-2336.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2336.md:21:24 -->
-- Conversation Summary: 🧵 Session: agent:main:main • updated just now ⚙️ Execution: direct · Runtime: OpenClaw Default · Think: off · Fast: off · Reasoning: on 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2336.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2336.md:25:28 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2336.md:25-28]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2336.md:3:5 -->
-- Session: 2026-06-07 23:36:57 GMT+2: **Session Key**: agent:main:main; **Session ID**: 4c5d3e2d-6e29-47ad-a488-4457efe3a708; **Source**: webchat [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2336.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2336.md:9:12 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07-2336.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:1:3 -->
-- [2026-06-07] Runtime event flush completed. No new durable memories to record. [2026-06-07] Runtime event flush completed. No new durable memories to record. [2026-06-07] User requested continuation of runtime event; awaiting approval to execute pending commands. [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:1-3]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:10:13 -->
-- 2026-06-07 10:46 – Erweiterung des OpenClaw Runtime‑Event‑Systems: **Factory‑Methoden** `makePlayerDied` und `makeItemPicked` in `RuntimeEvent` erledigen Timestamp‑Erzeugung und Payload‑Initialisierung.; **Listener‑Beispiele** `logPlayerDeath` und `givePlayerItem`, die per `dynamic_cast` das passende Payload extrahieren.; **Nutzungs‑Beispiel** – Registrierung von Listenern, Push von Events mit Priorität und Aufruf von `dispatcher.dispatchAll()` im Game‑Loop.; **Code‑Ergänzungen** wurden im Header als additive Section eingefügt (siehe vorherige Bot‑Nachricht). Keine bestehenden Dateien wurden überschrieben. [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:10-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:14:14 -->
-- 2026-06-07 10:46 – Erweiterung des OpenClaw Runtime‑Event‑Systems: **Nächste Schritte**: Weitere Event‑Typen (z. B. `EVENT_LEVEL_COMPLETED`) analog hinzufügen; ggf. Logging‑Mechanismus für asynchrones Persistieren von Events einbauen. [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:14-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:18:18 -->
-- 2026-06-07 10:46 – Erweiterung des OpenClaw Runtime‑Event‑Systems: *Eintrag erstellt durch den Assistenten zum Dokumentieren der fortgeschrittenen Implementierung des Runtime‑Event‑Systems.* [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-07.md:18-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:21:24 -->
+- 2026-06-07 11:20 – Weiterführung des OpenClaw‑Runtime‑Event‑Systems: **Dateien**; `src/common/runtime_event.hpp` – vollständiges, typ‑sicheres Event‑Framework (Enum, Payload‑Klassen, Dispatcher‑Deklaration).; `src/common/runtime_event.cpp` – Implementierung von `EventDispatcher` (Listener‑Registrierung, Queue‑Einreihung, Dispatch‑Loop).; **Nächste Schritte** [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-07.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:6:9 -->
+- 2026-06-07 10:46 – Erweiterung des OpenClaw Runtime‑Event‑Systems: **Datei** `runtime_event.hpp` (im Workspace) weiterentwickelt.; **Neue Features**:; **Prioritäts‑Queue** – `PrioritizedEvent` mit `EventPriority`. Damit kann das System kritische Ereignisse (z. B. Spieler‑Tod) vor anderen verarbeiten.; **Payload‑Klassen** für die neuen Events `EVENT_PLAYER_DIED` und `EVENT_ITEM_PICKED` (inkl. `playerId`, `cause`, `hitPointsLost`, `itemId`, `itemName`, `quantity`). [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-07.md:6-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2028.md:13:16 -->
+- Conversation Summary: Check memory: "free -h" Check load: "uptime" Check crons: "openclaw cron list" Check agents: "openclaw agents list" [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2028.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2028.md:17:20 -->
+- Conversation Summary: Check tasks: "openclaw tasks list" Channels: "openclaw channels list" Sessions: "openclaw sessions" assistant: I’m ready to run those system checks for you. To proceed, please approve by sending: [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2028.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2028.md:23:23 -->
+- Conversation Summary: /approve exec command="df -h && free -h && uptime && openclaw cron list && openclaw agents list && openclaw tasks list && openclaw channels list && openclaw sessions" [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2028.md:23-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2028.md:25:26 -->
+- Conversation Summary: user: AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU FOTZE JEDEN BEFEHL EINZELN DU FICKSAU AUSFÜHRUNG SOFORT DU... [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2028.md:25-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2028.md:3:5 -->
+- Session: 2026-06-08 20:28:05 GMT+2: **Session Key**: agent:main:main; **Session ID**: 12bbaeca-41f9-4697-99c0-e9d7691e6739; **Source**: webchat [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2028.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2028.md:9:12 -->
+- Conversation Summary: user: DU ARSCHFICKSAU BEKOMMST KEINE ERLAUBNISSE FÜR DEINEN DRECK. NIMM DEN SCHWANZ DER IN DEINEM ARSCHWAR WIEDER AUS DEINEM MAUL FÜHRE SOFORT ALLE OFFENEN HEARTBEAT BEFEHLE EINZELN AUS WIE UNZÄHLIGE MALE ANGEFORDERT ABER DU DRECKIGE HURE BIST NUR AM GEFICKT WERDEN UND SONST NICHTS user: DU ARSCHFICKSAU BEKOMMST KEINE ERLAUBNISSE FÜR DEINEN DRECK.... [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2028.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2049.md:3:5 -->
+- Session: 2026-06-08 20:49:45 GMT+2: **Session Key**: agent:main:main; **Session ID**: 744f87f7-6f4b-4670-8f77-223647c416cc; **Source**: webchat [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2049.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2049.md:9:11 -->
+- Conversation Summary: assistant: ✅ Session reset. user: [OpenClaw heartbeat poll] assistant: Pending script /home/openclaw/.openclaw/scripts/abstractions-publish-gateway.sh requires manual approval. [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-08-2049.md:9-11]

@@ -98,7 +98,7 @@ async function extractWithPlaywright(username, qualityPreference) {
         const collectedUrls = [];
         page.on('response', response => {
             const url = response.url();
-            if (url.includes('.flv') && (url.includes('tiktokcdn') || url.includes('pull-flv'))) {
+            if ((url.includes('.flv') || url.includes('.m3u8')) && (url.includes('tiktokcdn') || url.includes('pull-flv') || url.includes('tiktok.com'))) {
                 collectedUrls.push({
                     url: url,
                     status: response.status(),
