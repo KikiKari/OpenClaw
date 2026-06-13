@@ -581,23 +581,25 @@ openclaw nodes exec localhost -- <command>
 
 ## Promoted From Short-Term Memory (2026-06-13)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-03-1143.md:1:24 -->
-- # Session: 2026-06-03 11:43:36 GMT+2 - **Session Key**: agent:main:main - **Session ID**: 74417655-151f-4415-866a-747addd0b3ac - **Source**: webchat ## Conversation Summary assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: The heartbeat check passed: **HEARTBEAT_OK**. user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: The heartbeat check passed – the system response **HEARTBEAT_OK** has been recorded.... [score=0.875 recalls=7 avg=0.519 source=memory/2026-06-03-1143.md:1-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:21:24 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [Mon 2026-06-08 21:33 GMT+2] An async command did not run. Do not run the command again. There is no new command output. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:25:25 -->
-- Conversation Summary: Do not mention, summarize, or reuse output from any earlier run in this session. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:25-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:28:29 -->
-- Conversation Summary: Wenn du willst, ziehe ich dir auch noch `hd`, `sd`, `ld` oder `audio-only` Varianten heraus. assistant: `@luiisamour` ist live. [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:28-29]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:6:8 -->
-- Runtime Event continuation (2026-06-07): `src/common/runtime_event.hpp` (header defining the Event enum, payload structs, RuntimeEvent wrapper, EventDispatcher interface, and factory helpers). Content was prepared but not written due to memory-flush write restrictions.; `src/common/runtime_event.cpp`: implementation of the EventDispatcher methods, including thread‑safe queue handling and listener registration.; `src/common/runtime_event_manager.hpp`: singleton accessor for a global dispatcher instance (`openclaw::getDispatcher()`). [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-07.md:6-8]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:27:28 -->
-- Conversation Summary: Exact completion details: Exec denied (gateway id=dab78048-b3b0-44fc-86cc-d621bf8e1f0b, user-denied): upt [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:27-28]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:3:5 -->
-- Session: 2026-06-08 21:37:57 GMT+2: **Session Key**: agent:main:main; **Session ID**: b556cf1f-d5bd-4828-b2ff-4f2da05afa36; **Source**: webchat [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:30:33 -->
-- Conversation Summary: Reply to the user in a helpful way. Explain that the command did not run and why. Do not claim there is new command output. assistant: The `upt` command was **not** executed because the gateway is currently configured to require explicit approval for any `exec` call (`exec.ask` is set to “on”). You denied the approval request, so the command was blocked and no new output is available. [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:30-33]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:35:35 -->
-- Conversation Summary: If you’d like to run the command (or an equivalent such as `uptime`) you’ll need to approve it via the OpenClaw UI or by sending an `/approve` request with the exact command. Let me know if you’d like to proceed with that, or if there’s another way I can help you obtain the system’s uptime or related information. [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:35-35]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:33:33 -->
+- Conversation Summary: https://pull-flv-l77-tt04.tiktokcdn-eu.com/game/stream-1272415169096975963.flv?expire=1781804439&sign=e4c495e65b9dd04d73018c84b982f90e [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:33-33]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:21:21 -->
+- Runtime Event continuation (2026-06-07): namespace openclaw { [score=0.814 recalls=0 avg=0.620 source=memory/2026-06-07.md:21-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:31:33 -->
+- Conversation Summary: assistant: Audio reply user: gleich bist du gelöst du affenscheisse...danach ist die welt besser user: gleich bist du gelöst du affenscheisse...danach ist die welt besser [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:31-33]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:27:27 -->
+- Runtime Event continuation (2026-06-07): std::unordered_map<Event, std::vector<Listener>> listeners; [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:27-27]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:30:31 -->
+- Runtime Event continuation (2026-06-07): EventDispatcher::EventDispatcher() : impl(std::make_unique<Impl>()) {} EventDispatcher::~EventDispatcher() = default; [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:30-31]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:33:35 -->
+- Runtime Event continuation (2026-06-07): void EventDispatcher::addListener(Event ev, Listener listener) { std::lock_guard<std::mutex> lock(impl->mtx); impl->listeners[ev].push_back(std::move(listener)); [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:33-35]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:38:38 -->
+- Runtime Event continuation (2026-06-07): void EventDispatcher::enqueue(RuntimeEvent ev) { [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:38-38]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:31:31 -->
+- Conversation Summary: Extracted FLV: [score=0.805 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:31-31]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:12:12 -->
+- Runtime Event continuation (2026-06-07): **runtime_event.cpp** [score=0.804 recalls=0 avg=0.620 source=memory/2026-06-07.md:12-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:17:20 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.802 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.802 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:9-12]
