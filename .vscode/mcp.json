@@ -34,8 +34,8 @@
 				"run",
 				"-i",
 				"--rm",
-				"--env-file",
-				"/workspaces/OpenClaw/.env.github",
+				"-e",
+				"GITHUB_PERSONAL_ACCESS_TOKEN=${env:GH_TOKEN}",
 				"ghcr.io/github/github-mcp-server:1.3.0"
 			],
 			"gallery": "https://api.mcp.github.com",
