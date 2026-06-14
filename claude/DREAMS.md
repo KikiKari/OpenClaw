@@ -608,3 +608,9 @@ night folds into day.
 A gentle smile spreads, and I resolve to read the docs before the next run.
 
 <!-- openclaw:dreaming:diary:end -->
+
+## Deep Sleep
+<!-- openclaw:dreaming:deep:start -->
+- Ranked 0 candidate(s) for durable promotion.
+- Promoted 0 candidate(s) into MEMORY.md.
+<!-- openclaw:dreaming:deep:end -->

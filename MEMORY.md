@@ -71,3 +71,10 @@
 - Session: 2026-06-08 22:16:04 GMT+2: **Session Key**: agent:main:main; **Session ID**: 49494dd2-116a-4ce7-9d15-63a32320c5bb; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2216.md:3-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-08-2216.md:9:12 -->
 - Conversation Summary: assistant: ✅ Session reset. assistant: <messageaction="send" message="✅ Session has been reset. How can I assist you now?" /> assistant: ANNOUNCE_SKIP user: [OpenClaw heartbeat poll] [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2216.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-14)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-09.md:1:1 -->
+- [2026-06-09] DB maintenance completed: Ran tree scan, updated tree.db, detected 8 doc changes, updated docs.db, created hourly backups, cleaned old backups. All tasks succeeded. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-09.md:1-1]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-10.md:3:3 -->
+- Heartbeat poll received. No pending tasks or new items. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-10.md:3-3]

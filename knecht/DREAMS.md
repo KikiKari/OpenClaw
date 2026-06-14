@@ -150,3 +150,9 @@ What Happened
 Reflections
 1. A meaningful share of the day went into friction, and the interaction pattern looks pragmatic rather than emotional: diagnose the blocker, preserve state, and move on. [memory/2026-04-26-1729.md:9, memory/2026-04-26-1729.md:110, memory/2026-04-26-1729.md:111]
 <!-- openclaw:dreaming:diary:end -->
+
+## Deep Sleep
+<!-- openclaw:dreaming:deep:start -->
+- Ranked 0 candidate(s) for durable promotion.
+- Promoted 0 candidate(s) into MEMORY.md.
+<!-- openclaw:dreaming:deep:end -->
