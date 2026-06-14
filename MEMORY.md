@@ -579,27 +579,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-13)
+## Promoted From Short-Term Memory (2026-06-14)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:33:33 -->
-- Conversation Summary: https://pull-flv-l77-tt04.tiktokcdn-eu.com/game/stream-1272415169096975963.flv?expire=1781804439&sign=e4c495e65b9dd04d73018c84b982f90e [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:33-33]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:21:21 -->
-- Runtime Event continuation (2026-06-07): namespace openclaw { [score=0.814 recalls=0 avg=0.620 source=memory/2026-06-07.md:21-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:31:33 -->
-- Conversation Summary: assistant: Audio reply user: gleich bist du gelöst du affenscheisse...danach ist die welt besser user: gleich bist du gelöst du affenscheisse...danach ist die welt besser [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:31-33]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:27:27 -->
-- Runtime Event continuation (2026-06-07): std::unordered_map<Event, std::vector<Listener>> listeners; [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:27-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:30:31 -->
-- Runtime Event continuation (2026-06-07): EventDispatcher::EventDispatcher() : impl(std::make_unique<Impl>()) {} EventDispatcher::~EventDispatcher() = default; [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:30-31]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:33:35 -->
-- Runtime Event continuation (2026-06-07): void EventDispatcher::addListener(Event ev, Listener listener) { std::lock_guard<std::mutex> lock(impl->mtx); impl->listeners[ev].push_back(std::move(listener)); [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:33-35]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:38:38 -->
-- Runtime Event continuation (2026-06-07): void EventDispatcher::enqueue(RuntimeEvent ev) { [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-07.md:38-38]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-06-1903.md:31:31 -->
-- Conversation Summary: Extracted FLV: [score=0.805 recalls=0 avg=0.620 source=memory/2026-06-06-1903.md:31-31]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-07.md:12:12 -->
-- Runtime Event continuation (2026-06-07): **runtime_event.cpp** [score=0.804 recalls=0 avg=0.620 source=memory/2026-06-07.md:12-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:17:20 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.802 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2137.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.802 recalls=0 avg=0.620 source=memory/2026-06-08-2137.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-07-2335.md:27:30 -->
+- Conversation Summary: assistant: Audio reply assistant: Audio reply assistant: Audio reply assistant: Audio reply [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-07-2335.md:27-30]

@@ -353,3 +353,9 @@ Candidates
 Possible Lasting Updates
 - 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-05-09-2310.md:92]
 <!-- openclaw:dreaming:diary:end -->
+
+## Deep Sleep
+<!-- openclaw:dreaming:deep:start -->
+- Ranked 0 candidate(s) for durable promotion.
+- Promoted 0 candidate(s) into MEMORY.md.
+<!-- openclaw:dreaming:deep:end -->
