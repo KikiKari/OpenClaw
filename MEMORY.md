@@ -2,6 +2,8 @@
 
 [2026-06-13] Heartbeat poll received. No pending tasks or alerts.
 
+[2026-06-15] ARCHIVE_MEMORY reminder handled. No memory files older than 30 days were found, so nothing was archived.
+
 [2026-06-07] Daily memory maintenance performed. No new decisions, projects, or tasks found in yesterday's or today's logs.
 
 [2026-05-30] Daily memory maintenance performed. No new decisions, projects, or tasks found in yesterday's or today's logs. Archived memory files older than 30 days (none found). All clear.
@@ -78,3 +80,8 @@
 - [2026-06-09] DB maintenance completed: Ran tree scan, updated tree.db, detected 8 doc changes, updated docs.db, created hourly backups, cleaned old backups. All tasks succeeded. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-09.md:1-1]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-10.md:3:3 -->
 - Heartbeat poll received. No pending tasks or new items. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-10.md:3-3]
+
+## Promoted From Short-Term Memory (2026-06-15)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-11.md:3:3 -->
+- Heartbeat poll at 12:01 GMT+2. No pending tasks. Memory checked; no new notes. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-11.md:3-3]
