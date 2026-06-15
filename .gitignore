@@ -289,3 +289,13 @@ memory/2026-04-13-dream-memory.md
 # =====================================================
 memory/
 **/memory/
+
+# =====================================================
+# Lokale Laufzeit-/Browser-/npm-Artefakte
+# =====================================================
+.npm/
+**/.npm/
+.local/share/pki/
+**/.local/share/pki/
+.openclaw/tmp/
+**/.openclaw/tmp/
