@@ -1,0 +1,9 @@
+{
+  "name": "tiktok-live-temp",
+  "version": "1.0.0",
+  "description": "Temporary scripts for TikTok Live skill",
+  "main": "tiktok-check-profile.js",
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
