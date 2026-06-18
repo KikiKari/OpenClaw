@@ -90,3 +90,12 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-13.md:1:1 -->
 - [2026-06-13] Heartbeat poll received. No pending tasks or alerts. [score=0.833 recalls=0 avg=0.620 source=memory/2026-06-13.md:1-1]
+
+## Promoted From Short-Term Memory (2026-06-18)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:21:24 -->
+- Conversation Summary: We need to respond correctly: just "HEARTBEAT_OK". Possibly provide a clean response. No extra. So final: "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HE user: [OpenClaw heartbeat poll] [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:3:5 -->
+- Session: 2026-06-14 23:02:35 GMT+2: **Session Key**: agent:main:main; **Session ID**: 8747040d-7bc8-4915-ae3f-71152a84dcc4; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:3-5]
