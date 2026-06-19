@@ -12,6 +12,7 @@
  */
 
 const { chromium } = require('playwright');
+const fs = require('fs');
 
 const username = process.argv[2];
 if (!username) {
@@ -195,7 +196,10 @@ async function detectLiveStatus(page) {
 
     // --- Priorität 5: Link auf /live ---
     try {
-        const liveLink = await page.$('a[href*="/live"]');
+        const escapedUsername = username.replace(/["\\]/g, '\\$&');
+        const liveLink = await page.$(
+            `a[href="/@${escapedUsername}/live"], a[href^="/@${escapedUsername}/live?"]`
+        );
         if (liveLink) {
             indicators.liveLink = true;
             detectionMethod = 'live-link';
@@ -258,6 +262,18 @@ async function checkAgeRestriction(page, username) {
 
 async function checkLiveStatus(username) {
     let browser;
+    try {
+        fs.accessSync(chromium.executablePath(), fs.constants.X_OK);
+    } catch (error) {
+        console.error(JSON.stringify({
+            error: true,
+            status: 'dependency_missing',
+            method: 'playwright_enhanced',
+            message: `Playwright Chromium unavailable: ${error.message}`,
+            timestamp: new Date().toISOString()
+        }));
+        process.exit(2);
+    }
     try {
         browser = await chromium.launch({ headless: true });
         const context = await browser.newContext({

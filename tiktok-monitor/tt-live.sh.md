@@ -203,11 +203,11 @@ over a long window:
 
 ```bash
 # Step 1: resolve identity (gives sec_uid, plus a snapshot of current state)
-JSON="$(tt-live.sh check luiisamour)"
+JSON="$(tt-live.sh check example_creator)"
 SEC_UID="$(echo "$JSON" | python3 -c 'import json,sys; print(json.load(sys.stdin)["sec_uid"])')"
 
 # Step 2: spawn the daemon
-DAEMON_OUT="$(tt-live.sh daemon luiisamour --hours 12 --poll-min 5)"
+DAEMON_OUT="$(tt-live.sh daemon example_creator --hours 12 --poll-min 5)"
 EVENTS_DIR="$(echo "$DAEMON_OUT" | awk -F= '/^events_dir=/{print $2}')"
 EVENTS_FILE="$EVENTS_DIR/$SEC_UID.events"
 
@@ -219,10 +219,10 @@ The sub-agent reads each new line from the events file and decides what
 to announce back into its requester chat channel. The wrapper itself
 does not announce anything.
 
-For a one-off check ("is @luiisamour live right now"):
+For a one-off check ("is @example_creator live right now"):
 
 ```bash
-if tt-live.sh check luiisamour > /tmp/status.json; then
+if tt-live.sh check example_creator > /tmp/status.json; then
   # exit 0 → user is live; /tmp/status.json has room_id, title, etc.
   cat /tmp/status.json
 else
@@ -234,7 +234,7 @@ fi
 For a one-off URL grab:
 
 ```bash
-URL="$(tt-live.sh url luiisamour)" || { echo "not live or extract failed"; exit 1; }
+URL="$(tt-live.sh url example_creator)" || { echo "not live or extract failed"; exit 1; }
 vlc "$URL"
 ```
 
@@ -243,7 +243,7 @@ vlc "$URL"
 ## 10. Concurrency notes
 
 The wrapper does **not** maintain a PID file or prevent duplicate
-daemons. If `tt-live.sh daemon luiisamour --hours 12` is called twice,
+daemons. If `tt-live.sh daemon example_creator --hours 12` is called twice,
 both daemons will run in parallel, both will write to the same
 `<sec_uid>.events` file, and lines will interleave. Avoiding duplicates
 is the caller's (sub-agent's) responsibility.

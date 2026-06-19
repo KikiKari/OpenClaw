@@ -18,10 +18,10 @@ Type notation:
 ## 1. Filesystem layout
 
 ```
+<identity-dir>/
+├── identities/<sec_uid>.json         §2  Identity record
+└── pointers/<unique_id>.json         §3  Pointer record
 <workspace>/
-├── tiktok-names/
-│   ├── identities/<sec_uid>.json     §2  Identity record
-│   └── pointers/<unique_id>.json     §3  Pointer record
 └── state/tt-live/
     ├── <sec_uid>.state.json          §4  State record
     └── <sec_uid>.events              §5  Event lines (append-only)
@@ -29,6 +29,10 @@ Type notation:
 
 `<workspace>` resolves to `$TT_LIVE_WORKSPACE` (default
 `~/.openclaw/workspace/tiktok-monitor/`).
+`<identity-dir>` resolves to `$TT_LIVE_IDENTITY_DIR` (default
+`~/.openclaw/workspace/tiktok-names/`). If `TT_LIVE_WORKSPACE` is explicitly
+set while `TT_LIVE_IDENTITY_DIR` is unset, it resolves to
+`$TT_LIVE_WORKSPACE/tiktok-names/`.
 
 All filenames use the **raw** `sec_uid` or `unique_id` value. No path
 escaping is needed because:
@@ -42,7 +46,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 
 ## 2. Identity record
 
-**Path:** `<workspace>/tiktok-names/identities/<sec_uid>.json`
+**Path:** `<identity-dir>/identities/<sec_uid>.json`
 **Written by:** `IdentityStore.update_from_scrape`, `IdentityStore.save_identity`
 **Read by:** `IdentityStore.load_identity`, manual inspection
 
@@ -71,7 +75,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 ```json
 {
   "sec_uid": "MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_",
-  "unique_id_current": "luiisamour",
+  "unique_id_current": "example_creator",
   "nickname": "lui",
   "user_id": "131475542305824768",
   "first_seen": "2026-05-20T14:00:00Z",
@@ -79,7 +83,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
   "rename_history": [
     {
       "from": "lui_amour",
-      "to": "luiisamour",
+      "to": "example_creator",
       "detected_at": "2026-05-22T09:14:00Z"
     }
   ]
@@ -99,7 +103,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 
 ## 3. Pointer record
 
-**Path:** `<workspace>/tiktok-names/pointers/<unique_id>.json`
+**Path:** `<identity-dir>/pointers/<unique_id>.json`
 **Written by:** `IdentityStore.write_pointer`
 **Read by:** `IdentityStore.load_pointer`, `IdentityStore.resolve_sec_uid`
 
@@ -119,7 +123,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 
 ```json
 {
-  "unique_id": "luiisamour",
+  "unique_id": "example_creator",
   "sec_uid": "MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_",
   "current": true,
   "first_pointed_at": "2026-05-22T09:14:00Z",
@@ -265,11 +269,11 @@ this holds in practice.
 ### 5.4 Examples
 
 ```
-ts=2026-05-25T18:12:11Z evt=daemon_start sec_uid=MS4wLjA... unique_id=luiisamour hours=12 poll_sec=300
-ts=2026-05-25T18:17:11Z evt=poll_ok sec_uid=MS4wLjA... unique_id=luiisamour alive=false
-ts=2026-05-25T18:22:13Z evt=poll_ok sec_uid=MS4wLjA... unique_id=luiisamour alive=true
-ts=2026-05-25T18:22:13Z evt=go_live sec_uid=MS4wLjA... unique_id=luiisamour room_id=7643867662644251414 stream_url=https://pull-hls-f16-tt04.tiktokcdn-eu.com/.../index.m3u8?expire=1748800000&sign=...
-ts=2026-05-25T19:14:00Z evt=rename_detected sec_uid=MS4wLjA... unique_id=lui_x old_unique_id=luiisamour
+ts=2026-05-25T18:12:11Z evt=daemon_start sec_uid=MS4wLjA... unique_id=example_creator hours=12 poll_sec=300
+ts=2026-05-25T18:17:11Z evt=poll_ok sec_uid=MS4wLjA... unique_id=example_creator alive=false
+ts=2026-05-25T18:22:13Z evt=poll_ok sec_uid=MS4wLjA... unique_id=example_creator alive=true
+ts=2026-05-25T18:22:13Z evt=go_live sec_uid=MS4wLjA... unique_id=example_creator room_id=7643867662644251414 stream_url=https://pull-hls-f16-tt04.tiktokcdn-eu.com/.../index.m3u8?expire=1748800000&sign=...
+ts=2026-05-25T19:14:00Z evt=rename_detected sec_uid=MS4wLjA... unique_id=renamed_creator old_unique_id=previous_handle
 ts=2026-05-25T22:05:00Z evt=poll_ok sec_uid=MS4wLjA... unique_id=lui_x alive=false
 ts=2026-05-25T22:05:00Z evt=go_offline sec_uid=MS4wLjA... unique_id=lui_x last_room_id=7643867662644251414
 ts=2026-05-26T06:12:11Z evt=daemon_end sec_uid=MS4wLjA... unique_id=lui_x reason=timer_expired transitions=2

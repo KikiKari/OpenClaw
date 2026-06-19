@@ -6,6 +6,7 @@
  */
 
 const { chromium } = require('playwright');
+const fs = require('fs');
 
 const username = process.argv[2];
 if (!username) {
@@ -14,6 +15,18 @@ if (!username) {
 }
 
 async function checkLiveStatus(username) {
+    try {
+        fs.accessSync(chromium.executablePath(), fs.constants.X_OK);
+    } catch (error) {
+        console.error(JSON.stringify({
+            error: true,
+            status: 'dependency_missing',
+            method: 'playwright_basic',
+            message: `Playwright Chromium unavailable: ${error.message}`,
+            timestamp: new Date().toISOString()
+        }));
+        process.exit(2);
+    }
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -138,13 +151,20 @@ async function checkLiveStatus(username) {
         }
         
         // Method 4: Check für Live-Link oder Live-Button
-        const liveLink = await page.$('a[href*="/live"]');
+        const escapedUsername = username.replace(/["\\]/g, '\\$&');
+        const liveLink = await page.$(
+            `a[href="/@${escapedUsername}/live"], a[href^="/@${escapedUsername}/live?"]`
+        );
         const hasLiveLink = liveLink !== null;
         
         // Method 5: Check für pulsierenden roten Punkt (Live-Indikator)
         const liveIndicator = await page.$('[class*="live-indicator"], div[class*="LiveBadge"]');
         
-        const isLive = liveIcon !== null || liveBadgeVisible || hasLiveBorder || hasLiveLink || liveIndicator !== null;
+        const isLive =
+            liveIcon !== null ||
+            hasLiveBorder ||
+            liveIndicator !== null ||
+            (liveBadgeVisible && hasLiveLink);
         
         console.log(JSON.stringify({
             username,

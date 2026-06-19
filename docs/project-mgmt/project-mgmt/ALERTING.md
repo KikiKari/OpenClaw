@@ -12,7 +12,7 @@ Grund: Gateway lief unter root UND openclaw. Systemd-Wechsel verursachte Datenve
 - WebChat
 
 ### tiktok-live-alert.sh
-Prüft: @luiisamour, @iman.hayatiii
+Prüft: die im jeweiligen Auftrag übergebenen TikTok-Handles
 - API: localhost:5001 oder localhost:16000
 - Bei Live: Alert + VLC-Link
 

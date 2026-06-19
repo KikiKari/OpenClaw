@@ -389,11 +389,11 @@ This means:
 
 ```bash
 # Daemon 1: 6-hour watch, user goes live at hour 3
-tt-live.sh daemon luiisamour --hours 6
+tt-live.sh daemon example_creator --hours 6
 # events: daemon_start, poll_ok×, go_live, poll_ok×, daemon_end (transitions=1)
 
 # Daemon 2: started right after Daemon 1 ended; user still live
-tt-live.sh daemon luiisamour --hours 6
+tt-live.sh daemon example_creator --hours 6
 # events appended: daemon_start, poll_ok×, ..., daemon_end (no spurious go_live)
 ```
 

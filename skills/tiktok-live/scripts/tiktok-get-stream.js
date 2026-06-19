@@ -6,6 +6,7 @@
  */
 
 const { chromium } = require('playwright');
+const fs = require('fs');
 
 const username = process.argv[2];
 if (!username) {
@@ -14,6 +15,18 @@ if (!username) {
 }
 
 async function getStreamUrl(username) {
+    try {
+        fs.accessSync(chromium.executablePath(), fs.constants.X_OK);
+    } catch (error) {
+        console.error(JSON.stringify({
+            error: true,
+            status: 'dependency_missing',
+            method: 'playwright_network_basic',
+            message: `Playwright Chromium unavailable: ${error.message}`,
+            timestamp: new Date().toISOString()
+        }));
+        process.exit(2);
+    }
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'

@@ -68,6 +68,7 @@ USER_AGENT = (
 )
 
 DEFAULT_WORKSPACE = Path.home() / ".openclaw" / "workspace" / "tiktok-monitor"
+DEFAULT_IDENTITY_DIR = Path.home() / ".openclaw" / "workspace" / "tiktok-names"
 
 
 # ============================================================================
@@ -82,10 +83,20 @@ def resolve_workspace() -> Path:
     return DEFAULT_WORKSPACE
 
 
-def ensure_dirs(ws: Path) -> None:
+def resolve_identity_dir(ws: Path) -> Path:
+    """Resolve the independent TikTok identity/address-book directory."""
+    env = os.environ.get("TT_LIVE_IDENTITY_DIR", "").strip()
+    if env:
+        return Path(env).expanduser().resolve()
+    if os.environ.get("TT_LIVE_WORKSPACE", "").strip():
+        return ws / "tiktok-names"
+    return DEFAULT_IDENTITY_DIR
+
+
+def ensure_dirs(ws: Path, identity_dir: Path) -> None:
     """Create workspace subdirectories if missing."""
-    (ws / "tiktok-names" / "identities").mkdir(parents=True, exist_ok=True)
-    (ws / "tiktok-names" / "pointers").mkdir(parents=True, exist_ok=True)
+    (identity_dir / "identities").mkdir(parents=True, exist_ok=True)
+    (identity_dir / "pointers").mkdir(parents=True, exist_ok=True)
     (ws / "state" / "tt-live").mkdir(parents=True, exist_ok=True)
 
 
@@ -389,9 +400,9 @@ class IdentityStore:
     disk but get current=false so historical lookups still resolve.
     """
 
-    def __init__(self, workspace: Path):
-        self.ident_dir = workspace / "tiktok-names" / "identities"
-        self.ptr_dir = workspace / "tiktok-names" / "pointers"
+    def __init__(self, identity_dir: Path):
+        self.ident_dir = identity_dir / "identities"
+        self.ptr_dir = identity_dir / "pointers"
 
     def _ident_path(self, sec_uid: str) -> Path:
         return self.ident_dir / f"{sec_uid}.json"
@@ -648,8 +659,9 @@ def cmd_check(args: argparse.Namespace) -> int:
     Exit 0 = live, 1 = offline, 2 = error.
     """
     ws = resolve_workspace()
-    ensure_dirs(ws)
-    ids = IdentityStore(ws)
+    identity_dir = resolve_identity_dir(ws)
+    ensure_dirs(ws, identity_dir)
+    ids = IdentityStore(identity_dir)
     state_store = StateStore(ws)
 
     username = args.username
@@ -704,8 +716,9 @@ def cmd_url(args: argparse.Namespace) -> int:
     Prints the URL to stdout. Exit 0 = ok, 1 = offline, 2 = error.
     """
     ws = resolve_workspace()
-    ensure_dirs(ws)
-    ids = IdentityStore(ws)
+    identity_dir = resolve_identity_dir(ws)
+    ensure_dirs(ws, identity_dir)
+    ids = IdentityStore(identity_dir)
     state_store = StateStore(ws)
 
     username = args.username
@@ -763,8 +776,9 @@ def cmd_daemon(args: argparse.Namespace) -> int:
     Returns 0 at clean end (timer expired or interrupted).
     """
     ws = resolve_workspace()
-    ensure_dirs(ws)
-    ids = IdentityStore(ws)
+    identity_dir = resolve_identity_dir(ws)
+    ensure_dirs(ws, identity_dir)
+    ids = IdentityStore(identity_dir)
     state_store = StateStore(ws)
 
     username = args.username

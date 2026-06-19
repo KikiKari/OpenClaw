@@ -49,20 +49,23 @@ Do NOT invoke this skill for:
 
 ## Workspace
 
-All state lives under `$TT_LIVE_WORKSPACE`, default
-`~/.openclaw/workspace/tiktok-monitor/`. Created automatically on first
+Live state, events, and logs live under `$TT_LIVE_WORKSPACE`, default
+`~/.openclaw/workspace/tiktok-monitor/`. The durable identity/address-book
+store lives under `$TT_LIVE_IDENTITY_DIR`, default
+`~/.openclaw/workspace/tiktok-names/`. Created automatically on first
 invocation.
 
 ```
-workspace/
+~/.openclaw/workspace/
 ├── tiktok-names/
 │   ├── identities/<sec_uid>.json     canonical identity records
 │   └── pointers/<unique_id>.json     @handle → sec_uid pointers
-├── state/tt-live/
-│   ├── <sec_uid>.state.json          per-user live state + URL cache
-│   └── <sec_uid>.events              append-only daemon event log
-└── logs/
-    └── daemon-<user>-<UTC-ts>.log    daemon stderr+stdout
+└── tiktok-monitor/
+    ├── state/tt-live/
+    │   ├── <sec_uid>.state.json      per-user live state + URL cache
+    │   └── <sec_uid>.events          append-only daemon event log
+    └── logs/
+        └── daemon-<user>-<UTC-ts>.log daemon stderr+stdout
 ```
 
 ---

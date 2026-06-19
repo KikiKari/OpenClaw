@@ -8,7 +8,9 @@ description: Extract TikTok live stream URLs and check live status using Playwri
 **Aktueller Installationspfad:** `~/.openclaw/workspace/skills/tiktok-live/`
 **Stale Pfad:** `~/.openclaw/skills/tiktok-live/` nicht verwenden.
 
-Extract live stream URLs from TikTok using Playwright-based visual detection. Replaces unreliable API-based methods.
+Extract live stream URLs from TikTok using Playwright-based visual detection.
+API-, Webcast- und CLI-Methoden bleiben als unabhängige Gegenprüfung und
+Fallbacks erhalten.
 
 ## Overview
 
@@ -17,7 +19,8 @@ This skill provides reliable TikTok Live stream extraction by:
 2. Capturing network traffic to extract FLV stream URLs
 3. Supporting multiple playback methods (VLC, MPV, FFmpeg)
 
-**Why not API?** TikTok's API consistently returns OFFLINE even for active streams. Visual detection is the only reliable method.
+Webcast/API-Ergebnisse können von der visuellen Erkennung abweichen. Deshalb
+werden sie nicht allein als endgültiges Offline-Ergebnis verwendet.
 
 ## Prerequisites
 
@@ -32,6 +35,20 @@ sudo ufw allow out 443/tcp
 ```
 
 ## Quick Start
+
+### Kombinierter Dispatcher
+
+Der Dispatcher führt alle verfügbaren Methoden mit festen Zeitlimits aus.
+Ein einzelnes API-`offline` beendet die visuellen Prüfungen nicht.
+
+```bash
+python3 ~/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py check <username>
+python3 ~/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url <username>
+```
+
+Statuswerte: `live`, `offline`, `restricted`, `dependency_missing`,
+`technical_error`. Bei erfolgreicher URL-Auflösung enthält stdout ohne
+`--json` ausschließlich die nackte URL. Methodendiagnosen stehen auf stderr.
 
 ### Check Live Status
 

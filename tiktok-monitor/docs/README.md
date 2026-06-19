@@ -173,6 +173,12 @@ Default: `~/.openclaw/workspace/tiktok-monitor/`
 Override: set `TT_LIVE_WORKSPACE` to any absolute path. The directory
 is created on first invocation.
 
+The durable identity/address-book store defaults to
+`~/.openclaw/workspace/tiktok-names/`. Override it independently with
+`TT_LIVE_IDENTITY_DIR`. When `TT_LIVE_WORKSPACE` is explicitly set and
+`TT_LIVE_IDENTITY_DIR` is not, identities remain under
+`$TT_LIVE_WORKSPACE/tiktok-names/` for compatibility.
+
 Layout details, including the per-file JSON schemas, are in
 [`SCHEMA.md`](SCHEMA.md).
 

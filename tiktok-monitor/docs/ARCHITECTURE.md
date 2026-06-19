@@ -32,9 +32,10 @@ see [DAEMON.md](DAEMON.md).
    IdentityStore  StateStore   EventWriter
         │           │               │
         ▼           ▼               ▼
-   tiktok-names/  state/        state/
-   identities/    tt-live/      tt-live/
-   pointers/      *.state.json  *.events
+   workspace/     state/        state/
+   tiktok-names/  tt-live/      tt-live/
+   identities/    *.state.json  *.events
+   pointers/
 ```
 
 **Trust boundary:** the sub-agent is the only thing that reads events
@@ -51,10 +52,11 @@ tt_live.py
 ├── Constants
 │     FORMAT_CAP="360"   MIN_POLL_MINUTES=5   DEFAULT_DAEMON_HOURS=12
 │     URL_RETENTION_DAYS=3   REQUEST_TIMEOUT_SEC=15   TT_AID="1988"
-│     USER_AGENT   DEFAULT_WORKSPACE
+│     USER_AGENT   DEFAULT_WORKSPACE   DEFAULT_IDENTITY_DIR
 │
 ├── Workspace helpers
-│     resolve_workspace()   ensure_dirs(ws)   now_iso()
+│     resolve_workspace()   resolve_identity_dir(ws)
+│     ensure_dirs(ws, identity_dir)   now_iso()
 │
 ├── HTTP layer
 │     http_get(url) → (status, body)

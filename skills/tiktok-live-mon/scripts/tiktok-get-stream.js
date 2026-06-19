@@ -11,9 +11,30 @@
  */
 
 const { chromium } = require('playwright');
+const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const execPromise = util.promisify(require('child_process').exec);
+const execFilePromise = util.promisify(require('child_process').execFile);
+
+const FALLBACK_TIMEOUT_MS = 45000;
+
+function log(message) {
+    console.error(message);
+}
+
+function playwrightPreflight() {
+    try {
+        const executable = chromium.executablePath();
+        fs.accessSync(executable, fs.constants.X_OK);
+        return { ok: true, executable };
+    } catch (error) {
+        return {
+            ok: false,
+            status: 'dependency_missing',
+            error: `Playwright Chromium unavailable: ${error.message}`
+        };
+    }
+}
 
 function humanDelay(min = 2000, max = 4000) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -80,6 +101,15 @@ async function checkRestrictions(page) {
 // Playwright-basierte FLV-Extraktion
 async function extractWithPlaywright(username, qualityPreference) {
     let browser;
+    const preflight = playwrightPreflight();
+    if (!preflight.ok) {
+        return {
+            success: false,
+            method: 'playwright',
+            status: preflight.status,
+            error: preflight.error
+        };
+    }
     try {
         browser = await chromium.launch({
             headless: true,
@@ -120,8 +150,9 @@ async function extractWithPlaywright(username, qualityPreference) {
         // Prüfe auf Einschränkungen
         const restrictions = await checkRestrictions(page);
         if (restrictions.restricted) {
-            console.log(`Playwright: Stream restricted - ${restrictions.reason}`);
-            return { success: false, method: 'playwright', restricted: true, reason: restrictions.reason };
+            log(`Playwright: Stream restricted - ${restrictions.reason}`);
+            return { success: false, method: 'playwright', status: 'restricted',
+                     restricted: true, reason: restrictions.reason };
         }
 
         // Versuche Video abzuspielen falls nötig
@@ -140,14 +171,16 @@ async function extractWithPlaywright(username, qualityPreference) {
         // Nochmal Restrictions prüfen
         const restrictions2 = await checkRestrictions(page);
         if (restrictions2.restricted) {
-            console.log(`Playwright: Stream became restricted after wait - ${restrictions2.reason}`);
-            return { success: false, method: 'playwright', restricted: true, reason: restrictions2.reason };
+            log(`Playwright: Stream became restricted after wait - ${restrictions2.reason}`);
+            return { success: false, method: 'playwright', status: 'restricted',
+                     restricted: true, reason: restrictions2.reason };
         }
 
         // URLs auswerten
         if (collectedUrls.length === 0) {
-            console.log('Playwright: No FLV URLs captured via network monitoring.');
-            return { success: false, method: 'playwright', restricted: false, reason: 'No FLV URLs found' };
+            log('Playwright: No FLV URLs captured via network monitoring.');
+            return { success: false, method: 'playwright', status: 'offline',
+                     restricted: false, reason: 'No FLV URLs found' };
         }
 
         // Deduplizieren und nach Qualität sortieren
@@ -176,8 +209,9 @@ async function extractWithPlaywright(username, qualityPreference) {
         };
 
     } catch (error) {
-        console.error(`Playwright error: ${error.message}`);
-        return { success: false, method: 'playwright', error: error.message };
+        log(`Playwright error: ${error.message}`);
+        return { success: false, method: 'playwright', status: 'technical_error',
+                 error: error.message };
     } finally {
         if (browser) await browser.close();
     }
@@ -187,7 +221,11 @@ async function extractWithPlaywright(username, qualityPreference) {
 async function tryStreamlink(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-streamlink.sh');
     try {
-        const { stdout } = await execPromise(`bash "${scriptPath}" ${username} ${quality} --json`);
+        const { stdout } = await execFilePromise(
+            'bash',
+            [scriptPath, username, quality, '--json'],
+            { timeout: FALLBACK_TIMEOUT_MS, killSignal: 'SIGTERM', maxBuffer: 1024 * 1024 }
+        );
         return JSON.parse(stdout);
     } catch (error) {
         if (error.stdout) {
@@ -202,7 +240,11 @@ async function tryYtDlp(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-yt-dlp.sh');
     const ytFormat = quality === 'ld' ? 'worst' : (quality === 'auto' ? 'best' : quality);
     try {
-        const { stdout } = await execPromise(`bash "${scriptPath}" ${username} ${ytFormat} --json`);
+        const { stdout } = await execFilePromise(
+            'bash',
+            [scriptPath, username, ytFormat, '--json'],
+            { timeout: FALLBACK_TIMEOUT_MS, killSignal: 'SIGTERM', maxBuffer: 1024 * 1024 }
+        );
         return JSON.parse(stdout);
     } catch (error) {
         if (error.stdout) {
@@ -217,29 +259,29 @@ async function getStreamUrl(username, qualityPreference = 'ld') {
     const timestamp = new Date().toISOString();
 
     // --- 1. Playwright ---
-    console.log(`[1/3] Trying Playwright for @${username}...`);
+    log(`[1/3] Trying Playwright for @${username}...`);
     const pwResult = await extractWithPlaywright(username, qualityPreference);
     if (pwResult.success) {
         pwResult.timestamp = timestamp;
         return pwResult;
     }
-    console.log(`Playwright result: ${pwResult.reason || pwResult.error || 'failed'}`);
+    log(`Playwright result: ${pwResult.reason || pwResult.error || 'failed'}`);
 
     // --- 2. Streamlink (zuverlässigster Fallback) ---
-    console.log(`[2/3] Trying streamlink for @${username} (quality: ${qualityPreference})...`);
+    log(`[2/3] Trying streamlink for @${username} (quality: ${qualityPreference})...`);
     const slResult = await tryStreamlink(username, qualityPreference);
     if (slResult.success) {
         return slResult;
     }
-    console.log(`Streamlink result: ${slResult.message || slResult.error || 'failed'}`);
+    log(`Streamlink result: ${slResult.message || slResult.error || 'failed'}`);
 
     // --- 3. yt-dlp (letzter Versuch) ---
-    console.log(`[3/3] Trying yt-dlp for @${username}...`);
+    log(`[3/3] Trying yt-dlp for @${username}...`);
     const ytResult = await tryYtDlp(username, qualityPreference);
     if (ytResult.success) {
         return ytResult;
     }
-    console.log(`yt-dlp result: ${ytResult.message || ytResult.error || 'failed'}`);
+    log(`yt-dlp result: ${ytResult.message || ytResult.error || 'failed'}`);
 
     // --- Alle fehlgeschlagen ---
     return {

@@ -17,12 +17,20 @@ Automated TikTok Live stream monitoring with Playwright-based visual detection.
 ## Usage
 
 ```bash
+# Run all available methods with bounded retries/timeouts
+python3 ~/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py check <username>
+python3 ~/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url <username>
+
 # Check if user is live
 node ~/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-check-profile.js <username>
 
 # Get stream URL
 node ~/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-get-stream.js <username>
 ```
+
+The dispatcher preserves Python/Webcast API, Playwright network capture,
+streamlink, and yt-dlp. A failure or missing dependency in one method does not
+disable the remaining methods.
 
 ## Requirements
 

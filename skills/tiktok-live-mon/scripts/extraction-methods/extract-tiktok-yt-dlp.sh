@@ -9,8 +9,8 @@ FORMAT="${2:-best}" # Default best quality for yt-dlp
 JSON_FLAG="$3"
 
 # Temporäres Verzeichnis für Logs und Output
-TMP_DIR="/tmp/tiktok_$(date +%s)"
-mkdir -p "$TMP_DIR"
+TMP_DIR=$(mktemp -d /tmp/tiktok-yt-dlp.XXXXXX)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
 if [ -z "$USERNAME" ]; then
     echo '{"success":false,"method":"yt-dlp","error":"Usage: extract-tiktok-yt-dlp.sh <username> [format] [--json]","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' >&2
@@ -23,12 +23,24 @@ LIVE_URL="https://www.tiktok.com/@${USERNAME}/live"
 # --print-json gibt strukturierte Daten aus
 # --output_args '%(url,http_headers.cookie)s' könnte nützlich sein, wird aber hier ignoriert
 # --no-warnings sollte nur für saubere Ausgabe verwendet werden, aber wir loggen stderr
-COMMAND="yt-dlp --no-warnings --print-json --skip-download --write-info-json --prefer-free-formats --format \"${FORMAT}\" \"${LIVE_URL}\""
+COMMAND=(
+    yt-dlp
+    --no-warnings
+    --print-json
+    --skip-download
+    --write-info-json
+    --prefer-free-formats
+    --format "$FORMAT"
+    "$LIVE_URL"
+)
 
-echo "Running command: ${COMMAND}" >&2 # Log command for debugging
+printf 'Running command:' >&2
+printf ' %q' "${COMMAND[@]}" >&2
+printf '\n' >&2
 
-# Führe yt-dlp aus und fange stdout/stderr auf
-eval "$COMMAND" 2> "${TMP_DIR}/yt-dlp.stderr.log" > "${TMP_DIR}/yt-dlp.stdout.log"
+"${COMMAND[@]}" \
+    2> "${TMP_DIR}/yt-dlp.stderr.log" \
+    > "${TMP_DIR}/yt-dlp.stdout.log"
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then

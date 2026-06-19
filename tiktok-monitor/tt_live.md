@@ -103,6 +103,11 @@ endpoints reject obviously-non-browser UAs.
 `Path.home() / ".openclaw" / "workspace" / "tiktok-monitor"`. Used when
 the `TT_LIVE_WORKSPACE` environment variable is unset or empty.
 
+### `DEFAULT_IDENTITY_DIR`
+`Path.home() / ".openclaw" / "workspace" / "tiktok-names"`. Used for the
+durable identity/address-book store when `TT_LIVE_IDENTITY_DIR` and
+`TT_LIVE_WORKSPACE` are unset.
+
 ---
 
 ## 3. Workspace helpers
@@ -117,13 +122,21 @@ Returns the workspace root.
 No filesystem access; pure path resolution. Use `ensure_dirs()` before
 writing.
 
-### `ensure_dirs(ws: Path) -> None`
-Creates the four required subdirectories under `ws` with
+### `resolve_identity_dir(ws: Path) -> Path`
+Returns the durable identity/address-book root.
+
+- If `TT_LIVE_IDENTITY_DIR` is set, returns that path.
+- If `TT_LIVE_WORKSPACE` is explicitly set, returns `<ws>/tiktok-names`
+  for compatibility.
+- Otherwise returns `DEFAULT_IDENTITY_DIR`.
+
+### `ensure_dirs(ws: Path, identity_dir: Path) -> None`
+Creates the required state and identity subdirectories with
 `parents=True, exist_ok=True`:
 
 ```
-<ws>/tiktok-names/identities/
-<ws>/tiktok-names/pointers/
+<identity_dir>/identities/
+<identity_dir>/pointers/
 <ws>/state/tt-live/
 ```
 
@@ -569,7 +582,7 @@ python3 tt_live.py check <username>
 ```json
 {
   "sec_uid":         "MS4wLjA...",
-  "unique_id":       "luiisamour",
+  "unique_id":       "example_creator",
   "nickname":        "Display Name",
   "user_id":         "131475542305824768",
   "live":            true,
@@ -721,6 +734,7 @@ directly runnable.
 | Variable | Purpose | Default |
 |---|---|---|
 | `TT_LIVE_WORKSPACE` | Workspace root override | `~/.openclaw/workspace/tiktok-monitor` |
+| `TT_LIVE_IDENTITY_DIR` | Identity/address-book root override | `~/.openclaw/workspace/tiktok-names` |
 
 No other environment variables are read.
 
@@ -729,16 +743,17 @@ No other environment variables are read.
 ## 16. Filesystem layout (after first use)
 
 ```
-<workspace>/
+~/.openclaw/workspace/
 ├── tiktok-names/
 │   ├── identities/
 │   │   └── MS4wLjA...secUid.json
 │   └── pointers/
-│       └── luiisamour.json
-└── state/
-    └── tt-live/
-        ├── MS4wLjA...secUid.state.json
-        └── MS4wLjA...secUid.events
+│       └── example_creator.json
+└── tiktok-monitor/
+    └── state/
+        └── tt-live/
+            ├── MS4wLjA...secUid.state.json
+            └── MS4wLjA...secUid.events
 ```
 
 Both `.state.json` and `.events` filenames use the **raw sec_uid**
