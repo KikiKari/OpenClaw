@@ -10,8 +10,8 @@
 
 | Endpunkt | Methode | Beschreibung |
 |----------|---------|--------------|
-| `/tiktok/status/luiisamour` | GET | Prüft ob der User "luiisamour" live ist |
-| `/tiktok/status/iman.hayatiii` | GET | Prüft ob der User "iman.hayatiii" live ist |
+| `/tiktok/status/example_creator` | GET | Prüft ob der User "example_creator" live ist |
+| `/tiktok/status/example_creator` | GET | Prüft ob der User "example_creator" live ist |
 
 ### Response Format
 
@@ -69,11 +69,11 @@ memory/vlc-links-YYYY-MM-DD.md
 ```markdown
 ## VLC Links - 2026-04-03
 
-### luiisamour
+### example_creator
 - Zeit: 19:30
 - Link: https://pull-flv-f1...tiktokcdn.com/...
 
-### iman.hayatiii
+### example_creator
 - Zeit: 20:15
 - Link: https://pull-flv-f2...tiktokcdn.com/...
 ```
@@ -185,11 +185,11 @@ sudo systemctl start tiktok-api
 ### API-Test
 
 ```bash
-# Teste luiisamour
-curl http://localhost:5001/tiktok/status/luiisamour
+# Teste example_creator
+curl http://localhost:5001/tiktok/status/example_creator
 
-# Teste iman.hayatiii
-curl http://localhost:5001/tiktok/status/iman.hayatiii
+# Teste example_creator
+curl http://localhost:5001/tiktok/status/example_creator
 ```
 
 ---

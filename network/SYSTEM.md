@@ -89,7 +89,7 @@ coding-agent, **tiktok-live** (NEU)
 - `tiktok-live-check-20` → XX:20
 - `tiktok-live-check-45` → XX:45
 
-**Accounts:** luiisamour, iman.hayatiii
+**Accounts:** example_creator, example_creator
 
 ---
 

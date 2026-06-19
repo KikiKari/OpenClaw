@@ -3,5 +3,5 @@
 ## 09:20 Uhr
 | Account | Status | URL extrahiert |
 |---------|--------|----------------|
-| luiisamour | ✅ LIVE | ✅ Ja |
-| iman.hayatiii | ✅ LIVE | ✅ Ja |
+| example_creator | ✅ LIVE | ✅ Ja |
+| example_creator | ✅ LIVE | ✅ Ja |

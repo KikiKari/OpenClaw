@@ -7,7 +7,7 @@
 
 *   **Fehler bei TikTok Live Stream Extraktion:**
     *   `HTTP Error 400: Bad Request`
-    *   `ERROR: [tiktok:live] iman.hayatiii: The channel is not currently live` (obwohl live erkannt wurde)
+    *   `ERROR: [tiktok:live] example_creator: The channel is not currently live` (obwohl live erkannt wurde)
 *   **`impersonation` / User-Agent Probleme:**
     *   Fehlermeldung: `yt-dlp: The extractor is attempting impersonation, but no impersonate target is available.`
     *   Hinweis: Dies deutet darauf hin, dass yt-dlp versucht, sich als Browser auszugeben, aber dafür notwendige Header oder Konfigurationen fehlen.

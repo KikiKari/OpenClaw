@@ -71,15 +71,15 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 ```json
 {
   "sec_uid": "MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_",
-  "unique_id_current": "luiisamour",
+  "unique_id_current": "example_creator",
   "nickname": "lui",
   "user_id": "131475542305824768",
   "first_seen": "2026-05-20T14:00:00Z",
   "last_seen": "2026-05-25T18:22:13Z",
   "rename_history": [
     {
-      "from": "lui_amour",
-      "to": "luiisamour",
+      "from": "previous_handle",
+      "to": "example_creator",
       "detected_at": "2026-05-22T09:14:00Z"
     }
   ]
@@ -119,7 +119,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 
 ```json
 {
-  "unique_id": "luiisamour",
+  "unique_id": "example_creator",
   "sec_uid": "MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_",
   "current": true,
   "first_pointed_at": "2026-05-22T09:14:00Z",
@@ -265,14 +265,14 @@ this holds in practice.
 ### 5.4 Examples
 
 ```
-ts=2026-05-25T18:12:11Z evt=daemon_start sec_uid=MS4wLjA... unique_id=luiisamour hours=12 poll_sec=300
-ts=2026-05-25T18:17:11Z evt=poll_ok sec_uid=MS4wLjA... unique_id=luiisamour alive=false
-ts=2026-05-25T18:22:13Z evt=poll_ok sec_uid=MS4wLjA... unique_id=luiisamour alive=true
-ts=2026-05-25T18:22:13Z evt=go_live sec_uid=MS4wLjA... unique_id=luiisamour room_id=7643867662644251414 stream_url=https://pull-hls-f16-tt04.tiktokcdn-eu.com/.../index.m3u8?expire=1748800000&sign=...
-ts=2026-05-25T19:14:00Z evt=rename_detected sec_uid=MS4wLjA... unique_id=lui_x old_unique_id=luiisamour
-ts=2026-05-25T22:05:00Z evt=poll_ok sec_uid=MS4wLjA... unique_id=lui_x alive=false
-ts=2026-05-25T22:05:00Z evt=go_offline sec_uid=MS4wLjA... unique_id=lui_x last_room_id=7643867662644251414
-ts=2026-05-26T06:12:11Z evt=daemon_end sec_uid=MS4wLjA... unique_id=lui_x reason=timer_expired transitions=2
+ts=2026-05-25T18:12:11Z evt=daemon_start sec_uid=MS4wLjA... unique_id=previous_handle hours=12 poll_sec=300
+ts=2026-05-25T18:17:11Z evt=poll_ok sec_uid=MS4wLjA... unique_id=previous_handle alive=false
+ts=2026-05-25T18:22:13Z evt=poll_ok sec_uid=MS4wLjA... unique_id=previous_handle alive=true
+ts=2026-05-25T18:22:13Z evt=go_live sec_uid=MS4wLjA... unique_id=previous_handle room_id=7643867662644251414 stream_url=https://pull-hls-f16-tt04.tiktokcdn-eu.com/.../index.m3u8?expire=1748800000&sign=...
+ts=2026-05-25T19:14:00Z evt=rename_detected sec_uid=MS4wLjA... unique_id=example_creator old_unique_id=previous_handle
+ts=2026-05-25T22:05:00Z evt=poll_ok sec_uid=MS4wLjA... unique_id=example_creator alive=false
+ts=2026-05-25T22:05:00Z evt=go_offline sec_uid=MS4wLjA... unique_id=example_creator last_room_id=7643867662644251414
+ts=2026-05-26T06:12:11Z evt=daemon_end sec_uid=MS4wLjA... unique_id=example_creator reason=timer_expired transitions=2
 ```
 
 ### 5.5 Parsing snippets

@@ -150,7 +150,7 @@ fi
 ### 7.2 Chain with `get_room_id.py`
 
 ```bash
-ROOM_ID="$(get_room_id.py luiisamour | jq -r '.room_id // empty')"
+ROOM_ID="$(get_room_id.py example_creator | jq -r '.room_id // empty')"
 if [ -n "$ROOM_ID" ] && check_alive.py "$ROOM_ID" > /dev/null; then
   echo "live, room_id=$ROOM_ID"
 fi

@@ -58,7 +58,7 @@ Reflections
 
 What Happened
 1. Skill-Erstellung: tiktok-live: Zeit: 2026-04-06 11:00-12:00 CET; Status: ✅ Vollständig dokumentiert; and ✅ MEMORY.md mit Skill-Verweis [memory/2026-04-06.md:56, memory/2026-04-06.md:57, memory/2026-04-06.md:74]
-2. Account: Username: @luiisamour; Zeit: 10:42 - 10:43 CET (08:42 - 08:43 UTC); and Status: 🔴 LIVE erkannt [memory/2026-04-06.md:6, memory/2026-04-06.md:7, memory/2026-04-06.md:8]
+2. Account: Username: @example_creator; Zeit: 10:42 - 10:43 CET (08:42 - 08:43 UTC); and Status: 🔴 LIVE erkannt [memory/2026-04-06.md:6, memory/2026-04-06.md:7, memory/2026-04-06.md:8]
 3. Technische Details: Erkannte Live-Indikatoren:; ✅ LIVE-Badge sichtbar (nach DSGVO-Banner-Schließung); and ✅ Roter Rahmen um Profilbild [memory/2026-04-06.md:12, memory/2026-04-06.md:13, memory/2026-04-06.md:14]
 4. 1. DSGVO-Banner Handling: Banner muss zuerst geschlossen werden ("Verstanden" oder "Akzeptieren"); Ohne Schließung blockiert der Banner das Profilbild und LIVE-Badge; and Mehrere Selektoren nötig für internationale Varianten [memory/2026-04-06.md:30, memory/2026-04-06.md:31, memory/2026-04-06.md:32]
 
@@ -75,7 +75,7 @@ What Happened
 1. Memory-Maintenance Cron aktiv: Täglicher Cron-Job: 07:00 CET and Aufgaben: Daily-Logs lesen, MEMORY.md aktualisieren, 30 Tage archivieren [memory/2026-04-07.md:35, memory/2026-04-07.md:36]
 2. 🔴 KRITISCH: Tunnel-Automatisierung (von 2026-04-03): Status: Noch immer NICHT erledigt — Wurde mehrfach versprochen!; Erforderlich:; and 3 Systemd-Services für SSH-Tunnel: [memory/2026-04-07.md:6, memory/2026-04-07.md:8, memory/2026-04-07.md:9]
 3. 🟡 Node 4 WireGuard (von 2026-04-06): Status: QR-Code gescannt, manuelle Config-Eingabe ausstehend; Aufgabe: Manuelle Config in WireGuard App unter "Von Grund auf erstellen" eingeben; and PrivateKey: GMaJ9dRUGmXwiUxseQmthw+uQCBq8545GbUxTUvbKWU= [memory/2026-04-07.md:19, memory/2026-04-07.md:21, memory/2026-04-07.md:22]
-4. 🟢 TikTok Live Skill: Status: Voll funktionsfähig and Letzte erfolgreiche Nutzung: 2026-04-06 10:42 CET (@luiisamour) [memory/2026-04-07.md:26, memory/2026-04-07.md:28]
+4. 🟢 TikTok Live Skill: Status: Voll funktionsfähig and Letzte erfolgreiche Nutzung: 2026-04-06 10:42 CET (@example_creator) [memory/2026-04-07.md:26, memory/2026-04-07.md:28]
 
 Reflections
 1. Important context tends to get externalized quickly into notes, trackers, or memory surfaces, which suggests a preference for explicit systems over holding context informally. [memory/2026-04-07.md:35, memory/2026-04-07.md:36]

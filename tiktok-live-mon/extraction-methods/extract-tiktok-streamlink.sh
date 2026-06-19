@@ -2,9 +2,9 @@
 # TikTok Live Stream URL Extraktion via streamlink v1.2
 # Usage: ./extract-tiktok-streamlink.sh <username> [quality] [--json]
 
-USERNAME="$1"
+USERNAME="${1:-}"
 QUALITY="${2:-best}"
-JSON_FLAG="$3"
+JSON_FLAG="${3:-}"
 LIVE_URL="https://www.tiktok.com/@${USERNAME}/live"
 TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
@@ -25,7 +25,10 @@ EXIT_CODE=$?
 if [ $EXIT_CODE -ne 0 ] || [ -z "$OUTPUT" ]; then
     # Fallback: ohne --json probieren, nur URL extrahieren
     URL=$(streamlink --stream-url "${LIVE_URL}" "${QUALITY}" 2>/dev/null)
-    if [ $? -eq 0 ] && [ -n "$URL" ]; then
+    if [ -z "$URL" ] && [ "$QUALITY" != "best" ]; then
+        URL=$(streamlink --stream-url "${LIVE_URL}" best 2>/dev/null)
+    fi
+    if [ -n "$URL" ]; then
         if [ "$JSON_FLAG" = "--json" ]; then
             echo "{\"success\":true,\"method\":\"streamlink\",\"username\":\"${USERNAME}\",\"url\":\"${URL}\",\"quality\":\"${QUALITY}\",\"timestamp\":\"${TIMESTAMP}\"}"
         else
@@ -65,7 +68,7 @@ except:
 
 # Wenn URL nicht aus JSON gefunden, versuche direkt aus dem Output zu greifen
 if [ -z "$URL" ]; then
-    URL=$(echo "$OUTPUT" | grep -oP '"url":\s*"\K[^"]+\.flv[^"]*' | head -1)
+    URL=$(echo "$OUTPUT" | grep -oP '"url":\s*"\K[^"]+(?:\.flv|\.m3u8)[^"]*' | head -1)
 fi
 
 if [ -n "$URL" ]; then

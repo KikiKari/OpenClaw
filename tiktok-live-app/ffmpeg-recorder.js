@@ -97,7 +97,7 @@ class TikTokRecorder {
 
 // Hauptfunktion
 async function main() {
-  const username = process.argv[2] || 'iman.hayatiii';
+  const username = process.argv[2] || 'example_creator';
   const duration = parseInt(process.argv[3]) || 60; // Minuten
   
   const recorder = new TikTokRecorder(username);

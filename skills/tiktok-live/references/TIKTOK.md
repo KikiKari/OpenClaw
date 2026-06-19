@@ -74,11 +74,11 @@ Die ursprüngliche 3-Tier API-Architektur ist **obsolet**:
 
 ## Überwachte Accounts
 
-- @luiisamour
-- @iman.hayatiii
+- @example_creator
+- @example_creator
 
 **Letzte erfolgreiche Extraktion:**
-- Account: @luiisamour
+- Account: @example_creator
 - Zeit: 2026-04-06 10:42 CET
 - Ergebnis: VLC-kompatible FLV-URL extrahiert & verifiziert
 
@@ -197,10 +197,10 @@ ffplay -buffer_size 65536 "https://..."
 pip install streamlink
 
 # TikTok Live (experimentell)
-streamlink "https://tiktok.com/@luiisamour/live" best
+streamlink "https://tiktok.com/@example_creator/live" best
 
 # Mit Player
-streamlink --player=mpv "https://tiktok.com/@luiisamour/live" best
+streamlink --player=mpv "https://tiktok.com/@example_creator/live" best
 ```
 
 ### 6. yt-dlp (Download)
@@ -209,10 +209,10 @@ streamlink --player=mpv "https://tiktok.com/@luiisamour/live" best
 pip install yt-dlp
 
 # Direkte Stream-URL extrahieren
-yt-dlp -g "https://tiktok.com/@luiisamour/live"
+yt-dlp -g "https://tiktok.com/@example_creator/live"
 
 # Mit Wiedergabe
-yt-dlp -o - "https://tiktok.com/@luiisamour/live" | mpv -
+yt-dlp -o - "https://tiktok.com/@example_creator/live" | mpv -
 ```
 
 ---
@@ -222,7 +222,7 @@ yt-dlp -o - "https://tiktok.com/@luiisamour/live" | mpv -
 ### Methode A: yt-dlp (kein Playwright nötig)
 ```bash
 # Prüft Live-Status und gibt Stream-URL
-yt-dlp --no-warnings -g "https://tiktok.com/@luiisamour/live" 2>/dev/null
+yt-dlp --no-warnings -g "https://tiktok.com/@example_creator/live" 2>/dev/null
 ```
 **Pro:** Kein Browser, schnell
 **Con:** Weniger zuverlässig bei Bot-Erkennung
@@ -233,7 +233,7 @@ yt-dlp --no-warnings -g "https://tiktok.com/@luiisamour/live" 2>/dev/null
 pip install gallery-dl
 
 # Extraktion
- gallery-dl -g "https://tiktok.com/@luiisamour/live"
+ gallery-dl -g "https://tiktok.com/@example_creator/live"
 ```
 
 ### Methode C: you-get
@@ -242,7 +242,7 @@ pip install gallery-dl
 pip install you-get
 
 # Stream-Info
-you-get -i "https://tiktok.com/@luiisamour/live"
+you-get -i "https://tiktok.com/@example_creator/live"
 ```
 
 ---

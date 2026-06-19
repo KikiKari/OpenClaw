@@ -4,9 +4,9 @@
 # Gibt nackte URL aus oder JSON bei --json Flag
 # Korrekturen: Besseres JSON-Handling und Fehlerquellen-Logging
 
-USERNAME="$1"
+USERNAME="${1:-}"
 FORMAT="${2:-best}" # Default best quality for yt-dlp
-JSON_FLAG="$3"
+JSON_FLAG="${3:-}"
 
 # Temporäres Verzeichnis für Logs und Output
 TMP_DIR="/tmp/tiktok_$(date +%s)"
@@ -31,6 +31,13 @@ echo "Running command: ${COMMAND}" >&2 # Log command for debugging
 eval "$COMMAND" 2> "${TMP_DIR}/yt-dlp.stderr.log" > "${TMP_DIR}/yt-dlp.stdout.log"
 EXIT_CODE=$?
 
+if [ $EXIT_CODE -ne 0 ] && [ "$FORMAT" != "best" ]; then
+    echo "Requested format '${FORMAT}' failed; retrying without a quality restriction using best." >&2
+    COMMAND="yt-dlp --no-warnings --print-json --skip-download --write-info-json --prefer-free-formats --format \"best\" \"${LIVE_URL}\""
+    eval "$COMMAND" 2> "${TMP_DIR}/yt-dlp.stderr.log" > "${TMP_DIR}/yt-dlp.stdout.log"
+    EXIT_CODE=$?
+fi
+
 if [ $EXIT_CODE -ne 0 ]; then
     STDERR_OUTPUT=$(cat "${TMP_DIR}/yt-dlp.stderr.log")
     echo "yt-dlp exited with code $EXIT_CODE. Stderr: ${STDERR_OUTPUT}" >&2
@@ -47,7 +54,7 @@ STDOUT_OUTPUT=$(cat "${TMP_DIR}/yt-dlp.stdout.log")
 
 # Versuche, die URL direkt zu finden
 # yt-dlp gibt manchmal direkt die URL zurück, wenn --print-json nicht gut funktioniert
-EXTRACTED_URL=$(echo "$STDOUT_OUTPUT" | grep -o 'http.*\.flv' | head -n 1)
+EXTRACTED_URL=$(echo "$STDOUT_OUTPUT" | grep -oE 'https?://[^"[:space:]]+(\.flv|\.m3u8)[^"[:space:]]*' | head -n 1)
 
 if [ -n "$EXTRACTED_URL" ]; then
     if [ "$JSON_FLAG" = "--json" ]; then

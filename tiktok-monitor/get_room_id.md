@@ -21,8 +21,8 @@ get_room_id.py <username>
 A single positional argument. Examples:
 
 ```
-get_room_id.py luiisamour
-get_room_id.py @luiisamour      # leading @ is stripped
+get_room_id.py example_creator
+get_room_id.py @example_creator      # leading @ is stripped
 ```
 
 No flags. No subcommands. No environment variables.
@@ -36,7 +36,7 @@ deterministic:
 
 ```json
 {
-  "unique_id":  "luiisamour",
+  "unique_id":  "example_creator",
   "nickname":   "Display Name",
   "user_id":    "131475542305824768",
   "sec_uid":    "MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_",
@@ -145,7 +145,7 @@ adds workspace side-effects (identity write, state update,
 ### 7.1 Shell, plain check
 
 ```bash
-if get_room_id.py luiisamour > /tmp/rec.json; then
+if get_room_id.py example_creator > /tmp/rec.json; then
   echo "live: $(jq -r .room_id /tmp/rec.json)"
 else
   echo "offline"
@@ -155,13 +155,13 @@ fi
 ### 7.2 Extract a single field
 
 ```bash
-SEC_UID="$(get_room_id.py luiisamour | jq -r '.sec_uid')"
+SEC_UID="$(get_room_id.py example_creator | jq -r '.sec_uid')"
 ```
 
 ### 7.3 Pipe to the daemon-events file path
 
 ```bash
-SEC_UID="$(get_room_id.py luiisamour | jq -r '.sec_uid')"
+SEC_UID="$(get_room_id.py example_creator | jq -r '.sec_uid')"
 EVENTS_FILE="$HOME/.openclaw/workspace/tiktok-monitor/state/tt-live/$SEC_UID.events"
 [ -f "$EVENTS_FILE" ] && tail -F "$EVENTS_FILE"
 ```
@@ -169,7 +169,7 @@ EVENTS_FILE="$HOME/.openclaw/workspace/tiktok-monitor/state/tt-live/$SEC_UID.eve
 ### 7.4 Use as a probe before starting a daemon
 
 ```bash
-get_room_id.py luiisamour > /dev/null && echo "live -> spawn daemon now"
+get_room_id.py example_creator > /dev/null && echo "live -> spawn daemon now"
 ```
 
 (Exit 0 = live; chain with `&&` to act only when live.)

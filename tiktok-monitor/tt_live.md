@@ -569,7 +569,7 @@ python3 tt_live.py check <username>
 ```json
 {
   "sec_uid":         "MS4wLjA...",
-  "unique_id":       "luiisamour",
+  "unique_id":       "example_creator",
   "nickname":        "Display Name",
   "user_id":         "131475542305824768",
   "live":            true,
@@ -734,7 +734,7 @@ No other environment variables are read.
 │   ├── identities/
 │   │   └── MS4wLjA...secUid.json
 │   └── pointers/
-│       └── luiisamour.json
+│       └── example_creator.json
 └── state/
     └── tt-live/
         ├── MS4wLjA...secUid.state.json

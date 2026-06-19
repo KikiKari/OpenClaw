@@ -99,3 +99,16 @@
 - Conversation Summary: We need to respond correctly: just "HEARTBEAT_OK". Possibly provide a clean response. No extra. So final: "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HE user: [OpenClaw heartbeat poll] [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:21-24]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:3:5 -->
 - Session: 2026-06-14 23:02:35 GMT+2: **Session Key**: agent:main:main; **Session ID**: 8747040d-7bc8-4915-ae3f-71152a84dcc4; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:3-5]
+
+## Promoted From Short-Term Memory (2026-06-19)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:17:19 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HE [score=0.888 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:17-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.842 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:25:25 -->
+- Conversation Summary: assistant: HEARTBEAT_OK [score=0.836 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:25-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16.md:3:5 -->
+- Heartbeat poll at 02:00 GMT+2 (Unix timestamp 1781568000).; No pending email, calendar, or weather checks.; Created daily memory file. [score=0.813 recalls=0 avg=0.620 source=memory/2026-06-16.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:9-12]

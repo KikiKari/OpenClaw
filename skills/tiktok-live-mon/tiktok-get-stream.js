@@ -94,17 +94,26 @@ async function extractWithPlaywright(username, qualityPreference) {
         });
         const page = await context.newPage();
 
-        // FLV-URLs sammeln via Event-Listener BEVOR wir navigieren
+        // Stream-URLs via Request und Response sammeln, BEVOR wir navigieren.
         const collectedUrls = [];
-        page.on('response', response => {
-            const url = response.url();
-            if ((url.includes('.flv') || url.includes('.m3u8')) && (url.includes('tiktokcdn') || url.includes('pull-flv') || url.includes('tiktok.com'))) {
+        const collectUrl = (url, source, status = null) => {
+            if (
+                (url.includes('.flv') || url.includes('.m3u8') || url.includes('pull-flv') || url.includes('pull-hls')) &&
+                (url.includes('tiktokcdn') || url.includes('pull-flv') || url.includes('pull-hls') || url.includes('tiktok.com'))
+            ) {
                 collectedUrls.push({
-                    url: url,
-                    status: response.status(),
+                    url,
+                    source,
+                    status,
                     timestamp: new Date().toISOString()
                 });
             }
+        };
+        page.on('request', request => {
+            collectUrl(request.url(), 'request');
+        });
+        page.on('response', response => {
+            collectUrl(response.url(), 'response', response.status());
         });
 
         // Navigiere direkt zu /live
@@ -152,10 +161,24 @@ async function extractWithPlaywright(username, qualityPreference) {
             return { success: false, method: 'playwright', restricted: true, reason: restrictions2.reason };
         }
 
+        // Zusätzlicher Fallback: Stream-URLs aus dem Seitenquelltext übernehmen.
+        try {
+            const content = (await page.content())
+                .replace(/\\u002F/g, '/')
+                .replace(/\\\//g, '/')
+                .replace(/&amp;/g, '&');
+            const sourceUrls = content.match(/https:\/\/[^"'<>\\s]+(?:\\.flv|\\.m3u8)[^"'<>\\s]*/g) || [];
+            for (const url of sourceUrls) {
+                collectUrl(url, 'page-source');
+            }
+        } catch (error) {
+            console.log(`Playwright: Page-source extraction failed - ${error.message}`);
+        }
+
         // URLs auswerten
         if (collectedUrls.length === 0) {
-            console.log('Playwright: No FLV URLs captured via network monitoring.');
-            return { success: false, method: 'playwright', restricted: false, reason: 'No FLV URLs found' };
+            console.log('Playwright: No FLV or HLS URLs captured.');
+            return { success: false, method: 'playwright', restricted: false, reason: 'No FLV or HLS URLs found' };
         }
 
         // Deduplizieren und nach Qualität sortieren
@@ -163,8 +186,10 @@ async function extractWithPlaywright(username, qualityPreference) {
 
         // Qualitäts-Präferenz anwenden
         const qualityOrder = qualityPreference === 'auto'
-            ? ['_hd.flv', '_sd.flv', '_ld.flv', '.flv']
-            : [`_${qualityPreference}.flv`, '.flv'];
+            ? ['_origin.flv', '_or4.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '_hd.flv', '_sd.flv', '_ld.flv', '.flv', '.m3u8']
+            : qualityPreference === 'origin'
+                ? ['_origin.flv', '_or4.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '.flv', '.m3u8']
+                : [`_${qualityPreference}.flv`, '.flv', '.m3u8'];
 
         let bestUrl = null;
         for (const suffix of qualityOrder) {
