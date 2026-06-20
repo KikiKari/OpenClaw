@@ -55,25 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-13)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2123.md:3:5 -->
-- Session: 2026-06-08 21:23:19 GMT+2: **Session Key**: agent:main:main; **Session ID**: b023c012-b759-4a14-babb-6d779661a606; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2123.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2123.md:9:11 -->
-- Conversation Summary: assistant: ✅ Session reset. user: [OpenClaw heartbeat poll] assistant: Pending script requires manual approval: /home/openclaw/.openclaw/scripts/abstractions-publish-gateway.sh [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2123.md:9-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2138.md:14:14 -->
-- Conversation Summary: /approve exec command="df -h && free -h && uptime && openclaw cron list && openclaw agents list && openclaw tasks list && openclaw channels list && openclaw sessions" [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2138.md:14-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2138.md:3:5 -->
-- Session: 2026-06-08 21:38:09 GMT+2: **Session Key**: agent:main:main; **Session ID**: 2dfb46b0-0798-4059-84fd-5a3e67683893; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2138.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2138.md:9:11 -->
-- Conversation Summary: assistant: ✅ Session reset. user: [OpenClaw heartbeat poll] assistant: Please approve the system‑diagnostics command so I can complete the heartbeat check: [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2138.md:9-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2216.md:13:13 -->
-- Conversation Summary: assistant: Pending script: /home/openclaw/.openclaw/scripts/abstractions-publish-gateway.sh requires manual approval [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2216.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2216.md:3:5 -->
-- Session: 2026-06-08 22:16:04 GMT+2: **Session Key**: agent:main:main; **Session ID**: 49494dd2-116a-4ce7-9d15-63a32320c5bb; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2216.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-08-2216.md:9:12 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: <messageaction="send" message="✅ Session has been reset. How can I assist you now?" /> assistant: ANNOUNCE_SKIP user: [OpenClaw heartbeat poll] [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-08-2216.md:9-12]
-
 ## Promoted From Short-Term Memory (2026-06-14)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-09.md:1:1 -->
@@ -112,3 +93,20 @@
 - Heartbeat poll at 02:00 GMT+2 (Unix timestamp 1781568000).; No pending email, calendar, or weather checks.; Created daily memory file. [score=0.813 recalls=0 avg=0.620 source=memory/2026-06-16.md:3-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-20)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:3:5 -->
+- Session: 2026-06-16 00:54:33 GMT+2: **Session Key**: agent:main:main; **Session ID**: aca9572e-08f2-42df-99de-b76a73ecffb6; **Source**: webchat [score=0.853 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15.md:3:5 -->
+- Heartbeat poll at 12:03 GMT+2 (Unix timestamp 1781517799).; No pending email, calendar, or weather checks.; Created daily memory file. [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-15.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:13:15 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HE HEART [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-17.md:1:1 -->
+- [Heartbeat] 2026-06-17 02:00 GMT+2: No pending tasks. All systems nominal. [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-17.md:1-1]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:17:20 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:21:23 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:21-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:9-12]
