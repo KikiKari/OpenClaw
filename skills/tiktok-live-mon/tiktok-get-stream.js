@@ -13,7 +13,9 @@
 const { chromium } = require('playwright');
 const path = require('path');
 const util = require('util');
+const os = require('os');
 const execPromise = util.promisify(require('child_process').exec);
+const execFilePromise = util.promisify(require('child_process').execFile);
 // Optional extra wait (ms) to allow Playwright to capture FLV requests
 const PLAYWRIGHT_CAPTURE_MS = parseInt(process.env.PLAYWRIGHT_CAPTURE_MS, 10) || 0;
 
@@ -245,9 +247,41 @@ async function tryYtDlp(username, quality) {
     }
 }
 
+async function verifyLiveStatus(username) {
+    const checkerPath = path.join(__dirname, 'tiktok-check-profile.js');
+    try {
+        const { stdout } = await execFilePromise(process.execPath, [checkerPath, username], {
+            env: process.env,
+            timeout: 60000,
+            maxBuffer: 1024 * 1024
+        });
+        const result = JSON.parse(stdout);
+        return result.isLive === true;
+    } catch (error) {
+        const output = error.stdout || error.stderr;
+        if (output) {
+            try {
+                const result = JSON.parse(output);
+                return result.isLive === true;
+            } catch (parseError) { /* kein verwertbares JSON */ }
+        }
+        return false;
+    }
+}
+
 // Hauptfunktion mit Fallback-Kette
 async function getStreamUrl(username, qualityPreference = 'ld') {
     const timestamp = new Date().toISOString();
+
+    const isLive = await verifyLiveStatus(username);
+    if (!isLive) {
+        return {
+            success: false,
+            username,
+            message: 'User is not currently live.',
+            timestamp
+        };
+    }
 
     // --- 1. Playwright ---
     console.log(`[1/3] Trying Playwright for @${username}...`);
@@ -292,9 +326,27 @@ if (process.argv.length < 3) {
     process.exit(1);
 }
 
-const cliUsername = process.argv[2];
+const cliUsername = process.argv[2].replace(/^@+/, '');
+if (!cliUsername) {
+    console.error('Username must not be empty');
+    process.exit(1);
+}
 const cliQuality = process.argv[3] || 'ld';
 const cliJson = process.argv.includes('--json');
+
+function rejectBusyNode() {
+    const limit = Number(process.env.TIKTOK_MAX_LOAD_PER_CPU);
+    if (!Number.isFinite(limit) || limit <= 0) return;
+
+    const cpuCount = Math.max(1, os.cpus().length);
+    const normalizedLoad = os.loadavg()[0] / cpuCount;
+    if (normalizedLoad > limit) {
+        console.error(`NODE_BUSY normalizedLoad=${normalizedLoad.toFixed(2)} limit=${limit}`);
+        process.exit(75);
+    }
+}
+
+rejectBusyNode();
 
 getStreamUrl(cliUsername, cliQuality).then(result => {
     if (cliJson) {

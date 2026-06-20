@@ -33,16 +33,20 @@ sudo ufw allow out 443/tcp
 ### Check Live Status
 
 ```bash
-node ~/.openclaw/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
+node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js" <username>
 ```
+
+The username may be supplied with or without a leading `@`.
 
 **Output:** JSON with `isLive` boolean and detection indicators
 
 ### Extract Stream URL
 
 ```bash
-node ~/.openclaw/skills/tiktok-live/scripts/tiktok-get-stream.js <username>
+node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" <username>
 ```
+
+The username may be supplied with or without a leading `@`.
 
 **Output:** Nackte URL (eine Zeile), z.B.:
 ```
@@ -81,7 +85,7 @@ Das Skript gibt nur die nackte URL aus. Zum Abspielen:
 
 ```bash
 # VLC
-vlc "$(node ~/.openclaw/skills/tiktok-live/scripts/tiktok-get-stream.js username)"
+vlc "$(node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" username)"
 
 # MPV (mit Cache)
 mpv --cache=yes --cache-secs=30 "URL"
@@ -94,6 +98,27 @@ ffmpeg -i "URL" -c copy -f flv rtmp://...
 ```
 
 **Wichtig:** URLs immer als nackte URLs weitergeben — kein `vlc "..."` Prefix in Dokumentation oder Logs.
+
+## Execution Routing
+
+1. Run the command on the Gateway by default.
+2. For load balancing, inspect paired and connected nodes and only select nodes
+   that advertise `system.run`.
+3. Run the same command through the OpenClaw `exec` tool with:
+   - `host: "node"`
+   - `node: "<selected-node>"`
+   - `env: { "TIKTOK_MAX_LOAD_PER_CPU": "1.0" }`
+4. Retry another eligible node or the Gateway if execution returns exit code 75
+   (`NODE_BUSY`), the script or Playwright is missing, the command times out, the
+   node disconnects, or execution is denied.
+5. The skill must be synchronized to the same
+   `$HOME/.openclaw/workspace/skills/tiktok-live/` path on every worker node.
+
+The skill may be presented to the agent from a generated
+`/workspace/.openclaw/sandbox-skills/...` path. That path is only a sandbox skill
+copy and must not be used for Gateway or node execution. Do not use
+`nodes invoke` or the removed legacy `nodes run` command for shell execution;
+remote shell commands must use the OpenClaw `exec` tool with `host=node`.
 
 ## Alternative Extraction Methods
 

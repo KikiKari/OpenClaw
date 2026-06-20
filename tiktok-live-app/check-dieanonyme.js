@@ -1,5 +1,5 @@
 const { WebcastPushConnection } = require('tiktok-live-connector');
-const username = 'dieanonyme_196';
+const username = process.argv[2]?.replace(/^@+/, '') || 'example_creator';
 const connection = new WebcastPushConnection(username);
 
 async function getStreamUrl() {

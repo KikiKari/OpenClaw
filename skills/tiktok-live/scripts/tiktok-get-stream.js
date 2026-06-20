@@ -6,14 +6,69 @@
  */
 
 const { chromium } = require('playwright');
+const os = require('os');
+const path = require('path');
+const util = require('util');
+const execFilePromise = util.promisify(require('child_process').execFile);
 
-const username = process.argv[2];
-if (!username) {
+const rawUsername = process.argv[2];
+if (!rawUsername) {
     console.error('Usage: node tiktok-get-stream.js <username>');
     process.exit(1);
 }
+const username = rawUsername.replace(/^@+/, '');
+if (!username) {
+    console.error('Username must not be empty');
+    process.exit(1);
+}
+
+function rejectBusyNode() {
+    const limit = Number(process.env.TIKTOK_MAX_LOAD_PER_CPU);
+    if (!Number.isFinite(limit) || limit <= 0) return;
+
+    const cpuCount = Math.max(1, os.cpus().length);
+    const normalizedLoad = os.loadavg()[0] / cpuCount;
+    if (normalizedLoad > limit) {
+        console.error(`NODE_BUSY normalizedLoad=${normalizedLoad.toFixed(2)} limit=${limit}`);
+        process.exit(75);
+    }
+}
+
+rejectBusyNode();
+
+async function verifyLiveStatus(username) {
+    const checkerPath = path.join(__dirname, 'tiktok-check-profile.js');
+    try {
+        const { stdout } = await execFilePromise(process.execPath, [checkerPath, username], {
+            env: process.env,
+            timeout: 60000,
+            maxBuffer: 1024 * 1024
+        });
+        const result = JSON.parse(stdout);
+        return result.isLive === true;
+    } catch (error) {
+        const output = error.stdout || error.stderr;
+        if (output) {
+            try {
+                const result = JSON.parse(output);
+                return result.isLive === true;
+            } catch (parseError) { /* kein verwertbares JSON */ }
+        }
+        return false;
+    }
+}
 
 async function getStreamUrl(username) {
+    if (!await verifyLiveStatus(username)) {
+        console.error(JSON.stringify({
+            username,
+            isLive: false,
+            error: 'User is not currently live.',
+            timestamp: new Date().toISOString()
+        }));
+        return false;
+    }
+
     const browser = await chromium.launch({ headless: true });
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -86,13 +141,15 @@ async function getStreamUrl(username) {
                 vlcCommand: `vlc "${uniqueUrls[0].url}"`,
                 timestamp: new Date().toISOString()
             }, null, 2));
+            return true;
         } else {
-            console.log(JSON.stringify({
+            console.error(JSON.stringify({
                 username,
                 isLive: false,
                 error: 'No stream URLs found - user may not be live',
                 timestamp: new Date().toISOString()
             }));
+            return false;
         }
         
     } catch (error) {
@@ -102,8 +159,17 @@ async function getStreamUrl(username) {
             message: error.message,
             timestamp: new Date().toISOString()
         }));
-        process.exit(1);
+        return false;
     }
 }
 
-getStreamUrl(username);
+getStreamUrl(username).then(success => {
+    process.exit(success ? 0 : 1);
+}).catch(error => {
+    console.error(JSON.stringify({
+        error: true,
+        message: error.message,
+        timestamp: new Date().toISOString()
+    }));
+    process.exit(1);
+});

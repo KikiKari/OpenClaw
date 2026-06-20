@@ -6,12 +6,32 @@
  */
 
 const { chromium } = require('playwright');
+const os = require('os');
 
-const username = process.argv[2];
-if (!username) {
+const rawUsername = process.argv[2];
+if (!rawUsername) {
     console.error('Usage: node tiktok-check-profile.js <username>');
     process.exit(1);
 }
+const username = rawUsername.replace(/^@+/, '');
+if (!username) {
+    console.error('Username must not be empty');
+    process.exit(1);
+}
+
+function rejectBusyNode() {
+    const limit = Number(process.env.TIKTOK_MAX_LOAD_PER_CPU);
+    if (!Number.isFinite(limit) || limit <= 0) return;
+
+    const cpuCount = Math.max(1, os.cpus().length);
+    const normalizedLoad = os.loadavg()[0] / cpuCount;
+    if (normalizedLoad > limit) {
+        console.error(`NODE_BUSY normalizedLoad=${normalizedLoad.toFixed(2)} limit=${limit}`);
+        process.exit(75);
+    }
+}
+
+rejectBusyNode();
 
 async function checkLiveStatus(username) {
     const browser = await chromium.launch({ headless: true });
@@ -79,34 +99,22 @@ async function checkLiveStatus(username) {
         
         // Check for LIVE indicators
         // Method 1: data-e2e="live-icon"
-        const liveIcon = await page.$('[data-e2e="live-icon"]');
+        const profileScope = page.locator(
+            '[data-e2e="creator-page-header"], [data-e2e="profile-avatar"]'
+        );
+        const liveIcon = profileScope.locator('[data-e2e="live-icon"]').first();
+        const liveIconVisible = await liveIcon.isVisible().catch(() => false);
         
         // Method 2: LIVE text/badge (scoped to profile header/avatar)
         let liveBadgeVisible = false;
-        const profileHeader = await page.$('[data-e2e="profile-avatar"], [data-e2e="creator-page-header"], [data-e2e="user-bio"], header');
-        if (profileHeader) {
-            const pb = await profileHeader.$('text=/^LIVE$/i');
-            if (pb) {
-                try {
-                    liveBadgeVisible = await pb.evaluate(el => {
-                        const rect = el.getBoundingClientRect();
-                        return !!(rect.width || rect.height || el.offsetParent);
-                    });
-                } catch (e) {
-                    liveBadgeVisible = true;
-                }
-            } else {
-                liveBadgeVisible = false;
-            }
-        }
+        const profileBadge = profileScope.getByText(/^LIVE$/i).first();
+        liveBadgeVisible = await profileBadge.isVisible().catch(() => false);
 
         // Method 3: Roter Rahmen um Profilbild - mehrere Selektoren
         const profileSelectors = [
-            'img[alt*="profile"]',
             'img[data-e2e="avatar"]',
             'div[data-e2e="profile-avatar"] img',
-            'a[href*="/@"] img',
-            '[class*="avatar"] img'
+            '[data-e2e="creator-page-header"] img[alt*="profile"]'
         ];
         
         let hasLiveBorder = false;
@@ -157,20 +165,23 @@ async function checkLiveStatus(username) {
         const hasLiveLink = liveLink !== null;
         
         // Method 5: Check für pulsierenden roten Punkt (Live-Indikator)
-        const liveIndicator = await page.$('[class*="live-indicator"], div[class*="LiveBadge"]');
+        const liveIndicator = profileScope.locator(
+            '[class*="live-indicator"], div[class*="LiveBadge"]'
+        ).first();
+        const liveIndicatorVisible = await liveIndicator.isVisible().catch(() => false);
         
-        const isLive = liveIcon !== null || liveBadgeVisible || hasLiveBorder || hasLiveLink || liveIndicator !== null;
+        const isLive = liveIconVisible || liveBadgeVisible || hasLiveBorder || hasLiveLink || liveIndicatorVisible;
         
         console.log(JSON.stringify({
             username,
             isLive,
             timestamp: new Date().toISOString(),
             indicators: {
-                liveIcon: liveIcon !== null,
+                liveIcon: liveIconVisible,
                 liveBadge: liveBadgeVisible,
                 liveBorder: hasLiveBorder,
                 liveLink: hasLiveLink,
-                liveIndicator: liveIndicator !== null
+                liveIndicator: liveIndicatorVisible
             }
         }, null, 2));
         
@@ -189,4 +200,13 @@ async function checkLiveStatus(username) {
     }
 }
 
-checkLiveStatus(username);
+checkLiveStatus(username).then(isLive => {
+    process.exit(isLive ? 0 : 1);
+}).catch(error => {
+    console.error(JSON.stringify({
+        error: true,
+        message: error.message,
+        timestamp: new Date().toISOString()
+    }));
+    process.exit(1);
+});

@@ -3,14 +3,14 @@
 ## Erfolgreiche Durchführung - 04.04.2026
 
 ### Prozess
-**Nutzer:** @dieanonyme_196
+**Nutzer:** @example_creator
 **Status:** ONLINE (LIVE)
 **Stream ID:** 4442595906643297149
 
 ### Durchgeführte Schritte
 1. **API-Check:** `tiktok-live-connector` → Status: OFFLINE (API-Fehler)
 2. **Playwright-Check:** Chromium-Automation
-   - Profilseite: https://www.tiktok.com/@dieanonyme_196
+   - Profilseite: https://www.tiktok.com/@example_creator
    - DSGVO akzeptiert
    - Live-Indikator gefunden: JA (roter Rand)
    - Direktzugriff: /live URL

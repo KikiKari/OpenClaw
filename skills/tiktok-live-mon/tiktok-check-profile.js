@@ -12,12 +12,32 @@
  */
 
 const { chromium } = require('playwright');
+const os = require('os');
 
-const username = process.argv[2];
-if (!username) {
+const rawUsername = process.argv[2];
+if (!rawUsername) {
     console.error('Usage: node tiktok-check-profile.js <username>');
     process.exit(1);
 }
+const username = rawUsername.replace(/^@+/, '');
+if (!username) {
+    console.error('Username must not be empty');
+    process.exit(1);
+}
+
+function rejectBusyNode() {
+    const limit = Number(process.env.TIKTOK_MAX_LOAD_PER_CPU);
+    if (!Number.isFinite(limit) || limit <= 0) return;
+
+    const cpuCount = Math.max(1, os.cpus().length);
+    const normalizedLoad = os.loadavg()[0] / cpuCount;
+    if (normalizedLoad > limit) {
+        console.error(`NODE_BUSY normalizedLoad=${normalizedLoad.toFixed(2)} limit=${limit}`);
+        process.exit(75);
+    }
+}
+
+rejectBusyNode();
 
 // Realistische Verzögerung (2-4s zufällig)
 function humanDelay(min = 2000, max = 4000) {
@@ -93,7 +113,7 @@ async function waitForPageReady(page) {
     return pageReady;
 }
 
-async function detectLiveStatus(page) {
+async function detectLiveStatus(page, username) {
     const indicators = {
         liveIcon: false,
         liveBadge: false,
@@ -103,19 +123,23 @@ async function detectLiveStatus(page) {
     };
     let detectionMethod = 'none';
 
-    // --- Priorität 1: data-e2e="live-icon" (zuverlässigster Indikator) ---
+    const profileScope = page.locator(
+        '[data-e2e="creator-page-header"], [data-e2e="profile-avatar"]'
+    );
+
+    // --- Priorität 1: Profilgebundenes data-e2e="live-icon" ---
     try {
-        const liveIcon = await page.$('[data-e2e="live-icon"]');
-        if (liveIcon) {
+        const liveIcon = profileScope.locator('[data-e2e="live-icon"]').first();
+        if (await liveIcon.isVisible().catch(() => false)) {
             indicators.liveIcon = true;
             detectionMethod = 'live-icon';
             return { isLive: true, detectionMethod, indicators };
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 2: LIVE Text/Badge ---
+    // --- Priorität 2: LIVE Text/Badge nur im Profilkopf ---
     try {
-        const liveBadge = await page.locator('text=/^LIVE$/i').first();
+        const liveBadge = profileScope.getByText(/^LIVE$/i).first();
         const liveBadgeVisible = await liveBadge.isVisible().catch(() => false);
         if (liveBadgeVisible) {
             indicators.liveBadge = true;
@@ -127,11 +151,9 @@ async function detectLiveStatus(page) {
     // --- Priorität 3: Roter Rahmen um Profilbild ---
     try {
         const profileSelectors = [
-            'img[alt*="profile"]',
             'img[data-e2e="avatar"]',
             'div[data-e2e="profile-avatar"] img',
-            'a[href*="/@"] img',
-            '[class*="avatar"] img'
+            '[data-e2e="creator-page-header"] img[alt*="profile"]'
         ];
 
         for (const selector of profileSelectors) {
@@ -183,19 +205,21 @@ async function detectLiveStatus(page) {
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 4: Pulsierender Live-Indikator ---
+    // --- Priorität 4: Pulsierender Live-Indikator im Profilkopf ---
     try {
-        const liveIndicator = await page.$('[class*="live-indicator"], div[class*="LiveBadge"]');
-        if (liveIndicator) {
+        const liveIndicator = profileScope.locator(
+            '[class*="live-indicator"], div[class*="LiveBadge"]'
+        ).first();
+        if (await liveIndicator.isVisible().catch(() => false)) {
             indicators.liveIndicator = true;
             detectionMethod = 'live-indicator';
             return { isLive: true, detectionMethod, indicators };
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 5: Link auf /live ---
+    // --- Priorität 5: Exakter Link auf das Live des geprüften Profils ---
     try {
-        const liveLink = await page.$('a[href*="/live"]');
+        const liveLink = await page.$(`a[href*="/@${username}/live"]`);
         if (liveLink) {
             indicators.liveLink = true;
             detectionMethod = 'live-link';
@@ -285,7 +309,7 @@ async function checkLiveStatus(username) {
         }
 
         // Step 3: Live-Status prüfen (priorisiert)
-        const liveResult = await detectLiveStatus(page);
+        const liveResult = await detectLiveStatus(page, username);
 
         // Step 4: Age-Restriction prüfen (nur wenn live erkannt)
         let ageResult = { isAgeRestricted: false, reason: null };
