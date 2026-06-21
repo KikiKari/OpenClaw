@@ -1,291 +1,155 @@
-# TikTok Live Monitor - Dokumentation
+# TikTok LIVE Runtime Reference
 
-**Letzte Aktualisierung:** 2026-04-06
-**Status:** ✅ Playwright-basierte Extraktion operational
+Stand: 2026-06-21.
 
----
+This document describes the active gateway/node implementation. Older
+Port-5001, SSH, fixed-account, cron, and `/opt/tiktok-api` instructions are
+historical and must not be used.
 
-## Architektur-Update (2026-04-06)
+## Components
 
-### ❌ Veraltete Architektur (nicht mehr in Betrieb)
+| Component | Purpose |
+|---|---|
+| `tiktok-monitor/tiktok_dispatch.py` | Canonical orchestration, result normalization, timeouts, routing metadata |
+| `skills/tiktok-live/` | Basic account-specific profile check and Playwright URL extraction |
+| `skills/tiktok-live-mon/` | Enhanced accessible/restricted/offline classification and extractor fallbacks |
+| `tiktok-monitor/tt-live.sh` | Stateful Python/Webcast monitor and daemon |
+| `tiktok-names/` | Durable identity/address-book history; not runtime configuration |
 
-Die ursprüngliche 3-Tier API-Architektur ist **obsolet**:
+All paths are below `$HOME/.openclaw/workspace/`.
 
-```
-┌─────────────────┐     SSH Tunnel      ┌─────────────────┐
-│   NODE 1        │═════════════════════│   NODE 2        │
-│   (Hetzner)     │◄────Port 15000─────│   (Netcup)      │
-│   Main Gateway  │◄────Port 18792─────│   Worker        │
-│   Ubuntu 24.04  │                     │   Ubuntu 24.04  │
-└─────────────────┘                     └─────────────────┘
-         │
-         │ Port 18791/18792
-         │
-         ▼
-┌─────────────────┐
-│   NODE 3        │
-│   (Netcup)      │
-│   CentOS 8      │
-│   TikTok API    │  ← DEFEKT (liefert falsche OFFLINE-Status)
-└─────────────────┘
-```
+## Dispatcher examples
 
-**Warum obsolet:**
-- `tiktok-live-connector` API gibt konsistent falsche OFFLINE-Status zurück
-- Selbst bei aktiv laufenden Streams: API meldet "OFFLINE"
-- NGINX Load-Balancing nutzlos bei defekter Datenquelle
-
----
-
-## ✅ Neue Architektur: Playwright + Visuelle Erkennung
-
-```
-┌─────────────────────────────────────────────┐
-│  NODE 1 (Hetzner - Main Gateway)            │
-│  Ubuntu 24.04, 16GB RAM                     │
-│                                             │
-│  ┌─────────────────────────────────────┐   │
-│  │  Playwright + Chromium              │   │
-│  │  ├─ tiktok-check-profile.js        │   │
-│  │  └─ tiktok-get-stream.js           │   │
-│  └─────────────────────────────────────┘   │
-│                                             │
-│  ┌─────────────────────────────────────┐   │
-│  │  Memory & Dokumentation             │   │
-│  │  ├─ TIKTOK.md (diese Datei)        │   │
-│  │  ├─ MEMORY.md (Langzeitspeicher)   │   │
-│  │  └─ memory/2026-04-06.md            │   │
-│  └─────────────────────────────────────┘   │
-└─────────────────────────────────────────────┘
-```
-
----
-
-## Verfügbare Skripte
-
-| Skript | Zweck | Aufruf |
-|--------|-------|--------|
-| `tiktok-check-profile.js` | Live-Status prüfen | `node tiktok-check-profile.js <username>` |
-| `tiktok-get-stream.js` | FLV-Stream-URL extrahieren | `node tiktok-get-stream.js <username>` |
-
-**Pfad:** `/home/openclaw/.openclaw/workspace/`
-
----
-
-## Überwachte Accounts
-
-- @example_creator
-- @another_creator
-
-**Letzte erfolgreiche Extraktion:**
-- Account: @example_creator
-- Zeit: 2026-04-06 10:42 CET
-- Ergebnis: VLC-kompatible FLV-URL extrahiert & verifiziert
-
----
-
-## Kritische Learnings (2026-04-06)
-
-### 1. DSGVO-Banner Handling
-```javascript
-// Banner MUSZ zuerst geschlossen werden
-const verstandenButton = await page.$('button:has-text("Verstanden")');
-if (verstandenButton) await verstandenButton.click();
-```
-**Warum:** Der Banner überdeckt das Profilbild — ohne Schließung kein LIVE-Badge sichtbar.
-
-### 2. Seitenlade-Reihenfolge
-```
-1. Navigate to @username
-2. Warte auf domcontentloaded
-3. Schließe DSGVO-Banner (sofort)
-4. Warte 3-5s auf vollständiges Rendern
-5. Warte auf networkidle (API-Calls)
-6. +2s für TikTok-interne Live-Prüfung
-```
-
-**Indikator für vollständiges Laden:**
-Der Reiter "Erneute Veröffentlichungen" erscheint erst, wenn die Seite komplett geladen ist.
-
-### 3. Live-Indikatoren (Zuverlässigkeit)
-| Indikator | Zuverlässigkeit | Erkennung |
-|-----------|-----------------|-----------|
-| LIVE-Badge | ⭐⭐⭐⭐⭐ | `text=/^LIVE$/i` |
-| Roter Rahmen | ⭐⭐⭐⭐☆ | `borderColor` + `boxShadow` |
-| Live-Link | ⭐⭐⭐☆☆ | `a[href*="/live"]` |
-
-### 4. Browser-Cleanup (KRITISCH)
-```javascript
-await browser.close();  // Nicht vergessen!
-```
-**Warum:** Ohne sauberes Cleanup bleiben Session-Cookies/Cache erhalten — nächste Abfrage ist beeinflusst.
-
----
-
-## Stream-URL Format
-
-**Beispiel (funktionierend):**
-```
-https://pull-flv-f77-tt04.tiktokcdn-eu.com/game/stream-<ID>_ld.flv
-?_session_id=<SESSION>
-&_webnoredir=1
-&abr_pts=-2800
-&expire=<TIMESTAMP>
-&sign=<SIGNATURE>
-```
-
-**Parameter:**
-- `_ld.flv` = Low Definition (auch `_sd.flv`, `_hd.flv` möglich)
-- `expire` = Unix-Timestamp (2-4h TTL)
-- `sign` = HMAC-Signatur (pro Sitzung einzigartig)
-
----
-
-## Stream-Wiedergabe (Player-Optionen)
-
-### 1. VLC (empfohlen)
 ```bash
-# Direkter Aufruf
-vlc "https://pull-flv-f77-tt04.tiktokcdn-eu.com/game/stream-..."
-
-# Mit User-Agent (falls nötig)
-vlc --http-user-agent="Mozilla/5.0" "https://..."
-
-# Headless (nur Audio)
-cvlc "https://..." --intf dummy
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check @example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator --json
 ```
 
-### 2. MPV
+`@example_creator` and `example_creator` identify the same account. No account
+is hardcoded in active code or operational documentation.
+
+JSON output contains at least:
+
+```json
+{
+  "status": "live",
+  "execution": "gateway",
+  "node": null,
+  "method": "playwright",
+  "url": "https://<allowed-tiktok-cdn>/<stream>.flv?<signed-query>",
+  "exit_code": 0
+}
+```
+
+Valid statuses are `live`, `offline`, `restricted`, `overloaded`,
+`dependency_missing`, and `technical_error`.
+
+## Detection
+
+The profile check is scoped to the requested account. Exact account LIVE links,
+profile-header/avatar state, and the direct `/@example_creator/live` page are
+used. Sidebar recommendations and unrelated `LIVE` labels do not count.
+
+The enhanced checker treats a direct LIVE page as:
+
+- `live` after an allowed TikTok CDN `.flv` response succeeds with HTTP `2xx`;
+- `restricted` when account-specific LIVE/gating text is present but no
+  accessible stream response is available;
+- `offline` when exact ended/offline evidence is present or account-specific
+  LIVE evidence is absent;
+- `technical_error` when navigation or classification cannot complete safely.
+
+The Python/Webcast result `live=true` is tentative until the Playwright direct
+page check has ruled out restriction.
+
+## URL validation
+
+An extractor success must satisfy all of these conditions:
+
+1. Output is a single normalized URL.
+2. Scheme is HTTPS.
+3. Host is an allowed TikTok/TikTok-CDN host.
+4. Path represents an observed `.flv` stream.
+5. The Playwright response status is HTTP `2xx`.
+
+Do not accept arbitrary URLs returned by a fallback, redirect, node response,
+or temporary file. Do not synthesize quality variants by modifying a signed
+URL.
+
+## Execution and fallback order
+
+The dispatcher runs bounded attempts and preserves method attribution. The
+enhanced URL extractor uses:
+
+1. Playwright response interception;
+2. `streamlink`;
+3. `yt-dlp`.
+
+Fallback executables receive fixed argument arrays. Their stdout/stderr is
+bounded and their whole process group is terminated on timeout.
+
+## Gateway/node routing
+
+The gateway remains a complete local executor. With `--execution auto`, the
+caller may select a connected paired node that supports `system.run`, has the
+required workspace/runtime, and is below the load threshold.
+
+The OpenClaw agent invokes the node through `exec host=node`. On that node it
+runs:
+
 ```bash
-# Standard
-mpv "https://pull-flv-f77-tt04.tiktokcdn-eu.com/game/stream-..."
-
-# Mit Cache für stabilere Wiedergabe
-mpv --cache=yes --cache-secs=30 "https://..."
-
-# Nur Audio
-mpv --no-video "https://..."
+TIKTOK_EXECUTION_CONTEXT=node TIKTOK_NODE_ID=<node-id> \
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" \
+url example_creator --execution local --json
 ```
 
-### 3. FFmpeg (Download/Reweaming)
+The caller validates the returned JSON, status, URL, exit code, and node
+identity. It falls back to the gateway for no suitable node, overload, missing
+dependencies, timeout, or invocation failure unless fallback was disabled for
+diagnosis.
+
+Direct SSH and direct CLI `system.run` invocation are not part of this design.
+
+## Load and exit codes
+
+The gateway and every node apply the same preflight:
+
+```text
+1-minute load / CPU count <= TIKTOK_MAX_LOAD_PER_CPU
+```
+
+The default limit is `1.5`. Overload stops before browser launch with empty
+non-JSON stdout and exit `75`.
+
+| Result | Exit |
+|---|---:|
+| accessible LIVE / URL found | 0 |
+| offline, restricted, or no URL | 1 |
+| dependency or technical failure | 2 |
+| invalid CLI usage | 64 |
+| overload | 75 |
+
+## VLC
+
 ```bash
-# Direktes Download
-ffmpeg -i "https://pull-flv-f77-tt04.tiktokcdn-eu.com/game/stream-..." \
-  -c copy output.flv
-
-# Zu MP4 konvertieren
-ffmpeg -i "https://..." -c copy output.mp4
-
-# Zu HLS für Web-Player
-ffmpeg -i "https://..." -c copy -f hls -hls_time 10 -hls_list_size 0 playlist.m3u8
-
-# Live-Reweaming zu RTMP (z.B. YouTube)
-ffmpeg -i "https://..." -c copy -f flv rtmp://youtube.com/...
+url="$(python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator)"
+vlc "$url"
 ```
 
-### 4. ffplay (einfache Wiedergabe)
-```bash
-ffplay "https://pull-flv-f77-tt04.tiktokcdn-eu.com/game/stream-..."
+Signed URLs may expire or be revoked at any time. Resolve again instead of
+reusing documented links. Logs and documentation must contain placeholders,
+not working signed URLs.
 
-# Mit Buffer
-ffplay -buffer_size 65536 "https://..."
-```
+## Node prerequisites
 
-### 5. Streamlink (Multi-Platform)
-```bash
-# Installation
-pip install streamlink
+Each executing node must provide:
 
-# TikTok Live (experimentell)
-streamlink "https://tiktok.com/@example_creator/live" best
+- the synchronized workspace at `$HOME/.openclaw/workspace/`;
+- Python 3 and Node.js;
+- Playwright and its Chromium executable in the skill installation;
+- optional `streamlink` and `yt-dlp` if those fallbacks are expected;
+- outbound HTTPS connectivity.
 
-# Mit Player
-streamlink --player=mpv "https://tiktok.com/@example_creator/live" best
-```
-
-### 6. yt-dlp (Download)
-```bash
-# Installation
-pip install yt-dlp
-
-# Direkte Stream-URL extrahieren
-yt-dlp -g "https://tiktok.com/@example_creator/live"
-
-# Mit Wiedergabe
-yt-dlp -o - "https://tiktok.com/@example_creator/live" | mpv -
-```
-
----
-
-## Alternative Extraktions-Methoden
-
-### Methode A: yt-dlp (kein Playwright nötig)
-```bash
-# Prüft Live-Status und gibt Stream-URL
-yt-dlp --no-warnings -g "https://tiktok.com/@example_creator/live" 2>/dev/null
-```
-**Pro:** Kein Browser, schnell
-**Con:** Weniger zuverlässig bei Bot-Erkennung
-
-### Methode B: gallery-dl
-```bash
-# Installation
-pip install gallery-dl
-
-# Extraktion
- gallery-dl -g "https://tiktok.com/@example_creator/live"
-```
-
-### Methode C: you-get
-```bash
-# Installation
-pip install you-get
-
-# Stream-Info
-you-get -i "https://tiktok.com/@example_creator/live"
-```
-
----
-
-## Fehlerbehebung
-
-| Problem | Lösung |
-|---------|--------|
-| Kein LIVE-Badge sichtbar | DSGVO-Banner prüfen / schließen |
-| Browser hängt | `pkill -f chromium` |
-| Session abgelaufen | Neue Instanz starten (nicht wiederverwenden) |
-| FLV-URL 403 | URL hat 2-4h TTL — neu extrahieren |
-| FFmpeg "403 Forbidden" | User-Agent hinzufügen: `-user_agent "Mozilla/5.0"` |
-| Stream ruckelt | Buffer erhöhen: `-buffer_size 1M` |
-
----
-
-## UFW Firewall (für Outgoing)
-
-**Erforderliche Ports:**
-```bash
-sudo ufw allow out 80/tcp    # HTTP
-sudo ufw allow out 443/tcp   # HTTPS
-sudo ufw allow out 8080/tcp  # HTTP alt
-sudo ufw allow out 8443/tcp  # HTTPS alt
-```
-
----
-
-## Referenzen
-
-- **Detaillierte Session-Doku:** `memory/2026-04-06.md`
-- **Langzeitspeicher:** `MEMORY.md` (Abschnitt "TikTok Live Stream Extraktion")
-- **AGENTS.md:** Architektur-Learnings & Konventionen
-- **Cron-Logs:** `~/.openclaw/cron/runs/`
-
----
-
-## Historie
-
-| Datum | Änderung |
-|-------|----------|
-| 2026-04-02 | Erste Architektur (3-Tier API) |
-| 2026-04-03 | API-Probleme dokumentiert |
-| 2026-04-06 | **Umstellung auf Playwright** — erste erfolgreiche Extraktion |
-| 2026-04-06 | Alternative Wiedergabe-Methoden dokumentiert (FFmpeg, MPV, yt-dlp, etc.) |
+If a prerequisite is absent, return `dependency_missing`; do not install
+software implicitly during a check.

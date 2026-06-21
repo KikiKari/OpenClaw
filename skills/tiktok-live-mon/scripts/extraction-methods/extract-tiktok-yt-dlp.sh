@@ -1,123 +1,86 @@
-#!/bin/bash
-# TikTok Live Stream URL Extraktion via yt-dlp v1.1
-# Usage: ./extract-tiktok-yt-dlp.sh <username> [format] [--json]
-# Gibt nackte URL aus oder JSON bei --json Flag
-# Korrekturen: Besseres JSON-Handling und Fehlerquellen-Logging
+#!/usr/bin/env bash
+# Bounded fallback used by the enhanced extractor. Temporary files are cleaned
+# on every exit and output is normalized again by tiktok-get-stream.js.
+# Standalone overload exits 75 before yt-dlp starts.
+set -u
 
-USERNAME="$1"
-FORMAT="${2:-best}" # Default best quality for yt-dlp
-JSON_FLAG="$3"
-
-# Temporäres Verzeichnis für Logs und Output
+USERNAME="${1#@}"
+FORMAT="${2:-best}"
+JSON_FLAG="${3:-}"
+TIMESTAMP=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 TMP_DIR=$(mktemp -d /tmp/tiktok-yt-dlp.XXXXXX)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-if [ -z "$USERNAME" ]; then
-    echo '{"success":false,"method":"yt-dlp","error":"Usage: extract-tiktok-yt-dlp.sh <username> [format] [--json]","timestamp":"'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"}' >&2
-    exit 1
+emit_json() {
+    python3 - "$@" <<'PY'
+import json
+import sys
+keys = ("success", "method", "username", "url", "format", "error", "timestamp", "status")
+payload = {k: v for k, v in zip(keys, sys.argv[1:]) if v != ""}
+if "success" in payload:
+    payload["success"] = payload["success"].lower() == "true"
+print(json.dumps(payload, ensure_ascii=False))
+PY
+}
+
+if [[ ! "$USERNAME" =~ ^[A-Za-z0-9._]{1,24}$ ]]; then
+    echo "Invalid TikTok username" >&2
+    exit 64
+fi
+if [[ ! "$FORMAT" =~ ^(best|worst|ld|sd|hd|origin|auto|[0-9]+p)$ ]]; then
+    echo "Invalid yt-dlp format" >&2
+    exit 64
+fi
+
+LOAD_PER_CPU=$(python3 -c 'import os; print(os.getloadavg()[0] / max(1, os.cpu_count() or 1))')
+MAX_LOAD="${TIKTOK_MAX_LOAD_PER_CPU:-1.5}"
+if python3 -c 'import sys; sys.exit(0 if float(sys.argv[1]) > float(sys.argv[2]) else 1)' "$LOAD_PER_CPU" "$MAX_LOAD"; then
+    emit_json "false" "yt-dlp" "$USERNAME" "" "$FORMAT" "host overloaded" "$TIMESTAMP" "overloaded" >&2
+    exit 75
+fi
+if ! command -v yt-dlp >/dev/null 2>&1; then
+    emit_json "false" "yt-dlp" "$USERNAME" "" "$FORMAT" "yt-dlp not installed" "$TIMESTAMP" "dependency_missing" >&2
+    exit 2
 fi
 
 LIVE_URL="https://www.tiktok.com/@${USERNAME}/live"
-
-# yt-dlp Kommando mit mehr Optionen für Robustheit
-# --print-json gibt strukturierte Daten aus
-# --output_args '%(url,http_headers.cookie)s' könnte nützlich sein, wird aber hier ignoriert
-# --no-warnings sollte nur für saubere Ausgabe verwendet werden, aber wir loggen stderr
-COMMAND=(
-    yt-dlp
-    --no-warnings
-    --print-json
-    --skip-download
-    --write-info-json
-    --prefer-free-formats
-    --format "$FORMAT"
-    "$LIVE_URL"
-)
-
-printf 'Running command:' >&2
-printf ' %q' "${COMMAND[@]}" >&2
-printf '\n' >&2
-
-"${COMMAND[@]}" \
-    2> "${TMP_DIR}/yt-dlp.stderr.log" \
-    > "${TMP_DIR}/yt-dlp.stdout.log"
+yt-dlp --no-warnings --dump-single-json --skip-download --format "$FORMAT" "$LIVE_URL" \
+    >"$TMP_DIR/stdout.json" 2>"$TMP_DIR/stderr.log"
 EXIT_CODE=$?
-
-if [ $EXIT_CODE -ne 0 ]; then
-    STDERR_OUTPUT=$(cat "${TMP_DIR}/yt-dlp.stderr.log")
-    echo "yt-dlp exited with code $EXIT_CODE. Stderr: ${STDERR_OUTPUT}" >&2
-    if [ "$JSON_FLAG" = "--json" ]; then
-        echo "{\"success\":false,\"method\":\"yt-dlp\",\"username\":\"${USERNAME}\",\"error\":\"yt-dlp failed with code ${EXIT_CODE}. Stderr: ${STDERR_OUTPUT//\"/\\\"}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
+if [ "$EXIT_CODE" -ne 0 ]; then
+    if grep -Eqi 'not currently live|No live cdn found|not available|private video' "$TMP_DIR/stderr.log"; then
+        STATUS=offline
+        CODE=1
     else
-        echo "ERROR: yt-dlp failed for @${USERNAME}." >&2
+        STATUS=technical_error
+        CODE=2
     fi
-    exit $EXIT_CODE
+    emit_json "false" "yt-dlp" "$USERNAME" "" "$FORMAT" \
+        "$(head -c 1000 "$TMP_DIR/stderr.log")" "$TIMESTAMP" "$STATUS" >&2
+    exit "$CODE"
 fi
 
-# Parse die stdout
-STDOUT_OUTPUT=$(cat "${TMP_DIR}/yt-dlp.stdout.log")
-
-# Versuche, die URL direkt zu finden
-# yt-dlp gibt manchmal direkt die URL zurück, wenn --print-json nicht gut funktioniert
-EXTRACTED_URL=$(echo "$STDOUT_OUTPUT" | grep -o 'http.*\.flv' | head -n 1)
-
-if [ -n "$EXTRACTED_URL" ]; then
-    if [ "$JSON_FLAG" = "--json" ]; then
-        echo "{\"success\":true,\"method\":\"yt-dlp\",\"username\":\"${USERNAME}\",\"url\":\"${EXTRACTED_URL}\",\"format\":\"${FORMAT}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
-    else
-        echo "$EXTRACTED_URL"
-    fi
-    exit 0
-fi
-
-# Wenn directe URL nicht gefunden, parse JSON output
-JSON_DATA=$(echo "$STDOUT_OUTPUT" | jq -r '. | select(length > 0)')
-if [ -z "$JSON_DATA" ] || [ "$JSON_DATA" == "null" ]; then
-    # Wenn kein JSON gefunden wurde, prüfen wir die STDERR für Hinweise
-    STDERR_OUTPUT=$(cat "${TMP_DIR}/yt-dlp.stderr.log")
-    if [[ "$STDERR_OUTPUT" == *"No live cdn found"* ]] || [[ "$STDERR_OUTPUT" == *"is not available"* ]] || [[ "$STDERR_OUTPUT" == *"private video"* ]]; then
-         if [ "$JSON_FLAG" = "--json" ]; then
-            echo "{\"success\":false,\"method\":\"yt-dlp\",\"username\":\"${USERNAME}\",\"error\":\"Stream not found or private. ${STDERR_OUTPUT//\"/\\\"}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
-        else
-            echo "ERROR: Stream not found or private for @${USERNAME}. ${STDERR_OUTPUT}" >&2
-        fi
-        exit 1
-    fi
-    # Wenn es kein klarer Fehler ist, aber kein JSON/URL, dann schlagen wir fehl
-    if [ "$JSON_FLAG" = "--json" ]; then
-        echo "{\"success\":false,\"method\":\"yt-dlp\",\"username\":\"${USERNAME}\",\"error\":\"Could not find JSON or URL in yt-dlp output. Check logs.\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
-    else
-        echo "ERROR: Could not find JSON or URL in yt-dlp output for @${USERNAME}." >&2
-    fi
+URL=$(python3 -c '
+import json, sys
+d=json.load(sys.stdin)
+candidates=[]
+if isinstance(d.get("url"), str):
+    candidates.append(d["url"])
+for item in d.get("formats", []) or []:
+    if isinstance(item, dict) and isinstance(item.get("url"), str):
+        candidates.append(item["url"])
+for value in candidates:
+    if value.startswith("https://") and ".flv" in value.lower():
+        print(value)
+        break
+' <"$TMP_DIR/stdout.json" 2>/dev/null)
+if [ -z "$URL" ]; then
+    emit_json "false" "yt-dlp" "$USERNAME" "" "$FORMAT" \
+        "could not extract HTTPS FLV URL" "$TIMESTAMP" "offline" >&2
     exit 1
 fi
-
-# Extrahiere die beste URL aus dem JSON, mit Priorität auf FLV
-BEST_URL=$(echo "$JSON_DATA" | jq -r '
-  .url // (if .formats then
-    (
-      .formats
-      | map(select(.protocol | test("http")) | select(.ext == "flv" or .vcodec == "avc1") | .url)
-      | if length > 0 then .[0]
-        else
-          (map(.url) | .[0]) // ""
-        end
-    )
-  else "" end)
-')
-
-if [ -n "$BEST_URL" ]; then
-    if [ "$JSON_FLAG" = "--json" ]; then
-        echo "{\"success\":true,\"method\":\"yt-dlp\",\"username\":\"${USERNAME}\",\"url\":\"${BEST_URL}\",\"format\":\"${FORMAT}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
-    else
-        echo "$BEST_URL"
-    fi
-    exit 0
+if [ "$JSON_FLAG" = "--json" ]; then
+    emit_json "true" "yt-dlp" "$USERNAME" "$URL" "$FORMAT" "" "$TIMESTAMP" "live"
 else
-    if [ "$JSON_FLAG" = "--json" ]; then
-        echo "{\"success\":false,\"method\":\"yt-dlp\",\"username\":\"${USERNAME}\",\"error\":\"Could not extract stream URL from JSON data.\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
-    else
-        echo "ERROR: Could not extract stream URL from JSON data for @${USERNAME}." >&2
-    fi
-    exit 1
+    printf '%s\n' "$URL"
 fi

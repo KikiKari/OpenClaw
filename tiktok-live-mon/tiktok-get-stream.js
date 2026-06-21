@@ -1,10 +1,13 @@
 #!/usr/bin/env node
+/** LEGACY COPY: background reference only. Use the active script under
+ * $HOME/.openclaw/workspace/skills/tiktok-live-mon/scripts/ via the dispatcher.
+ */
 /**
  * TikTok Stream URL Extractor v2.4
  * 
  * Strategie:
  * 1. Playwright: Navigiere zu /live, schließe Popups, fange FLV-URLs via page.on('response')
- * 2. Streamlink: Fallback (zuverlässigste CLI-Methode)
+ * 2. Streamlink: historischer Fallback; aktive Ausgabe wird strikt normalisiert
  * 3. yt-dlp: Letzter Fallback
  * 
  * Fix: Verwendet page.on('response') statt nicht-existierender waitForResponses()
@@ -225,7 +228,7 @@ async function getStreamUrl(username, qualityPreference = 'ld') {
     }
     console.log(`Playwright result: ${pwResult.reason || pwResult.error || 'failed'}`);
 
-    // --- 2. Streamlink (zuverlässigster Fallback) ---
+    // --- 2. Streamlink (historischer Fallback; nicht ungeprüft übernehmen) ---
     console.log(`[2/3] Trying streamlink for @${username} (quality: ${qualityPreference})...`);
     const slResult = await tryStreamlink(username, qualityPreference);
     if (slResult.success) {

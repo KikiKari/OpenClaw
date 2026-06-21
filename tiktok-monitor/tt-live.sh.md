@@ -1,5 +1,9 @@
 # `tt-live.sh` — Wrapper Reference
 
+> **Scope (2026-06-21):** This wrapper exposes the stateful Python monitor.
+> Use `tiktok_dispatch.py` for restriction-aware checks, FLV extraction,
+> overload exit `75`, and agent-managed gateway/node routing.
+
 Source: `tt-live.sh`. Thin bash wrapper around `tt_live.py`.
 
 The wrapper has three responsibilities:

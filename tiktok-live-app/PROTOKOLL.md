@@ -1,34 +1,17 @@
-# TikTok Live System - Protokoll
+# Historical TikTok Test Protocol
 
-## Session: 04.04.2026 21:00-22:10
+This file previously mixed dated test observations with operational
+instructions. Those observations are historical and have been retired from
+the active documentation.
 
-### Problemstellung
-Nutzer @dieanonyme_196 wurde wiederholt als OFFLINE gemeldet, obwohl Stream aktiv.
-Ursache: `tiktok-live-connector` API liefert inkonsistente Status.
+Current regression cases use runtime-supplied handles only:
 
-### Lösung implementiert
-- Playwright mit Chromium installiert
-- Visueller Check (roter Rand am Profilbild)
-- Netzwerk-Traffic-Monitoring für FLV-Links
+- `@example_creator` and `example_creator` normalize identically;
+- unrelated sidebar `LIVE` text is not a positive signal;
+- offline/restricted URL extraction has empty stdout and exit `1`;
+- overload exits `75` before Playwright starts;
+- gateway/node results use the same normalized contract;
+- signed URLs are represented by placeholders and are re-resolved for each
+  playback test.
 
-### Erfolgreicher Test
-**Nutzer:** @dieanonyme_196
-**Ermittelter Status:** LIVE
-**VLC-Link:** Extrahiert und funktionsfähig
-
-### Prozess-Workflow (final)
-1. Playwright starten
-2. Profilseite loaded (DSGVO accept)
-3. Live-Indikator check (CSS/Element)
-4. Falls LIVE → /live URL
-5. Netzwerk-Requests monitoren
-6. FLV-URL extrahieren
-7. Browser schließen
-
-### Skripte aktualisiert
-- `check-profile.js` - Profil-Check mit Live-Erkennung
-- `get-stream.js` - Stream-URL-Extraktion
-- `check-dieanonyme.js` - API-Check (Backup)
-
-### Status
-✅ SYSTEM EINSATZBEREIT
+See `../skills/tiktok-live/references/TIKTOK.md` for the current contract.

@@ -1,5 +1,12 @@
 # tt-live
 
+> **Aktueller Laufzeitvertrag (2026-06-21):** Dieses Dokument beschreibt den
+> zustandsbehafteten Python-Monitor. Für öffentliche
+> `live|offline|restricted`-Klassifikation, FLV-Auflösung,
+> Lastschutz und Gateway-/Node-Routing ist
+> `../tiktok_dispatch.py` der kanonische Einstieg. Nodes werden durch den
+> OpenClaw-Agenten über `exec host=node` beauftragt, nicht über SSH.
+
 TikTok LIVE monitor for OpenClaw. Resolves a TikTok user's live status,
 m3u8 stream URL, or watches them over a timer window emitting structured
 transition events for a sub-agent to announce.
@@ -96,8 +103,9 @@ https://pull-hls-f16-tt04.tiktokcdn-eu.com/.../index.m3u8?expire=1748800000&sign
 $ vlc "$(tt-live.sh url <user>)"
 ```
 
-URL is cache-first (3-day retention). Cache miss falls back to direct
-webcast API → yt-dlp → streamlink.
+URL is cache-first (3-day retention as state/history metadata). Retention does
+not guarantee that a signed URL remains playable. Cache miss falls back to
+direct webcast API → yt-dlp → streamlink.
 
 ### Watch for transitions
 
@@ -105,9 +113,9 @@ webcast API → yt-dlp → streamlink.
 $ tt-live.sh daemon <user> --hours 12 --poll-min 5
 pid=12345
 username=<user>
-workspace=/home/openclaw/.openclaw/workspace/tiktok-monitor
-log=/home/openclaw/.openclaw/workspace/tiktok-monitor/logs/daemon-<user>-20260525T182213Z.log
-events_dir=/home/openclaw/.openclaw/workspace/tiktok-monitor/state/tt-live
+workspace=$HOME/.openclaw/workspace/tiktok-monitor
+log=$HOME/.openclaw/workspace/tiktok-monitor/logs/daemon-<user>-20260525T182213Z.log
+events_dir=$HOME/.openclaw/workspace/tiktok-monitor/state/tt-live
 ```
 
 Daemon runs in the background. Its events go to
@@ -190,7 +198,7 @@ Layout details, including the per-file JSON schemas, are in
 |---|---|---|
 | Stream format cap | 360p (HLS m3u8) | Predictable bandwidth for sub-agent use cases |
 | Poll interval floor | 5 minutes | TikTok rate-limits aggressive polling |
-| URL cache retention | 3 days | Matches practical signature validity |
+| URL cache retention | 3 days | Bounds state/history; not a playability guarantee |
 | HTTP request timeout | 15 seconds | Calibrated to TikTok's observed response latency |
 | Notifications | none | The skill is a data provider; sub-agents announce |
 | Cron mode | not supported | OpenClaw cron has ask=always; out of scope |

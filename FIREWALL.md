@@ -19,7 +19,6 @@ sudo ufw status verbose
 | 80/tcp | TCP | ALLOW | HTTP |
 | 443/tcp | TCP | ALLOW | HTTPS |
 | 993/tcp | TCP | ALLOW | IMAPS |
-| 5001 | TCP | ALLOW | 127.0.0.1 nur (TikTok API - DEFEKT) |
 | 51820/udp | UDP | ALLOW | WireGuard VPN |
 | 18789/tcp | TCP | ALLOW | OpenClaw Gateway |
 
@@ -34,22 +33,14 @@ sudo ufw status verbose
 | 443/tcp | TCP | ALLOW | HTTPS |
 | 587/tcp | TCP | ALLOW | SMTP |
 | 853/tcp | TCP | ALLOW | DNS-over-TLS |
-| 8080/tcp | TCP | ALLOW | HTTP alt (TikTok/Playwright) |
-| 8443/tcp | TCP | ALLOW | HTTPS alt (TikTok/Playwright) |
 
 ---
 
-## TikTok/Playwright Anforderungen
+## TikTok/Playwright Anforderungen (2026-06-21)
 
-**Hinzugefügt 2026-04-06:**
-```bash
-sudo ufw allow out 80/tcp    # HTTP für TikTok
-sudo ufw allow out 443/tcp   # HTTPS für TikTok
-sudo ufw allow out 8080/tcp  # HTTP alt
-sudo ufw allow out 8443/tcp  # HTTPS alt
-```
+Der aktive Dispatcher öffnet keinen TikTok-API-Port. Gateway und ausführende Nodes benötigen lediglich DNS sowie ausgehendes HTTPS zu TikTok- und TikTok-CDN-Hosts. Port 80 kann für normale HTTP-Weiterleitungen erlaubt bleiben; 8080/8443 sind keine TikTok-Laufzeitanforderung.
 
-**Warum:** Playwright/Chromium benötigt ausgehende HTTP/HTTPS-Verbindungen zu TikTok-CDN und Stream-Servern.
+Node-Aufträge laufen über die bestehende OpenClaw-Verbindung (`exec host=node`), nicht über zusätzliche TikTok-Tunnel oder eingehende Ports.
 
 ---
 
@@ -86,4 +77,4 @@ sudo ufw enable
 
 - `INFRASTRUCTURE.md` — Netzwerk-Übersicht
 - `SYSTEM.md` — System-Dokumentation
-- `TIKTOK.md` — TikTok Firewall-Anforderungen
+- `skills/tiktok-live/references/TIKTOK.md` — TikTok-Laufzeit und Netzwerk

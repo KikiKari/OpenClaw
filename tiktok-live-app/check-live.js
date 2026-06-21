@@ -1,6 +1,8 @@
+// LEGACY PROTOTYPE: retained for history only.
+// Use tiktok-monitor/tiktok_dispatch.py for operational checks.
 const { WebcastPushConnection } = require('tiktok-live-connector');
 
-const username = 'einfachnuralinaa';
+const username = process.argv[2] || 'example_creator';
 const connection = new WebcastPushConnection(username);
 
 async function checkLiveStatus() {

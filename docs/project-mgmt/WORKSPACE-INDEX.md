@@ -27,15 +27,15 @@
 | **2026-04-10.md** | Gestern - Infrastructure Updates | - | Gestern |
 | **2026-04-09.md** | Node-Setup und Xvfb | - | 09.04 |
 | **MAINTENANCE.md** | Cron-Jobs und Wartung | - | - |
-| **tiktok-health.md** | TikTok System Status | 3.4K | 15:06 |
-| **tiktok-checks.md** | TikTok Check-Log | - | - |
+| **tiktok-health.md** | Historischer TikTok-Systemstand | 3.4K | 15:06 |
+| **tiktok-checks.md** | Historisches TikTok-Check-Log | - | - |
 | **SSH-TUNNEL-NODE3.md** | SSH-Tunnel Dokumentation | 1.2K | 15:48 |
 | **XVFB-UNIFIED-SETUP.md** | Xvfb Vereinheitlichung | 2.8K | 16:37 |
 | **2026-04-11-SUMMARY.md** | Tageszusammenfassung | 1.8K | 16:40 |
 | **NODE-XVFB-SETUP.md** | Original Xvfb Setup-Plan | - | 09.04 |
 | **emails-*.md** | E-Mail Check-Logs | Variabel | Täglich |
 | **delta-*.md** | Session-Deltas | Variabel | Täglich |
-| **vlc-links-*.md** | VLC Stream-Links | Variabel | Bei Live |
+| **vlc-links-*.md** | Historische signierte URLs; nicht wiederverwenden | Variabel | Bei Live |
 
 ## 📂 Reports Verzeichnis
 
@@ -72,6 +72,7 @@
 |-------|------|--------------|
 | **tiktok-check-profile.js** | ~/.openclaw/workspace/skills/tiktok-live/scripts/ | Live-Status Check |
 | **tiktok-get-stream.js** | ~/.openclaw/workspace/skills/tiktok-live/scripts/ | Stream-URL Extraktion |
+| **tiktok_dispatch.py** | ~/.openclaw/workspace/tiktok-monitor/ | Kanonischer Status-/URL-Dispatcher mit Gateway-/Node-Routing |
 | **connect_node_*.sh** | Verschiedene | Node-Verbindungsskripte |
 | **setup-secret-write.sh** | Workspace | Secret-Store Setup |
 
@@ -79,7 +80,7 @@
 
 | Datei | Beschreibung | Status |
 |-------|--------------|--------|
-| **TIKTOK.md** | TikTok Master-Dokumentation | Aktuell |
+| **skills/tiktok-live/references/TIKTOK.md** | Aktueller TikTok-Laufzeitvertrag | Aktuell 2026-06-21 |
 | **SYSTEM.md** | System-Übersicht | Aktuell |
 | **FIREWALL.md** | UFW Konfiguration | Aktuell |
 | **PASSWORD.md** | Credential-Management | Sensibel |

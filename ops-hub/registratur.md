@@ -72,7 +72,9 @@ Dieses Dokument enthält ein vollständiges Inhaltsverzeichnis aller internen un
 | Skill | Zweck | Pfad |
 |-------|-------|------|
 | blogwatcher | RSS/Atom Feed Monitoring | `~/.openclaw/skills/blogwatcher/` |
-| tiktok-live | TikTok Livestream Extraktion | `~/.openclaw/workspace/skills/tiktok-live/` |
+| tiktok-live | Accountgenaue TikTok-LIVE-Prüfung und URL-Extraktion | `~/.openclaw/workspace/skills/tiktok-live/` |
+| tiktok-live-mon | Restricted-Erkennung und bounded Fallbacks | `~/.openclaw/workspace/skills/tiktok-live-mon/` |
+| tiktok_dispatch.py | Gateway-/Node-Orchestrierung mit lokalem Fallback | `~/.openclaw/workspace/tiktok-monitor/` |
 | healthcheck | Sicherheitsprüfungen | `~/.openclaw/skills/healthcheck/` |
 
 ---

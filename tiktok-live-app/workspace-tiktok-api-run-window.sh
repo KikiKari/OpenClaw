@@ -1,4 +1,5 @@
 #!/bin/bash
+# LEGACY: transient Port-5001 API launcher; not used by the current dispatcher.
 set -euo pipefail
 DURATION="${1:-300}"
 UNIT_NAME="tiktok-api-window-$(date +%s)"

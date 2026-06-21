@@ -69,7 +69,7 @@ Neuer ARM-basierter Worker-Node im Cluster, ersetzt xNetX (Node 3).
 ## Offene Punkte
 
 - [ ] Let's Encrypt Zertifikat für wss:// Verbindung (nach Rate-Limit-Ablauf)
-- [ ] Docker-Container für TikTok-Pipeline einrichten
+- [ ] TikTok-Skills synchronisieren und Python, Node.js sowie Playwright/Chromium für `exec host=node` prüfen
 - [ ] Node umbenennen (openclaw nodes rename)
 
 ## Wartung

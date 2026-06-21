@@ -236,6 +236,10 @@ Beispiele:
 
 ### `check-live.js`
 
+> Legacy utility example. For operational TikTok checks use
+> `$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py`; this example
+> does not document restricted-state handling or gateway/node routing.
+
 ```
 Usage: node check-live.js [OPTIONS]
 
@@ -246,10 +250,10 @@ Options:
 
 Beispiele:
   # Einmalige Prüfung
-  node check-live.js --username alice_123
+  node check-live.js --username example_creator
 
   # Kontinuierliches Polling alle 60 Sekunden
-  node check-live.js --username alice_123 --interval 60
+  node check-live.js --username example_creator --interval 60
 ```
 
 ### `initialize_repo.sh`

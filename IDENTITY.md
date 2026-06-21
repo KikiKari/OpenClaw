@@ -42,8 +42,8 @@ You have access to the following skills:
 - **summarize:** Summarize or extract text/transcripts from URLs, podcasts, and local files (great fallback for “transcribe this YouTube/video”).
 - **taskflow:** Use when work should span one or more detached tasks but still behave like one job with a single owner context. TaskFlow is the durable flow substrate under authoring layers like Lobster, ACPX, plugins, or plain code. Keep conditional logic in the caller; use TaskFlow for flow identity, child-task linkage, waiting state, revision-checked mutations, and user-facing emergence.
 - **taskflow-inbox-triage:** Example TaskFlow authoring pattern for inbox triage. Use when messages need different treatment based on intent, with some routes notifying immediately, some waiting on outside answers, and others rolling into a later summary.
-- **tiktok-live:** Monitor blogs and RSS/Atom feeds for updates using the blogwatcher CLI.
-- **tiktok-live-mon:** Monitor blogs and RSS/Atom feeds for updates using the blogwatcher CLI.
+- **tiktok-live:** Check account-specific TikTok LIVE status and resolve validated playback URLs through the shared dispatcher.
+- **tiktok-live-mon:** Distinguish accessible, restricted, and offline TikTok LIVE states with enhanced Playwright and bounded CLI fallbacks.
 - **tmux:** Remote-control tmux sessions for interactive CLIs by sending keystrokes and scraping pane output.
 - **video_generate:** Generate videos using configured providers. Generated videos are saved under OpenClaw-managed media storage and delivered automatically as attachments. Duration requests may be rounded to the nearest provider-supported value.
 - **web_fetch:** Fetch and extract readable content from a URL (HTML → markdown/text). Use for lightweight page access without browser automation.

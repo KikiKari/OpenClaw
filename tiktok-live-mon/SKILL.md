@@ -1,30 +1,27 @@
----
-name: tiktok-live-mon
-description: TikTok Live stream monitoring and recording automation. Uses Playwright for visual detection and network traffic monitoring to capture FLV stream URLs. Supports automatic live status checks, stream recording to disk, and notification integration.
----
+# Legacy TikTok LIVE Monitor Location
 
-# TikTok Live Monitor
+Stand: 2026-06-21.
 
-Automated TikTok Live stream monitoring with Playwright-based visual detection.
+This directory contains retained background references. It is not the active
+skill installation.
 
-## Features
+Use:
 
-- **Visual Detection:** Uses Chromium/Playwright to detect live status (red border around profile)
-- **Stream URL Extraction:** Captures FLV stream URLs from network traffic
-- **Automatic Recording:** Saves streams to disk when live
-- **Notifications:** Alerts when stream goes live/offline
-
-## Usage
-
-```bash
-# Check if user is live
-node check-profile.js @username
-
-# Get stream URL
-node get-stream.js @username
+```text
+$HOME/.openclaw/workspace/skills/tiktok-live-mon/
 ```
 
-## Requirements
+Canonical commands:
 
-- Node.js 16+
-- Playwright with Chromium
+```bash
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator
+```
+
+The active implementation uses exact account selectors, distinguishes
+accessible LIVE from restricted LIVE, accepts only validated HTTPS TikTok CDN
+FLV results, returns overload as exit `75`, and can be run locally or by an
+OpenClaw agent on a paired node through `exec host=node`.
+
+Do not copy scripts, dependencies, SSH examples, or signed URLs from this
+legacy directory into production.

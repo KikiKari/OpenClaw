@@ -1,5 +1,11 @@
 # Architecture
 
+> **Scope (2026-06-21):** This is the architecture of the stateful Python
+> monitor. The canonical one-shot dispatcher is `../tiktok_dispatch.py`; it
+> adds Playwright restriction detection, strict URL/result normalization,
+> load exit `75`, and agent-managed `exec host=node` execution with gateway
+> fallback.
+
 How the tt-live skill is wired together: components, classes, data
 flows, and the reasoning behind each design choice.
 

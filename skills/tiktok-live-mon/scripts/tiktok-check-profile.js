@@ -1,24 +1,34 @@
 #!/usr/bin/env node
 /**
- * TikTok Live Status Checker v2.1
- * Verbesserte Version mit:
- * - Robusteres DSGVO-Banner-Handling (alle bekannten Varianten)
- * - Wartet auf vollständigen Seitenaufbau ("Erneute Veröffentlichungen" Tab)
- * - Priorisierte Live-Erkennung (Badge > Border > Link)
- * - Age-Restriction-Erkennung
- * - Bessere Fehlerbehandlung & konsistente JSON-Ausgabe
- * - Debug-Modus (DEBUG=1)
- * - Realistische Verzögerungen gegen Bot-Erkennung
+ * Enhanced TikTok LIVE status checker.
+ *
+ * Uses exact account selectors and the direct /@username/live page to return
+ * live, restricted, offline, dependency_missing, technical_error, or
+ * overloaded. An accessible LIVE requires a successful allowed TikTok-CDN
+ * FLV response; unrelated sidebar LIVE labels never count.
+ *
+ * Browser resources are closed on every completion path.
  */
 
 const { chromium } = require('playwright');
 const fs = require('fs');
+const {
+    classifyDirectLiveState,
+    enforceLoadLimit,
+    isSuccessfulStreamResponse,
+    liveHrefSelectors,
+    normalizeUsername
+} = require('./tiktok-common');
 
-const username = process.argv[2];
-if (!username) {
+let username;
+try {
+    username = normalizeUsername(process.argv[2]);
+} catch (error) {
     console.error('Usage: node tiktok-check-profile.js <username>');
-    process.exit(1);
+    console.error(error.message);
+    process.exit(64);
 }
+enforceLoadLimit('playwright_enhanced');
 
 // Realistische Verzögerung (2-4s zufällig)
 function humanDelay(min = 2000, max = 4000) {
@@ -94,7 +104,7 @@ async function waitForPageReady(page) {
     return pageReady;
 }
 
-async function detectLiveStatus(page) {
+async function detectLiveStatus(page, username) {
     const indicators = {
         liveIcon: false,
         liveBadge: false,
@@ -104,19 +114,23 @@ async function detectLiveStatus(page) {
     };
     let detectionMethod = 'none';
 
-    // --- Priorität 1: data-e2e="live-icon" (zuverlässigster Indikator) ---
+    // --- Priorität 1: LIVE-Icon innerhalb des exakten Account-LIVE-Links ---
     try {
-        const liveIcon = await page.$('[data-e2e="live-icon"]');
-        if (liveIcon) {
+        const liveLink = page.locator(liveHrefSelectors(username).join(', ')).first();
+        const liveIconVisible = await liveLink.locator(
+            '[data-e2e="live-icon"], [class*="LiveBadge"], [class*="live-indicator"]'
+        ).first().isVisible().catch(() => false);
+        if (liveIconVisible) {
             indicators.liveIcon = true;
             detectionMethod = 'live-icon';
             return { isLive: true, detectionMethod, indicators };
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 2: LIVE Text/Badge ---
+    // --- Priorität 2: exaktes LIVE-Badge innerhalb desselben Account-Links ---
     try {
-        const liveBadge = await page.locator('text=/^LIVE$/i').first();
+        const liveLink = page.locator(liveHrefSelectors(username).join(', ')).first();
+        const liveBadge = liveLink.locator('text=/^LIVE$/i').first();
         const liveBadgeVisible = await liveBadge.isVisible().catch(() => false);
         if (liveBadgeVisible) {
             indicators.liveBadge = true;
@@ -125,14 +139,13 @@ async function detectLiveStatus(page) {
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 3: Roter Rahmen um Profilbild ---
+    // --- Priorität 3: Live-Rahmen am Profilkopf/Avatar des Accounts ---
     try {
         const profileSelectors = [
-            'img[alt*="profile"]',
-            'img[data-e2e="avatar"]',
-            'div[data-e2e="profile-avatar"] img',
-            'a[href*="/@"] img',
-            '[class*="avatar"] img'
+            '[data-e2e="user-page"] img[data-e2e="avatar"]',
+            '[data-e2e="user-page"] div[data-e2e="profile-avatar"] img',
+            'main header img[data-e2e="avatar"]',
+            'main header [class*="avatar"] img'
         ];
 
         for (const selector of profileSelectors) {
@@ -184,23 +197,23 @@ async function detectLiveStatus(page) {
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 4: Pulsierender Live-Indikator ---
+    // --- Priorität 4: Live-Indikator innerhalb des exakten Account-Links ---
     try {
-        const liveIndicator = await page.$('[class*="live-indicator"], div[class*="LiveBadge"]');
-        if (liveIndicator) {
+        const liveLink = page.locator(liveHrefSelectors(username).join(', ')).first();
+        const liveIndicatorVisible = await liveLink.locator(
+            '[class*="live-indicator"], div[class*="LiveBadge"]'
+        ).first().isVisible().catch(() => false);
+        if (liveIndicatorVisible) {
             indicators.liveIndicator = true;
             detectionMethod = 'live-indicator';
             return { isLive: true, detectionMethod, indicators };
         }
     } catch (e) { /* weiter */ }
 
-    // --- Priorität 5: Link auf /live ---
+    // --- Priorität 5: sichtbarer exakter /@username/live-Link ---
     try {
-        const escapedUsername = username.replace(/["\\]/g, '\\$&');
-        const liveLink = await page.$(
-            `a[href="/@${escapedUsername}/live"], a[href^="/@${escapedUsername}/live?"]`
-        );
-        if (liveLink) {
+        const liveLink = page.locator(liveHrefSelectors(username).join(', ')).first();
+        if (await liveLink.isVisible().catch(() => false)) {
             indicators.liveLink = true;
             detectionMethod = 'live-link';
             return { isLive: true, detectionMethod, indicators };
@@ -210,54 +223,34 @@ async function detectLiveStatus(page) {
     return { isLive: false, detectionMethod, indicators };
 }
 
-async function checkAgeRestriction(page, username) {
-    // Navigiere zur /live Seite um Age-Restriction zu prüfen
+async function inspectDirectLiveState(page, username) {
+    let successfulStreamResponse = false;
+    const responseHandler = response => {
+        if (isSuccessfulStreamResponse(response.status(), response.url())) {
+            successfulStreamResponse = true;
+        }
+    };
+    page.on('response', responseHandler);
     try {
         await page.goto(`https://www.tiktok.com/@${username}/live`, {
             waitUntil: 'domcontentloaded',
-            timeout: 20000
+            timeout: 30000
         });
-        await page.waitForTimeout(humanDelay(2000, 3000));
-
-        // Prüfe auf Login-Aufforderung
-        const loginTexts = [
-            'text="Bei TikTok anmelden"',
-            'text="Log in to TikTok"',
-            'text="Sign in"'
-        ];
-        for (const selector of loginTexts) {
-            try {
-                const el = await page.$(selector);
-                if (el && await el.isVisible()) {
-                    return {
-                        isAgeRestricted: true,
-                        reason: 'Login erforderlich (möglicherweise altersbeschränkt)'
-                    };
-                }
-            } catch (e) { /* weiter */ }
-        }
-
-        // Prüfe auf Inhaltswarnung
-        const warningTexts = [
-            'text=/unangenehm empfunden/',
-            'text=/mature content/',
-            'text=/age-restricted/',
-            'text=/viewer discretion/'
-        ];
-        for (const selector of warningTexts) {
-            try {
-                const el = await page.$(selector);
-                if (el && await el.isVisible()) {
-                    return {
-                        isAgeRestricted: true,
-                        reason: 'Inhaltswarnung/Altersbeschränkung angezeigt'
-                    };
-                }
-            } catch (e) { /* weiter */ }
-        }
-    } catch (e) { /* Navigation fehlgeschlagen */ }
-
-    return { isAgeRestricted: false, reason: null };
+        await page.waitForTimeout(humanDelay(8000, 10000));
+        const currentUrl = new URL(page.url());
+        const bodyText = await page.locator('body').innerText().catch(() => '');
+        return classifyDirectLiveState({
+            username,
+            currentPath: currentUrl.pathname,
+            title: await page.title(),
+            bodyText,
+            successfulStreamResponse
+        });
+    } catch (error) {
+        return { status: 'technical_error', reason: error.message };
+    } finally {
+        page.off('response', responseHandler);
+    }
 }
 
 async function checkLiveStatus(username) {
@@ -301,21 +294,31 @@ async function checkLiveStatus(username) {
         }
 
         // Step 3: Live-Status prüfen (priorisiert)
-        const liveResult = await detectLiveStatus(page);
+        const liveResult = await detectLiveStatus(page, username);
 
-        // Step 4: Age-Restriction prüfen (nur wenn live erkannt)
-        let ageResult = { isAgeRestricted: false, reason: null };
-        if (liveResult.isLive) {
-            ageResult = await checkAgeRestriction(page, username);
-        }
+        // Step 4: Accountgenaue /live-Seite prüfen. Das trennt zugängliche
+        // Streams, Login-/Content-Sperren und tatsächlich beendete Streams.
+        const directResult = await inspectDirectLiveState(page, username);
+        const finalStatus = directResult.status === 'restricted'
+            ? 'restricted'
+            : (
+                liveResult.isLive || directResult.status === 'live'
+                    ? 'live'
+                    : directResult.status
+            );
 
         // Ergebnis ausgeben
         const result = {
             username,
-            isLive: liveResult.isLive,
-            detectionMethod: liveResult.detectionMethod,
-            isAgeRestricted: ageResult.isAgeRestricted,
-            ageRestrictionReason: ageResult.reason,
+            status: finalStatus,
+            isLive: finalStatus === 'live' || finalStatus === 'restricted',
+            detectionMethod: directResult.status === 'restricted'
+                ? 'account-live-restricted'
+                : liveResult.detectionMethod,
+            isAgeRestricted: finalStatus === 'restricted',
+            ageRestrictionReason: finalStatus === 'restricted'
+                ? directResult.reason
+                : null,
             indicators: liveResult.indicators,
             bannerClosed,
             pageFullyLoaded: pageReady,
@@ -324,12 +327,13 @@ async function checkLiveStatus(username) {
         };
 
         console.log(JSON.stringify(result, null, 2));
-        process.exit(liveResult.isLive ? 0 : 1);
+        return finalStatus;
 
     } catch (error) {
         const result = {
             username,
             isLive: false,
+            status: 'technical_error',
             detectionMethod: 'error',
             isAgeRestricted: false,
             ageRestrictionReason: null,
@@ -339,7 +343,7 @@ async function checkLiveStatus(username) {
             version: 2
         };
         console.error(JSON.stringify(result, null, 2));
-        process.exit(1);
+        return 'technical_error';
     } finally {
         if (browser) {
             await browser.close();
@@ -347,4 +351,8 @@ async function checkLiveStatus(username) {
     }
 }
 
-checkLiveStatus(username);
+checkLiveStatus(username).then(status => {
+    if (status === 'live') process.exit(0);
+    if (status === 'offline' || status === 'restricted') process.exit(1);
+    process.exit(2);
+});

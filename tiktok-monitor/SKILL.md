@@ -1,227 +1,128 @@
 ---
-name: tt_live
-description: TikTok LIVE monitor. Check whether a TikTok user is live right now, resolve their current m3u8 stream URL, or spawn a background daemon that polls them over a timer window and emits go_live / go_offline / rename_detected events for the sub-agent to announce.
-version: 0.1.0
-metadata:
-  openclaw:
-    requires:
-      bins:
-        - python3
-    os:
-      - linux
-      - darwin
-    emoji: "🎥"
-    homepage: https://github.com/KikiKari/tt-live
+name: tt-live
+description: Dispatch one-shot TikTok LIVE checks and URL extraction, or run the stateful Python monitor/daemon. Use for live/offline/restricted classification, playable URL resolution, identity history, and timed transition monitoring.
 ---
 
-# tt-live — TikTok LIVE Monitor
+# tt-live — Dispatcher and Stateful Monitor
 
-Inspect a TikTok user's live status, resolve their stream URL, or watch
-them over time. Operate on `uniqueId` (the `@handle`) at the input
-boundary; track `secUid` as the stable primary key inside the workspace.
+The canonical one-shot entry is `tiktok_dispatch.py`. The lower-level
+`tt-live.sh`/`tt_live.py` component maintains identity, state, cache, and daemon
+events.
 
-This skill is a pure data provider. It does not push notifications. All
-chat announcements are the sub-agent's job through the normal OpenClaw
-announce mechanism in the requester's channel.
+## One-shot dispatcher
 
----
+```bash
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url @example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator --json
+```
 
-## When to invoke
+The dispatcher normalizes the handle, runs bounded Python and Playwright
+methods, distinguishes restricted LIVE from offline, validates extractor
+output, and reports the method that established the result.
 
-Invoke this skill when the requester asks any of:
+### Exit/status contract
 
-- "Is @&lt;user&gt; live right now?" — one-shot status check
-- "Give me the stream URL for @&lt;user&gt;" — m3u8 URL resolution
-- "Watch @&lt;user&gt; and tell me when they go live or offline over the
-  next N hours" — daemon-mode watch
-- "Did @&lt;user&gt; rename recently?" — identity history lookup via the
-  workspace identity store or daemon events
+| Status | Exit |
+|---|---:|
+| `live` | 0 |
+| `offline` | 1 |
+| `restricted` | 1 |
+| `dependency_missing` | 2 |
+| `technical_error` | 2 |
+| `overloaded` | 75 |
 
-Do NOT invoke this skill for:
+For non-JSON URL extraction, stdout contains only the naked URL on success and
+is empty otherwise.
 
-- Anything outside TikTok LIVE (regular TikTok videos, comments, DMs,
-  user analytics)
-- Downloading or recording the stream — this skill only resolves the URL
-- Pushing notifications to external services (Slack, Discord,
-  webhooks). The sub-agent owns announcements; the skill does not.
+### Execution modes
 
----
+```text
+--execution auto|local|node
+--node <id|name>
+--no-local-fallback
+```
+
+The gateway is always a valid local executor. In node mode, the calling
+OpenClaw agent uses `exec host=node` to run the same dispatcher with
+`--execution local` on a connected paired node. Node execution is not SSH and
+not direct CLI `system.run`. Missing dependencies, overload, timeout, or invoke
+failure fall back to the gateway unless disabled.
+
+The load threshold is the 1-minute load divided by CPU count. Its default is
+`1.5`; set `TIKTOK_MAX_LOAD_PER_CPU` to override it.
+
+## Stateful Python component
+
+Use the wrapper for identity/state persistence or daemon monitoring:
+
+```bash
+"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" check example_creator
+"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" url example_creator
+"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" daemon example_creator --hours 12 --poll-min 5
+```
+
+The Python component uses `secUid` as the stable primary key and stores
+handle pointers/history in `tiktok-names`. It is a data provider and does not
+send notifications.
+
+### Component scope
+
+- `check`: Webcast/profile status and identity update;
+- `url`: cached/direct API HLS resolution with optional `yt-dlp`/`streamlink`;
+- `daemon`: transition polling and append-only events;
+- `get_room_id.py`: standalone profile/room probe;
+- `check_alive.py`: standalone room liveness probe.
+
+A Python `live=true` result is tentative for public accessibility. Use the
+dispatcher or enhanced Playwright checker to identify `restricted`.
 
 ## Workspace
 
-Live state, events, and logs live under `$TT_LIVE_WORKSPACE`, default
-`~/.openclaw/workspace/tiktok-monitor/`. The durable identity/address-book
-store lives under `$TT_LIVE_IDENTITY_DIR`, default
-`~/.openclaw/workspace/tiktok-names/`. Created automatically on first
-invocation.
-
-```
-~/.openclaw/workspace/
+```text
+$HOME/.openclaw/workspace/
 ├── tiktok-names/
-│   ├── identities/<sec_uid>.json     canonical identity records
-│   └── pointers/<unique_id>.json     @handle → sec_uid pointers
+│   ├── identities/<sec_uid>.json
+│   └── pointers/<unique_id>.json
 └── tiktok-monitor/
-    ├── state/tt-live/
-    │   ├── <sec_uid>.state.json      per-user live state + URL cache
-    │   └── <sec_uid>.events          append-only daemon event log
-    └── logs/
-        └── daemon-<user>-<UTC-ts>.log daemon stderr+stdout
+    ├── state/tt-live/<sec_uid>.state.json
+    ├── state/tt-live/<sec_uid>.events
+    └── logs/daemon-<user>-<UTC-ts>.log
 ```
 
----
+`TT_LIVE_WORKSPACE` and `TT_LIVE_IDENTITY_DIR` override these defaults.
+Identity/address-book/history data is preserved independently of active
+runtime examples.
 
-## Entry points
+## Daemon event contract
 
-All entry points are invoked through `tt-live.sh` (the bash wrapper)
-which dispatches to `tt_live.py`. The wrapper handles backgrounding for
-the daemon case.
+Events are appended one per line:
 
-### `tt-live.sh check <username>`
-
-One-shot status check. Updates identity + state stores. Prints a JSON
-record with `sec_uid`, `unique_id`, `nickname`, `user_id`, `live`,
-`room_id`, `title`, `start_time`, `rename_detected`, `checked_at`.
-
-Exit codes: `0` = live, `1` = offline, `2` = error.
-
-### `tt-live.sh url <username> [--verbose|-v]`
-
-Resolve the current m3u8 stream URL. Cache-first (3-day retention);
-falls back to direct webcast API → yt-dlp → streamlink. Prints the URL
-on stdout.
-
-Exit codes: `0` = ok, `1` = offline, `2` = all extraction strategies
-failed.
-
-With `-v`, prints `# source: cache|api|yt-dlp|streamlink` to stderr.
-
-### `tt-live.sh daemon <username> [--hours N] [--poll-min M]`
-
-Spawn a background daemon. Defaults: `--hours 12`, `--poll-min 5`. The
-`--poll-min` value has a hard floor of 5; lower values are silently
-clamped.
-
-The wrapper prints `pid=...`, `username=...`, `workspace=...`,
-`log=...`, `events_dir=...` and returns immediately. The daemon writes
-structured events to `<events_dir>/<sec_uid>.events`.
-
-Exit codes: `0` = spawned and alive after 1s, `2` = spawn failed
-(check the printed log path).
-
----
-
-## Standalone tools (workspace-free)
-
-These two scripts are independent of `tt_live.py`. They do not read or
-write the workspace. Use them for ad-hoc probes.
-
-### `get_room_id.py <username>`
-
-SIGI_STATE scrape from `/@<user>/live`. Prints identity + room fields
-as JSON. Exit `0`/`1`/`2` (live/offline/error).
-
-### `check_alive.py <room_id>`
-
-Webcast API liveness check on an already-known room_id. Prints
-`{room_id, alive, checked_at}`. Exit `0`/`1`/`2` (alive/not/error).
-
-These are read-only counterparts to `tt_live.py check` for cases where
-workspace side-effects are not wanted.
-
----
-
-## Canonical workflow for long-running watch
-
-When the requester asks "watch @&lt;user&gt; for N hours and tell me when
-they go live / offline":
-
-**Step 1.** Resolve identity. The JSON output contains `sec_uid`, which
-is needed for the events file path.
-
-```bash
-JSON="$(tt-live.sh check <user>)"
-SEC_UID="$(echo "$JSON" | python3 -c 'import json,sys; print(json.load(sys.stdin)["sec_uid"])')"
-```
-
-**Step 2.** Spawn the daemon. Capture the workspace + events_dir from
-the printed key=value lines.
-
-```bash
-DAEMON_OUT="$(tt-live.sh daemon <user> --hours N --poll-min 5)"
-EVENTS_DIR="$(echo "$DAEMON_OUT" | awk -F= '/^events_dir=/{print $2}')"
-EVENTS_FILE="$EVENTS_DIR/$SEC_UID.events"
-```
-
-**Step 3.** Tail the events file. For each new line, parse `evt=` and
-announce to the requester's chat channel:
-
-| Event | Sub-agent action |
-|---|---|
-| `daemon_start` | Acknowledge the watch has begun (optional) |
-| `go_live` | Announce live + share the `stream_url` value |
-| `go_offline` | Announce the stream ended |
-| `rename_detected` | Announce the @handle change (`old_unique_id` → `unique_id`) |
-| `poll_err` | Log internally; do not announce unless multiple in a row |
-| `poll_ok` | Do not announce — these are normal heartbeats |
-| `daemon_end` | Announce watch window ended (include `reason` + `transitions`) |
-
-**Step 4.** When `daemon_end` arrives, the watch is complete. Stop
-tailing.
-
-The skill itself never announces. The sub-agent is responsible for
-turning events into human-readable chat messages.
-
----
-
-## Event format
-
-One line per event. Field order is fixed:
-
-```
+```text
 ts=<iso> evt=<type> sec_uid=<...> unique_id=<...> [k=v ...] [stream_url=...]
 ```
 
-Rules:
+`stream_url` is last because its signed query contains `&` and `=`. Event
+types are `daemon_start`, `daemon_end`, `poll_ok`, `poll_err`, `go_live`,
+`go_offline`, and `rename_detected`.
 
-- `ts=` is always first
-- `evt=` is always second
-- `sec_uid=`, `unique_id=` follow if present
-- `stream_url=` is **always the last key** when present, because its
-  value contains `&` and `=` which would break key=value parsers
-- All seven event types: `daemon_start`, `daemon_end`, `poll_ok`,
-  `poll_err`, `go_live`, `go_offline`, `rename_detected`
+The caller owns announcements. The daemon emits data only.
 
-See `tt_live.md` §10 for the per-event field reference.
+## Cache and signed URLs
 
----
+The state store may retain a URL for three days as history/cache metadata.
+Retention does not guarantee playability. A URL can expire, be revoked, or
+become invalid when a LIVE session ends. Resolve a fresh URL for playback and
+do not place working signed URLs in documentation.
 
-## Hard constraints
+## Constraints
 
-These are baked into the code and not configurable at runtime:
+- one handle per daemon;
+- five-minute minimum daemon poll interval;
+- Python resolver targets a bounded 360p HLS format;
+- no recording and no outbound notification integration;
+- validated handles only; `secUid` remains the durable identity key;
+- use the dispatcher for node routing and public-access classification.
 
-- **360p stream cap.** URL extraction is fixed at 360p height. Sub-agent
-  use cases assume predictable bandwidth.
-- **5-minute poll floor.** `--poll-min` values below 5 are clamped.
-  TikTok rate-limits aggressive polling and there is no benefit to
-  finer resolution for go_live / go_offline transitions.
-- **No outbound notifications.** No webhooks, no Slack-from-Python, no
-  Discord posts. The sub-agent's announce mechanism is the only output
-  channel.
-- **Stream URL validity is tied to the live session.** When the user
-  goes offline and live again, the previous URL is gone — even if it's
-  within the 3-day retention window. The cached URL is still useful as
-  a forensic record but not as a playable stream.
-- **`sec_uid` is the primary key.** Track users by `sec_uid`, not by
-  `unique_id`. Users can rename their @handle; `sec_uid` does not change.
-
----
-
-## Out of scope
-
-- Recording / saving the stream content
-- Multi-user batch monitoring (one user per daemon)
-- Notifications to external services
-- TikTok video downloads, comments, follower lists, anything not LIVE
-- Stop / pause / resume controls — to stop a daemon, the sub-agent kills
-  the printed `pid=` and the daemon writes a `daemon_end
-  reason=interrupted` event on the way out
+See `docs/README.md`, `docs/ARCHITECTURE.md`, `docs/SCHEMA.md`, and
+`docs/DAEMON.md` for component-level details.

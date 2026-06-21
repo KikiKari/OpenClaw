@@ -1,3 +1,6 @@
+> **Runtime-Hinweis (2026-06-21):** Diese Datei ist Hintergrund-/Upstream-Referenz, nicht der aktive Laufzeitvertrag. Der aktive Extractor nutzt exakte Account-Selektoren, akzeptiert nur beobachtete HTTPS-TikTok-CDN-`.flv`-Antworten mit HTTP `2xx`, verändert keine signierten URLs, klassifiziert eingeschränkte LIVE-Sessions als `restricted` mit Exit `1` und wird über `tiktok_dispatch.py` lokal oder agent-gesteuert mit `exec host=node` ausgeführt.
+>
+
 # Streamlink CLI Reference
 **Quelle:** https://streamlink.github.io/cli.html
 
@@ -58,10 +61,10 @@ streamlink --record <FILENAME> <URL>
 ## Beispiele
 ```bash
 # Stream-URL extrahieren
-streamlink --stream-url https://www.tiktok.com/@username/live
+streamlink --stream-url https://www.tiktok.com/@example_creator/live
 
 # Weniger Qualität (Performance)
-streamlink --stream-url "https://www.tiktok.com/@username/live" sd
+streamlink --stream-url "https://www.tiktok.com/@example_creator/live" sd
 
 # Direkt aufnehmen
 streamlink --record "~/recordings/{author}/{category}/{id}-{time:%Y%m%d%H%M%S}.ts" <URL> best

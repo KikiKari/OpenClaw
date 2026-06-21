@@ -1,3 +1,5 @@
+// LEGACY RECORDER PROTOTYPE: recording is outside the active TikTok skills.
+// Resolve URLs through tiktok-monitor/tiktok_dispatch.py before playback.
 const { exec, spawn } = require('child_process');
 const { chromium } = require('playwright');
 const fs = require('fs');
@@ -97,7 +99,7 @@ class TikTokRecorder {
 
 // Hauptfunktion
 async function main() {
-  const username = process.argv[2] || 'iman.hayatiii';
+  const username = process.argv[2] || 'example_creator';
   const duration = parseInt(process.argv[3]) || 60; // Minuten
   
   const recorder = new TikTokRecorder(username);

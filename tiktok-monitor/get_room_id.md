@@ -1,5 +1,9 @@
 # `get_room_id.py` — CLI Reference
 
+> **Scope (2026-06-21):** This standalone scrape reports room metadata. A
+> non-empty room is not proof of anonymous accessibility; use
+> `tiktok_dispatch.py check` for `live|restricted|offline`.
+
 Source: `get_room_id.py`. Self-contained standalone tool.
 
 A one-shot lookup that fetches the TikTok `/@<user>/live` page, extracts

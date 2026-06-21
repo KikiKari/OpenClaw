@@ -1,3 +1,5 @@
+// LEGACY PROTOTYPE: request-substring capture below is not the active URL
+// validation contract. Use tiktok-monitor/tiktok_dispatch.py.
 const { chromium } = require('playwright');
 
 const username = process.argv[2];

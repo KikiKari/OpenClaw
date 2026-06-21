@@ -1,10 +1,13 @@
 #!/usr/bin/env node
+/** LEGACY COPY: background reference only. Use the active script under
+ * $HOME/.openclaw/workspace/skills/tiktok-live-mon/scripts/ via the dispatcher.
+ */
 /**
  * TikTok Live Status Checker v2.1
  * Verbesserte Version mit:
  * - Robusteres DSGVO-Banner-Handling (alle bekannten Varianten)
  * - Wartet auf vollständigen Seitenaufbau ("Erneute Veröffentlichungen" Tab)
- * - Priorisierte Live-Erkennung (Badge > Border > Link)
+ * - Historische Erkennungsreihenfolge; nicht der aktuelle accountgenaue Vertrag
  * - Age-Restriction-Erkennung
  * - Bessere Fehlerbehandlung & konsistente JSON-Ausgabe
  * - Debug-Modus (DEBUG=1)

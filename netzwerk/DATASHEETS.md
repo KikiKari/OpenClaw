@@ -53,7 +53,7 @@
 | Node | Tunnel | Port | Status |
 |------|--------|------|--------|
 | Node 2 | Reverse SSH + Autossh | 18790 | ✅ Aktiv |
-| Node 2 | TikTok API Tunnel | 15000 | ✅ Aktiv |
+| Node 2 | Legacy TikTok API Tunnel (nicht vom Dispatcher genutzt) | 15000 | ✅ Aktiv |
 | Node 3 | SSH-Tunnel | 18788 | ✅ Aktiv |
 
 ### OpenClaw Node Mode
@@ -102,7 +102,7 @@ Alle 20 Minuten wird geprüft, ob der `openclaw-node` Prozess läuft. Falls nich
 | wg0 (WireGuard) | systemd (system) | ✅ active |
 | openclaw-tunnel | systemd (system) | ✅ active |
 | tunnel-18790 (Autossh) | systemd (system) | ✅ active |
-| tunnel-15000 (TikTok API) | systemd (system) | ✅ active |
+| tunnel-15000 (Legacy TikTok API; nicht vom Dispatcher genutzt) | systemd (system) | ✅ active |
 | openclaw-gateway | systemd (user/openclaw) | ✅ active |
 | openclaw-node | root-Prozess + Cron-Monitor | ✅ active |
 
@@ -158,7 +158,7 @@ Alle 20 Minuten wird geprüft, ob der `openclaw-node` Prozess läuft. Falls nich
 | Node 2 | Tailscale | 41641 | UDP | Tailscale Mesh |
 | Node 2 | OpenClaw Gateway (lokal) | 18789 | TCP | Lokaler Gateway |
 | Node 2 | SSH Reverse Tunnel | 18790 | TCP | Tunnel zu Node 1 |
-| Node 2 | TikTok API Tunnel | 15000 | TCP | Tunnel zu Node 1 |
+| Node 2 | Legacy TikTok API Tunnel (nicht vom Dispatcher genutzt) | 15000 | TCP | Tunnel zu Node 1 |
 | Node 3 | Tailscale | 41641 | UDP | Tailscale Mesh |
 | Node 3 | SSH-Tunnel | 18788 | TCP | Tunnel zu Gateway |
 | Node 4 | Webhosting | 443 | TCP | xstoragex.de (HTTPS) |

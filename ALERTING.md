@@ -11,10 +11,10 @@ Grund: Gateway lief unter root UND openclaw. Systemd-Wechsel verursachte Datenve
 - Slack DM (U0AP3JXHWBZ)
 - WebChat
 
-### tiktok-live-alert.sh
-Prüft: @luiisamour, @iman.hayatiii
-- API: localhost:5001 oder localhost:16000
-- Bei Live: Alert + VLC-Link
+### TikTok LIVE Alerts
+TikTok-Prüfungen erhalten den Handle zur Laufzeit; es gibt keine feste Account-Liste. Der alte `tiktok-live-alert.sh`-/Port-5001-Pfad ist deaktiviert. Neue Alert-Aufträge rufen `tiktok_dispatch.py` auf und behandeln `live`, `offline`, `restricted`, technische Fehler und Überlast getrennt. Eine URL wird nur bei Exit `0` und nach strikter Validierung weitergegeben.
+
+Node-Ausführung erfolgt agent-gesteuert über `exec host=node` mit Gateway-Fallback. Der Dispatcher selbst sendet keine Alerts.
 
 ### node-health-alert.sh
 Prüft Nodes:
@@ -25,7 +25,6 @@ Prüft Nodes:
 ## Crons (alle 15min)
 
 ```bash
-*/15 * * * * /home/openclaw/bin/tiktok-live-alert.sh
 */15 * * * * /home/openclaw/bin/node-health-alert.sh
 */15 * * * * himalaya envelope list | head -10 >> /tmp/email-check.log
 */15 * * * * df -h / && uptime >> /tmp/system-check.log

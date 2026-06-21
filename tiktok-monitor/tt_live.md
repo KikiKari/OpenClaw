@@ -1,5 +1,9 @@
 # `tt_live.py` — Code Reference
 
+> **Scope (2026-06-21):** This is the lower-level stateful Python component.
+> Use `tiktok_dispatch.py` for restriction-aware Playwright checks, strict FLV
+> normalization, load protection, and gateway/node routing.
+
 Source: `tt_live.py`. Single-file Python core for the TikTok LIVE monitor.
 
 This document covers every public surface — constants, functions, classes,
@@ -756,9 +760,9 @@ No other environment variables are read.
             └── MS4wLjA...secUid.events
 ```
 
-Both `.state.json` and `.events` filenames use the **raw sec_uid**
-(which is URL-safe base64-ish: `[A-Za-z0-9_-]`), so no path escaping is
-needed.
+Both `.state.json` and `.events` filenames use a validated `sec_uid`
+(expected URL-safe base64-like `[A-Za-z0-9_-]`). Validation precedes path
+composition; path safety is not delegated to TikTok.
 
 ---
 

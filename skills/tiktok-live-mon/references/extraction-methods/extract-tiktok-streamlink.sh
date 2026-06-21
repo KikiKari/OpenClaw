@@ -1,4 +1,6 @@
 #!/bin/bash
+# LEGACY COPY: background reference only. Use the active fallback under
+# $HOME/.openclaw/workspace/skills/tiktok-live-mon/scripts/extraction-methods/.
 # TikTok Live Stream URL Extraktion via streamlink v1.2
 # Usage: ./extract-tiktok-streamlink.sh <username> [quality] [--json]
 

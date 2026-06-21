@@ -1,4 +1,6 @@
 #!/bin/bash
+# LEGACY: Port-5001 app launcher retained for history; do not use for current
+# TikTok LIVE checks. The active entry is tiktok-monitor/tiktok_dispatch.py.
 set -euo pipefail
 WORKDIR="$(pwd)"
 # use venv python if present

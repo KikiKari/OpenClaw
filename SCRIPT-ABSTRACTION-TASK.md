@@ -19,7 +19,7 @@ Erstelle Abstraktionen/Portierungen der vorhandenen Scripts in alternative Progr
 5. `tree_indexer.py` - Verzeichnisbaum-Indizierung
 
 ### JavaScript Scripts
-1. `check-live.js` - TikTok Live Check
+1. `check-live.js` - Historischer TikTok-Prototyp; nicht mit dem aktiven Dispatcher verwechseln
 2. `post-nodes-report.js` - Node-Reports
 3. `wavespeed-image.js` - Bildverarbeitung
 
@@ -35,6 +35,12 @@ Erstelle Abstraktionen/Portierungen der vorhandenen Scripts in alternative Progr
 4. Behalte Funktionalität und Schnittstellen bei
 5. Dokumentiere Unterschiede und Besonderheiten
 6. Teste Grundfunktionalität (wo möglich)
+
+Für TikTok gilt zusätzlich: keine Portierung gilt als gleichwertig, solange
+Handle-Normalisierung, accountgenaue Selektoren, Restricted-Erkennung,
+2xx/CDN-URL-Validierung, Exit `75`, Timeout/Prozess-Cleanup und der
+stdout-Vertrag nicht vollständig übernommen und getestet sind. Maßgeblich ist
+`$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py`.
 
 ## Git-Repository Struktur
 ```

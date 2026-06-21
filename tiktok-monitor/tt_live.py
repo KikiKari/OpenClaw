@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-tt_live.py — TikTok LIVE monitor
+tt_live.py — stateful TikTok LIVE monitor
 
 Subcommands
 -----------
@@ -14,6 +14,8 @@ Subcommands
 
 Design
 ------
+- Lower-level stateful component; use tiktok_dispatch.py for public-access
+  classification, Playwright URL extraction, and gateway/node routing
 - stdlib only (urllib + json + subprocess for optional fallbacks)
 - Identity store: secUid is the primary key; uniqueId is a pointer with a
   "current" flag and a rename history
@@ -21,6 +23,8 @@ Design
 - Event log: append-only line file per secUid; sub-agents tail it and announce
 - SIGI_STATE only; no UNIVERSAL_DATA fallback
 - Stream extraction order: direct webcast API -> yt-dlp -> streamlink
+- A Webcast ``live`` result may still be login/content restricted; the
+  dispatcher resolves that distinction with the direct Playwright LIVE page
 - Hardcoded 360p format cap; not configurable
 - No Notifier class. No outbound notifications. Sub-agents own announcement.
 
@@ -40,12 +44,14 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
 import time
 import urllib.error
 import urllib.request
+import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -61,14 +67,34 @@ DEFAULT_DAEMON_HOURS = 12        # daemon default duration
 URL_RETENTION_DAYS = 3           # stream URL retention in state store
 REQUEST_TIMEOUT_SEC = 15         # per HTTP request
 TT_AID = "1988"                  # TikTok webcast app id
+USERNAME_RE = re.compile(r"^[A-Za-z0-9._]{1,24}$")
+SEC_UID_RE = re.compile(r"^[A-Za-z0-9_-]{1,256}$")
 
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
+ALLOWED_TIKTOK_HOSTS = {"www.tiktok.com", "webcast.tiktok.com"}
+ALLOWED_MEDIA_HOST_RE = re.compile(r"(^|\.)tiktokcdn(?:-[a-z0-9-]+)?\.com$")
 
 DEFAULT_WORKSPACE = Path.home() / ".openclaw" / "workspace" / "tiktok-monitor"
 DEFAULT_IDENTITY_DIR = Path.home() / ".openclaw" / "workspace" / "tiktok-names"
+
+
+def normalize_username(raw: str) -> str:
+    """Normalize @handle input and reject path/shell/control characters."""
+    username = str(raw or "").strip().lstrip("@")
+    if not USERNAME_RE.fullmatch(username):
+        raise argparse.ArgumentTypeError(
+            "username must contain 1-24 letters, digits, dots, or underscores"
+        )
+    return username
+
+
+def validate_sec_uid(raw: Any) -> str | None:
+    """Return a filesystem-safe TikTok secUid, or None for malformed data."""
+    value = str(raw or "")
+    return value if SEC_UID_RE.fullmatch(value) else None
 
 
 # ============================================================================
@@ -121,9 +147,20 @@ def http_get(url: str,
     }
     if extra_headers:
         headers.update(extra_headers)
+    class TikTokRedirectHandler(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, response_headers, newurl):
+            parsed = urllib.parse.urlparse(newurl)
+            if parsed.scheme != "https" or parsed.hostname not in ALLOWED_TIKTOK_HOSTS:
+                raise urllib.error.HTTPError(newurl, 403, "redirect blocked", response_headers, fp)
+            return super().redirect_request(req, fp, code, msg, response_headers, newurl)
+
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme != "https" or parsed.hostname not in ALLOWED_TIKTOK_HOSTS:
+        return 0, b""
     req = urllib.request.Request(url, headers=headers, method="GET")
+    opener = urllib.request.build_opener(TikTokRedirectHandler())
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        with opener.open(req, timeout=timeout) as resp:
             return resp.status, resp.read()
     except urllib.error.HTTPError as e:
         body = e.read() if hasattr(e, "read") else b""
@@ -305,7 +342,20 @@ def pick_360p_hls(room_info: dict) -> str | None:
         return (2, height)            # over cap; smaller height = closer to cap
 
     pool.sort(key=sort_key)
-    return pool[0][1]
+    for _, value in pool:
+        if is_allowed_media_url(value):
+            return value
+    return None
+
+
+def is_allowed_media_url(value: str) -> bool:
+    """Allow only HTTPS TikTok CDN media URLs."""
+    try:
+        parsed = urllib.parse.urlparse(value)
+    except (TypeError, ValueError):
+        return False
+    hostname = (parsed.hostname or "").lower()
+    return parsed.scheme == "https" and bool(ALLOWED_MEDIA_HOST_RE.search(hostname))
 
 
 def extract_via_ytdlp(username: str) -> str | None:
@@ -331,9 +381,9 @@ def extract_via_ytdlp(username: str) -> str | None:
     if not lines:
         return None
     for ln in lines:
-        if ".m3u8" in ln:
+        if ".m3u8" in ln and is_allowed_media_url(ln):
             return ln
-    return lines[0]
+    return next((ln for ln in lines if is_allowed_media_url(ln)), None)
 
 
 def extract_via_streamlink(username: str) -> str | None:
@@ -356,7 +406,7 @@ def extract_via_streamlink(username: str) -> str | None:
     if out.returncode != 0:
         return None
     line = (out.stdout or "").strip()
-    return line or None
+    return line if line and is_allowed_media_url(line) else None
 
 
 def extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]:
@@ -405,9 +455,12 @@ class IdentityStore:
         self.ptr_dir = identity_dir / "pointers"
 
     def _ident_path(self, sec_uid: str) -> Path:
+        if not validate_sec_uid(sec_uid):
+            raise ValueError("invalid sec_uid")
         return self.ident_dir / f"{sec_uid}.json"
 
     def _ptr_path(self, unique_id: str) -> Path:
+        unique_id = normalize_username(unique_id)
         return self.ptr_dir / f"{unique_id}.json"
 
     def load_identity(self, sec_uid: str) -> dict | None:
@@ -464,8 +517,11 @@ class IdentityStore:
         Update identity + pointer files from a fresh scrape.
         Returns (sec_uid, rename_detected).
         """
-        sec_uid = scrape.get("sec_uid")
-        unique_id = scrape.get("unique_id")
+        sec_uid = validate_sec_uid(scrape.get("sec_uid"))
+        try:
+            unique_id = normalize_username(scrape.get("unique_id"))
+        except argparse.ArgumentTypeError:
+            unique_id = None
         if not sec_uid or not unique_id:
             return None, False
 
@@ -529,6 +585,8 @@ class StateStore:
         self.dir = workspace / "state" / "tt-live"
 
     def _path(self, sec_uid: str) -> Path:
+        if not validate_sec_uid(sec_uid):
+            raise ValueError("invalid sec_uid")
         return self.dir / f"{sec_uid}.state.json"
 
     def _default(self, sec_uid: str) -> dict:
@@ -602,7 +660,8 @@ class StateStore:
             for entry in reversed(urls):
                 if entry.get("room_id") == room_id:
                     return entry.get("url")
-        return urls[-1].get("url")
+        value = urls[-1].get("url")
+        return value if is_allowed_media_url(value) else None
 
 
 # ============================================================================
@@ -623,6 +682,8 @@ class EventWriter:
     """
 
     def __init__(self, workspace: Path, sec_uid: str):
+        if not validate_sec_uid(sec_uid):
+            raise ValueError("invalid sec_uid")
         self.path = workspace / "state" / "tt-live" / f"{sec_uid}.events"
 
     def write(self, evt: str, **fields: Any) -> None:
@@ -947,14 +1008,14 @@ def build_parser() -> argparse.ArgumentParser:
         "check",
         help="One-shot live status check; JSON to stdout",
     )
-    p_check.add_argument("username", help="TikTok @username (no @)")
+    p_check.add_argument("username", type=normalize_username, help="TikTok @username")
     p_check.set_defaults(func=cmd_check)
 
     p_url = sub.add_parser(
         "url",
         help="Print current m3u8 stream URL (cached or fresh)",
     )
-    p_url.add_argument("username")
+    p_url.add_argument("username", type=normalize_username)
     p_url.add_argument(
         "--verbose", "-v", action="store_true",
         help="Print extraction source to stderr",
@@ -965,7 +1026,7 @@ def build_parser() -> argparse.ArgumentParser:
         "daemon",
         help="Poll user over a timer window; emit events on transitions",
     )
-    p_daemon.add_argument("username")
+    p_daemon.add_argument("username", type=normalize_username)
     p_daemon.add_argument(
         "--hours", type=int, default=DEFAULT_DAEMON_HOURS,
         help=f"Watch duration in hours (default {DEFAULT_DAEMON_HOURS})",

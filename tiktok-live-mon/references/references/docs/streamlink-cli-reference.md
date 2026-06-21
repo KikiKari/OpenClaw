@@ -1,3 +1,6 @@
+> **Runtime-Hinweis (2026-06-21):** Diese Datei ist Hintergrund-/Upstream-Referenz, nicht der aktive Laufzeitvertrag. Der aktive Extractor nutzt exakte Account-Selektoren, akzeptiert nur beobachtete HTTPS-TikTok-CDN-`.flv`-Antworten mit HTTP `2xx`, verändert keine signierten URLs, klassifiziert eingeschränkte LIVE-Sessions als `restricted` mit Exit `1` und wird über `tiktok_dispatch.py` lokal oder agent-gesteuert mit `exec host=node` ausgeführt.
+>
+
 # Streamlink CLI Referenz - TikTok Relevante Optionen
 
 **Quelle:** https://streamlink.github.io/cli.html (Streamlink 8.3.0)
@@ -20,7 +23,7 @@ streamlink [OPTIONS] <URL> [STREAM]
 ### --stream-url
 **Gibt die aufgelöste Stream-URL aus statt den Player zu starten.**
 ```bash
-streamlink --stream-url "https://www.tiktok.com/@username/live" best
+streamlink --stream-url "https://www.tiktok.com/@example_creator/live" best
 ```
 Dies ist die Methode die wir verwenden um VLC-kompatible URLs zu extrahieren.
 
@@ -44,7 +47,7 @@ Default: 1
 
 ### --player PATH
 ```bash
-streamlink -p vlc "https://www.tiktok.com/@username/live" best
+streamlink -p vlc "https://www.tiktok.com/@example_creator/live" best
 ```
 Default: VLC (wenn verfügbar)
 
@@ -102,9 +105,9 @@ streamlink --json "URL"
 3. **--stream-url funktioniert** und gibt kürzere URLs als Playwright zurück
 4. **Empfohlener Befehl:**
    ```bash
-   streamlink --stream-url "https://www.tiktok.com/@username/live" best
+   streamlink --stream-url "https://www.tiktok.com/@example_creator/live" best
    ```
 5. **Bei Problemen mit `best`:** Versuche `sd` oder `ld` als Fallback
    ```bash
-   streamlink --stream-url "https://www.tiktok.com/@username/live" "sd,ld,best"
+   streamlink --stream-url "https://www.tiktok.com/@example_creator/live" "sd,ld,best"
    ```

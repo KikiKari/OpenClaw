@@ -28,7 +28,7 @@ Im OpenClaw-Cluster können Aufgaben an Sub-Agents oder Worker-Nodes delegiert w
 
 | Agent | Aufgabe | Status | Nutzung |
 |-------|---------|--------|-------------|
-| **tiktok-live-mon** | TikTok Live Monitoring | 📦 Skill bereit | Manuell/Konfiguration fehlt |
+| **tiktok-live-mon** | TikTok LIVE Klassifikation/URL | ✅ Dispatcher bereit | Gateway lokal oder agent-gesteuert auf gepaartem Node |
 | **git-publish-agent** | Git/ClawHub Publishing | 📦 Skill bereit | Manuell/Event-basiert |
 | **server-maintenance** | Node-spezifische Wartung | 📦 Skill bereit | Teilweise in openclaw-maintenance |
 | **sync-utils** | Sync-Hilfsfunktionen | ✅ Skill erstellt | Manuell für Bulk/Konflikte |
@@ -95,10 +95,15 @@ sessions_spawn --agent maintainer --task "Update WORKSPACE-INDEX.md daily" --cro
 
 ### Für parallele Browser-Tasks:
 ```bash
-# TikTok-Checks auf mehreren Nodes
-openclaw nodes run node2 -- node tiktok-check.js user1
-openclaw nodes run node3 -- node tiktok-check.js user2
+# Der OpenClaw-Agent wählt verbundene gepaarte Nodes und nutzt exec host=node.
+# Auf jedem gewählten Node läuft derselbe portable Einstieg lokal:
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" \
+  check example_creator --execution local --json
 ```
+
+Bei fehlender Eignung, Überlast (Exit 75), Timeout oder Invoke-Fehler übernimmt
+der Gateway. Direkte SSH- oder `openclaw nodes run`-Aufrufe gehören nicht zum
+TikTok-Routing.
 
 ## Best Practices
 
@@ -120,7 +125,7 @@ sessions_list
 sessions_yield
 
 # Node-Task ausführen
-openclaw nodes run <node-id> -- <command>
+# Über das OpenClaw-exec-Tool: host=node, node=<node-id>, command=<argv>
 ```
 
 ## Warum Sub-Agents nutzen?

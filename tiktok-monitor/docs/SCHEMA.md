@@ -1,5 +1,11 @@
 # Schema Reference
 
+> **Scope (2026-06-21):** These schemas describe the stateful Python component.
+> Dispatcher JSON additionally carries normalized `status`, `execution`,
+> `node`, `method`, `url`, and `exit_code` fields. Valid dispatcher statuses
+> are `live`, `offline`, `restricted`, `overloaded`,
+> `dependency_missing`, and `technical_error`.
+
 Concrete schemas for every JSON object and event line produced or
 consumed by the tt-live skill. Anything written to disk, printed to
 stdout, or appended to the events file is documented here.
@@ -34,11 +40,12 @@ Type notation:
 set while `TT_LIVE_IDENTITY_DIR` is unset, it resolves to
 `$TT_LIVE_WORKSPACE/tiktok-names/`.
 
-All filenames use the **raw** `sec_uid` or `unique_id` value. No path
-escaping is needed because:
-- `sec_uid` values are URL-safe base64-ish: `[A-Za-z0-9_-]`
-- `unique_id` values are TikTok handles, restricted by TikTok to
-  `[A-Za-z0-9._]`
+Filenames use the validated `sec_uid` or normalized `unique_id` value.
+Validation happens before path composition; callers must not rely on a remote
+TikTok response alone for path safety. Expected character sets are:
+
+- `sec_uid`: URL-safe base64-like `[A-Za-z0-9_-]`
+- `unique_id`: normalized TikTok handle `[A-Za-z0-9._]`
 
 Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 

@@ -1,5 +1,9 @@
 # `check_alive.py` — CLI Reference
 
+> **Scope (2026-06-21):** This standalone room probe does not distinguish an
+> anonymously accessible LIVE from a restricted LIVE. Use
+> `tiktok_dispatch.py check` for the unified classification.
+
 Source: `check_alive.py`. Self-contained standalone tool.
 
 A one-shot liveness check against TikTok's `webcast/room/check_alive`

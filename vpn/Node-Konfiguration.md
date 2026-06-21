@@ -69,7 +69,7 @@
 | OpenClaw Node | 18788 | ✅ Running |
 | Tailscale | - | ✅ Active |
 | WireGuard | 51820 | ✅ Active |
-| TikTok API | 5000 | ✅ Running |
+| Legacy TikTok API (nicht vom aktuellen Dispatcher genutzt) | 5000 | ✅ Running |
 
 ### VPN-Verbindungen
 | Typ | Ziel | Status |
@@ -139,7 +139,7 @@
 │  │  │ 100.111.216.40│◄────►│ 100.92.155.34│◄────►│100.73.154.│  │ │     │
 │  │  │ openclaw-node1│ 1ms  │ openclaw-node2│ 1ms  │  openclaw  │  │ │     │
 │  │  │ (Hetzner)     │      │ (Netcup)      │      │  -node3    │  │ │     │
-│  │  │ Node 1 Gateway│      │ TikTok API    │      │  (xNetX)   │  │ │     │
+│  │  │ Node 1 Gateway│      │ Legacy TikTok API (nicht vom aktuellen Dispatcher genutzt)    │      │  (xNetX)   │  │ │     │
 │  │  └──────┬────────┘      └──────────────┘      └────────────┘  │ │     │
 │  └─────────┼────────────────────────────────────────────────────┘ │     │
 │            │                                                      │     │
@@ -154,7 +154,7 @@
 │  ┌─────────▼────────────────────────────────────────────────────┐ │     │
 │  │              SSH-TUNNEL BACKUP (localhost)                   │ │     │
 │  │  Port 18790 ─────► Node 2 (OpenClaw)                         │ │     │
-│  │  Port 15000 ─────► Node 2 (TikTok API)                       │ │     │
+│  │  Port 15000 ─────► Node 2 (Legacy TikTok API (nicht vom aktuellen Dispatcher genutzt))                       │ │     │
 │  │  Port 18792 ─────► Node 3 (OpenClaw)                         │ │     │
 │  └──────────────────────────────────────────────────────────────┘ │     │
 │                                                                   │     │

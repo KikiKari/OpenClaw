@@ -1,3 +1,6 @@
+> **Runtime-Hinweis (2026-06-21):** Diese Datei ist Hintergrund-/Upstream-Referenz, nicht der aktive Laufzeitvertrag. Der aktive Extractor nutzt exakte Account-Selektoren, akzeptiert nur beobachtete HTTPS-TikTok-CDN-`.flv`-Antworten mit HTTP `2xx`, verändert keine signierten URLs, klassifiziert eingeschränkte LIVE-Sessions als `restricted` mit Exit `1` und wird über `tiktok_dispatch.py` lokal oder agent-gesteuert mit `exec host=node` ausgeführt.
+>
+
 # Playwright Network Requests Interception Tutorial
 **Quelle:** https://dev.to/philipfong/intercepting-network-requests-in-playwright-25op
 
@@ -37,7 +40,7 @@ await expectRequest(page, [loginRequest, profileRequest], async () => {
 ```typescript
 const flvRequest = {url: '.flv', method: 'GET'}
 const responses = await expectRequest(page, [flvRequest], async () => {
-  await page.goto('https://www.tiktok.com/@username/live')
+  await page.goto('https://www.tiktok.com/@example_creator/live')
 })
 const flvUrl = responses[0].url()
 ```

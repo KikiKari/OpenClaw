@@ -1,5 +1,10 @@
 # Daemon Mode
 
+> **Scope (2026-06-21):** Daemon mode is local state/event polling and does not
+> perform node selection. Use `../tiktok_dispatch.py` for one-shot
+> gateway/node execution and public `live|offline|restricted`
+> classification.
+
 How `tt_live.py daemon` actually works: lifecycle, polling cadence,
 transition detection, failure modes, and how to observe or stop a
 running daemon.

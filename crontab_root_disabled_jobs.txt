@@ -9,3 +9,7 @@
 
 # tiktok-live-check-20 (deaktiviert)
 # 20 * * * * /usr/bin/python3 /home/openclaw/.openclaw/skills/tiktok-live/scripts/check_streams.py --interval 20 >> /home/openclaw/.openclaw/workspace/logs/tiktok-live.log 2>&1
+# Historische, deaktivierte Jobs. Die TikTok-Einträge sind keine aktuelle
+# Betriebsanweisung: der aktive Einstieg ist
+# $HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py und erhält den
+# Handle zur Laufzeit. Es gibt keinen festen TikTok-Cron.

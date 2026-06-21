@@ -1,3 +1,5 @@
+// LEGACY PROTOTYPE: broad visual selectors may produce false positives.
+// Use tiktok-monitor/tiktok_dispatch.py for account-scoped classification.
 const { chromium } = require('playwright');
 
 const username = process.argv[2];

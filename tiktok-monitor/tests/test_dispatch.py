@@ -1,0 +1,140 @@
+import importlib.util
+import os
+import sys
+import unittest
+from argparse import Namespace
+from pathlib import Path
+from unittest import mock
+
+
+MODULE_PATH = Path(__file__).resolve().parents[1] / "tiktok_dispatch.py"
+SPEC = importlib.util.spec_from_file_location("tiktok_dispatch", MODULE_PATH)
+dispatch = importlib.util.module_from_spec(SPEC)
+assert SPEC.loader
+sys.modules[SPEC.name] = dispatch
+SPEC.loader.exec_module(dispatch)
+
+
+class DispatcherTests(unittest.TestCase):
+    def test_username_normalization(self):
+        self.assertEqual(dispatch.normalize_username("@example_creator"), "example_creator")
+        self.assertEqual(dispatch.normalize_username(" example_creator "), "example_creator")
+
+    def test_username_rejects_shell_input(self):
+        with self.assertRaises(ValueError):
+            dispatch.normalize_username("example_creator;id")
+
+    def test_overload_classification(self):
+        attempt = dispatch.classify("playwright", 75, "", '{"status":"overloaded"}', "url")
+        self.assertEqual(attempt.status, "overloaded")
+
+    def test_offline_has_no_url(self):
+        attempt = dispatch.classify("playwright", 1, "", '{"status":"offline"}', "url")
+        self.assertEqual(attempt.status, "offline")
+        self.assertIsNone(attempt.url)
+
+    def test_offline_url_cannot_be_promoted(self):
+        attempt = dispatch.classify(
+            "playwright", 1, '{"status":"offline","url":"http://127.0.0.1/admin"}', "", "url"
+        )
+        self.assertEqual(attempt.status, "offline")
+        self.assertIsNone(attempt.url)
+
+    def test_nonzero_live_is_technical_error(self):
+        attempt = dispatch.classify("playwright", 2, '{"live":true}', "", "check")
+        self.assertEqual(attempt.status, "technical_error")
+
+    def test_remote_title_does_not_override_structured_live(self):
+        attempt = dispatch.classify(
+            "python", 0, '{"live":true,"title":"age-restricted promotion"}', "", "check"
+        )
+        self.assertEqual(attempt.status, "live")
+
+    @mock.patch.object(dispatch, "connected_system_run_nodes")
+    def test_selects_lowest_reported_load(self, nodes):
+        nodes.return_value = [
+            {"nodeId": "busy", "commands": ["system.run"], "loadPerCpu": 1.2},
+            {"nodeId": "idle", "commands": ["system.run"], "loadPerCpu": 0.2},
+        ]
+        self.assertEqual(dispatch.select_node(), "idle")
+
+    @mock.patch.object(dispatch, "connected_system_run_nodes")
+    def test_skips_malformed_node_load(self, nodes):
+        nodes.return_value = [
+            {"nodeId": "bad", "commands": ["system.run"], "loadPerCpu": "not-a-number"},
+            {"nodeId": "idle", "commands": ["system.run"], "loadPerCpu": 0.2},
+        ]
+        self.assertEqual(dispatch.select_node(), "idle")
+
+    @mock.patch.object(dispatch, "connected_system_run_nodes")
+    def test_accepts_node_without_status_load_telemetry(self, nodes):
+        nodes.return_value = [
+            {
+                "nodeId": "node-id",
+                "displayName": "xnetx",
+                "commands": ["system.run"],
+            }
+        ]
+        self.assertEqual(dispatch.select_node(), "node-id")
+
+    @mock.patch.object(dispatch, "connected_system_run_nodes")
+    def test_requested_alias_returns_canonical_node_id(self, nodes):
+        nodes.return_value = [
+            {
+                "nodeId": "node-id",
+                "displayName": "xnetx",
+                "commands": ["system.run"],
+            }
+        ]
+        self.assertEqual(dispatch.select_node("xnetx"), "node-id")
+
+    @mock.patch.object(dispatch, "run_json_command")
+    def test_node_status_uses_dedicated_timeout(self, run_json):
+        run_json.return_value = {"nodes": []}
+        self.assertEqual(dispatch.connected_system_run_nodes(), [])
+        run_json.assert_called_once_with(
+            ["openclaw", "nodes", "status", "--connected", "--json"],
+            timeout=dispatch.NODE_STATUS_TIMEOUT_SECONDS,
+        )
+
+    def test_timeout_bounds(self):
+        self.assertEqual(dispatch.positive_bounded_timeout("45"), 45)
+        with self.assertRaises(Exception):
+            dispatch.positive_bounded_timeout("0")
+        with self.assertRaises(Exception):
+            dispatch.positive_bounded_timeout("121")
+
+    def test_forced_load_value(self):
+        with mock.patch.dict(os.environ, {"TIKTOK_TEST_LOAD_PER_CPU": "2.0",
+                                          "TIKTOK_MAX_LOAD_PER_CPU": "1.5"}):
+            self.assertEqual(dispatch.load_state(), (2.0, 1.5))
+
+    @mock.patch.object(dispatch, "emit_log")
+    @mock.patch.object(dispatch, "run_command")
+    @mock.patch.object(dispatch, "commands")
+    def test_restricted_web_check_overrides_tentative_python_live(
+        self, command_list, run_command, _emit_log
+    ):
+        command_list.return_value = [
+            ("python_webcast", ["python-webcast"]),
+            ("playwright_enhanced", ["playwright-enhanced"]),
+        ]
+        run_command.side_effect = [
+            (0, '{"live":true}', ""),
+            (1, '{"status":"restricted","isLive":true}', ""),
+        ]
+        args = Namespace(
+            operation="check",
+            username="example_creator",
+            quality="ld",
+            retries=0,
+            timeout=45,
+        )
+        payload, code = dispatch.dispatch_local(args)
+        self.assertEqual(code, 1)
+        self.assertEqual(payload["status"], "restricted")
+        self.assertEqual(payload["method"], "playwright_enhanced")
+
+
+if __name__ == "__main__":
+    unittest.main()

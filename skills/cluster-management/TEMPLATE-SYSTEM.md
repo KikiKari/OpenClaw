@@ -59,7 +59,9 @@
 
 ## Spezialisierte Funktionen
 
-[Playwright, TikTok, etc.]
+[Playwright, TikTok, etc. — für TikTok nur mit synchronisiertem
+`$HOME/.openclaw/workspace/`, gleicher Laufzeit auf dem Node und
+agent-gesteuertem `exec host=node`; Gateway-Fallback beibehalten.]
 
 ---
 
@@ -108,7 +110,7 @@ openclaw nodes status
 sessions_spawn --agent <type> --task "<description>"
 
 # Auf Node ausführen
-openclaw nodes run <node-id> -- <command>
+# OpenClaw-exec-Tool mit host=node, node=<node-id>, command=<argv>
 ```
 
 ---

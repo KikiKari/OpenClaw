@@ -579,25 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-20)
+## Promoted From Short-Term Memory (2026-06-21)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:17:17 -->
-- Conversation Summary: assistant: The user has asked: "Use the 'tiktok-live' skill for this request. User input: @rabiabaysal". This means they want to check if the TikTok user "@rabiabaysal" is live, or possibly extract their live stream URL. Let's interpret this request: They said: "Use the 'tiktok-live' skill for this request. User input: @rabiabaysal". So presumably they want to check the live status of the TikTok user rabiabaysal. The skill provides two scripts: [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:17-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:22:22 -->
-- Conversation Summary: Given the user just said "User input: @rabiabaysal", likely they want to check if that user is live, maybe also get the stream URL if live. The standard approach is to first run tiktok-check-profile.js to see if live. Then optionally if live, run tiktok-get-stream.js. [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:22-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:24:24 -->
-- Conversation Summary: First, we need to ensure Playwright and Chromium are installed. We attempted to run a node script and got an error: "browserType.launch: Executable doesn't exist at /ms-playwright/chromium_headless_shell-1217/chrome-linux/headless_shell". It suggests we need to run `npx playwright install` to install the browsers. In the context of OpenClaw, we may need to run the installation. The exec tool is allowed but we need to see if we have permission for installation. Using npm install -g npx && npx playwright install chromium. That command started and is still running, we need to monitor it. [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:24-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:9:12 -->
-- Conversation Summary: assistant: HE user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:15:18 -->
-- Conversation Summary: We have a pattern: The assistant is supposed to respond "HEARTBEAT_OK". However, the assistant responded partially "HEARTBEAT". This is a mistake. We need to correct it. The user message is a heartbeat poll. The assistant must reply exactly "HEARTBEAT_OK". So final output: HEARTBEAT_OK (without other text).HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:15-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:21:23 -->
-- Conversation Summary: We see the assistant is correctly responding most times but sometimes adds extra spaces or repeated strings; the correct answer must be exactly "HEARTBEAT_OK". In the latest response, the assistant gave "HEARTBEAT_OK " with an extra space at the end. That's not exactly "HEARTBEAT_OK". Even though trailing spaces may be considered different; the spec says reply exactly: "HEARTBEAT_OK". We should correct it by responding with just "HEARTBEAT_OK". So the user hasn't prompted anything else, just a heartbeat poll. The correct reply is exactly "HEARTBEAT_OK". We'll respond now.... [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:25:25 -->
-- Conversation Summary: We see that answer is correct. We'll continue. [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:25-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:27:27 -->
-- Conversation Summary: Then there is no further user input, but we see the assistant responded. That's fine. [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:27-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:3:5 -->
-- Session: 2026-06-15 05:58:27 GMT+2: **Session Key**: agent:main:main; **Session ID**: 0ded53df-0d5d-46e9-b3fe-39ce87fb844e; **Source**: webchat [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:13:16 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:19:20 -->
+- Conversation Summary: tiktok-check-profile.js to check live status.; tiktok-get-stream.js to extract the stream URL. [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:19-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:3:5 -->
+- Session: 2026-06-16 00:54:19 GMT+2: **Session Key**: agent:main:main; **Session ID**: a8c0a2f0-e051-4868-b417-2c230ef2562a; **Source**: webchat [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:17:19 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEART HEART… [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:17-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:23:23 -->
+- Conversation Summary: The assistant responded with "HE ART..." incorrectly. We need to respond correctly according to heartbeat spec: if heartbeat poll and no alerts, reply exactly "HEARTBEAT_OK". Should not have any extra characters. Also previous messages have "HEARTBEAT_OK" many times, they are correct. The last one is garbled. Need to correct it. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:23-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:25:28 -->
+- Conversation Summary: Thus we need to output "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:25-28]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:3:5 -->
+- Session: 2026-06-15 18:55:55 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9db81d73-b965-4eb0-92e7-6149f655f0fc; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:13:13 -->
+- Conversation Summary: assistant: HEARTBEAT [score=0.836 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:19:19 -->
+- Conversation Summary: assistant: HEARTBEAT_OK [score=0.836 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:9-12]

@@ -92,7 +92,10 @@ python3 check_nodes.py --format table
 - json-utils (4 Scripts)
 - scripting-utils (4 Scripts)
 - model-usage (2 Scripts)
-- tiktok-live (relevante Scripts)
+- tiktok-live / tiktok-live-mon (nur aktive Scripts unter
+  `$HOME/.openclaw/workspace/skills/...`; bei Portierungen den Dispatcher-
+  Vertrag einschließlich Normalisierung, Restricted-Erkennung, URL-Validierung,
+  Exit 75 und Prozess-Cleanup unverändert erhalten)
 
 ### Medium Priority (Workspace Scripts)
 - 63 Scripts in `/workspace/scripts/`

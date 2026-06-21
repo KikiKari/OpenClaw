@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
-# tt-live.sh — TikTok LIVE monitor wrapper
+# tt-live.sh — stateful TikTok LIVE monitor wrapper
 #
 # Dispatches subcommands to tt_live.py. The daemon subcommand is spawned in
 # the background with nohup so it survives shell exit; check and url run in
 # the foreground and pass through their exit codes.
+#
+# Use tiktok_dispatch.py for public-access classification, Playwright URL
+# extraction, load-aware gateway/node routing, and the unified result contract.
 #
 # This wrapper is intentionally minimal. It does not parse subcommand flags;
 # everything after the subcommand name is forwarded to tt_live.py untouched.
@@ -118,14 +121,12 @@ case "${1:-}" in
     # because tt_live.py daemon still expects it as the first positional.
     USERNAME="$1"
 
-    # Reject obviously malformed usernames so the log filename stays sane.
-    # tt_live.py applies its own validation through TikTok's response.
-    case "$USERNAME" in
-      -*|*/*|*\\*|"")
-        err "error: invalid username argument: $USERNAME"
-        exit 2
-        ;;
-    esac
+    USERNAME="${USERNAME#@}"
+    if [[ ! "$USERNAME" =~ ^[A-Za-z0-9._]{1,24}$ ]]; then
+      err "error: invalid username argument"
+      exit 64
+    fi
+    set -- "$USERNAME" "${@:2}"
 
     mkdir -p "$LOG_DIR"
 

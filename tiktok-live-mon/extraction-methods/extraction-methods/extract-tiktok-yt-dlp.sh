@@ -1,4 +1,6 @@
 #!/bin/bash
+# LEGACY COPY: background reference only. Use the active fallback under
+# $HOME/.openclaw/workspace/skills/tiktok-live-mon/scripts/extraction-methods/.
 # TikTok Live Stream URL Extraktion via yt-dlp v1.1
 # Usage: ./extract-tiktok-yt-dlp.sh <username> [format] [--json]
 # Gibt nackte URL aus oder JSON bei --json Flag

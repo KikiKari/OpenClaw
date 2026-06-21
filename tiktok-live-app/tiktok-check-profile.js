@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * TikTok Live Status Checker
- * Prüft visuell, ob ein TikTok-Account live ist
- * Korrigiert: DSGVO-Banner muss zuerst geschlossen werden
+ * LEGACY TikTok profile prototype.
+ *
+ * Broad profile detection is retained for history only. Use the dispatcher
+ * for exact account selectors and live/restricted/offline classification.
  */
 
 const { chromium } = require('playwright');

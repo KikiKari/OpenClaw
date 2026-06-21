@@ -1,25 +1,101 @@
 #!/usr/bin/env node
 /**
- * TikTok Stream URL Extractor v2.4
- * 
- * Strategie:
- * 1. Playwright: Navigiere zu /live, schließe Popups, fange FLV-URLs via page.on('response')
- * 2. Streamlink: Fallback (zuverlässigste CLI-Methode)
- * 3. yt-dlp: Letzter Fallback
- * 
- * Fix: Verwendet page.on('response') statt nicht-existierender waitForResponses()
+ * Enhanced TikTok LIVE URL extractor.
+ *
+ * Order: Playwright response interception, streamlink, then yt-dlp. Every
+ * result is schema-normalized and must be an allowed HTTPS TikTok-CDN FLV
+ * URL. Fallbacks use fixed argument arrays, bounded output, timeouts, and
+ * process-group cleanup.
+ *
+ * Exit 0 = URL, 1 = offline/restricted/no URL, 2 = dependency/technical
+ * failure, 75 = overloaded before Playwright startup.
  */
 
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
-const execFilePromise = util.promisify(require('child_process').execFile);
+const { spawn } = require('child_process');
+const {
+    classifyFinalFailure,
+    enforceLoadLimit,
+    exitCodeForResult,
+    forcedOffline,
+    isSuccessfulStreamResponse,
+    normalizeExtractorResult,
+    normalizeUsername
+} = require('./tiktok-common');
 
 const FALLBACK_TIMEOUT_MS = 45000;
+const FALLBACK_MAX_OUTPUT = 1024 * 1024;
 
 function log(message) {
     console.error(message);
+}
+
+function runFallback(scriptPath, args) {
+    return new Promise(resolve => {
+        const child = spawn('bash', [scriptPath, ...args], {
+            detached: true,
+            stdio: ['ignore', 'pipe', 'pipe']
+        });
+        let stdout = '';
+        let stderr = '';
+        let overflow = false;
+        const collect = target => chunk => {
+            const next = target() + chunk.toString('utf8');
+            if (Buffer.byteLength(next) > FALLBACK_MAX_OUTPUT) {
+                overflow = true;
+                return;
+            }
+            if (target === getStdout) stdout = next;
+            else stderr = next;
+        };
+        const getStdout = () => stdout;
+        const getStderr = () => stderr;
+        child.stdout.on('data', collect(getStdout));
+        child.stderr.on('data', collect(getStderr));
+        let timedOut = false;
+        const timer = setTimeout(() => {
+            timedOut = true;
+            try { process.kill(-child.pid, 'SIGTERM'); } catch (error) { /* exited */ }
+            setTimeout(() => {
+                try { process.kill(-child.pid, 'SIGKILL'); } catch (error) { /* exited */ }
+            }, 3000).unref();
+        }, FALLBACK_TIMEOUT_MS);
+        child.on('error', error => {
+            clearTimeout(timer);
+            resolve({ code: 2, stdout, stderr: `${stderr}\n${error.message}`.trim() });
+        });
+        child.on('close', code => {
+            clearTimeout(timer);
+            if (overflow) {
+                resolve({ code: 2, stdout: '', stderr: 'fallback output exceeded limit' });
+            } else if (timedOut) {
+                resolve({ code: 2, stdout, stderr: `${stderr}\nfallback timeout`.trim() });
+            } else {
+                resolve({ code: code ?? 2, stdout: stdout.trim(), stderr: stderr.trim() });
+            }
+        });
+    });
+}
+
+function parseFallbackResult(method, username, execution) {
+    for (const text of [execution.stdout, execution.stderr]) {
+        if (!text) continue;
+        try {
+            const value = JSON.parse(text);
+            if (value && typeof value === 'object') {
+                return normalizeExtractorResult(value, method, username);
+            }
+        } catch (error) { /* try next channel */ }
+    }
+    return normalizeExtractorResult({
+        success: false,
+        status: execution.code === 75 ? 'overloaded' : 'technical_error',
+        method,
+        username,
+        message: execution.stderr || `fallback exited ${execution.code}`
+    }, method, username);
 }
 
 function playwrightPreflight() {
@@ -125,7 +201,10 @@ async function extractWithPlaywright(username, qualityPreference) {
         const collectedUrls = [];
         page.on('response', response => {
             const url = response.url();
-            if (url.includes('.flv') && (url.includes('tiktokcdn') || url.includes('pull-flv'))) {
+            if (
+                collectedUrls.length < 100 &&
+                isSuccessfulStreamResponse(response.status(), url)
+            ) {
                 collectedUrls.push({
                     url: url,
                     status: response.status(),
@@ -200,6 +279,7 @@ async function extractWithPlaywright(username, qualityPreference) {
 
         return {
             success: true,
+            status: 'live',
             method: 'playwright',
             username,
             url: bestUrl.url,
@@ -220,38 +300,16 @@ async function extractWithPlaywright(username, qualityPreference) {
 // Streamlink Fallback
 async function tryStreamlink(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-streamlink.sh');
-    try {
-        const { stdout } = await execFilePromise(
-            'bash',
-            [scriptPath, username, quality, '--json'],
-            { timeout: FALLBACK_TIMEOUT_MS, killSignal: 'SIGTERM', maxBuffer: 1024 * 1024 }
-        );
-        return JSON.parse(stdout);
-    } catch (error) {
-        if (error.stdout) {
-            try { return JSON.parse(error.stdout); } catch (e) { /* kein JSON */ }
-        }
-        return { success: false, method: 'streamlink', username, message: error.message, timestamp: new Date().toISOString() };
-    }
+    const execution = await runFallback(scriptPath, [username, quality, '--json']);
+    return parseFallbackResult('streamlink', username, execution);
 }
 
 // yt-dlp Fallback
 async function tryYtDlp(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-yt-dlp.sh');
     const ytFormat = quality === 'ld' ? 'worst' : (quality === 'auto' ? 'best' : quality);
-    try {
-        const { stdout } = await execFilePromise(
-            'bash',
-            [scriptPath, username, ytFormat, '--json'],
-            { timeout: FALLBACK_TIMEOUT_MS, killSignal: 'SIGTERM', maxBuffer: 1024 * 1024 }
-        );
-        return JSON.parse(stdout);
-    } catch (error) {
-        if (error.stdout) {
-            try { return JSON.parse(error.stdout); } catch (e) { /* kein JSON */ }
-        }
-        return { success: false, method: 'yt-dlp', username, message: error.message, timestamp: new Date().toISOString() };
-    }
+    const execution = await runFallback(scriptPath, [username, ytFormat, '--json']);
+    return parseFallbackResult('yt-dlp', username, execution);
 }
 
 // Hauptfunktion mit Fallback-Kette
@@ -265,27 +323,38 @@ async function getStreamUrl(username, qualityPreference = 'ld') {
         pwResult.timestamp = timestamp;
         return pwResult;
     }
+    if (pwResult.status === 'restricted' || pwResult.status === 'overloaded') {
+        return pwResult;
+    }
     log(`Playwright result: ${pwResult.reason || pwResult.error || 'failed'}`);
 
-    // --- 2. Streamlink (zuverlässigster Fallback) ---
+    // --- 2. Streamlink (bounded fallback; output is normalized below) ---
     log(`[2/3] Trying streamlink for @${username} (quality: ${qualityPreference})...`);
     const slResult = await tryStreamlink(username, qualityPreference);
     if (slResult.success) {
         return slResult;
     }
+    if (slResult.status === 'restricted' || slResult.status === 'overloaded') {
+        return slResult;
+    }
     log(`Streamlink result: ${slResult.message || slResult.error || 'failed'}`);
 
-    // --- 3. yt-dlp (letzter Versuch) ---
+    // --- 3. yt-dlp (final bounded fallback; output is normalized below) ---
     log(`[3/3] Trying yt-dlp for @${username}...`);
     const ytResult = await tryYtDlp(username, qualityPreference);
     if (ytResult.success) {
         return ytResult;
     }
+    if (ytResult.status === 'restricted' || ytResult.status === 'overloaded') {
+        return ytResult;
+    }
     log(`yt-dlp result: ${ytResult.message || ytResult.error || 'failed'}`);
 
     // --- Alle fehlgeschlagen ---
+    const status = classifyFinalFailure([pwResult, slResult, ytResult]);
     return {
         success: false,
+        status,
         username,
         message: 'All extraction methods failed (Playwright, streamlink, yt-dlp).',
         playwrightReason: pwResult.reason || pwResult.error,
@@ -301,9 +370,25 @@ if (process.argv.length < 3) {
     process.exit(1);
 }
 
-const cliUsername = process.argv[2];
-const cliQuality = process.argv[3] || 'ld';
+let cliUsername;
+try {
+    cliUsername = normalizeUsername(process.argv[2]);
+} catch (error) {
+    console.error(error.message);
+    process.exit(64);
+}
+enforceLoadLimit('playwright_streamlink_ytdlp');
+if (forcedOffline('playwright_streamlink_ytdlp', cliUsername)) {
+    process.exit(1);
+}
+const cliQuality = process.argv
+    .slice(3)
+    .find(argument => !argument.startsWith('--')) || 'ld';
 const cliJson = process.argv.includes('--json');
+if (!['ld', 'sd', 'hd', 'origin', 'auto'].includes(cliQuality)) {
+    console.error('Invalid quality; expected ld, sd, hd, origin, or auto');
+    process.exit(64);
+}
 
 getStreamUrl(cliUsername, cliQuality).then(result => {
     if (cliJson) {
@@ -315,8 +400,8 @@ getStreamUrl(cliUsername, cliQuality).then(result => {
             console.error(result.message);
         }
     }
-    process.exit(result.success ? 0 : 1);
+    process.exit(exitCodeForResult(result));
 }).catch(err => {
     console.error('Unhandled error:', err.message);
-    process.exit(1);
+    process.exit(2);
 });

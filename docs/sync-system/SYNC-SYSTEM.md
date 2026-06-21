@@ -55,7 +55,7 @@ Automatische bidirektionale Synchronisation zwischen:
 | Agent | Zweck | Nutzung |
 |-------|-------|---------|
 | **sync-utils** | Sync-Hilfsfunktionen | Manuell für Bulk/Konflikte |
-| **tiktok-live-mon** | Live-Stream Monitor | Manuelle Ausführung |
+| **tiktok-live-mon** | `live|restricted|offline` und URL-Extraktion | Gateway lokal oder agent-gesteuert via `exec host=node` |
 | **git-publish-agent** | Git Publishing | Event-basiert |
 | **server-maintenance** | Node-Wartung | Teilweise in openclaw-maintenance |
 

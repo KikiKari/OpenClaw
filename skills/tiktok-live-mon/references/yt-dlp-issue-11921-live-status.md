@@ -1,3 +1,6 @@
+> **Runtime-Hinweis (2026-06-21):** Diese Datei ist Hintergrund-/Upstream-Referenz, nicht der aktive Laufzeitvertrag. Der aktive Extractor nutzt exakte Account-Selektoren, akzeptiert nur beobachtete HTTPS-TikTok-CDN-`.flv`-Antworten mit HTTP `2xx`, verändert keine signierten URLs, klassifiziert eingeschränkte LIVE-Sessions als `restricted` mit Exit `1` und wird über `tiktok_dispatch.py` lokal oder agent-gesteuert mit `exec host=node` ausgeführt.
+>
+
 # yt-dlp Issue #11921 - TikTok Live Status Bug
 **Quelle:** https://github.com/yt-dlp/yt-dlp/issues/11921
 **Titel:** [TikTok:live] Livestreams are mistaken as "not currently live" after JSON metadata request

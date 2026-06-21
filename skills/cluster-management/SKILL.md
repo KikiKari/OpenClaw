@@ -66,15 +66,14 @@ Based on: `tools/SUB-AGENTS-WORKERS.md` (Master in workspace/tools/)
 # Long-running Tasks -> Sub-Agent
 sessions_spawn --agent <type> --task "<description>"
 
-# Browser Automation -> Worker Nodes
-openclaw nodes run <node-id> -- node <script>.js
+# Browser Automation -> Worker Node
+# OpenClaw-exec-Tool mit host=node, node=<node-id>, command=<argv>
 
 # Documentation Updates -> Scheduled Worker
 # Cron: 0 */6 * * *
 
 # Parallel Processing -> Multiple Nodes
-openclaw nodes run node2 -- <task1> &
-openclaw nodes run node3 -- <task2> &
+# Mehrere unabhängige exec-Aufträge mit host=node parallel starten.
 ```
 
 ### Worker Distribution Logic
@@ -104,7 +103,7 @@ Based on: `tools/SYSTEM.md` (Master in workspace/tools/)
 
 | Category | Frequency | Examples |
 |----------|-----------|----------|
-| **Live Monitoring** | 20/45 min | TikTok, Streams |
+| **Live Monitoring** | auftragsbezogen | TikTok-Dispatcher; kein fester Handle/Cron |
 | **System Health** | 3h | Disk, Memory, Network |
 | **Daily Maintenance** | 06-08h | Cleanup, Security, Memory |
 | **Communications** | hourly | Email, Notifications |

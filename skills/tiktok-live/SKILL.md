@@ -1,204 +1,147 @@
 ---
 name: tiktok-live
-description: Extract TikTok live stream URLs and check live status using Playwright and visual detection. Use when: (1) Checking if a TikTok user is currently live streaming, (2) Extracting VLC/MPV-compatible stream URLs from TikTok Live, (3) Monitoring TikTok accounts for live streams, (4) Converting TikTok live streams to FLV URLs for playback or download. NOT for: recorded videos, TikTok API queries, or non-live content.
+description: Check a TikTok account's current LIVE status and resolve a playable stream URL with Playwright. Use for one-shot live/offline/restricted checks and VLC/MPV-compatible URL extraction. Do not use for recorded videos, account analytics, recording, or notifications.
 ---
 
-# TikTok Live Stream Extraction
+# TikTok LIVE
 
-**Aktueller Installationspfad:** `~/.openclaw/workspace/skills/tiktok-live/`
-**Stale Pfad:** `~/.openclaw/skills/tiktok-live/` nicht verwenden.
+Use the portable installation under:
 
-Extract live stream URLs from TikTok using Playwright-based visual detection.
-API-, Webcast- und CLI-Methoden bleiben als unabhängige Gegenprüfung und
-Fallbacks erhalten.
+```text
+$HOME/.openclaw/workspace/skills/tiktok-live/
+```
 
-## Overview
+Do not use the stale path `$HOME/.openclaw/skills/tiktok-live/`.
 
-This skill provides reliable TikTok Live stream extraction by:
-1. Using Playwright + Chromium for visual live status detection
-2. Capturing network traffic to extract FLV stream URLs
-3. Supporting multiple playback methods (VLC, MPV, FFmpeg)
+## Canonical entry point
 
-Webcast/API-Ergebnisse können von der visuellen Erkennung abweichen. Deshalb
-werden sie nicht allein als endgültiges Offline-Ergebnis verwendet.
-
-## Prerequisites
+Use the dispatcher unless a single extractor must be diagnosed:
 
 ```bash
-# Install Playwright (if not present)
-npm install playwright
-npx playwright install chromium
-
-# UFW Firewall (outgoing)
-sudo ufw allow out 80/tcp
-sudo ufw allow out 443/tcp
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url @example_creator
+python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator --json
 ```
 
-## Quick Start
+Whitespace and one leading `@` are removed. Valid TikTok handles contain only
+letters, digits, `.`, and `_`, with a maximum length of 24 characters.
 
-### Kombinierter Dispatcher
+Without `--json`, a successful `url` command writes only the naked URL to
+stdout. Diagnostics and routing information go to stderr.
 
-Der Dispatcher führt alle verfügbaren Methoden mit festen Zeitlimits aus.
-Ein einzelnes API-`offline` beendet die visuellen Prüfungen nicht.
+## Result contract
+
+| Status | Meaning | Exit |
+|---|---|---:|
+| `live` | Account-specific LIVE confirmed; URL may be present | 0 |
+| `offline` | No account-specific LIVE evidence or URL | 1 |
+| `restricted` | LIVE exists but requires login or is otherwise gated | 1 |
+| `dependency_missing` | Required runtime or executable unavailable | 2 |
+| `technical_error` | Navigation, parsing, timeout, or execution failure | 2 |
+| `overloaded` | Load threshold exceeded before Playwright starts | 75 |
+
+The standalone URL extractors follow the same stdout rule:
+
+- success: one naked URL, exit `0`
+- offline/restricted/no URL: empty stdout, exit `1`
+- dependency or technical failure: empty stdout, exit `2`
+- overload: empty stdout, exit `75`
+
+## Gateway and paired nodes
+
+The dispatcher is always executable locally on the gateway. Its execution
+modes are:
+
+```text
+--execution auto|local|node
+--node <id|name>
+--no-local-fallback
+```
+
+`auto` selects a connected, paired, suitable node when the calling OpenClaw
+agent can issue `exec host=node`; otherwise it runs on the gateway. A remote
+node runs the same dispatcher with `--execution local` and returns stdout,
+stderr, and the exit code. Missing dependencies, overload, invoke failure, and
+timeout fall back to the gateway unless `--no-local-fallback` is set.
+
+Remote execution is agent-managed. Do not use SSH or
+`openclaw nodes invoke ... system.run`; OpenClaw reserves `system.run` for the
+`exec` tool.
+
+Each executing node needs the synchronized workspace, Node.js, Playwright, and
+Chromium under the same portable paths.
+
+## Load protection
+
+Before browser startup, each extractor compares the 1-minute load average with
+the CPU count:
+
+```text
+load_per_cpu = load_1m / cpu_count
+```
+
+The default limit is `1.5`; override it with
+`TIKTOK_MAX_LOAD_PER_CPU`. Overload produces exit `75` without starting
+Playwright.
+
+## Detection rules
+
+Only account-specific evidence counts:
+
+- the profile header/avatar for the requested account;
+- an exact link to `/@example_creator/live`;
+- a successful HTTP `2xx` response for an allowed TikTok CDN HTTPS `.flv`
+  URL on that account's LIVE page.
+
+An isolated `LIVE` label in TikTok's sidebar or recommendations is ignored.
+The enhanced checker opens `/@example_creator/live` to distinguish accessible
+LIVE, restricted LIVE, and offline states.
+
+## Standalone diagnostics
 
 ```bash
-python3 ~/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py check <username>
-python3 ~/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url <username>
+node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js" example_creator
+node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" example_creator
 ```
 
-Statuswerte: `live`, `offline`, `restricted`, `dependency_missing`,
-`technical_error`. Bei erfolgreicher URL-Auflösung enthält stdout ohne
-`--json` ausschließlich die nackte URL. Methodendiagnosen stehen auf stderr.
+The basic checker is intentionally profile-only. Use the enhanced skill or the
+dispatcher when `restricted` must be distinguished from `offline`.
 
-### Check Live Status
+## Playback
+
+Resolve a fresh URL immediately before playback:
 
 ```bash
-node ~/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
+url="$(python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator)"
+vlc "$url"
 ```
 
-**Output:** JSON with `isLive` boolean and detection indicators
+Stream URLs are signed and revocable. Do not document or log live signed URLs;
+use placeholders. Re-resolve after expiration, HTTP rejection, or a new LIVE
+session. Do not modify observed URLs to guess another quality.
 
-### Extract Stream URL
+## Security and cleanup
 
-```bash
-node ~/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js <username>
-```
+- Never interpolate handles into shell commands.
+- Start fallbacks with fixed executables and argument arrays.
+- Accept only normalized extractor output and allowed HTTPS TikTok CDN URLs.
+- Bound child-process output and execution time.
+- Terminate the complete fallback process group on timeout.
+- Close browser, context, page, and temporary files on every path.
+- Do not persist signed stream URLs outside the existing state/history
+  mechanisms.
 
-**Output:** Nackte URL (eine Zeile), z.B.:
-```
-https://pull-flv-f77-tt04.tiktokcdn-eu.com/game/stream-..._ld.flv?...
-```
-Bei Fehler oder nicht-live: leerer Output + exit code 1.
+## Requirements
 
-## How It Works
-
-### Step 1: DSGVO Banner Handling
-The cookie banner blocks the profile picture. Must be closed first:
-
-```javascript
-const verstandenButton = await page.$('button:has-text("Verstanden")');
-if (verstandenButton) await verstandenButton.click();
-```
-
-### Step 2: Wait for Full Page Load
-Wait for "Erneute Veröffentlichungen" tab to appear (indicates complete load).
-
-### Step 3: Visual Live Detection
-Check multiple indicators in order of reliability:
-1. LIVE badge (`text=/^LIVE$/i`) - most reliable
-2. Red border around profile picture - check `borderColor` and `boxShadow`
-3. Live link presence (`a[href*="/live"]`)
-
-### Step 4: Stream URL Extraction
-If live, navigate to `/live` and capture network traffic for `.flv` URLs.
-
-### Step 5: Browser Cleanup
-**Critical:** Always close browser with `browser.close()` to ensure fresh sessions.
-
-## Stream Playback Options
-
-Das Skript gibt nur die nackte URL aus. Zum Abspielen:
-
-```bash
-# VLC
-vlc "$(node ~/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js username)"
-
-# MPV (mit Cache)
-mpv --cache=yes --cache-secs=30 "URL"
-
-# FFmpeg (Download)
-ffmpeg -i "URL" -c copy output.mp4
-
-# FFmpeg (Restream zu RTMP)
-ffmpeg -i "URL" -c copy -f flv rtmp://...
-```
-
-**Wichtig:** URLs immer als nackte URLs weitergeben — kein `vlc "..."` Prefix in Dokumentation oder Logs.
-
-## Alternative Extraction Methods
-
-| Method | Command | Pros | Cons |
-|--------|---------|------|------|
-| yt-dlp | `yt-dlp -g "https://tiktok.com/@user/live"` | Fast, no browser | Less reliable |
-| streamlink | `streamlink "https://tiktok.com/@user/live" best` | Multi-platform | Experimental support |
-| gallery-dl | `gallery-dl -g "https://..."` | Dedicated tool | Limited TikTok support |
-
-## Critical Learnings
-
-- **DSGVO banner**: MUST close first or LIVE badge is hidden
-- **Page load**: Wait for "Erneute Veröffentlichungen" tab
-- **Browser cleanup**: Essential for fresh sessions
-- **Stream TTL**: URLs valid 2-4 hours (signature-based)
-- **Quality levels**: `_ld.flv` (low), `_sd.flv` (standard), `_hd.flv` (high)
-
-## Stream Restrictions
-
-TikTok Live Streams können verschiedene Einschränkungen haben, die die Extraktion beeinflussen:
-
-### 1. Age-Restricted / Age-Gated Streams
-**Erkennungsmerkmale:**
-- Kein roter Rahmen um Profilbild auf der Profilseite
-- Kein LIVE-Badge auf der Profilseite
-- Auf `/live` Seite: "Bei TikTok anmelden" + "Dieses LIVE enthält Themen, die von einigen als unangenehm empfunden werden können"
-- Stream läuft technisch, ist aber ohne Login nicht zugänglich
-
-**Auswirkungen:**
-- FLV-URLs können nicht extrahiert werden (kein Netzwerk-Traffic ohne Auth)
-- `tiktok-check-profile.js` zeigt möglicherweise `isLive: true` (technisch korrekt, aber nicht öffentlich)
-- Alte FLV-Links funktionieren nicht (Signatur abgelaufen)
-
-**Lösung:**
-- Warten auf nächsten öffentlichen Stream
-- Oder: Extraktion mit authentifiziertem TikTok-Account (Login-Cookies erforderlich)
-
-### 2. [Weitere Einschränkungen - dokumentieren sobald reproduzierbar]
-- Region-locked Streams
-- Follower-only Streams
-- Subscriber-only Streams
-
-## Multi-Node Support (Stand: 2026-04-11)
-
-### Verfügbare Nodes mit Playwright/Chromium
-
-| Node | Status | Xvfb | Playwright | Verwendung |
-|------|--------|------|------------|------------|
-| Gateway | ✅ Bereit | :99 | Nativ | Haupt-Checks |
-| Node 2 | ✅ Bereit | :99 | v1.59.1 | Parallel-Checks |
-| Node 3 | ✅ Bereit | :99 | v1.59.x | Backup/Parallel |  
-
-### Node-basierte Ausführung
-
-```bash
-# Auf Node 2
-ssh node2 "cd /tmp && export DISPLAY=:99 && node check-tiktok.js username"
-
-# Auf Node 3  
-ssh node3 "cd /tmp && export DISPLAY=:99 && node check-tiktok.js username"
-```
-
-**Wichtig:** Alle Nodes nutzen einheitlich User=openclaw für Xvfb (systemd-Service).
-
-## Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| No LIVE badge visible | Check/close DSGVO banner |
-| Browser hangs | `pkill -f chromium` |
-| 403 on stream URL | URL expired, re-extract |
-| Session issues | Ensure `browser.close()` called |
-| FFmpeg 403 | Add `-user_agent "Mozilla/5.0"` |
-| Stream erkannt aber keine FLV URL | Prüfe auf Age-Restriction (siehe oben) |
-| "Bei TikTok anmelden" auf /live | Stream ist age-restricted, Login erforderlich |
-| SSH-Tunnel down (Node 3) | Restart: `ssh -f -N -R 18794:localhost:22 ...` |
+- Python 3
+- Node.js
+- Playwright with Chromium in both skill directories
+- Optional `streamlink` and `yt-dlp` fallbacks for the enhanced extractor
+- Outbound HTTPS access to TikTok and TikTok CDN hosts
 
 ## References
 
-- Full documentation: `references/TIKTOK.md`
-- Master documentation: `/home/openclaw/.openclaw/workspace/TIKTOK.md`
-- Session log: `/home/openclaw/.openclaw/workspace/memory/2026-04-06.md`
-- MEMORY.md: Search "TikTok Live Stream Extraktion"
-
-## Scripts
-
-- `scripts/tiktok-check-profile.js` - Live status check
-- `scripts/tiktok-get-stream.js` - Stream URL extraction
+- Runtime details: `references/TIKTOK.md`
+- Enhanced extractor: `$HOME/.openclaw/workspace/skills/tiktok-live-mon/SKILL.md`
+- Dispatcher/stateful monitor:
+  `$HOME/.openclaw/workspace/tiktok-monitor/SKILL.md`

@@ -2,6 +2,13 @@
 **Erstellt:** 2026-04-18
 **Status:** In Bearbeitung
 
+> **Historischer Snapshot:** Die TikTok-Einträge bilden den Stand vom
+> 2026-04-18 ab. Aktuell sind
+> `$HOME/.openclaw/workspace/skills/tiktok-live/`,
+> `$HOME/.openclaw/workspace/skills/tiktok-live-mon/` und
+> `$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py` maßgeblich.
+> Alte `tiktok-live-app`-/Backup-Pfade sind keine Laufzeitkomponenten.
+
 ## Übersicht
 - **Skills gesamt:** 21
 - **Script-Dateien:** ~61 (ohne node_modules)

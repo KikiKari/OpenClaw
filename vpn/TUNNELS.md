@@ -4,7 +4,7 @@
 
 ```
 Node 2 (159.195.78.116) ──Reverse──→ Node 1 (152.53.145.65)
-  Port 15000 (TikTok API: localhost:5000)
+  Port 15000 (Legacy TikTok API (nicht vom aktuellen Dispatcher genutzt): localhost:5000)
   Port 18790 (OpenClaw Gateway: localhost:18789)
 
 Node 3 (185.162.248.90) ──Reverse──→ Node 1 (152.53.145.65)

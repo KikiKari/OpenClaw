@@ -36,7 +36,7 @@ OpenClaw betreibt derzeit **8 aktive Sub-Agents** mit Cron-Jobs (alle als root) 
 | Agent | Zweck | Skill-Pfad | Benötigt |
 |-------|-------|------------|----------|
 | **reports-creator** | Tägliche/wöchentliche Reports | `/skills/reports-creator/` | Cron-Job |
-| **tiktok-live-mon** | TikTok Live Monitoring | `/skills/tiktok-live-mon/` | Config + Cron |
+| **tiktok-live-mon** | TikTok LIVE Klassifikation und URL | `/skills/tiktok-live-mon/` | Dispatcher; optional `exec host=node`, kein Cron erforderlich |
 | **git-publish-agent** | Git/ClawHub Publishing | `/skills/git-publish-agent/` | Event-Trigger |
 | **server-maintenance** | Node-spezifische Wartung | `/skills/server-maintenance/` | Alerting-System |
 | **web-scraper** | Web-Daten Extraktion | `/skills/web-scraper/` | Manuell/Event |

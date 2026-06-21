@@ -54,7 +54,7 @@
 
 - [ ] **Pairing:** Node 7 muss auf Node 1 genehmigt werden.
 - [ ] **Gateway-Konfiguration auf Node 1:** Überprüfen, ob `gateway.mode: "serve"` und `bind: "loopback"` korrekt gesetzt sind.
-- [ ] **Task-Logik:** Einrichtung von `coding-agent` und TikTok-Pipeline.
+- [ ] **Task-Logik:** Einrichtung von `coding-agent`; TikTok-Dispatcher/Skills am portablen Workspace-Pfad prüfen.
 
 ## Wartung
 

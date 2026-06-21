@@ -1,18 +1,28 @@
 #!/usr/bin/env node
 /**
- * TikTok Live Status Checker
- * Prüft visuell, ob ein TikTok-Account live ist
- * Korrigiert: DSGVO-Banner muss zuerst geschlossen werden
+ * Basic TikTok LIVE profile checker.
+ *
+ * Scopes every signal to the requested account and ignores unrelated sidebar
+ * LIVE labels. This profile-only checker does not classify restricted LIVE;
+ * use the enhanced checker or dispatcher for that distinction.
+ *
+ * Exit 0 = account-specific LIVE, 1 = offline, 2 = dependency/technical
+ * failure, 75 = overloaded before Playwright startup.
  */
 
 const { chromium } = require('playwright');
 const fs = require('fs');
+const { enforceLoadLimit, liveHrefSelectors, normalizeUsername } = require('./tiktok-common');
 
-const username = process.argv[2];
-if (!username) {
+let username;
+try {
+    username = normalizeUsername(process.argv[2]);
+} catch (error) {
     console.error('Usage: node tiktok-check-profile.js <username>');
-    process.exit(1);
+    console.error(error.message);
+    process.exit(64);
 }
+enforceLoadLimit('playwright_basic');
 
 async function checkLiveStatus(username) {
     try {
@@ -90,21 +100,28 @@ async function checkLiveStatus(username) {
             await page.screenshot({ path: `/tmp/tiktok-${username}.png` });
         }
         
-        // Check for LIVE indicators
-        // Method 1: data-e2e="live-icon"
-        const liveIcon = await page.$('[data-e2e="live-icon"]');
+        // Account-scoped LIVE indicators only. Sidebar/recommendation labels
+        // are outside the exact /@username/live link and never count.
+        // Method 1: live icon inside the exact account link
+        const liveLink = page.locator(liveHrefSelectors(username).join(', ')).first();
+        const hasLiveLink = await liveLink.isVisible().catch(() => false);
+        const liveIconVisible = hasLiveLink &&
+            await liveLink.locator(
+                '[data-e2e="live-icon"], [class*="LiveBadge"], [class*="live-indicator"]'
+            ).first().isVisible().catch(() => false);
         
-        // Method 2: LIVE text/badge
-        const liveBadge = await page.locator('text=/^LIVE$/i').first();
+        // Method 2: exact LIVE text/badge inside the account link
+        const liveBadge = hasLiveLink
+            ? liveLink.locator('text=/^LIVE$/i').first()
+            : page.locator('body > __never_match__');
         const liveBadgeVisible = await liveBadge.isVisible().catch(() => false);
         
-        // Method 3: Roter Rahmen um Profilbild - mehrere Selektoren
+        // Method 3: Live-Rahmen am Profilkopf/Avatar
         const profileSelectors = [
-            'img[alt*="profile"]',
-            'img[data-e2e="avatar"]',
-            'div[data-e2e="profile-avatar"] img',
-            'a[href*="/@"] img',
-            '[class*="avatar"] img'
+            '[data-e2e="user-page"] img[data-e2e="avatar"]',
+            '[data-e2e="user-page"] div[data-e2e="profile-avatar"] img',
+            'main header img[data-e2e="avatar"]',
+            'main header [class*="avatar"] img'
         ];
         
         let hasLiveBorder = false;
@@ -150,48 +167,47 @@ async function checkLiveStatus(username) {
             }
         }
         
-        // Method 4: Check für Live-Link oder Live-Button
-        const escapedUsername = username.replace(/["\\]/g, '\\$&');
-        const liveLink = await page.$(
-            `a[href="/@${escapedUsername}/live"], a[href^="/@${escapedUsername}/live?"]`
-        );
-        const hasLiveLink = liveLink !== null;
-        
-        // Method 5: Check für pulsierenden roten Punkt (Live-Indikator)
-        const liveIndicator = await page.$('[class*="live-indicator"], div[class*="LiveBadge"]');
+        // Method 4: exact account LIVE link
+        // Method 5: live indicator inside that account link
+        const liveIndicatorVisible = hasLiveLink &&
+            await liveLink.locator(
+                '[class*="live-indicator"], div[class*="LiveBadge"]'
+            ).first().isVisible().catch(() => false);
         
         const isLive =
-            liveIcon !== null ||
+            hasLiveLink ||
             hasLiveBorder ||
-            liveIndicator !== null ||
-            (liveBadgeVisible && hasLiveLink);
+            liveIconVisible ||
+            liveIndicatorVisible ||
+            liveBadgeVisible;
         
         console.log(JSON.stringify({
             username,
             isLive,
             timestamp: new Date().toISOString(),
             indicators: {
-                liveIcon: liveIcon !== null,
+                liveIcon: liveIconVisible,
                 liveBadge: liveBadgeVisible,
                 liveBorder: hasLiveBorder,
                 liveLink: hasLiveLink,
-                liveIndicator: liveIndicator !== null
+                liveIndicator: liveIndicatorVisible
             }
         }, null, 2));
         
-        await browser.close();
         return isLive;
         
     } catch (error) {
-        await browser.close();
         console.error(JSON.stringify({
             error: true,
+            status: 'technical_error',
             message: error.message,
             stack: error.stack,
             timestamp: new Date().toISOString()
         }));
-        process.exit(1);
+        return null;
+    } finally {
+        await browser.close();
     }
 }
 
-checkLiveStatus(username);
+checkLiveStatus(username).then(isLive => process.exit(isLive === null ? 2 : (isLive ? 0 : 1)));

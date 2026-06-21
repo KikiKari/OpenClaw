@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * TikTok Stream URL Extractor
- * Nutzt Network Monitoring um FLV-Stream-URLs zu capturen
- * Basierend auf AGENTS.md Learnings
+ * LEGACY TikTok URL prototype.
+ *
+ * This request-substring implementation is retained for history only. The
+ * active extractor accepts successful allowed TikTok-CDN responses and is
+ * invoked through tiktok-monitor/tiktok_dispatch.py.
  */
 
 const { chromium } = require('playwright');

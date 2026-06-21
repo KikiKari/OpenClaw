@@ -30,7 +30,8 @@
 | **reports-creator** | `~/.openclaw/workspace/skills/reports-creator/` | Automatische Berichte |
 | **resource-manager** | `~/.openclaw/workspace/skills/resource-manager/` | Ressourcen-Management |
 | **scripting-utils** | `~/.openclaw/workspace/skills/scripting-utils/` | Multi-Lang Scripting |
-| **tiktok-live-mon** | `~/.openclaw/workspace/skills/tiktok-live-mon/` | TikTok Live-Monitoring |
+| **tiktok-live** | `~/.openclaw/workspace/skills/tiktok-live/` | Accountgenaue LIVE-Prüfung und validierte URL-Extraktion |
+| **tiktok-live-mon** | `~/.openclaw/workspace/skills/tiktok-live-mon/` | `live|restricted|offline`, CLI-Fallbacks und Node-fähiger Dispatcher |
 | **web-scraper** | `~/.openclaw/workspace/skills/web-scraper/` | Gezielte Web-Extraktion |
 | **workspace-db** | `~/.openclaw/workspace/skills/workspace-db/` | Dokumentations-DB & Index |
 | model-usage | `~/.openclaw/workspace/skills/model-usage/` | Modell-Nutzungsstatistiken |

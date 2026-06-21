@@ -1,5 +1,8 @@
 # `tt-live.json` — Configuration Reference
 
+> **Status (2026-06-21):** Reference only. The active `tt_live.py` does not
+> load this file, and the dispatcher has its own CLI/environment settings.
+
 Source: `tt-live.json`. Format: JSON5 (JSON with comments and trailing
 commas allowed).
 
@@ -37,11 +40,9 @@ entries from `<sec_uid>.state.json` whose `captured_at` is older than
 this many days. The strip runs on every state-write path (passive
 garbage collection — there is no scheduler).
 
-3 days is calibrated to TikTok's stream URL signature expiry, which is
-roughly 14 days but with two-stage client-side restrictions kicking in
-much earlier (~40-60s ABR downgrade, ~14min bundle swap). 3 days
-balances "the cache is fresh enough to still be useful for forensics"
-against "the file does not grow without bound."
+Three days is a bounded retention period for state/history. It is not an
+estimate or guarantee of signed URL validity: a URL may expire or be revoked
+much sooner, especially when the LIVE session ends.
 
 ### 2.2 `request_timeout_sec`
 
@@ -77,8 +78,8 @@ They are not user preferences — they are tuned to:
 
 - **TikTok's API behavior** (`request_timeout_sec` matches observed
   response latency)
-- **TikTok's stream URL lifecycle** (`url_retention_days` matches
-  practical signature validity)
+- **Bounded state/history** (`url_retention_days` limits retained URL records;
+  it does not assert playability)
 - **The expected runtime environment** (`yt_dlp_path` defaults to
   PATH discovery, which works in 100% of standard installs)
 
@@ -115,21 +116,19 @@ source the script should target.
 
 ---
 
-## 5. File location
+## 5. Reference locations
 
-The skill looks for `tt-live.json` in two places, in this priority:
+A future loader could look for `tt-live.json` in this priority:
 
 1. `$TT_LIVE_WORKSPACE/tt-live.json` — workspace override (typically
    `~/.openclaw/workspace/tiktok-monitor/tt-live.json`)
 2. Same directory as `tt_live.py` and `tt-live.sh` — skill default
 
-This priority matches the workspace convention: data lives in
+This proposed priority matches the workspace convention: data lives in
 `$TT_LIVE_WORKSPACE`, code lives next to the entry-point scripts.
 
-Since the current `tt_live.py` does not load the file at all, both
-paths are documentation-only for now. They define the canonical
-locations a future loader (or the change-script described in §4)
-should look at.
+The current `tt_live.py` does not load either path. Both are
+documentation-only.
 
 ---
 

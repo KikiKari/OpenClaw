@@ -16,7 +16,7 @@ Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.
 - **OS:** Ubuntu 24.04
 - **OpenClaw:** Gateway via `openclaw gateway restart`
 - **Port:** 18789
-- **TikTok:** Playwright-Skill (NICHT mehr Port 5001 - DEFEKT)
+- **TikTok:** Gateway-lokaler Dispatcher mit optionaler agent-gesteuerter Node-Ausführung
 - **User:** openclaw
 - **Config:** /home/openclaw/.openclaw/openclaw.json
 - **ENV:** /home/openclaw/.config/openclaw/env
@@ -71,25 +71,23 @@ Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.
 weather, summarize, github, himalaya, session-logs, tmux, healthcheck,
 skill-creator, video-frames, nano-pdf, blogwatcher, discord, model-usage,
 oracle, sherpa-onnx-tts, spotify-player, notion, openai-whisper-api, sag,
-coding-agent, **tiktok-live** (NEU)
+coding-agent, **tiktok-live**, **tiktok-live-mon**
 
 ---
 
-## TikTok Live (Aktualisiert 2026-04-06)
+## TikTok LIVE (Aktualisiert 2026-06-21)
 
-**Status:** ✅ Playwright-basiert — Port 5001 DEFEKT
+**Kanonischer Einstieg:** `$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py`
 
-**Skill-Pfad:** `~/.openclaw/workspace/skills/tiktok-live/`
+**Skills:**
+- `$HOME/.openclaw/workspace/skills/tiktok-live/` — Basisprüfung und URL-Extraktion
+- `$HOME/.openclaw/workspace/skills/tiktok-live-mon/` — `live|restricted|offline` und Fallbacks
 
-**Skripte:**
-- `scripts/tiktok-check-profile.js` — Live-Status
-- `scripts/tiktok-get-stream.js` — Stream-URL
+**Ausführung:** lokal auf dem Gateway oder durch einen OpenClaw-Agenten über `exec host=node` auf einem verbundenen gepaarten Node. Bei fehlendem Node, Abhängigkeit, Timeout oder Überlast erfolgt standardmäßig Gateway-Fallback.
 
-**Cron-Jobs:**
-- `tiktok-live-check-20` → XX:20
-- `tiktok-live-check-45` → XX:45
+**Vertrag:** keine festen Handles; Überlast Exit `75`; Offline/Restricted Exit `1`; nicht-JSON URL-Erfolg schreibt ausschließlich die nackte URL.
 
-**Accounts:** Werden pro Auftrag dynamisch übergeben; keine festen Handles.
+Die alte Port-5001-API und die TikTok-Cron-Beispiele sind nicht aktiv.
 
 ---
 
@@ -111,8 +109,6 @@ coding-agent, **tiktok-live** (NEU)
 
 | Job | Zeit | Zweck |
 |-----|------|-------|
-| tiktok-live-check-20 | XX:20 | TikTok Live-Check (Playwright) |
-| tiktok-live-check-45 | XX:45 | TikTok Live-Check (Playwright) |
 | hourly-email-check | XX:00 | E-Mail-Check |
 | light-system-check | alle 3h | System-Health |
 | session-delta-sync | alle 3h | Session-Monitoring |
@@ -184,7 +180,7 @@ openclaw node run --host 10.10.0.3 --port 18789
 | Dokument | Pfad |
 |----------|------|
 | SYSTEM.md | Diese Datei |
-| TIKTOK.md | `workspace/TIKTOK.md` |
+| TikTok LIVE | `workspace/skills/tiktok-live/references/TIKTOK.md` |
 | MAINTENANCE.md | `memory/MAINTENANCE.md` |
 | MEMORY.md | `workspace/MEMORY.md` |
 
@@ -197,5 +193,5 @@ openclaw node run --host 10.10.0.3 --port 18789
 | Node-Service --gateway Flag | ⚠️ Offen | Bug 2026.4.2 |
 | Externe Gateway-Verbindung | ⚠️ Offen | Nicht möglich |
 | Node 3 fail2ban | ⚠️ Offen | Blockt Node 1 IP |
-| TikTok API Port 5001 | ✅ Gelöst | Playwright-Replacement |
+| TikTok API Port 5001 | Retired | Dispatcher/Playwright ersetzt den Dienst |
 | DSGVO-Banner | ✅ Gelöst | Automatisches Schließen |
