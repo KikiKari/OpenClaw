@@ -16,6 +16,11 @@ metadata:
 
 # tt-live — TikTok LIVE Monitor
 
+This is the separate browser-free SIGI/Webcast monitor. It does not replace
+the profile-scoped Playwright skills and does not inherit their selector or
+multi-node execution behavior. See
+`/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Inspect a TikTok user's live status, resolve their stream URL, or watch
 them over time. Operate on `uniqueId` (the `@handle`) at the input
 boundary; track `secUid` as the stable primary key inside the workspace.

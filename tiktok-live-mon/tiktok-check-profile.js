@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /**
+ * @deprecated Legacy copy. Use workspace/skills/tiktok-live-mon/.
  * TikTok Live Status Checker v2.1
  * Verbesserte Version mit:
  * - Robusteres DSGVO-Banner-Handling (alle bekannten Varianten)

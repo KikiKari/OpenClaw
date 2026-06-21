@@ -1,5 +1,9 @@
 # Streamlink CLI Referenz - TikTok Relevante Optionen
 
+> Technische Referenz. Streamlink ist nur ein Extraktions-Fallback nach
+> bestätigtem Live-Preflight. Siehe
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 **Quelle:** https://streamlink.github.io/cli.html (Streamlink 8.3.0)
 **Abgerufen:** 2026-04-19
 

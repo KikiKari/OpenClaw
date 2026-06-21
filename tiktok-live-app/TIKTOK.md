@@ -1,5 +1,9 @@
 # TikTok Live Monitor - Dokumentation
 
+> Legacy-Dokumentation. Die kanonischen Skripte liegen heute unter
+> `workspace/skills/tiktok-live*`. Aktueller Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 **Letzte Aktualisierung:** 2026-04-06
 **Status:** ✅ Playwright-basierte Extraktion operational
 
@@ -110,9 +114,12 @@ Der Reiter "Erneute Veröffentlichungen" erscheint erst, wenn die Seite komplett
 ### 3. Live-Indikatoren (Zuverlässigkeit)
 | Indikator | Zuverlässigkeit | Erkennung |
 |-----------|-----------------|-----------|
-| LIVE-Badge | ⭐⭐⭐⭐⭐ | `text=/^LIVE$/i` |
+| Profilgebundener LIVE-Badge | ⭐⭐⭐⭐⭐ | Nur innerhalb des Profilkopfs |
 | Roter Rahmen | ⭐⭐⭐⭐☆ | `borderColor` + `boxShadow` |
-| Live-Link | ⭐⭐⭐☆☆ | `a[href*="/live"]` |
+| Exakter Live-Link | ⭐⭐⭐⭐☆ | `a[href*="/@<username>/live"]` |
+
+Ein globaler `text=/^LIVE$/i`-Selektor ist nicht zulässig, weil er den
+permanenten TikTok-Navigationspunkt „LIVE“ treffen kann.
 
 ### 4. Browser-Cleanup (KRITISCH)
 ```javascript

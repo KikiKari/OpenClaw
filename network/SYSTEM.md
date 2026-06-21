@@ -75,11 +75,13 @@ coding-agent, **tiktok-live** (NEU)
 
 ---
 
-## TikTok Live (Aktualisiert 2026-04-06)
+## TikTok Live (Aktualisiert 2026-06-21)
 
-**Status:** ✅ Playwright-basiert — Port 5001 DEFEKT
+**Status:** ✅ Profilgebundene Playwright-Erkennung mit Stream-Preflight
 
-**Skill-Pfad:** `~/.openclaw/skills/tiktok-live/`
+**Skill-Pfad:** `$HOME/.openclaw/workspace/skills/tiktok-live/`
+
+**Betriebsdokumentation:** `$HOME/.openclaw/workspace/TIKTOK-CURRENT.md`
 
 **Skripte:**
 - `scripts/tiktok-check-profile.js` — Live-Status
@@ -89,7 +91,7 @@ coding-agent, **tiktok-live** (NEU)
 - `tiktok-live-check-20` → XX:20
 - `tiktok-live-check-45` → XX:45
 
-**Accounts:** example_creator, example_creator
+**Account-Beispiele:** `example_creator`
 
 ---
 

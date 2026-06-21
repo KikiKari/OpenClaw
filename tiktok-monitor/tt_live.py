@@ -2,6 +2,9 @@
 """
 tt_live.py — TikTok LIVE monitor
 
+Separate browser-free SIGI/Webcast component. It is independent of the
+profile-scoped Playwright skills documented in workspace/TIKTOK-CURRENT.md.
+
 Subcommands
 -----------
   check  <username>   One-shot live status check; JSON to stdout

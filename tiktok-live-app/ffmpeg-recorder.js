@@ -1,3 +1,5 @@
+// @deprecated Legacy recorder prototype. Canonical status and URL resolution
+// live under workspace/skills/tiktok-live*/; see TIKTOK-CURRENT.md.
 const { exec, spawn } = require('child_process');
 const { chromium } = require('playwright');
 const fs = require('fs');

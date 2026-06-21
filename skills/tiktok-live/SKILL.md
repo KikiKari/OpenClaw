@@ -5,16 +5,18 @@ description: Extract TikTok live stream URLs and check live status using Playwri
 
 # TikTok Live Stream Extraction
 
-Extract live stream URLs from TikTok using Playwright-based visual detection. Replaces unreliable API-based methods.
+Extract live stream URLs from TikTok using profile-scoped Playwright detection.
 
 ## Overview
 
 This skill provides reliable TikTok Live stream extraction by:
-1. Using Playwright + Chromium for visual live status detection
+1. Using Playwright + Chromium for profile-scoped live status detection
 2. Capturing network traffic to extract FLV stream URLs
 3. Supporting multiple playback methods (VLC, MPV, FFmpeg)
 
-**Why not API?** TikTok's API consistently returns OFFLINE even for active streams. Visual detection is the only reliable method.
+**Why profile-scoped detection?** API and page-wide text checks can be
+ambiguous. In particular, TikTok's permanent navigation item “LIVE” is not a
+creator status indicator.
 
 ## Prerequisites
 
@@ -67,14 +69,17 @@ if (verstandenButton) await verstandenButton.click();
 ### Step 2: Wait for Full Page Load
 Wait for "Erneute Veröffentlichungen" tab to appear (indicates complete load).
 
-### Step 3: Visual Live Detection
-Check multiple indicators in order of reliability:
-1. LIVE badge (`text=/^LIVE$/i`) - most reliable
-2. Red border around profile picture - check `borderColor` and `boxShadow`
-3. Live link presence (`a[href*="/live"]`)
+### Step 3: Profile-Scoped Live Detection
+Check only indicators belonging to the requested profile:
+1. Live icon or badge inside the profile header
+2. Live border around the profile avatar
+3. Exact profile link (`a[href*="/@<username>/live"]`)
+
+Never use a page-wide `LIVE` text selector; it matches TikTok navigation.
 
 ### Step 4: Stream URL Extraction
-If live, navigate to `/live` and capture network traffic for `.flv` URLs.
+The stream extractor runs the status checker first. Only after a confirmed
+live result does it navigate to `/live` and capture FLV/HLS traffic.
 
 ### Step 5: Browser Cleanup
 **Critical:** Always close browser with `browser.close()` to ensure fresh sessions.
@@ -130,7 +135,8 @@ remote shell commands must use the OpenClaw `exec` tool with `host=node`.
 
 ## Critical Learnings
 
-- **DSGVO banner**: MUST close first or LIVE badge is hidden
+- **Scope selectors**: Generic page-wide `LIVE` text causes false positives
+- **DSGVO banner**: Close supported variants before evaluating the profile
 - **Page load**: Wait for "Erneute Veröffentlichungen" tab
 - **Browser cleanup**: Essential for fresh sessions
 - **Stream TTL**: URLs valid 2-4 hours (signature-based)
@@ -161,33 +167,18 @@ TikTok Live Streams können verschiedene Einschränkungen haben, die die Extrakt
 - Follower-only Streams
 - Subscriber-only Streams
 
-## Multi-Node Support (Stand: 2026-04-11)
+## Multi-Node Support
 
-### Verfügbare Nodes mit Playwright/Chromium
-
-| Node | Status | Xvfb | Playwright | Verwendung |
-|------|--------|------|------------|------------|
-| Gateway | ✅ Bereit | :99 | Nativ | Haupt-Checks |
-| Node 2 | ✅ Bereit | :99 | v1.59.1 | Parallel-Checks |
-| Node 3 | ✅ Bereit | :99 | v1.59.x | Backup/Parallel |  
-
-### Node-basierte Ausführung
-
-```bash
-# Auf Node 2
-ssh node2 "cd /tmp && export DISPLAY=:99 && node check-tiktok.js username"
-
-# Auf Node 3  
-ssh node3 "cd /tmp && export DISPLAY=:99 && node check-tiktok.js username"
-```
-
-**Wichtig:** Alle Nodes nutzen einheitlich User=openclaw für Xvfb (systemd-Service).
+Use the routing procedure in **Execution Routing**. Node availability and
+capabilities must be checked at runtime; static Node 2/Node 3 assumptions and
+direct SSH examples are not authoritative.
 
 ## Troubleshooting
 
 | Problem | Solution |
 |---------|----------|
-| No LIVE badge visible | Check/close DSGVO banner |
+| False positive from “LIVE” | Ensure every selector is scoped to the profile header |
+| No profile Live indicator | Treat the profile as offline |
 | Browser hangs | `pkill -f chromium` |
 | 403 on stream URL | URL expired, re-extract |
 | Session issues | Ensure `browser.close()` called |
@@ -199,7 +190,7 @@ ssh node3 "cd /tmp && export DISPLAY=:99 && node check-tiktok.js username"
 ## References
 
 - Full documentation: `references/TIKTOK.md`
-- Master documentation: `/home/openclaw/.openclaw/workspace/TIKTOK.md`
+- Current-state documentation: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`
 - Session log: `/home/openclaw/.openclaw/workspace/memory/2026-04-06.md`
 - MEMORY.md: Search "TikTok Live Stream Extraktion"
 

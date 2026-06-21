@@ -1,3 +1,5 @@
+// @deprecated Legacy HTTP wrapper. Canonical status and URL resolution
+// live under workspace/skills/tiktok-live*/; see TIKTOK-CURRENT.md.
 const express = require('express');
 const { spawn } = require('child_process');
 const path = require('path');

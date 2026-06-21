@@ -1,4 +1,7 @@
 # Playwright Request/Response Interception
+
+> Technische Referenz, nicht operative Anleitung. Aktueller TikTok-
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://checklyhq.com/docs/learn/playwright/intercept-requests
 
 ## Request Interception

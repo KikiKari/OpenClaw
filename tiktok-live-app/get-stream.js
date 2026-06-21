@@ -1,3 +1,5 @@
+// @deprecated Legacy implementation. Use workspace/skills/tiktok-live*/.
+// Current behavior: /home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md
 const { chromium } = require('playwright');
 
 const username = process.argv[2];

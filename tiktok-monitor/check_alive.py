@@ -2,6 +2,7 @@
 """
 check_alive.py — One-shot TikTok room liveness check.
 
+Part of the separate browser-free tiktok-monitor component.
 Standalone tool. Python port of the browser-console check_alive snippet.
 Takes a numeric room_id, calls webcast/room/check_alive, prints the
 result as a flat JSON object to stdout.

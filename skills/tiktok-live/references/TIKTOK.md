@@ -1,7 +1,10 @@
 # TikTok Live Monitor - Dokumentation
 
-**Letzte Aktualisierung:** 2026-04-06
+**Letzte Aktualisierung:** 2026-06-21
 **Status:** ✅ Playwright-basierte Extraktion operational
+
+> Aktueller Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+> Historische Architekturabschnitte bleiben zur Nachvollziehbarkeit erhalten.
 
 ---
 
@@ -65,8 +68,8 @@ Die ursprüngliche 3-Tier API-Architektur ist **obsolet**:
 
 | Skript | Zweck | Aufruf |
 |--------|-------|--------|
-| `tiktok-check-profile.js` | Live-Status prüfen | `node tiktok-check-profile.js <username>` |
-| `tiktok-get-stream.js` | FLV-Stream-URL extrahieren | `node tiktok-get-stream.js <username>` |
+| `tiktok-check-profile.js` | Live-Status prüfen | `node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js" <username>` |
+| `tiktok-get-stream.js` | FLV-Stream-URL extrahieren | `node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" <username>` |
 
 **Pfad:** `/home/openclaw/.openclaw/workspace/`
 
@@ -107,12 +110,15 @@ if (verstandenButton) await verstandenButton.click();
 **Indikator für vollständiges Laden:**
 Der Reiter "Erneute Veröffentlichungen" erscheint erst, wenn die Seite komplett geladen ist.
 
-### 3. Live-Indikatoren (Zuverlässigkeit)
+### 3. Profilgebundene Live-Indikatoren
 | Indikator | Zuverlässigkeit | Erkennung |
 |-----------|-----------------|-----------|
-| LIVE-Badge | ⭐⭐⭐⭐⭐ | `text=/^LIVE$/i` |
-| Roter Rahmen | ⭐⭐⭐⭐☆ | `borderColor` + `boxShadow` |
-| Live-Link | ⭐⭐⭐☆☆ | `a[href*="/live"]` |
+| Profil-Live-Icon/-Badge | ⭐⭐⭐⭐⭐ | Nur innerhalb des Profilkopfs |
+| Avatar-Live-Rahmen | ⭐⭐⭐⭐☆ | Profilavatar `borderColor` + `boxShadow` |
+| Exakter Live-Link | ⭐⭐⭐⭐☆ | `a[href*="/@<username>/live"]` |
+
+Ein globaler Selektor wie `text=/^LIVE$/i` ist unzulässig: Er trifft den
+permanenten Navigationspunkt „LIVE“ und erzeugt False Positives.
 
 ### 4. Browser-Cleanup (KRITISCH)
 ```javascript
@@ -251,7 +257,8 @@ you-get -i "https://tiktok.com/@example_creator/live"
 
 | Problem | Lösung |
 |---------|--------|
-| Kein LIVE-Badge sichtbar | DSGVO-Banner prüfen / schließen |
+| Globales „LIVE“ gefunden | Ignorieren; nur profilgebundene Indikatoren werten |
+| Kein Profil-Live-Indikator | Offline melden, keine URL-Extraktion starten |
 | Browser hängt | `pkill -f chromium` |
 | Session abgelaufen | Neue Instanz starten (nicht wiederverwenden) |
 | FLV-URL 403 | URL hat 2-4h TTL — neu extrahieren |

@@ -70,8 +70,8 @@
 
 | Datei | Pfad | Beschreibung |
 |-------|------|--------------|
-| **tiktok-check-profile.js** | ~/.openclaw/skills/tiktok-live/scripts/ | Live-Status Check |
-| **tiktok-get-stream.js** | ~/.openclaw/skills/tiktok-live/scripts/ | Stream-URL Extraktion |
+| **tiktok-check-profile.js** | `$HOME/.openclaw/workspace/skills/tiktok-live/scripts/` | Profilgebundener Live-Status-Check |
+| **tiktok-get-stream.js** | `$HOME/.openclaw/workspace/skills/tiktok-live/scripts/` | Stream-URL mit Live-Preflight |
 | **connect_node_*.sh** | Verschiedene | Node-Verbindungsskripte |
 | **setup-secret-write.sh** | Workspace | Secret-Store Setup |
 
@@ -79,7 +79,7 @@
 
 | Datei | Beschreibung | Status |
 |-------|--------------|--------|
-| **TIKTOK.md** | TikTok Master-Dokumentation | Aktuell |
+| **TIKTOK-CURRENT.md** | TikTok Master-Dokumentation | Aktuell |
 | **SYSTEM.md** | System-Übersicht | Aktuell |
 | **FIREWALL.md** | UFW Konfiguration | Aktuell |
 | **PASSWORD.md** | Credential-Management | Sensibel |

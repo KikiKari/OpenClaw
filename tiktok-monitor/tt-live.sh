@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # tt-live.sh — TikTok LIVE monitor wrapper
+# Separate browser-free SIGI/Webcast component; see workspace/TIKTOK-CURRENT.md.
 #
 # Dispatches subcommands to tt_live.py. The daemon subcommand is spawned in
 # the background with nohup so it survives shell exit; check and url run in

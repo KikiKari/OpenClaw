@@ -1,4 +1,7 @@
 # Playwright Network Requests Interception Tutorial
+
+> Technische Referenz, nicht operative Anleitung. Aktueller TikTok-
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://dev.to/philipfong/intercepting-network-requests-in-playwright-25op
 
 ## expectRequest Helper Function

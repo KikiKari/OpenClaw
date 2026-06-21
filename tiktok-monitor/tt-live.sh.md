@@ -1,5 +1,9 @@
 # `tt-live.sh` — Wrapper Reference
 
+> Teil des separaten browserfreien `tiktok-monitor`-Systems. Aktueller
+> komponentenübergreifender Stand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Source: `tt-live.sh`. Thin bash wrapper around `tt_live.py`.
 
 The wrapper has three responsibilities:

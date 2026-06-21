@@ -1,5 +1,8 @@
 # Schema Reference
 
+> Diese Schemas gehören zum separaten browserfreien `tiktok-monitor`.
+> Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Concrete schemas for every JSON object and event line produced or
 consumed by the tt-live skill. Anything written to disk, printed to
 stdout, or appended to the events file is documented here.

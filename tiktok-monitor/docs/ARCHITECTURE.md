@@ -1,5 +1,10 @@
 # Architecture
 
+This architecture belongs to the browser-free `tiktok-monitor` component. It
+is independent of the Playwright skills under `workspace/skills/tiktok-live*`.
+The cross-component current-state document is
+`/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 How the tt-live skill is wired together: components, classes, data
 flows, and the reasoning behind each design choice.
 

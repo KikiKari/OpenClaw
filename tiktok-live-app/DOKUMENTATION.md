@@ -1,5 +1,8 @@
 # TikTok Live Checker - Systemdokumentation
 
+> Historischer Testbericht vom 4. April 2026. Aktueller Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 ## Erfolgreiche Durchführung - 04.04.2026
 
 ### Prozess

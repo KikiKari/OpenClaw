@@ -1,5 +1,9 @@
 # yt-dlp Dokumentation - TikTok Probleme
 
+> Technische Referenz. yt-dlp ist nur ein Extraktions-Fallback nach
+> bestätigtem Live-Preflight. Siehe
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 **Quelle:** Auszüge aus dem `tiktok-live`-Skill und GitHub Issues zu yt-dlp.
 **Abgerufen:** Lokale Analyse, externe Suche nicht möglich.
 

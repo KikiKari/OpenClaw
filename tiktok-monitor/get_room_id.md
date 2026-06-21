@@ -1,5 +1,9 @@
 # `get_room_id.py` — CLI Reference
 
+> Teil des separaten browserfreien `tiktok-monitor`-Systems. Aktueller
+> komponentenübergreifender Stand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Source: `get_room_id.py`. Self-contained standalone tool.
 
 A one-shot lookup that fetches the TikTok `/@<user>/live` page, extracts

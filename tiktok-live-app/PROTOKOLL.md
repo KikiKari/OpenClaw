@@ -1,5 +1,9 @@
 # TikTok Live System - Protokoll
 
+> Historisches Protokoll. Reale Handles und damalige Ergebnisse bleiben
+> unverändert. Aktueller Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 ## Session: 04.04.2026 21:00-22:10
 
 ### Problemstellung

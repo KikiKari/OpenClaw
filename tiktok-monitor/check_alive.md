@@ -1,5 +1,9 @@
 # `check_alive.py` — CLI Reference
 
+> Teil des separaten browserfreien `tiktok-monitor`-Systems. Aktueller
+> komponentenübergreifender Stand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Source: `check_alive.py`. Self-contained standalone tool.
 
 A one-shot liveness check against TikTok's `webcast/room/check_alive`

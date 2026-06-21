@@ -1,4 +1,7 @@
 # Streamlink Issue #6832 - TikTok Live Inaccessible
+
+> Externe/historische Referenz. Aktueller OpenClaw-Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://github.com/streamlink/streamlink/issues/6832
 **Titel:** plugins.tiktok: Tiktok Live Stream is Inaccessible
 

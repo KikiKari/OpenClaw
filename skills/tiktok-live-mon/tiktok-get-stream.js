@@ -3,11 +3,12 @@
  * TikTok Stream URL Extractor v2.4
  * 
  * Strategie:
- * 1. Playwright: Navigiere zu /live, schließe Popups, fange FLV-URLs via page.on('response')
- * 2. Streamlink: Fallback (zuverlässigste CLI-Methode)
- * 3. yt-dlp: Letzter Fallback
+ * 1. Status-Preflight mit dem profilgebundenen Checker
+ * 2. Nur bei bestätigtem Live-Status: FLV/HLS-Capture mit Playwright
+ * 3. Streamlink und yt-dlp als Extraktions-Fallbacks
  * 
- * Fix: Verwendet page.on('response') statt nicht-existierender waitForResponses()
+ * Offline wird keine URL ausgegeben. Optionaler Node-Lastschutz:
+ * TIKTOK_MAX_LOAD_PER_CPU, Exit-Code 75 bei NODE_BUSY.
  */
 
 const { chromium } = require('playwright');

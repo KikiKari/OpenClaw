@@ -55,23 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-14)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-09.md:1:1 -->
-- [2026-06-09] DB maintenance completed: Ran tree scan, updated tree.db, detected 8 doc changes, updated docs.db, created hourly backups, cleaned old backups. All tasks succeeded. [score=0.852 recalls=0 avg=0.620 source=memory/2026-06-09.md:1-1]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-10.md:3:3 -->
-- Heartbeat poll received. No pending tasks or new items. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-10.md:3-3]
-
-## Promoted From Short-Term Memory (2026-06-15)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-11.md:3:3 -->
-- Heartbeat poll at 12:01 GMT+2. No pending tasks. Memory checked; no new notes. [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-11.md:3-3]
-
-## Promoted From Short-Term Memory (2026-06-16)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-13.md:1:1 -->
-- [2026-06-13] Heartbeat poll received. No pending tasks or alerts. [score=0.833 recalls=0 avg=0.620 source=memory/2026-06-13.md:1-1]
-
 ## Promoted From Short-Term Memory (2026-06-18)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:13:16 -->
@@ -110,3 +93,16 @@
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:21-23]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-21)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:17:17 -->
+- Conversation Summary: The conversation seems to be stuck in a loop where the user is sending heartbeat polls and the assistant replies "HEARTBEAT_OK". According to the instructions, when a heartbeat poll is received and there are no pending tasks or issues, we must reply "HEARTBEAT_OK". However, the user is now sending more polls and we keep responding. The last message from the user is a heartbeat poll at 19:04 GMT+2. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:19:19 -->
+- Conversation Summary: We need to respond accordingly. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:21:24 -->
+- Conversation Summary: I think we should just reply with "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:3:5 -->
+- Session: 2026-06-16 20:40:46 GMT+2: **Session Key**: agent:main:main; **Session ID**: 17d09954-4c50-4b41-8744-7e956a3ff192; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:9-12]

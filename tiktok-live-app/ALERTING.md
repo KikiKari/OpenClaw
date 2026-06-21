@@ -1,5 +1,8 @@
 # ALERTING.md - Alerting System
 
+> Historisches Dokument. Aktuelle Pfade, Live-Erkennung und Multi-Node-
+> Ausführung: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 ## Änderung: Systemd → Cron (alle 15min)
 
 Grund: Gateway lief unter root UND openclaw. Systemd-Wechsel verursachte Datenverlust.

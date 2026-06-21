@@ -1,4 +1,7 @@
 # Streamlink CLI Reference
+
+> Technische Referenz. Streamlink ist nur ein Extraktions-Fallback nach
+> bestätigtem Live-Preflight. Siehe `../TIKTOK-CURRENT.md`.
 **Quelle:** https://streamlink.github.io/cli.html
 
 ## Grundnutzung

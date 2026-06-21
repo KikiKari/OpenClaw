@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /**
+ * @deprecated Legacy implementation. Use the skills/tiktok-live directories.
  * TikTok Stream URL Extractor
  * Nutzt Network Monitoring um FLV-Stream-URLs zu capturen
  * Basierend auf AGENTS.md Learnings

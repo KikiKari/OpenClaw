@@ -1,5 +1,8 @@
 # TikTok Monitoring System
 
+> Historische API-Dokumentation; nicht der aktuelle operative Pfad.
+> Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Übersicht über das TikTok Live-Monitoring System und die verfügbaren API-Endpunkte.
 
 ---

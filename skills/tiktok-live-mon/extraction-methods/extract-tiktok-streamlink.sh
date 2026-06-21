@@ -1,5 +1,6 @@
 #!/bin/bash
 # TikTok Live Stream URL Extraktion via streamlink v1.2
+# Nur als Fallback nach erfolgreichem profilgebundenem Live-Preflight aufrufen.
 # Usage: ./extract-tiktok-streamlink.sh <username> [quality] [--json]
 
 USERNAME="${1:-}"

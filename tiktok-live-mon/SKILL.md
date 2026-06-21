@@ -3,6 +3,9 @@ name: tiktok-live-mon
 description: TikTok Live stream monitoring and recording automation. Uses Playwright for visual detection and network traffic monitoring to capture FLV stream URLs. Supports automatic live status checks, stream recording to disk, and notification integration.
 ---
 
+> Legacy-Kopie. Nicht als ausführbaren Skill-Pfad verwenden. Aktueller
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 # TikTok Live Monitor
 
 Automated TikTok Live stream monitoring with Playwright-based visual detection.

@@ -2,6 +2,7 @@
 """
 get_room_id.py — One-shot TikTok user lookup via SIGI_STATE scrape.
 
+Part of the separate browser-free tiktok-monitor component.
 Standalone tool. Python port of the browser-console SIGI_STATE snippet.
 Takes a username, fetches /@<user>/live, extracts the embedded SIGI_STATE
 JSON, and prints a flat record of identity + room fields to stdout.

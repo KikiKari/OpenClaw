@@ -1,5 +1,8 @@
 # yt-dlp Dokumentation - TikTok Probleme & Lösungen
 
+> Technische Referenz. yt-dlp ist nur ein Extraktions-Fallback nach
+> bestätigtem Live-Preflight. Siehe `../TIKTOK-CURRENT.md`.
+
 **Quellen:** GitHub Issues (`#15970`, `#11921`), FAQ (`wiki/FAQ`), Reddit-Diskussionen
 **Schlüsselprobleme:**
 1.  `HTTP Error 400: Bad Request`

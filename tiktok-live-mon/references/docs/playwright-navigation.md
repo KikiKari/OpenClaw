@@ -1,5 +1,8 @@
 # Playwright Navigation & Timeouts - Technische Referenz
 
+> Technische Referenz, nicht operative Anleitung. Aktueller TikTok-
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 **Quelle:** https://playwright.dev/docs/navigations + https://playwright.dev/docs/test-timeouts
 **Abgerufen:** 2026-04-19
 

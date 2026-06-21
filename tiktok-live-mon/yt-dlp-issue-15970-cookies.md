@@ -1,4 +1,7 @@
 # yt-dlp Issue #15970 - Cookies Fix
+
+> Externe/historische Referenz. Aktueller OpenClaw-Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://github.com/yt-dlp/yt-dlp/issues/15970
 **Titel:** Unable to work the Cookies
 

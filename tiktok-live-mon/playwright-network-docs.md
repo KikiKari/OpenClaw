@@ -1,4 +1,7 @@
 # Playwright Network - Offizielle Doku
+
+> Technische Referenz, nicht operative Anleitung. Aktueller TikTok-
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://playwright.dev/docs/network
 
 ## Network Events

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /**
+ * @deprecated Legacy copy. Use workspace/skills/tiktok-live-mon/.
  * TikTok Stream URL Extractor v2.4
  * 
  * Strategie:

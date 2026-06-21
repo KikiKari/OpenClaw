@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
  * TikTok Live Status Checker
- * Prüft visuell, ob ein TikTok-Account live ist
- * Korrigiert: DSGVO-Banner muss zuerst geschlossen werden
+ * Prüft ausschließlich profilgebundene Live-Indikatoren.
+ * Der allgemeine TikTok-Navigationspunkt "LIVE" ist kein Statussignal.
+ * Unterstützt @handle-Normalisierung und optionalen Node-Lastschutz
+ * via TIKTOK_MAX_LOAD_PER_CPU (Exit-Code 75 bei NODE_BUSY).
  */
 
 const { chromium } = require('playwright');

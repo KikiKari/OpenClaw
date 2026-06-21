@@ -1,4 +1,7 @@
 # Michele0303 tiktok-live-recorder Issue #236 - FLV Quality
+
+> Externe/historische Referenz. Aktueller OpenClaw-Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://github.com/Michele0303/tiktok-live-recorder/issues/236
 **Titel:** Recorded video quality after patch 6.2
 

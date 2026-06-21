@@ -67,14 +67,13 @@ Based on: `tools/SUB-AGENTS-WORKERS.md` (Master in workspace/tools/)
 sessions_spawn --agent <type> --task "<description>"
 
 # Browser Automation -> Worker Nodes
-openclaw nodes run <node-id> -- node <script>.js
+# OpenClaw exec tool: host="node", node="<node-id>", command="node <script>.js"
 
 # Documentation Updates -> Scheduled Worker
 # Cron: 0 */6 * * *
 
 # Parallel Processing -> Multiple Nodes
-openclaw nodes run node2 -- <task1> &
-openclaw nodes run node3 -- <task2> &
+# Issue separate exec tool calls with host="node" and the selected node id.
 ```
 
 ### Worker Distribution Logic

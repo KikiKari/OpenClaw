@@ -1,3 +1,5 @@
+// @deprecated Legacy API probe. Not a canonical Live-status signal.
+// See /home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md.
 const { WebcastPushConnection } = require('tiktok-live-connector');
 const username = process.argv[2]?.replace(/^@+/, '') || 'example_creator';
 const connection = new WebcastPushConnection(username);

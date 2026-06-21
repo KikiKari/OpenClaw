@@ -1,4 +1,7 @@
 # Playwright Page API - Relevante Methoden für TikTok
+
+> Technische Referenz, nicht operative Anleitung. Aktueller TikTok-
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://playwright.dev/docs/api/class-page
 **Abgerufen:** 2026-04-19
 

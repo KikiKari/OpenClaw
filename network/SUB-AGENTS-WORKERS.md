@@ -94,11 +94,10 @@ sessions_spawn --agent maintainer --task "Update WORKSPACE-INDEX.md daily" --cro
 ```
 
 ### Für parallele Browser-Tasks:
-```bash
-# TikTok-Checks auf mehreren Nodes
-openclaw nodes run node2 -- node tiktok-check.js user1
-openclaw nodes run node3 -- node tiktok-check.js user2
-```
+
+TikTok-Checks werden über das OpenClaw-`exec`-Tool mit `host=node` und
+explizitem `node=<id-or-name>` delegiert. Der alte CLI-Befehl
+`openclaw nodes run` existiert nicht mehr.
 
 ## Best Practices
 
@@ -120,7 +119,7 @@ sessions_list
 sessions_yield
 
 # Node-Task ausführen
-openclaw nodes run <node-id> -- <command>
+# OpenClaw exec tool: host="node", node="<node-id>", command="<command>"
 ```
 
 ## Warum Sub-Agents nutzen?

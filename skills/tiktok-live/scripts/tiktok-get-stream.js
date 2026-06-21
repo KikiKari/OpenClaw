@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
  * TikTok Stream URL Extractor
- * Nutzt Network Monitoring um FLV-Stream-URLs zu capturen
- * Basierend auf AGENTS.md Learnings
+ * Führt zuerst den profilgebundenen Status-Checker aus.
+ * Nur bei bestätigtem Live-Status werden FLV-Netzwerk-URLs erfasst.
+ * Offline wird keine Stream-URL ausgegeben.
  */
 
 const { chromium } = require('playwright');

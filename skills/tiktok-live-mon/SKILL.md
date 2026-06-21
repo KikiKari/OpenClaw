@@ -5,11 +5,12 @@ description: TikTok Live stream monitoring and recording automation. Uses Playwr
 
 # TikTok Live Monitor
 
-Automated TikTok Live stream monitoring with Playwright-based visual detection.
+Automated TikTok Live monitoring with profile-scoped Playwright detection.
 
 ## Features
 
-- **Visual Detection:** Uses Chromium/Playwright to detect live status (red border around profile)
+- **Live Detection:** Uses only profile-scoped Live icons, badges, avatar
+  borders, or the exact `/@<username>/live` link
 - **Stream URL Extraction:** Captures FLV stream URLs from network traffic
 - **Automatic Recording:** Saves streams to disk when live
 - **Notifications:** Alerts when stream goes live/offline
@@ -25,6 +26,10 @@ node "$HOME/.openclaw/workspace/skills/tiktok-live-mon/tiktok-get-stream.js" @us
 ```
 
 Both commands accept usernames with or without a leading `@`.
+
+The stream command performs the status check as a mandatory preflight. It does
+not output a URL unless the profile is confirmed live. A page-wide `LIVE` text
+selector is forbidden because it matches TikTok's permanent navigation.
 
 ## Execution Routing
 
@@ -51,3 +56,6 @@ remote shell commands must use the OpenClaw `exec` tool with `host=node`.
 
 - Node.js 16+
 - Playwright with Chromium
+
+See `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md` for the canonical
+architecture, selector rules and component boundaries.

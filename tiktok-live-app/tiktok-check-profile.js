@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 /**
+ * @deprecated Legacy implementation. Use the skills/tiktok-live directories.
  * TikTok Live Status Checker
  * Prüft visuell, ob ein TikTok-Account live ist
  * Korrigiert: DSGVO-Banner muss zuerst geschlossen werden

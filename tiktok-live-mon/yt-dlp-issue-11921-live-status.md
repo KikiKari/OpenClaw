@@ -1,4 +1,7 @@
 # yt-dlp Issue #11921 - TikTok Live Status Bug
+
+> Externe/historische Referenz. yt-dlp ist kein Live-Status-Primärsignal.
+> Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://github.com/yt-dlp/yt-dlp/issues/11921
 **Titel:** [TikTok:live] Livestreams are mistaken as "not currently live" after JSON metadata request
 

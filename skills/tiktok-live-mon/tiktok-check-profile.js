@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 /**
  * TikTok Live Status Checker v2.1
- * Verbesserte Version mit:
+ * Prüft ausschließlich profilgebundene Live-Indikatoren.
+ * Der allgemeine TikTok-Navigationspunkt "LIVE" ist kein Statussignal.
+ *
+ * Eigenschaften:
  * - Robusteres DSGVO-Banner-Handling (alle bekannten Varianten)
  * - Wartet auf vollständigen Seitenaufbau ("Erneute Veröffentlichungen" Tab)
- * - Priorisierte Live-Erkennung (Badge > Border > Link)
+ * - Profilgebundene Erkennung (Icon/Badge > Avatar-Rahmen > exakter Live-Link)
  * - Age-Restriction-Erkennung
  * - Bessere Fehlerbehandlung & konsistente JSON-Ausgabe
+ * - Optionaler Node-Lastschutz via TIKTOK_MAX_LOAD_PER_CPU (Exit 75)
  * - Debug-Modus (DEBUG=1)
  * - Realistische Verzögerungen gegen Bot-Erkennung
  */

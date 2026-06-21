@@ -1,5 +1,6 @@
 #!/bin/bash
 # TikTok Live Stream URL Extraktion via yt-dlp v1.1
+# Nur als Fallback nach erfolgreichem profilgebundenem Live-Preflight aufrufen.
 # Usage: ./extract-tiktok-yt-dlp.sh <username> [format] [--json]
 # Gibt nackte URL aus oder JSON bei --json Flag
 # Korrekturen: Besseres JSON-Handling und Fehlerquellen-Logging

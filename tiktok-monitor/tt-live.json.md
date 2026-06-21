@@ -1,5 +1,9 @@
 # `tt-live.json` — Configuration Reference
 
+> Teil des separaten browserfreien `tiktok-monitor`-Systems. Aktueller
+> komponentenübergreifender Stand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Source: `tt-live.json`. Format: JSON5 (JSON with comments and trailing
 commas allowed).
 

@@ -1,5 +1,9 @@
 # `tt_live.py` — Code Reference
 
+> Teil des separaten browserfreien `tiktok-monitor`-Systems. Aktueller
+> komponentenübergreifender Stand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 Source: `tt_live.py`. Single-file Python core for the TikTok LIVE monitor.
 
 This document covers every public surface — constants, functions, classes,

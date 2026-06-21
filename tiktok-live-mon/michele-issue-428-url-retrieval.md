@@ -1,4 +1,7 @@
 # Michele0303 tiktok-live-recorder Issue #428 - URL Retrieval Problem
+
+> Externe/historische Referenz. Aktueller OpenClaw-Betriebsstand:
+> `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://github.com/Michele0303/tiktok-live-recorder/issues/428
 **Titel:** Live not found: Unable to retrieve live streaming url
 

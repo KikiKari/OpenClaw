@@ -1,5 +1,8 @@
 # Daemon Mode
 
+> Diese Dokumentation gehört zum separaten browserfreien `tiktok-monitor`.
+> Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 How `tt_live.py daemon` actually works: lifecycle, polling cadence,
 transition detection, failure modes, and how to observe or stop a
 running daemon.

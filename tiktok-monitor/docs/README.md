@@ -1,5 +1,9 @@
 # tt-live
 
+This documentation describes the separate browser-free SIGI/Webcast monitor.
+For the current Playwright skills, profile-scoped detection and OpenClaw node
+routing, see `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+
 TikTok LIVE monitor for OpenClaw. Resolves a TikTok user's live status,
 m3u8 stream URL, or watches them over a timer window emitting structured
 transition events for a sub-agent to announce.

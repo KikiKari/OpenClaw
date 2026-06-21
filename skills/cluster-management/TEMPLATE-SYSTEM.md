@@ -108,7 +108,7 @@ openclaw nodes status
 sessions_spawn --agent <type> --task "<description>"
 
 # Auf Node ausführen
-openclaw nodes run <node-id> -- <command>
+# OpenClaw exec tool: host="node", node="<node-id>", command="<command>"
 ```
 
 ---

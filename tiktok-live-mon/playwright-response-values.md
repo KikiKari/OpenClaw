@@ -1,4 +1,7 @@
 # Playwright Response Values aus Network Requests
+
+> Technische Referenz, nicht operative Anleitung. Aktueller TikTok-
+> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 **Quelle:** https://playwrightsolutions.com/get-a-response-value-of-an-underlying-network-request-when-running-a-playwright-test/
 
 ## Konzept: Response-Werte abfangen und nutzen
