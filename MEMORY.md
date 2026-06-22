@@ -579,25 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-21)
+## Promoted From Short-Term Memory (2026-06-22)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:13:16 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:19:20 -->
-- Conversation Summary: tiktok-check-profile.js to check live status.; tiktok-get-stream.js to extract the stream URL. [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:19-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:3:5 -->
-- Session: 2026-06-16 00:54:19 GMT+2: **Session Key**: agent:main:main; **Session ID**: a8c0a2f0-e051-4868-b417-2c230ef2562a; **Source**: webchat [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:17:19 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEART HEART… [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:17-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:23:23 -->
-- Conversation Summary: The assistant responded with "HE ART..." incorrectly. We need to respond correctly according to heartbeat spec: if heartbeat poll and no alerts, reply exactly "HEARTBEAT_OK". Should not have any extra characters. Also previous messages have "HEARTBEAT_OK" many times, they are correct. The last one is garbled. Need to correct it. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:23-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:25:28 -->
-- Conversation Summary: Thus we need to output "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:25-28]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:3:5 -->
-- Session: 2026-06-15 18:55:55 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9db81d73-b965-4eb0-92e7-6149f655f0fc; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:13:13 -->
-- Conversation Summary: assistant: HEARTBEAT [score=0.836 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-0558.md:19:19 -->
-- Conversation Summary: assistant: HEARTBEAT_OK [score=0.836 recalls=0 avg=0.620 source=memory/2026-06-15-0558.md:19-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:9:12 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.848 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:11:14 -->
+- Conversation Summary: **Einmal‑Genehmigung jetzt erteilen** – sende die jeweiligen `/approve <ID> allow‑once`‑Befehle:; `/approve 62df31dc allow‑once` – `df -h`; `/approve 3f9f2045 allow‑once` – `free -h`; `/approve bdd66a67 allow‑once` – `uptime` [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:11-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:15:18 -->
+- Conversation Summary: `/approve fb4eeea7 allow‑once` – `openclaw cron list`; `/approve cacf6ce7 allow‑once` – `openclaw agents list`; `/approve acefdadd allow‑once` – `openclaw tasks list`; `/approve 8ae762e3 allow‑once` – `openclaw channels list` [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:15-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:19:19 -->
+- Conversation Summary: `/approve <session‑id> allow‑once` – `openclaw sessions` (falls noch nicht genehmigt) [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:21:21 -->
+- Conversation Summary: **Dauerhafte Erlaubnis** – ich kann die genannten Befehle in die *allow‑Liste* aufnehmen, sodass zukünftige Heartbeat‑Checks ohne weitere Approvals ausgeführt werden. Dafür muss ich die OpenClaw‑Konfiguration anpassen (eine einmalige Änderung). [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:21-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:3:5 -->
+- Session: 2026-06-16 20:40:43 GMT+2: **Session Key**: agent:main:main; **Session ID**: 2669ea19-c787-49da-a353-1823046f4e62; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:9:9 -->
+- Conversation Summary: assistant: Um denHeartbeat‑Check abschließen zu können, muss ich noch eine Genehmigung für die ausstehenden Befehle erhalten. Bitte entscheide dich für einen der beiden Wege: [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:29:29 -->
+- Conversation Summary: assistant: HEARTBEAT_OK [score=0.817 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:29-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:23:25 -->
+- Conversation Summary: Bitte gib mir Bescheid, ob du jetzt die einzelnen Approvals erteilen möchtest (Option 1) oder die Befehle dauerhaft erlauben willst (Option 2). Sobald ich deine Entscheidung habe, kann ich den Heartbeat‑Check abschließen und dir das Ergebnis liefern. user: [OpenClaw heartbeat poll] assistant: Die ausstehenden Heartbeat‑Prüfungen benötigen nach wie vor deine Genehmigung. Bitte bestätige die jeweiligen Approvals (oder weise sie ab), oder gib mir Bescheid, falls ich die Befehle dauerhaft in die *allow‑Liste* aufnehmen soll. [score=0.816 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:23-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:26:26 -->
+- Conversation Summary: We should monitor this process, wait for it to complete. We'll use process list, then process log. [score=0.809 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:26-26]
