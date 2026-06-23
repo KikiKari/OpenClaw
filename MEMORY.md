@@ -55,28 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-18)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:21:24 -->
-- Conversation Summary: We need to respond correctly: just "HEARTBEAT_OK". Possibly provide a clean response. No extra. So final: "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HE user: [OpenClaw heartbeat poll] [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:3:5 -->
-- Session: 2026-06-14 23:02:35 GMT+2: **Session Key**: agent:main:main; **Session ID**: 8747040d-7bc8-4915-ae3f-71152a84dcc4; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:3-5]
-
-## Promoted From Short-Term Memory (2026-06-19)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:17:19 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HE [score=0.888 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:17-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.842 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:25:25 -->
-- Conversation Summary: assistant: HEARTBEAT_OK [score=0.836 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:25-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16.md:3:5 -->
-- Heartbeat poll at 02:00 GMT+2 (Unix timestamp 1781568000).; No pending email, calendar, or weather checks.; Created daily memory file. [score=0.813 recalls=0 avg=0.620 source=memory/2026-06-16.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-14-2302.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-14-2302.md:9-12]
-
 ## Promoted From Short-Term Memory (2026-06-20)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:3:5 -->
@@ -106,3 +84,12 @@
 - Session: 2026-06-16 20:40:46 GMT+2: **Session Key**: agent:main:main; **Session ID**: 17d09954-4c50-4b41-8744-7e956a3ff192; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:3-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-23)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1716.md:12:13 -->
+- Conversation Summary: The previous attempt did not produce a user-visible answer. Continue from the current state and produce the visible answer now. Do not restart from scratch. assistant: PATH_OK tiktok-live-mon [score=0.857 recalls=0 avg=0.620 source=memory/2026-06-19-1716.md:12-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.857 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1716.md:9:10 -->
+- Conversation Summary: user: Verifikation: Lies ausschließlich /workspace/.openclaw/sandbox-skills/skills/tiktok-live-mon/SKILL.md mit dem read-Tool. Antworte danach nur mit PATH_OK und dem Skill-Namen. Verwende nicht workspace/.openclaw und nicht dir_list. user: Verifikation: Lies ausschließlich /workspace/.openclaw/sandbox-skills/skills/tiktok-live-mon/SKILL.md mit dem read-Tool. Antworte danach nur mit PATH_OK und dem Skill-Namen. Verwende nicht workspace/.openclaw und nicht dir_list. [score=0.842 recalls=0 avg=0.620 source=memory/2026-06-19-1716.md:9-10]
