@@ -579,25 +579,21 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-22)
+## Promoted From Short-Term Memory (2026-06-24)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:9:12 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.848 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:11:14 -->
-- Conversation Summary: **Einmal‑Genehmigung jetzt erteilen** – sende die jeweiligen `/approve <ID> allow‑once`‑Befehle:; `/approve 62df31dc allow‑once` – `df -h`; `/approve 3f9f2045 allow‑once` – `free -h`; `/approve bdd66a67 allow‑once` – `uptime` [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:11-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:15:18 -->
-- Conversation Summary: `/approve fb4eeea7 allow‑once` – `openclaw cron list`; `/approve cacf6ce7 allow‑once` – `openclaw agents list`; `/approve acefdadd allow‑once` – `openclaw tasks list`; `/approve 8ae762e3 allow‑once` – `openclaw channels list` [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:15-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:19:19 -->
-- Conversation Summary: `/approve <session‑id> allow‑once` – `openclaw sessions` (falls noch nicht genehmigt) [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:19-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:21:21 -->
-- Conversation Summary: **Dauerhafte Erlaubnis** – ich kann die genannten Befehle in die *allow‑Liste* aufnehmen, sodass zukünftige Heartbeat‑Checks ohne weitere Approvals ausgeführt werden. Dafür muss ich die OpenClaw‑Konfiguration anpassen (eine einmalige Änderung). [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:21-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:3:5 -->
-- Session: 2026-06-16 20:40:43 GMT+2: **Session Key**: agent:main:main; **Session ID**: 2669ea19-c787-49da-a353-1823046f4e62; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:9:9 -->
-- Conversation Summary: assistant: Um denHeartbeat‑Check abschließen zu können, muss ich noch eine Genehmigung für die ausstehenden Befehle erhalten. Bitte entscheide dich für einen der beiden Wege: [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:9-9]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-15-1855.md:29:29 -->
-- Conversation Summary: assistant: HEARTBEAT_OK [score=0.817 recalls=0 avg=0.620 source=memory/2026-06-15-1855.md:29-29]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-2040.md:23:25 -->
-- Conversation Summary: Bitte gib mir Bescheid, ob du jetzt die einzelnen Approvals erteilen möchtest (Option 1) oder die Befehle dauerhaft erlauben willst (Option 2). Sobald ich deine Entscheidung habe, kann ich den Heartbeat‑Check abschließen und dir das Ergebnis liefern. user: [OpenClaw heartbeat poll] assistant: Die ausstehenden Heartbeat‑Prüfungen benötigen nach wie vor deine Genehmigung. Bitte bestätige die jeweiligen Approvals (oder weise sie ab), oder gib mir Bescheid, falls ich die Befehle dauerhaft in die *allow‑Liste* aufnehmen soll. [score=0.816 recalls=0 avg=0.620 source=memory/2026-06-16-2040.md:23-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-16-0054.md:26:26 -->
-- Conversation Summary: We should monitor this process, wait for it to complete. We'll use process list, then process log. [score=0.809 recalls=0 avg=0.620 source=memory/2026-06-16-0054.md:26-26]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:13:13 -->
+- Conversation Summary: assistant: Der Aufruf des Node‑Skripts `tiktok-check-profile.js` für **@luiisamour** konnte nicht gestartet werden, weil dafür keine Ausführungs‑Genehmigung erteilt wurde. In OpenClaw dürfen solche Befehle nur nach einer expliziten Bestätigung ausgeführt werden; ohne diese Genehmigung wird das Kommando blockiert. [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:15:15 -->
+- Conversation Summary: Falls du den Live‑Status trotzdem prüfen möchtest, hast du zwei Optionen: [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:15-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:17:17 -->
+- Conversation Summary: **Genehmigung erteilen** – Öffne das OpenClaw‑Web‑UI (oder das zugehörige Chat‑Interface) und bestätige exakt den Befehl [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:19:19 -->
+- Conversation Summary: node /workspace/.openclaw/sandbox-skills/skills/tiktok-live-mon/scripts/tiktok-check-profile.js luiisamour [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:3:5 -->
+- Session: 2026-06-19 19:30:09 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9bdf9fdf-2905-4e84-9f33-295e4323ee0f; **Source**: webchat [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: ... user: [OpenClaw heartbeat poll] [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:3:5 -->
+- Session: 2026-06-20 13:54:33 GMT+2: **Session Key**: agent:main:main; **Session ID**: f73f9bad-c7a1-4654-a2cf-a3ae77c54632; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:3-5]
