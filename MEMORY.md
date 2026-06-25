@@ -579,21 +579,21 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-24)
+## Promoted From Short-Term Memory (2026-06-25)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:13:13 -->
-- Conversation Summary: assistant: Der Aufruf des Node‑Skripts `tiktok-check-profile.js` für **@luiisamour** konnte nicht gestartet werden, weil dafür keine Ausführungs‑Genehmigung erteilt wurde. In OpenClaw dürfen solche Befehle nur nach einer expliziten Bestätigung ausgeführt werden; ohne diese Genehmigung wird das Kommando blockiert. [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:15:15 -->
-- Conversation Summary: Falls du den Live‑Status trotzdem prüfen möchtest, hast du zwei Optionen: [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:15-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:17:17 -->
-- Conversation Summary: **Genehmigung erteilen** – Öffne das OpenClaw‑Web‑UI (oder das zugehörige Chat‑Interface) und bestätige exakt den Befehl [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:17-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:19:19 -->
-- Conversation Summary: node /workspace/.openclaw/sandbox-skills/skills/tiktok-live-mon/scripts/tiktok-check-profile.js luiisamour [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:19-19]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:3:5 -->
-- Session: 2026-06-19 19:30:09 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9bdf9fdf-2905-4e84-9f33-295e4323ee0f; **Source**: webchat [score=0.835 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: ... user: [OpenClaw heartbeat poll] [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:3:5 -->
-- Session: 2026-06-20 13:54:33 GMT+2: **Session Key**: agent:main:main; **Session ID**: f73f9bad-c7a1-4654-a2cf-a3ae77c54632; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:9:12 -->
+- Conversation Summary: assistant: HE user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.881 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:21:21 -->
+- Conversation Summary: Sobald die Genehmigung vorliegt, kann ich das Skript sofort ausführen und dir das Ergebnis (Live‑Status, Erkennungs‑Methode, evtl. Alters‑Beschränkungen) zurückliefern. [score=0.855 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:21-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:23:23 -->
+- Conversation Summary: **Alternative über Browser‑Automation** – Wenn du die Genehmigung gerade nicht erteilen kannst, kann ich das gleiche Ziel mit dem `browser‑automation`‑Skill erreichen: ein Headless‑Browser wird die TikTok‑Profilseite öffnen, nach dem bekannten Live‑Badge bzw. dem roten Rahmen suchen und dir das Ergebnis mitteilen. Diese Methode benötigt keine separate Exec‑Genehmigung. [score=0.831 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:23-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:19:19 -->
+- Conversation Summary: We see that the user is continually sending heartbeat polls. The assistant should reliably respond with "HEARTBEAT_OK". However there's a glitch: the last assistant response is truncated: "HE". That is not the full answer. The user didn't respond, they sent more heartbeat. The assistant should correct it and output "HEARTBEAT_OK". According to the HEARTBEAT guidelines, if there's no alert, respond exactly with the word HEARTBEAT_OK, nothing else, no punctuation. [score=0.816 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:19-19]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:21:24 -->
+- Conversation Summary: Thus the next answer should be "HEARTBEAT_OK". Let's produce that.HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.816 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:17:20 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:21:23 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:21-23]
