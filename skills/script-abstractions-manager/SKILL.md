@@ -52,13 +52,13 @@ Der Script Abstractions Manager erstellt automatisch Portierungen von Python-, J
 ### Automatischer Betrieb (Cron)
 ```bash
 # Läuft alle 6 Stunden via Cron
-0 */6 * * * /usr/bin/python3 .../abstractions_manager.py >> .../cron.log 2>&1
+0 */6 * * * /usr/bin/python3 .../ABSTRACTIONS_MANAGER.py >> .../cron.log 2>&1
 ```
 
 ### Manuelle Ausführung
 ```bash
 cd /home/openclaw/.openclaw/workspace
-python3 skills/script-abstractions-manager/scripts/abstractions_manager.py
+python3 skills/script-abstractions-manager/scripts/ABSTRACTIONS_MANAGER.py
 ```
 
 ### Mit Utils-Skills kombiniert
@@ -126,7 +126,7 @@ Automatische Commits nach jedem Batch:
 
 ## Konfiguration
 
-Editierbar in `scripts/abstractions_manager.py`:
+Editierbar in `scripts/ABSTRACTIONS_MANAGER.py`:
 ```python
 NODES = {
     "node1": {"always_available": True, "capacity": "medium", "priority": 2},
