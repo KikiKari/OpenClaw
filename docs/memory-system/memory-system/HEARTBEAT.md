@@ -2,6 +2,14 @@
 
 ## Periodische Checks (alle 180min)
 
+## Execution Routing
+- Run Linux host diagnostics (`vmstat`, `ps`, `df`, `free`, `uptime`, `journalctl`) with exec.
+- Do not run `openclaw ...` commands in `host: sandbox`; the sandbox PATH may not contain the OpenClaw CLI.
+- Prefer OpenClaw tools for platform state: Cron tool for crons, Agents tool for agents, Nodes tool with `action: status` for nodes.
+- If an OpenClaw CLI command is still required, run it on the Gateway, or call `/home/openclaw/.npm-global/bin/openclaw ...`.
+- Do not call `nodes` with `action: list`; valid node inventory comes from `nodes` `action: status` or `openclaw nodes status`.
+
+
 ### System
 - [x] System: vmstat
 
@@ -13,7 +21,7 @@
 - [x] Alle offenen Punkte an Agent ops-hub gemeldet?
 
 ## Bei Problemen
-- API und Gateway immer Agent ops-hub informieren: openclaw status && openclaw gateway status && openclaw nodes status && openclaw node list
+- API und Gateway immer Agent ops-hub informieren: openclaw status && openclaw gateway status && openclaw nodes status
 - API und Gateway Wartung: openclaw doctor --yes
 - memory Wartung: openclaw memory index --dry-run
 - session Wartung: openclaw sessions cleanup --dry-run

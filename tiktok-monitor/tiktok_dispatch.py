@@ -337,6 +337,25 @@ def result_payload(
     return result
 
 
+def resolve_url_for_live(
+    args: argparse.Namespace,
+    attempts: list[Attempt],
+) -> tuple[str | None, str | None]:
+    for method, command in commands("url", args.username, args.quality):
+        attempt: Attempt | None = None
+        for _ in range(args.retries + 1):
+            exit_code, stdout, stderr = run_command(command, args.timeout)
+            attempt = classify(method, exit_code, stdout, stderr, "url")
+            emit_log(attempt)
+            if attempt.status != "technical_error":
+                break
+        assert attempt is not None
+        attempts.append(attempt)
+        if attempt.status == "live" and attempt.url:
+            return attempt.url, method
+    return None, None
+
+
 def dispatch_local(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
     attempts: list[Attempt] = []
     tentative_python_live: Attempt | None = None
@@ -360,15 +379,30 @@ def dispatch_local(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
                 # login/content restrictions visible only on the web page.
                 tentative_python_live = attempt
                 continue
-            return result_payload("live", method, 0, attempts), 0
+            url, url_method = resolve_url_for_live(args, attempts)
+            return result_payload(
+                "live",
+                f"{method}+{url_method}" if url_method else method,
+                0,
+                attempts,
+                url,
+            ), 0
     statuses = {attempt.status for attempt in attempts}
     if "overloaded" in statuses:
         return result_payload("overloaded", "all_available_methods", 75, attempts), 75
     if tentative_python_live is not None:
+        url, url_method = resolve_url_for_live(args, attempts)
         return result_payload(
-            "live", tentative_python_live.method, 0, attempts
+            "live",
+            (
+                f"{tentative_python_live.method}+{url_method}"
+                if url_method else tentative_python_live.method
+            ),
+            0,
+            attempts,
+            url,
         ), 0
-    if "offline" in statuses:
+    if statuses == {"offline"}:
         return result_payload("offline", "all_available_methods", 1, attempts), 1
     status = "dependency_missing" if statuses == {"dependency_missing"} else "technical_error"
     return result_payload(status, "all_available_methods", 2, attempts), 2

@@ -21,9 +21,8 @@ All paths are below `$HOME/.openclaw/workspace/`.
 ## Dispatcher examples
 
 ```bash
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check @example_creator
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator --json
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py check @example_creator --json
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url example_creator
 ```
 
 `@example_creator` and `example_creator` identify the same account. No account
@@ -100,7 +99,7 @@ runs:
 
 ```bash
 TIKTOK_EXECUTION_CONTEXT=node TIKTOK_NODE_ID=<node-id> \
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" \
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py \
 url example_creator --execution local --json
 ```
 
@@ -133,8 +132,7 @@ non-JSON stdout and exit `75`.
 ## VLC
 
 ```bash
-url="$(python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator)"
-vlc "$url"
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url example_creator
 ```
 
 Signed URLs may expire or be revoked at any time. Resolve again instead of

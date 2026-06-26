@@ -2,6 +2,14 @@
 
 ## Periodische Checks (alle 45min)
 
+## Execution Routing
+- Run Linux host diagnostics (`vmstat`, `ps`, `df`, `free`, `uptime`, `journalctl`) with exec.
+- Do not run `openclaw ...` commands in `host: sandbox`; the sandbox PATH may not contain the OpenClaw CLI.
+- Prefer OpenClaw tools for platform state: Cron tool for crons, Agents tool for agents, Nodes tool with `action: status` for nodes.
+- If an OpenClaw CLI command is still required, run it on the Gateway, or call `/home/openclaw/.npm-global/bin/openclaw ...`.
+- Do not call `nodes` with `action: list`; valid node inventory comes from `nodes` `action: status` or `openclaw nodes status`.
+
+
 ### System
 - [x] System: vmstat
 - [x] Prozesse: ps aux | head -n 10
@@ -9,12 +17,12 @@
 - [ ] Memory: free -h
 - [ ] Load: uptime
 - [x] Logs: journalctl -n 200 -q
-- [ ] Crons: openclaw cron list
-- [ ] Agents: openclaw agents list
-- [ ] Tasks: openclaw tasks list
-- [ ] Channels: openclaw channels list
-- [ ] Sessions: openclaw sessions
-- [x] Nodes: openclaw nodes status && openclaw node list
+- [x] Crons: Cron tool action=list
+- [x] Agents: Agents tool
+- [x] Tasks: Gateway exec `/home/openclaw/.npm-global/bin/openclaw tasks list` if needed
+- [x] Channels: Gateway exec `/home/openclaw/.npm-global/bin/openclaw channels list` if needed
+- [x] Sessions: sessions_list tool or Gateway exec `/home/openclaw/.npm-global/bin/openclaw sessions` if needed
+- [x] Nodes: Nodes tool action=status only; do not call nodes action=list or `openclaw node list`
 
 
 ### Cron-Jobs
@@ -27,7 +35,7 @@
 - [x] Alle nicht erfolgreiche Aktionen zurückgestellt und an Agent ops-hub gemeldet?
 
 ## Bei Problemen
-- API und Gateway immer Agent ops-hub informieren: openclaw doctor --yes && openclaw status && openclaw gateway status && openclaw nodes status && openclaw node list
+- API und Gateway immer Agent ops-hub informieren: openclaw doctor --yes && openclaw status && openclaw gateway status && openclaw nodes status
 - API und Gateway Wartung: openclaw doctor --fix
 - memory Wartung: openclaw memory index --dry-run
 - session Wartung: openclaw sessions cleanup --dry-run

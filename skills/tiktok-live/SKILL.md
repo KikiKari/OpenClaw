@@ -15,13 +15,37 @@ Do not use the stale path `$HOME/.openclaw/skills/tiktok-live/`.
 
 ## Canonical entry point
 
-Use the dispatcher unless a single extractor must be diagnosed:
+Use the dispatcher. For normal slash-command requests with only a handle, run
+`url ... --json` directly so the reply can include the VLC/MPV URL when the
+account is live:
 
 ```bash
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url @example_creator
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator --json
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
 ```
+
+Use `check ... --json` only for diagnostics when no playback URL is needed.
+
+For `/tiktok_live @name`, the complete normal operation is this single exec
+command:
+
+```bash
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+```
+
+Do not use Process/session tools for one-shot TikTok checks. Do not start a
+named long-running process. The dispatcher owns browser startup, fallback
+timeouts, process cleanup, and final JSON output.
+
+Use the exec tool directly with the exact absolute dispatcher path above. Do
+not render dispatcher commands as chat text. Do not use `$HOME`, shell
+substitutions, or shell assignments.
+Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
+Use the documented `/home/openclaw/.openclaw/workspace/...` path for gateway
+exec.
+
+Do not answer a handle-only `/tiktok_live` request from `check` output alone.
+If the account is `live`, resolve a VLC/MPV URL before replying. Reply
+concisely: status plus VLC/MPV URL, or LIVE plus compact failure reason.
 
 Whitespace and one leading `@` are removed. Valid TikTok handles contain only
 letters, digits, `.`, and `_`, with a maximum length of 24 characters.
@@ -104,16 +128,16 @@ node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.
 node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" example_creator
 ```
 
-The basic checker is intentionally profile-only. Use the enhanced skill or the
-dispatcher when `restricted` must be distinguished from `offline`.
+The basic checker is intentionally profile-only. Use the dispatcher for normal
+command responses. Run these standalone scripts only for manual method-level
+diagnosis after the dispatcher path failed.
 
 ## Playback
 
 Resolve a fresh URL immediately before playback:
 
 ```bash
-url="$(python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url example_creator)"
-vlc "$url"
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url example_creator
 ```
 
 Stream URLs are signed and revocable. Do not document or log live signed URLs;

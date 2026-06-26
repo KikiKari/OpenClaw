@@ -10,19 +10,43 @@ It does not record streams and does not send notifications.
 
 ## Preferred usage
 
-Run the shared dispatcher:
+Run the shared dispatcher. For normal slash-command requests with only a
+handle, run `url ... --json` directly so the reply can include the VLC/MPV URL
+when the account is live:
 
 ```bash
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" check example_creator
-python3 "$HOME/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py" url @example_creator
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
 ```
 
-Use the scripts directly only for method-level diagnosis:
+Use `check ... --json` only for diagnostics when no playback URL is needed.
+
+For `/tiktok_live_mon @name`, the complete normal operation is this single
+exec command:
 
 ```bash
-node "$HOME/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-check-profile.js" example_creator
-node "$HOME/.openclaw/workspace/skills/tiktok-live-mon/scripts/tiktok-get-stream.js" example_creator
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
 ```
+
+Do not use Process/session tools for one-shot TikTok checks. Do not start a
+named long-running process. The dispatcher owns browser startup, fallback
+timeouts, process cleanup, and final JSON output.
+
+Use the exec tool directly with the exact absolute dispatcher path above. Do
+not render dispatcher commands as chat text. Do not use `$HOME`, shell
+substitutions, or shell assignments.
+Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
+Use the documented `/home/openclaw/.openclaw/workspace/...` path for gateway
+exec.
+
+For command responses, always send a concise user-facing reply. If an account
+is `live`, resolve a VLC/MPV URL before replying. Do not stop at live status
+alone. If URL extraction fails after all methods, say explicitly that the
+account is LIVE but no VLC URL could be resolved, and include only the compact
+failure reason. Do not paste full tool logs or repeated attempt output.
+
+Treat files under `skills/tiktok-live-mon/scripts/` as private implementation
+details during normal slash-command handling. Do not read, inspect, or execute
+those scripts unless the user explicitly asks for extractor debugging.
 
 ## Classification
 
