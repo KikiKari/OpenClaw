@@ -25,12 +25,20 @@
 - [x] Alle offenen Punkte in den WebChat geschrieben?
 - [x] Alle nicht erfolgreiche Aktionen zurückgestellt und an Agent ops-hub gemeldet?
 
+## Execution Routing
+
+- Run Linux host diagnostics (`vmstat`, `ps`, `df`, `free`, `uptime`, `journalctl`) with exec.
+- Do not run `openclaw ...` commands in `host: sandbox`; the sandbox PATH may not contain the OpenClaw CLI.
+- Prefer OpenClaw tools for platform state: Cron tool for crons, Agents tool for agents, Nodes tool with `action: status` for nodes.
+- If an OpenClaw CLI command is still required, run it on the Gateway, or call `/home/openclaw/.npm-global/bin/openclaw ...`.
+- Do not call `nodes` with `action: list`; valid node inventory comes from `nodes` `action: status` or `openclaw nodes status`.
+
 ## Bei Problemen
-- API und Gateway immer Agent ops-hub informieren: openclaw doctor --yes && openclaw status && openclaw gateway status && openclaw nodes status && openclaw node list
-- API und Gateway Wartung: openclaw doctor --force
-- memory Wartung: openclaw memory index --force
-- session Wartung: openclaw sessions cleanup --enforce
-- agent Wartung: openclaw sessions cleanup --all-agents
+- API und Gateway immer Agent ops-hub informieren: Gateway exec `/home/openclaw/.npm-global/bin/openclaw doctor --yes`, `/home/openclaw/.npm-global/bin/openclaw status`, `/home/openclaw/.npm-global/bin/openclaw gateway status`, `/home/openclaw/.npm-global/bin/openclaw nodes status`.
+- API und Gateway Wartung: Gateway exec `/home/openclaw/.npm-global/bin/openclaw doctor --force`.
+- memory Wartung: Gateway exec `/home/openclaw/.npm-global/bin/openclaw memory index --force`.
+- session Wartung: Gateway exec `/home/openclaw/.npm-global/bin/openclaw sessions cleanup --enforce`.
+- agent Wartung: Gateway exec `/home/openclaw/.npm-global/bin/openclaw sessions cleanup --all-agents`.
 
 ## Abschluss & Stummschaltung
 - Falls KEINE der oben genannten Bedingungen zutrifft:

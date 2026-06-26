@@ -1,11 +1,56 @@
 ---
 name: tiktok-live
-description: Extract TikTok live stream URLs and check live status using Playwright and visual detection. Use when: (1) Checking if a TikTok user is currently live streaming, (2) Extracting VLC/MPV-compatible stream URLs from TikTok Live, (3) Monitoring TikTok accounts for live streams, (4) Converting TikTok live streams to FLV URLs for playback or download. NOT for: recorded videos, TikTok API queries, or non-live content.
+description: Check TikTok live status or extract TikTok Live stream URLs by running the local Playwright scripts. Never use Tavily, Perplexity, web_search, browser search, or general web search for this skill. If the user supplies only a TikTok handle, username, or profile URL, run the live-status check immediately without asking a clarifying question.
+command-dispatch: tool
+command-tool: tiktok_live_direct
 ---
 
 # TikTok Live Stream Extraction
 
 Extract live stream URLs from TikTok using profile-scoped Playwright detection.
+
+## Mandatory Tool Routing
+
+This is not a web-search skill. Do not use Tavily, Perplexity, `web_search`,
+browser search, or general internet search to check TikTok live status.
+
+If the user supplies only a TikTok handle, username, or profile URL, the
+default intent is: check whether that profile is currently live. Do not ask a
+clarifying question for this case; run the status command immediately.
+
+Replace `@username` in the command examples with the supplied handle.
+
+After reading this skill, execute the Gateway script directly:
+
+```bash
+/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js @username
+```
+
+For stream extraction, execute:
+
+```bash
+/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js @username
+```
+
+For command responses, always send a concise user-facing reply. If an account
+is live, resolve a VLC/MPV URL before replying. Do not stop at live status
+alone. If URL extraction fails after all methods, say explicitly that the
+account is LIVE but no VLC/MPV URL could be resolved, and include only the
+compact failure reason. Do not paste full tool logs or repeated attempt output.
+Use the exact absolute script paths above. Do not use `$HOME`, shell
+substitutions, shell assignments, or approval-command text in normal replies.
+Try the exec call first. If the exec tool itself returns an approval-pending
+response, relay only that exact approval request.
+
+Do not run `tiktok-live`, `tiktok-live-mon`, or any guessed skill name as a
+shell command; these are skill names, not executables.
+
+Do not spawn a subagent, background task, monitor session, or long-running child
+run for a one-off live-status or stream-URL request. Execute the script command
+in the current agent turn and report the JSON or URL result directly.
+
+Never substitute these commands with a search query. If the script cannot run in
+the current sandbox, retry on the Gateway or an eligible node as described below.
 
 ## Overview
 
@@ -35,7 +80,7 @@ sudo ufw allow out 443/tcp
 ### Check Live Status
 
 ```bash
-node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js" <username>
+/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js <username>
 ```
 
 The username may be supplied with or without a leading `@`.
@@ -45,7 +90,7 @@ The username may be supplied with or without a leading `@`.
 ### Extract Stream URL
 
 ```bash
-node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" <username>
+/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js <username>
 ```
 
 The username may be supplied with or without a leading `@`.
@@ -89,11 +134,8 @@ live result does it navigate to `/live` and capture FLV/HLS traffic.
 Das Skript gibt nur die nackte URL aus. Zum Abspielen:
 
 ```bash
-# VLC
-vlc "$(node "$HOME/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js" username)"
-
-# MPV (mit Cache)
-mpv --cache=yes --cache-secs=30 "URL"
+# URL fuer VLC/MPV ermitteln
+/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js username
 
 # FFmpeg (Download)
 ffmpeg -i "URL" -c copy output.mp4
@@ -117,7 +159,7 @@ ffmpeg -i "URL" -c copy -f flv rtmp://...
    (`NODE_BUSY`), the script or Playwright is missing, the command times out, the
    node disconnects, or execution is denied.
 5. The skill must be synchronized to the same
-   `$HOME/.openclaw/workspace/skills/tiktok-live/` path on every worker node.
+   `/home/openclaw/.openclaw/workspace/skills/tiktok-live/` path on every worker node.
 
 The skill may be presented to the agent from a generated
 `/workspace/.openclaw/sandbox-skills/...` path. That path is only a sandbox skill

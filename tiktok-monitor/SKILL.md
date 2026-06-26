@@ -74,11 +74,26 @@ workspace/
 
 ## Entry points
 
-All entry points are invoked through `tt-live.sh` (the bash wrapper)
+All entry points are invoked through
+`/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh` (the bash wrapper)
 which dispatches to `tt_live.py`. The wrapper handles backgrounding for
 the daemon case.
 
-### `tt-live.sh check <username>`
+Use exact absolute paths. Do not use `$HOME`, shell substitutions, shell
+assignments, or approval-command text in normal replies. Try the exec call
+first. If the exec tool itself returns an approval-pending response, relay only
+that exact approval request.
+
+For VLC-link requests, run the `url` command directly and answer with the
+resolved URL or a compact failure reason. If a check result is live, resolve a
+URL before replying.
+
+```bash
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh check example_creator
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh url @example_creator
+```
+
+### `/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh check <username>`
 
 One-shot status check. Updates identity + state stores. Prints a JSON
 record with `sec_uid`, `unique_id`, `nickname`, `user_id`, `live`,
@@ -86,7 +101,7 @@ record with `sec_uid`, `unique_id`, `nickname`, `user_id`, `live`,
 
 Exit codes: `0` = live, `1` = offline, `2` = error.
 
-### `tt-live.sh url <username> [--verbose|-v]`
+### `/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh url <username> [--verbose|-v]`
 
 Resolve the current m3u8 stream URL. Cache-first (3-day retention);
 falls back to direct webcast API → yt-dlp → streamlink. Prints the URL
@@ -97,7 +112,7 @@ failed.
 
 With `-v`, prints `# source: cache|api|yt-dlp|streamlink` to stderr.
 
-### `tt-live.sh daemon <username> [--hours N] [--poll-min M]`
+### `/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh daemon <username> [--hours N] [--poll-min M]`
 
 Spawn a background daemon. Defaults: `--hours 12`, `--poll-min 5`. The
 `--poll-min` value has a hard floor of 5; lower values are silently
@@ -137,21 +152,19 @@ workspace side-effects are not wanted.
 When the requester asks "watch @&lt;user&gt; for N hours and tell me when
 they go live / offline":
 
-**Step 1.** Resolve identity. The JSON output contains `sec_uid`, which
-is needed for the events file path.
+**Step 1.** Resolve identity. The JSON output contains `sec_uid`, which is
+needed for the events file path. Run the command directly; do not wrap it in a
+shell assignment.
 
 ```bash
-JSON="$(tt-live.sh check <user>)"
-SEC_UID="$(echo "$JSON" | python3 -c 'import json,sys; print(json.load(sys.stdin)["sec_uid"])')"
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh check <user>
 ```
 
-**Step 2.** Spawn the daemon. Capture the workspace + events_dir from
-the printed key=value lines.
+**Step 2.** Spawn the daemon. Capture the `events_dir` and `sec_uid` values
+from the command outputs in the agent state, not with shell substitutions.
 
 ```bash
-DAEMON_OUT="$(tt-live.sh daemon <user> --hours N --poll-min 5)"
-EVENTS_DIR="$(echo "$DAEMON_OUT" | awk -F= '/^events_dir=/{print $2}')"
-EVENTS_FILE="$EVENTS_DIR/$SEC_UID.events"
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tt-live.sh daemon <user> --hours N --poll-min 5
 ```
 
 **Step 3.** Tail the events file. For each new line, parse `evt=` and

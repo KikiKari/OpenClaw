@@ -55,15 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-23)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1716.md:12:13 -->
-- Conversation Summary: The previous attempt did not produce a user-visible answer. Continue from the current state and produce the visible answer now. Do not restart from scratch. assistant: PATH_OK tiktok-live-mon [score=0.857 recalls=0 avg=0.620 source=memory/2026-06-19-1716.md:12-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.857 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1716.md:9:10 -->
-- Conversation Summary: user: Verifikation: Lies ausschließlich /workspace/.openclaw/sandbox-skills/skills/tiktok-live-mon/SKILL.md mit dem read-Tool. Antworte danach nur mit PATH_OK und dem Skill-Namen. Verwende nicht workspace/.openclaw und nicht dir_list. user: Verifikation: Lies ausschließlich /workspace/.openclaw/sandbox-skills/skills/tiktok-live-mon/SKILL.md mit dem read-Tool. Antworte danach nur mit PATH_OK und dem Skill-Namen. Verwende nicht workspace/.openclaw und nicht dir_list. [score=0.842 recalls=0 avg=0.620 source=memory/2026-06-19-1716.md:9-10]
-
 ## Promoted From Short-Term Memory (2026-06-24)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-19-1716.md:3:5 -->
@@ -91,3 +82,18 @@
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:21-23]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-26)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:3:5 -->
+- Session: 2026-06-21 13:37:43 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9e5db03b-734c-4241-9383-c8488d868f19; **Source**: webchat [score=0.853 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:22:25 -->
+- Conversation Summary: "schema": "openclaw.commandReply.v1", "command": { "toolName": "default_api.cron", "action": "wake", [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:22-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:26:28 -->
+- Conversation Summary: "arguments": { "text": "HEARTBEAT_OK", "mode": "next_heartbeat" [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:26-28]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:17:20 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:21:23 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:21-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:9-12]
