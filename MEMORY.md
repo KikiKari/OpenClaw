@@ -579,15 +579,13 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-26)
+## Promoted From Short-Term Memory (2026-06-27)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:3:5 -->
-- Session: 2026-06-21 13:37:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: c667efe9-5fd8-413b-b943-72a110c33041; **Source**: webchat [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:17:17 -->
-- Conversation Summary: assistant: HE [score=0.817 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:17-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:15:18 -->
-- Conversation Summary: The assistant has a broken response again. It responded "HE" instead of "HEARTBEAT_OK". Must correct that. So respond "HEARTBEAT_OK".HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.813 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:15-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:19:22 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.813 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:19-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:3:5 -->
+- Session: 2026-06-22 07:37:23 GMT+2: **Session Key**: agent:main:main; **Session ID**: c5cd8006-765c-4938-ac2a-48d3c5bdac78; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:13:13 -->
+- Conversation Summary: assistant: HE [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:23:23 -->
+- Conversation Summary: assistant: [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:23-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:9-12]
