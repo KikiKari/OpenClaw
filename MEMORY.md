@@ -55,21 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-24)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1716.md:3:5 -->
-- Session: 2026-06-19 17:16:47 GMT+2: **Session Key**: agent:main:codex-verification-20260618; **Session ID**: 427ec3ce-a53a-4452-97aa-d7a873d0b8a7; **Source**: webchat [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-19-1716.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:3:5 -->
-- Session: 2026-06-19 19:30:03 GMT+2: **Session Key**: agent:main:main; **Session ID**: ea3312f2-6648-4e31-9b96-a9bb84a6227f; **Source**: webchat [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.844 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:17:20 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:21:23 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-19-1930.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-19-1930.md:9-12]
-
 ## Promoted From Short-Term Memory (2026-06-25)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:3:5 -->
@@ -97,3 +82,14 @@
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:21-23]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-27)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OKDialog It looks like the conversation has devolved into a series of `HEARTBEAT_OK` messages, indicating a potential loop or a lack of active engagement. To break out of this pattern, I will provide a response that acknowledges the continuous heartbeats while also prompting for further interaction or a change in direction. This will help to re-engage the conversation and ensure that the assistant is still actively monitoring and ready to assist. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:18:18 -->
+- Conversation Summary: Given the pattern of repeated `HEARTBEAT_OK` responses and the lack of new user input beyond heartbeat polls, the most appropriate action is to continue responding with `HEARTBEAT_OK` as per the established protocol for such messages when no other tasks are pending. This maintains the current state of the assistant without introducing unnecessary conversational elements that might disrupt the expected behavior of continuous monitoring. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:18-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:3:5 -->
+- Session: 2026-06-22 07:37:30 GMT+2: **Session Key**: agent:main:main; **Session ID**: e1faf2fe-927c-41de-8820-78278b5f8414; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:9-12]
