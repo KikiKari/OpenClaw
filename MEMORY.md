@@ -55,19 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-25)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:3:5 -->
-- Session: 2026-06-20 13:54:28 GMT+2: **Session Key**: agent:main:main; **Session ID**: 586b7c4d-c1f7-49f3-bd23-5e24784e95fa; **Source**: webchat [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.824 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:17:20 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:21:23 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-20-1354.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-20-1354.md:9-12]
-
 ## Promoted From Short-Term Memory (2026-06-26)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:3:5 -->
@@ -93,3 +80,12 @@
 - Session: 2026-06-22 07:37:30 GMT+2: **Session Key**: agent:main:main; **Session ID**: e1faf2fe-927c-41de-8820-78278b5f8414; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:3-5]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:9-12]
+
+## Promoted From Short-Term Memory (2026-06-29)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:13:16 -->
+- Conversation Summary: 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) 🔄 Fallbacks: openai/gpt-5.4-mini, openrouter/google/gemini-2.0-flash-001, openai/code-davinci-002, openai/code-cushman-001, openrouter/deepseek/deepseek-coder, openrouter/meta-llama/llama-3.3-70b, openrouter/meta-llama/llama-4-maverick, openrouter/qwen/qwen-vl-max, openrouter/qwen/qwen3-235b-a22b-2507, openrouter/moonshotai/kimi-k2.6 🧮 Tokens: 0 in / 0 out 📚 Context: 17/128k (0%) · 🧹 Compactions: 0 [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:17:20 -->
+- Conversation Summary: 🧵 Session: agent:main:main • duration 1m 8s • updated just now ⚙️ Execution: docker/all · Runtime: OpenClaw Default · Think: off · Fast: off · Reasoning: on 🔌 Plugins: OK 🔊 Voice: always · provider=openai · limit=1500 · summary=on [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:21:24 -->
+- Conversation Summary: 🪢 Queue: steer (depth 0) assistant: @laafatooo is currently LIVE on TikTok. assistant: @laafatooo is currently LIVE on TikTok. VLC/MPV: https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071849351086973_ld.flv?_session_id=010-20260625215654D9367DB33CA9F3CD7926.1782424675236&_webnoredir=1&abr_pts=-2800&expire=1783634214&sign=c71065ec71f91c5f39be9ee1e728ad67 [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:21-24]
