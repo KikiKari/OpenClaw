@@ -579,13 +579,11 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-27)
+## Promoted From Short-Term Memory (2026-06-29)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:3:5 -->
-- Session: 2026-06-22 07:37:23 GMT+2: **Session Key**: agent:main:main; **Session ID**: c5cd8006-765c-4938-ac2a-48d3c5bdac78; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:13:13 -->
-- Conversation Summary: assistant: HE [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:23:23 -->
-- Conversation Summary: assistant: [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:23-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:18:21 -->
+- Conversation Summary: "username": "luiisamour", "status": "offline", "isLive": false, "detectionMethod": "none", [score=0.810 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:22:25 -->
+- Conversation Summary: "isAgeRestricted": false, "ageRestrictionReason": null, "indicators": { "liveIcon": false, [score=0.810 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:22-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:26:29 -->
+- Conversation Summary: "liveBadge": false, "liveBorder": false, "liveLink": false, "liveIndicator": false [score=0.810 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:26-29]
