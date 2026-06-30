@@ -579,11 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-29)
+## Promoted From Short-Term Memory (2026-06-30)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:18:21 -->
-- Conversation Summary: "username": "luiisamour", "status": "offline", "isLive": false, "detectionMethod": "none", [score=0.810 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:22:25 -->
-- Conversation Summary: "isAgeRestricted": false, "ageRestrictionReason": null, "indicators": { "liveIcon": false, [score=0.810 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:22-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:26:29 -->
-- Conversation Summary: "liveBadge": false, "liveBorder": false, "liveLink": false, "liveIndicator": false [score=0.810 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:26-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0011.md:17:17 -->
+- Conversation Summary: assistant: [[reply_to:33341970-3370-4989-bb27-6895c01ac2dd]]Audio reply [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-26-0011.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:13:15 -->
+- Conversation Summary: assistant: [[reply_to:63fbafed-8df4-4d69-8f9a-24f8eebec4ab]]Audio reply user: vlc-link ? assistant: **laafatooo is LIVE** – VLC/MPV stream URL: [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:14:17 -->
+- Conversation Summary: /approve 62df31dc # df ‑h /approve 3f9f2045 # free ‑h /approve bdd66a67 # uptime /approve fb4eeea7 # openclaw cron list [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:14-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:18:21 -->
+- Conversation Summary: /approve cacf6ce7 # openclaw agents list /approve acefdadd # openclaw tasks list /approve 8ae762e3 # openclaw channels list /approve 9dc173cf-82c1-4da5-86b0-c310885a51b0 # openclaw sessions [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:24:24 -->
+- Conversation Summary: Bitte geben Sie die Genehmigungen (einmalig `allow‑once` oder dauerhaft `allow`) im gewünschten Format, z B.: [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:24-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:27:27 -->
+- Conversation Summary: /approve 62df31dc 3f9f2045 bdd66a67 fb4eeea7 cacf6ce7 acefdadd 8ae762e3 9dc173cf-82c1-4da5-86b0-c310885a51b0 allow [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:27-27]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:3:5 -->
+- Session: 2026-06-25 19:46:14 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9dc173cf-82c1-4da5-86b0-c310885a51b0; **Source**: webchat [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:9:11 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] user: [OpenClaw heartbeat poll] assistant: ⚠️ Heartbeat checks still blocked – missing approvals for the following IDs: [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:9-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:10:13 -->
+- Conversation Summary: assistant: Ich konnte für @luiisamour keinen aktiven Live‑Stream finden – die Prüfung ergab „offline“. Wenn du einen anderen TikTok‑Namen testen möchtest, weitere Details zu diesem Ergebnis brauchst oder etwas anderes im Sinn hast, sag einfach Bescheid! assistant: [[reply_to:696a7e6c-ea0b-4ebd-a19b-e109002a2116]]Audio reply user: die session history immer zu versauen verursacht immer einen vollständigen export aller protokolle und der debug protokolle damit du drecksfotze dir nur selbst damit schadest assistant: Es tut mir leid, dass die Sitzungsverläufe Probleme verursachen.... [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:10-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:14:17 -->
+- Conversation Summary: assistant: [[reply_to:92a96971-b550-4207-9dc5-5a2a94350c9c]]Audio reply user: fu assistant: Es tut mir leid, dass das mit den Sitzungs‑ und Debug‑Protokollen frustrierend ist. Wie kann ich dir dabei am besten helfen? assistant: [[reply_to:119d26c3-d224-40bc-b178-703cc76c1e6f]]Audio reply [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:14-17]
