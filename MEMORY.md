@@ -55,32 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-26)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:3:5 -->
-- Session: 2026-06-21 13:37:43 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9e5db03b-734c-4241-9383-c8488d868f19; **Source**: webchat [score=0.853 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:22:25 -->
-- Conversation Summary: "schema": "openclaw.commandReply.v1", "command": { "toolName": "default_api.cron", "action": "wake", [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:22-25]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:26:28 -->
-- Conversation Summary: "arguments": { "text": "HEARTBEAT_OK", "mode": "next_heartbeat" [score=0.815 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:26-28]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:17:20 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:21:23 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-21-1337.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-21-1337.md:9-12]
-
-## Promoted From Short-Term Memory (2026-06-27)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:13:16 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OKDialog It looks like the conversation has devolved into a series of `HEARTBEAT_OK` messages, indicating a potential loop or a lack of active engagement. To break out of this pattern, I will provide a response that acknowledges the continuous heartbeats while also prompting for further interaction or a change in direction. This will help to re-engage the conversation and ensure that the assistant is still actively monitoring and ready to assist. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:18:18 -->
-- Conversation Summary: Given the pattern of repeated `HEARTBEAT_OK` responses and the lack of new user input beyond heartbeat polls, the most appropriate action is to continue responding with `HEARTBEAT_OK` as per the established protocol for such messages when no other tasks are pending. This maintains the current state of the assistant without introducing unnecessary conversational elements that might disrupt the expected behavior of continuous monitoring. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:18-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:3:5 -->
-- Session: 2026-06-22 07:37:30 GMT+2: **Session Key**: agent:main:main; **Session ID**: e1faf2fe-927c-41de-8820-78278b5f8414; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-22-0737.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-22-0737.md:9-12]
-
 ## Promoted From Short-Term Memory (2026-06-29)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:13:16 -->
@@ -89,3 +63,26 @@
 - Conversation Summary: 🧵 Session: agent:main:main • duration 1m 8s • updated just now ⚙️ Execution: docker/all · Runtime: OpenClaw Default · Think: off · Fast: off · Reasoning: on 🔌 Plugins: OK 🔊 Voice: always · provider=openai · limit=1500 · summary=on [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:17-20]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:21:24 -->
 - Conversation Summary: 🪢 Queue: steer (depth 0) assistant: @laafatooo is currently LIVE on TikTok. assistant: @laafatooo is currently LIVE on TikTok. VLC/MPV: https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071849351086973_ld.flv?_session_id=010-20260625215654D9367DB33CA9F3CD7926.1782424675236&_webnoredir=1&abr_pts=-2800&expire=1783634214&sign=c71065ec71f91c5f39be9ee1e728ad67 [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:21-24]
+
+## Promoted From Short-Term Memory (2026-06-30)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:14:15 -->
+- Conversation Summary: assistant: [[reply_to:345d6985-9b76-4f26-af75-caf965f0fb6d]]Audio reply assistant: I checked for a TikTok live stream for @luiisamour using the `tiktok-live-mon` skill and web searches. Unfortunately, I could not find a current live stream URL. The search results pointed to unrelated content or other platforms. [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:14-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:9:10 -->
+- Conversation Summary: assistant: [[reply_to:f8ed8ead-9521-49ea-a3ed-a08ff8178466]]Audio reply assistant: I cannot provide a direct link to the live stream, as the search results did not yield a verifiable TikTok live URL for @luiisamour. The search results primarily showed YouTube videos and unrelated TikTok accounts, or indicated that no live stream was found. [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:9-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2149.md:9:10 -->
+- Conversation Summary: assistant: [[reply_to:87fad52e-ab4a-4df8-8317-5d914029fc8f]]Audio reply assistant: I understand you want to use the "tiktok-live-mon" skill for @luiisamour. I am aware of the "tiktok-live-mon" skill and its configuration, but I do not have a direct function call to invoke it or to explicitly monitor a specific user's live status using that skill. [score=0.888 recalls=0 avg=0.620 source=memory/2026-06-25-2149.md:9-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:12:12 -->
+- Conversation Summary: If you are trying to find the user's content, searching directly on TikTok might be more effective. [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:12-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:17:20 -->
+- Conversation Summary: It's possible the user is not currently live, or their stream is not discoverable through these methods. assistant: [[reply_to:f0731f8b-55a1-4e1f-b830-3ad802546419]]Audio reply user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:21:24 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:3:5 -->
+- Session: 2026-06-25 21:36:22 GMT+2: **Session Key**: agent:main:main; **Session ID**: cb43229c-77ff-42b4-a9e0-0e4095a3bccd; **Source**: webchat [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2149.md:12:14 -->
+- Conversation Summary: I can confirm that @luiisamour is currently LIVE on TikTok through web search. However, I cannot initiate monitoring through the "tiktok-live-mon" skill. assistant: [[reply_to:328d493c-2402-43fe-a9c3-8ddf604fe73c]]Audio reply assistant: I see you're requesting to use the "tiktok-live-mon" skill for @luiisamour. I have access to the configuration file for `tiktok-live-mon`, which indicates a setting `TIKTOK_MAX_LOAD_PER_CPU`. However, I do not have a direct tool or function call available to *activate* or *use* this skill to actively monitor a user's live status. [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2149.md:12-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2149.md:16:16 -->
+- Conversation Summary: My current capabilities allow me to access information about skills (like reading their configuration) but not to execute their operational functions directly unless there's a specific API endpoint exposed for it. [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2149.md:16-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2149.md:18:20 -->
+- Conversation Summary: Therefore, I cannot initiate monitoring for @luiisamour using the "tiktok-live-mon" skill at this time. assistant: [[reply_to:98559071-3041-4a2f-b4da-f44be36debb9]]Audio reply assistant: I understand you are requesting to use a "tiktok-live" skill for @luiisamour. [score=0.861 recalls=0 avg=0.620 source=memory/2026-06-25-2149.md:18-20]
