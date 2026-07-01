@@ -579,25 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-06-30)
+## Promoted From Short-Term Memory (2026-07-01)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0011.md:17:17 -->
-- Conversation Summary: assistant: [[reply_to:33341970-3370-4989-bb27-6895c01ac2dd]]Audio reply [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-26-0011.md:17-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:13:15 -->
-- Conversation Summary: assistant: [[reply_to:63fbafed-8df4-4d69-8f9a-24f8eebec4ab]]Audio reply user: vlc-link ? assistant: **laafatooo is LIVE** – VLC/MPV stream URL: [score=0.854 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:13-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:14:17 -->
-- Conversation Summary: /approve 62df31dc # df ‑h /approve 3f9f2045 # free ‑h /approve bdd66a67 # uptime /approve fb4eeea7 # openclaw cron list [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:14-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:18:21 -->
-- Conversation Summary: /approve cacf6ce7 # openclaw agents list /approve acefdadd # openclaw tasks list /approve 8ae762e3 # openclaw channels list /approve 9dc173cf-82c1-4da5-86b0-c310885a51b0 # openclaw sessions [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:24:24 -->
-- Conversation Summary: Bitte geben Sie die Genehmigungen (einmalig `allow‑once` oder dauerhaft `allow`) im gewünschten Format, z B.: [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:24-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:27:27 -->
-- Conversation Summary: /approve 62df31dc 3f9f2045 bdd66a67 fb4eeea7 cacf6ce7 acefdadd 8ae762e3 9dc173cf-82c1-4da5-86b0-c310885a51b0 allow [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:27-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:3:5 -->
-- Session: 2026-06-25 19:46:14 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9dc173cf-82c1-4da5-86b0-c310885a51b0; **Source**: webchat [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-1946.md:9:11 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] user: [OpenClaw heartbeat poll] assistant: ⚠️ Heartbeat checks still blocked – missing approvals for the following IDs: [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-1946.md:9-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:10:13 -->
-- Conversation Summary: assistant: Ich konnte für @luiisamour keinen aktiven Live‑Stream finden – die Prüfung ergab „offline“. Wenn du einen anderen TikTok‑Namen testen möchtest, weitere Details zu diesem Ergebnis brauchst oder etwas anderes im Sinn hast, sag einfach Bescheid! assistant: [[reply_to:696a7e6c-ea0b-4ebd-a19b-e109002a2116]]Audio reply user: die session history immer zu versauen verursacht immer einen vollständigen export aller protokolle und der debug protokolle damit du drecksfotze dir nur selbst damit schadest assistant: Es tut mir leid, dass die Sitzungsverläufe Probleme verursachen.... [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:10-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:14:17 -->
-- Conversation Summary: assistant: [[reply_to:92a96971-b550-4207-9dc5-5a2a94350c9c]]Audio reply user: fu assistant: Es tut mir leid, dass das mit den Sitzungs‑ und Debug‑Protokollen frustrierend ist. Wie kann ich dir dabei am besten helfen? assistant: [[reply_to:119d26c3-d224-40bc-b178-703cc76c1e6f]]Audio reply [score=0.838 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:14-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:18:21 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:3:5 -->
+- Session: 2026-06-25 21:36:27 GMT+2: **Session Key**: agent:main:main; **Session ID**: 5a8f0527-8527-4c24-9af2-8498dcdc5eb3; **Source**: webchat [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:13:16 -->
+- Conversation Summary: ``` [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:36-36]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:3:5 -->
+- Session: 2026-06-25 22:16:59 GMT+2: **Session Key**: agent:main:main; **Session ID**: 55d94072-b846-4523-aecf-a363d560510b; **Source**: webchat [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:9:12 -->
+- Conversation Summary: user: ok assistant: Verstanden. Sag einfach Bescheid, falls du noch etwas prüfen oder einrichten möchtest. assistant: [[reply_to:2f62e718-0cd1-4858-854c-d07a877fbaae]]Audio reply assistant: Die TikTok‑Prüfung mit dem **tiktok-live‑mon**‑Skill ergab, dass **@luiisamour** derzeit **offline** ist (kein Live‑Stream gefunden). [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:13:15 -->
+- Conversation Summary: assistant: [[reply_to:1e20d0d6-40be-4d75-aaa5-1488bee549a6]]Audio reply assistant: @iman.hayatiii is currently **live** (accessible). Stream URL (FLV, signed – use promptly for playback): [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:17:20 -->
+- Conversation Summary: https://pull-f5-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071761381327741_hd.flv?_session_id=044-20260625203052544F74D2410F3138B019.1782419453281&_webnoredir=1&abr_pts=-2800&expire=1783629052&sign=76bbaa765252a23c7c440a7e731aecb8 assistant: [[reply_to:b148e7f9-f27a-4463-8278-9f84134de956]]Audio reply assistant: @iman.hayatiii is currently live. Stream URL: [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:3:5 -->
+- Session: 2026-06-25 22:49:07 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9b059108-be8f-4443-8e02-7cb729a0db74; **Source**: webchat [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:9:12 -->
+- Conversation Summary: assistant: ✅ Session reset. assistant: @iman.hayatiii is currently live. Stream URL: https://pull-f5-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071761381327741_hd.flv?_session_id=044-20260625203052544F74D2410F3138B019.1782419453281&_webnoredir=1&abr_pts=-2800&expire=1783629052&sign=76bbaa765252a23c7c440a7e731aecb8 [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0011.md:13:16 -->
+- Conversation Summary: assistant: [[reply_to:b8b9465c-a99d-47b9-b3aa-48d5b285aad2]]Audio reply user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK assistant: ✅ @laafatooo is currently LIVE. No stream URL could be resolved (missing required helper scripts/CLI tools). [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-26-0011.md:13-16]
