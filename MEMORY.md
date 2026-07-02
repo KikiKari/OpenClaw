@@ -55,35 +55,25 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-06-29)
+## Promoted From Short-Term Memory (2026-07-02)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:13:16 -->
-- Conversation Summary: 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) 🔄 Fallbacks: openai/gpt-5.4-mini, openrouter/google/gemini-2.0-flash-001, openai/code-davinci-002, openai/code-cushman-001, openrouter/deepseek/deepseek-coder, openrouter/meta-llama/llama-3.3-70b, openrouter/meta-llama/llama-4-maverick, openrouter/qwen/qwen-vl-max, openrouter/qwen/qwen3-235b-a22b-2507, openrouter/moonshotai/kimi-k2.6 🧮 Tokens: 0 in / 0 out 📚 Context: 17/128k (0%) · 🧹 Compactions: 0 [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:17:20 -->
-- Conversation Summary: 🧵 Session: agent:main:main • duration 1m 8s • updated just now ⚙️ Execution: docker/all · Runtime: OpenClaw Default · Think: off · Fast: off · Reasoning: on 🔌 Plugins: OK 🔊 Voice: always · provider=openai · limit=1500 · summary=on [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:21:24 -->
-- Conversation Summary: 🪢 Queue: steer (depth 0) assistant: @laafatooo is currently LIVE on TikTok. assistant: @laafatooo is currently LIVE on TikTok. VLC/MPV: https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071849351086973_ld.flv?_session_id=010-20260625215654D9367DB33CA9F3CD7926.1782424675236&_webnoredir=1&abr_pts=-2800&expire=1783634214&sign=c71065ec71f91c5f39be9ee1e728ad67 [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:21-24]
-
-
-## Promoted From Short-Term Memory (2026-07-01)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2217.md:13:13 -->
-- Conversation Summary: assistant: I cannot directly use the "tiktok-live" skill as it is not exposed as a callable tool in this environment. My previous searches for an active live stream for "@luiisamour" did not yield any results. [score=0.915 recalls=0 avg=0.620 source=memory/2026-06-25-2217.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2217.md:9:12 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: I assistant: [[reply_to:f9650aae-f21d-46a4-a926-e6e9ed5d2544]]Audio reply assistant: [[reply_to:25dc6e88-9d04-494d-99a7-cc61b2766d42]]Audio reply [score=0.915 recalls=0 avg=0.620 source=memory/2026-06-25-2217.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2238.md:9:12 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: I am sorry, but I encountered an issue while trying to use the `tiktok-live` skill. The command `tiktok-live` was not found in the environment, which means I cannot execute it to get information about @iman.hayatiii. This might be due to the skill not being installed or not being accessible in the current execution path. assistant: [[reply_to:76fe714c-78c5-479b-9fc8-17d3c67fed8b]]Audio reply assistant: I can help with that. I will use the `tiktok-live-mon` skill to monitor the TikTok live stream for @iman.hayatiii. [score=0.910 recalls=0 avg=0.620 source=memory/2026-06-25-2238.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2149.md:22:22 -->
-- Conversation Summary: Looking at the available tools, I do not have a direct function or skill named "tiktok-live" that I can execute to monitor live streams or retrieve stream URLs. I can confirm through web search that @luiisamour is currently LIVE on TikTok. [score=0.888 recalls=0 avg=0.620 source=memory/2026-06-25-2149.md:22-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2149.md:3:5 -->
-- Session: 2026-06-25 21:49:57 GMT+2: **Session Key**: agent:main:main; **Session ID**: 3a25a094-3b54-49b3-a4f6-68af5ffc0538; **Source**: webchat [score=0.888 recalls=0 avg=0.620 source=memory/2026-06-25-2149.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2217.md:15:18 -->
-- Conversation Summary: I can, however, try to search for general information about the user "@luiisamour" on TikTok if you'd like. assistant: [[reply_to:8b222d08-7cb1-4c5b-9d80-224c2b142a6d]]Audio reply user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.883 recalls=0 avg=0.620 source=memory/2026-06-25-2217.md:15-18]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2217.md:3:5 -->
-- Session: 2026-06-25 22:17:09 GMT+2: **Session Key**: agent:main:main; **Session ID**: cfd7cb2c-d13e-4e46-9407-e919c176b004; **Source**: webchat [score=0.883 recalls=0 avg=0.620 source=memory/2026-06-25-2217.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2238.md:13:16 -->
-- Conversation Summary: assistant: I have initiated monitoring for @iman.hayatiii's TikTok live stream using the `tiktok-live-mon` skill. I will notify you if there are any updates. assistant: [[reply_to:27cf31f3-06af-42b8-bc18-a8489e434e0a]]Audio reply assistant: I am unable to monitor the TikTok live stream for @iman.hayatiii at this time. It appears there is no direct tool available within my current capabilities to access or monitor TikTok live streams. user: [OpenClaw heartbeat poll] [score=0.878 recalls=0 avg=0.620 source=memory/2026-06-25-2238.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2238.md:3:5 -->
-- Session: 2026-06-25 22:38:55 GMT+2: **Session Key**: agent:main:main; **Session ID**: 8c99fea7-bec8-4dd3-966e-eb747dc2a9c7; **Source**: webchat [score=0.878 recalls=0 avg=0.620 source=memory/2026-06-25-2238.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2248.md:3:5 -->
-- Session: 2026-06-25 22:48:12 GMT+2: **Session Key**: agent:main:main; **Session ID**: 98d406a4-dea9-44ba-a9b3-1e0e009c88c0; **Source**: webchat [score=0.878 recalls=0 avg=0.620 source=memory/2026-06-25-2248.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:3:5 -->
+- Session: 2026-06-26 00:10:49 GMT+2: **Session Key**: agent:main:main; **Session ID**: 92b6a78b-5354-4b0d-ac8d-7bf2b2af1912; **Source**: webchat [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:9:12 -->
+- Conversation Summary: assistant: ✅ Session reset. assistant: ⚙️ Reasoning visibility enabled. assistant: 🦞 OpenClaw 2026.6.10 (aa69b12) ⏱️ Uptime: gateway 5m 40s · system 12d 10h [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:13:13 -->
+- Conversation Summary: For example, would you like me to: [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:14:16 -->
+- Conversation Summary: Check if `@iman.hayatiii` is currently live?; Monitor `@iman.hayatiii`'s channel for future live streams?; Retrieve information about their account? [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:14-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:18:21 -->
+- Conversation Summary: Please provide more details on what you'd like to do with the "tiktok-live" skill. assistant: [[reply_to:eea08e52-e99d-4521-af7b-c06255d01b4f]]Audio reply assistant: I couldn't find any direct information indicating that `@iman.hayatiii` is currently live on TikTok through a quick web search. The search results were for general TikTok LIVE streams and not specific to that user. assistant: [[reply_to:d2ddd994-cb34-475b-94e6-f41b660e2d2b]]Audio reply [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:22:22 -->
+- Conversation Summary: assistant: I can use the `tiktok-live-mon` skill to monitor `@iman.hayatiii`'s TikTok account. [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:22-22]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:3:5 -->
+- Session: 2026-06-25 23:25:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: 91a21436-9118-4ca2-9424-be0a0759f9f4; **Source**: webchat [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:9:11 -->
+- Conversation Summary: assistant: Could you please specify what you'd like to do with the TikTok Live skill and the username `@iman.hayatiii`? For example, are you trying to watch a live stream, get information about a user, or something else? assistant: [[reply_to:48b1cfca-47c2-46e1-b36f-9b315fcf0960]]Audio reply assistant: I understand you'd like to use the "tiktok-live" skill for the username `@iman.hayatiii`. However, I need to know what specific action you want to perform. [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:9-11]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:12:15 -->
+- Conversation Summary: If you can provide the command or a specific tool function to use, I would be happy to proceed. assistant: I cannot directly execute skills by their names. I need a specific tool or command that allows me to invoke the "tiktok-live" skill. Could you please provide the exact command or tool to use? user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:12-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:3:5 -->
+- Session: 2026-06-25 23:40:50 GMT+2: **Session Key**: agent:main:main; **Session ID**: 181f587d-cb17-4018-8b3e-afdc34ce225c; **Source**: webchat [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:3-5]
