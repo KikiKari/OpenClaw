@@ -5,13 +5,16 @@ Tree Indexer v2 - Erweitertes Tracking mit Metadaten
 
 import sqlite3
 import subprocess
+import os
 import re
 import hashlib
 from pathlib import Path
 from datetime import datetime
 
-WORKSPACE = Path("/home/openclaw/.openclaw/workspace")
-DB_DIR = WORKSPACE / "db"
+WORKSPACE = Path(
+    os.environ.get("OPENCLAW_WORKSPACE", Path(__file__).resolve().parents[1])
+)
+DB_DIR = WORKSPACE
 
 
 class TreeIndexerV2:
