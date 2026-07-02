@@ -579,25 +579,25 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-01)
+## Promoted From Short-Term Memory (2026-07-02)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:18:21 -->
-- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:3:5 -->
-- Session: 2026-06-25 21:36:27 GMT+2: **Session Key**: agent:main:main; **Session ID**: 5a8f0527-8527-4c24-9af2-8498dcdc5eb3; **Source**: webchat [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:13:16 -->
-- Conversation Summary: ``` [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:36-36]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:3:5 -->
-- Session: 2026-06-25 22:16:59 GMT+2: **Session Key**: agent:main:main; **Session ID**: 55d94072-b846-4523-aecf-a363d560510b; **Source**: webchat [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2216.md:9:12 -->
-- Conversation Summary: user: ok assistant: Verstanden. Sag einfach Bescheid, falls du noch etwas prüfen oder einrichten möchtest. assistant: [[reply_to:2f62e718-0cd1-4858-854c-d07a877fbaae]]Audio reply assistant: Die TikTok‑Prüfung mit dem **tiktok-live‑mon**‑Skill ergab, dass **@luiisamour** derzeit **offline** ist (kein Live‑Stream gefunden). [score=0.859 recalls=0 avg=0.620 source=memory/2026-06-25-2216.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:13:15 -->
-- Conversation Summary: assistant: [[reply_to:1e20d0d6-40be-4d75-aaa5-1488bee549a6]]Audio reply assistant: @iman.hayatiii is currently **live** (accessible). Stream URL (FLV, signed – use promptly for playback): [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:13-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:17:20 -->
-- Conversation Summary: https://pull-f5-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071761381327741_hd.flv?_session_id=044-20260625203052544F74D2410F3138B019.1782419453281&_webnoredir=1&abr_pts=-2800&expire=1783629052&sign=76bbaa765252a23c7c440a7e731aecb8 assistant: [[reply_to:b148e7f9-f27a-4463-8278-9f84134de956]]Audio reply assistant: @iman.hayatiii is currently live. Stream URL: [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:3:5 -->
-- Session: 2026-06-25 22:49:07 GMT+2: **Session Key**: agent:main:main; **Session ID**: 9b059108-be8f-4443-8e02-7cb729a0db74; **Source**: webchat [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:9:12 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: @iman.hayatiii is currently live. Stream URL: https://pull-f5-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071761381327741_hd.flv?_session_id=044-20260625203052544F74D2410F3138B019.1782419453281&_webnoredir=1&abr_pts=-2800&expire=1783629052&sign=76bbaa765252a23c7c440a7e731aecb8 [score=0.847 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0011.md:13:16 -->
-- Conversation Summary: assistant: [[reply_to:b8b9465c-a99d-47b9-b3aa-48d5b285aad2]]Audio reply user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK assistant: ✅ @laafatooo is currently LIVE. No stream URL could be resolved (missing required helper scripts/CLI tools). [score=0.846 recalls=0 avg=0.620 source=memory/2026-06-26-0011.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0011.md:3:5 -->
+- Session: 2026-06-26 00:11:02 GMT+2: **Session Key**: agent:main:main; **Session ID**: d13c6ad6-8a2b-4ef3-a47c-9e2f35f9275c; **Source**: webchat [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0011.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0011.md:9:12 -->
+- Conversation Summary: assistant: ✅ Session reset. assistant: [[reply_to:b8b9465c-a99d-47b9-b3aa-48d5b285aad2]]Audio reply user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0011.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:18:18 -->
+- Conversation Summary: https://pull-hls-f16-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443072163692413821_ld/index.m3u8?expire=1783635248&sign=06030498ea80b65609e725eccbc76f95 [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:18-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:21:24 -->
+- Conversation Summary: You can paste this URL directly into VLC (`Media → Open Network Stream…`) or MPV (`mpv <url>`). assistant: [[reply_to:67b46345-5f75-4ef9-8557-c0986e3e3ede]]Audio reply assistant: [[reply_to:0f31f7a3-ccc3-4ea0-9ced-eff581349664]]Audio reply user: [OpenClaw heartbeat poll] [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:25:27 -->
+- Conversation Summary: assistant: **laafatooo** is LIVE (detected via the enhanced `tiktok-live-mon` checker). The live status was confirmed with a live‑icon indicator; no age‑restriction was found, and the page fully loaded. assistant: [[reply_to:9c8eda13-a6f2-4e49-a9ed-a8d7472a0187]]Audio reply assistant: **Result (tiktok-live‑mon)** [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:25-27]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:3:5 -->
+- Session: 2026-06-26 00:32:58 GMT+2: **Session Key**: agent:main:main; **Session ID**: ef4e87d3-96e3-458b-ba1f-e8e322f5a14f; **Source**: webchat [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:9:12 -->
+- Conversation Summary: assistant: ✅ Session reset. assistant: laafatooo is currently LIVE. assistant: [[reply_to:63fbafed-8df4-4d69-8f9a-24f8eebec4ab]]Audio reply assistant: laafatooo is currently LIVE. [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2136.md:22:23 -->
+- Conversation Summary: user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.848 recalls=0 avg=0.620 source=memory/2026-06-25-2136.md:22-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:21:24 -->
+- Conversation Summary: https://pull-f5-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071761381327741_hd.flv?_session_id=044-20260625203052544F74D2410F3138B019.1782419453281&_webnoredir=1&abr_pts=-2800&expire=1783629052&sign=76bbaa765252a23c7c440a7e731aecb8 assistant: [[reply_to:1e20d0d6-40be-4d75-aaa5-1488bee549a6]]Audio reply assistant: @iman.hayatiii is currently **live** (accessible). Stream URL (FLV, signed – use promptly for playback): [score=0.848 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2249.md:26:29 -->
+- Conversation Summary: https://pull-f5-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071761381327741_hd.flv?_session_id=044-20260625203052544F74D2410F3138B019.1782419453281&_webnoredir=1&abr_pts=-2800&expire=1783629052&sign=76bbaa765252a23c7c440a7e731aecb8 assistant: [[reply_to:b148e7f9-f27a-4463-8278-9f84134de956]]Audio reply user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.848 recalls=0 avg=0.620 source=memory/2026-06-25-2249.md:26-29]
