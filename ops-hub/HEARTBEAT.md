@@ -20,9 +20,9 @@
 ### System
 - [x] System: vmstat
 - [x] Prozesse: ps aux | head -n 10
-- [ ] Disk: df -h (< 80%)
-- [ ] Memory: free -h
-- [ ] Load: uptime
+- [x] Disk: df -h (< 80%)
+- [x] Memory: free -h
+- [x] Load: uptime
 - [x] Logs: journalctl -n 1000 -q
 - [x] Crons: Cron tool action=list
 - [x] Agents: Agents tool
