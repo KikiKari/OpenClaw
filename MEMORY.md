@@ -77,3 +77,14 @@
 - Conversation Summary: If you can provide the command or a specific tool function to use, I would be happy to proceed. assistant: I cannot directly execute skills by their names. I need a specific tool or command that allows me to invoke the "tiktok-live" skill. Could you please provide the exact command or tool to use? user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:12-15]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:3:5 -->
 - Session: 2026-06-25 23:40:50 GMT+2: **Session Key**: agent:main:main; **Session ID**: 181f587d-cb17-4018-8b3e-afdc34ce225c; **Source**: webchat [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:3-5]
+
+## Promoted From Short-Term Memory (2026-07-03)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:25:25 -->
+- Conversation Summary: Method: playwright [score=0.899 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:25-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:9:10 -->
+- Conversation Summary: assistant: ✅ Session reset. assistant: I cannot directly invoke the "tiktok-live-mon" skill with the provided tools. I need a specific tool or command that allows me to execute skills by name. [score=0.877 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:9-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2238.md:17:17 -->
+- Conversation Summary: assistant: HEARTBEAT_OK [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-25-2238.md:17-17]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2248.md:9:9 -->
+- Conversation Summary: assistant: ✅ Session reset. [score=0.857 recalls=0 avg=0.620 source=memory/2026-06-25-2248.md:9-9]
