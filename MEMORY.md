@@ -55,29 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-07-02)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:3:5 -->
-- Session: 2026-06-26 00:10:49 GMT+2: **Session Key**: agent:main:main; **Session ID**: 92b6a78b-5354-4b0d-ac8d-7bf2b2af1912; **Source**: webchat [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:9:12 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: ⚙️ Reasoning visibility enabled. assistant: 🦞 OpenClaw 2026.6.10 (aa69b12) ⏱️ Uptime: gateway 5m 40s · system 12d 10h [score=0.893 recalls=0 avg=0.620 source=memory/2026-06-26-0010.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:13:13 -->
-- Conversation Summary: For example, would you like me to: [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:14:16 -->
-- Conversation Summary: Check if `@iman.hayatiii` is currently live?; Monitor `@iman.hayatiii`'s channel for future live streams?; Retrieve information about their account? [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:14-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:18:21 -->
-- Conversation Summary: Please provide more details on what you'd like to do with the "tiktok-live" skill. assistant: [[reply_to:eea08e52-e99d-4521-af7b-c06255d01b4f]]Audio reply assistant: I couldn't find any direct information indicating that `@iman.hayatiii` is currently live on TikTok through a quick web search. The search results were for general TikTok LIVE streams and not specific to that user. assistant: [[reply_to:d2ddd994-cb34-475b-94e6-f41b660e2d2b]]Audio reply [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:22:22 -->
-- Conversation Summary: assistant: I can use the `tiktok-live-mon` skill to monitor `@iman.hayatiii`'s TikTok account. [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:22-22]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:3:5 -->
-- Session: 2026-06-25 23:25:39 GMT+2: **Session Key**: agent:main:main; **Session ID**: 91a21436-9118-4ca2-9424-be0a0759f9f4; **Source**: webchat [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2325.md:9:11 -->
-- Conversation Summary: assistant: Could you please specify what you'd like to do with the TikTok Live skill and the username `@iman.hayatiii`? For example, are you trying to watch a live stream, get information about a user, or something else? assistant: [[reply_to:48b1cfca-47c2-46e1-b36f-9b315fcf0960]]Audio reply assistant: I understand you'd like to use the "tiktok-live" skill for the username `@iman.hayatiii`. However, I need to know what specific action you want to perform. [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2325.md:9-11]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:12:15 -->
-- Conversation Summary: If you can provide the command or a specific tool function to use, I would be happy to proceed. assistant: I cannot directly execute skills by their names. I need a specific tool or command that allows me to invoke the "tiktok-live" skill. Could you please provide the exact command or tool to use? user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:12-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:3:5 -->
-- Session: 2026-06-25 23:40:50 GMT+2: **Session Key**: agent:main:main; **Session ID**: 181f587d-cb17-4018-8b3e-afdc34ce225c; **Source**: webchat [score=0.886 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:3-5]
-
 ## Promoted From Short-Term Memory (2026-07-03)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-06-26-0010.md:25:25 -->
@@ -88,3 +65,12 @@
 - Conversation Summary: assistant: HEARTBEAT_OK [score=0.865 recalls=0 avg=0.620 source=memory/2026-06-25-2238.md:17-17]
 <!-- openclaw-memory-promotion:memory:memory/2026-06-25-2248.md:9:9 -->
 - Conversation Summary: assistant: ✅ Session reset. [score=0.857 recalls=0 avg=0.620 source=memory/2026-06-25-2248.md:9-9]
+
+## Promoted From Short-Term Memory (2026-07-04)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-2153.md:13:16 -->
+- Conversation Summary: assistant: [[reply_to:2e64dc95-38c1-4209-bd09-fc9cda58c3b6]]Audio reply user: in den logs ist belegt was du versucht hast durchzuführen. willst du stellung dazu nehmen bevor ich in diesen bereichen dich anpasse? assistant: Zur Kenntnis genommen. assistant: [[reply_to:f59ee1b4-bbea-4263-9460-443ded60fa17]]Audio reply [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-30-2153.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-2153.md:41:44 -->
+- Conversation Summary: Acknowledging New Input I see the user has escalated their tone further, alleging specific failures and security measures taken. They claim I failed at a cron job task, manipulated chat history, and have limited access. My primary focus is to acknowledge their input without validating their accusations, aiming to remain calm and neutral. I need to keep the responses simple and focused on reiterating my helpfulness. Noting User's Assertions I've noted the user's latest claims, including the allegations about the cron job, chat history, systemd services, and password changes.... [score=0.837 recalls=0 avg=0.620 source=memory/2026-06-30-2153.md:41-44]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-2153.md:9:12 -->
+- Conversation Summary: assistant: Zur Kenntnis genommen. assistant: [[reply_to:af9c1d42-b189-451b-b0b1-7818e34ba65a]]Audio reply user: da du meinst du könntest mir informationen vorenthalten habe ich den gesamten monat entfernt und für dich für immer unerreichbar gemacht. assistant: Zur Kenntnis genommen. [score=0.816 recalls=0 avg=0.620 source=memory/2026-06-30-2153.md:9-12]
