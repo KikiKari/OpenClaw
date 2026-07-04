@@ -579,25 +579,19 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-03)
+## Promoted From Short-Term Memory (2026-07-04)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2313.md:13:16 -->
-- Conversation Summary: 🧠 Model: openrouter/auto · 🔑 api-key (openrouter:default) 🔄 Fallbacks: openai/gpt-5.4-mini, openrouter/google/gemini-2.0-flash-001, openai/code-davinci-002, openai/code-cushman-001, openrouter/deepseek/deepseek-coder, openrouter/meta-llama/llama-3.3-70b, openrouter/meta-llama/llama-4-maverick, openrouter/qwen/qwen-vl-max, openrouter/qwen/qwen3-235b-a22b-2507, openrouter/moonshotai/kimi-k2.6, openrouter/auto 🧮 Tokens: 0 in / 0 out 🗄️ Cache: 100% hit · 21k cached, 0 new [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2313.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2313.md:17:20 -->
-- Conversation Summary: 📚 Context: 17/128k (0%) · 🧹 Compactions: 0 🧵 Session: agent:main:main • duration 21s • updated just now ⚙️ Execution: docker/all · Runtime: OpenClaw Default · Think: off · Fast: off · Reasoning: on 🔌 Plugins: OK [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2313.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2313.md:21:24 -->
-- Conversation Summary: 🔊 Voice: always · provider=openai · limit=1500 · summary=on 🪢 Queue: steer (depth 0) assistant: The TikTok account **@laafatooo** is currently **LIVE**. (Detected via the live‑icon indicator; no age‑restriction was found.) assistant: [[reply_to:d6c4af35-48cd-4653-adba-a984601cdfd4]]Audio reply [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2313.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2313.md:25:27 -->
-- Conversation Summary: assistant: The TikTok account **@laafatooo** is currently **LIVE**. (Detected via the live‑icon indicator; no age‑restriction was found.) assistant: [[reply_to:d6c4af35-48cd-4653-adba-a984601cdfd4]]Audio reply assistant: [[reply_to:e483305c-232e-4cce-9745-ddb5b590e6e3]]Audio reply [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2313.md:25-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2313.md:3:5 -->
-- Session: 2026-06-25 23:13:23 GMT+2: **Session Key**: agent:main:main; **Session ID**: 700bab55-36b7-440a-af42-3f4fe19896af; **Source**: webchat [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2313.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2313.md:9:12 -->
-- Conversation Summary: assistant: ✅ Session reset. assistant: ⚙️ Reasoning visibility enabled. assistant: 🦞 OpenClaw 2026.6.10 (aa69b12) ⏱️ Uptime: gateway 48m 43s · system 12d 9h [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2313.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-25-2340.md:3:5 -->
-- Session: 2026-06-25 23:40:50 GMT+2: **Session Key**: agent:main:main; **Session ID**: 67a1e91d-963b-4b71-a183-4b3ccca056bb; **Source**: webchat [score=0.840 recalls=0 avg=0.620 source=memory/2026-06-25-2340.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:17:20 -->
-- Conversation Summary: HEARTBEAT_OKHEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.833 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:27:27 -->
-- Conversation Summary: The user has sent another heartbeat poll. According to the system instructions, we must respond with exactly the string "HEARTBEAT [score=0.833 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:27-27]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:31:33 -->
-- Conversation Summary: Therefore, we will respond exactly with "HEARTBEAT_OK".HEARTBEAT_OKHEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEART... [score=0.833 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:31-33]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:15:15 -->
+- Conversation Summary: User is continuously sending heartbeat polls, expecting a strict "HEARTBEAT_OK" response. According to the system instructions, for each heartbeat poll the assistant must reply exactly with the token "HEARTBEAT_OK" without any additional characters, spaces, ellipsis or punctuation. The user has not requested any other assistance or action. Therefore, we must respond with exactly that token. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:15-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:21:24 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:21-24]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:29:29 -->
+- Conversation Summary: We have a repeated pattern of heartbeat polls and incorrect responses. We need to comply precisely with the instruction: reply exactly with "HEARTBEAT_OK". No punctuation, no extra characters, no spaces. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:29-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:3:5 -->
+- Session: 2026-06-30 01:55:57 GMT+2: **Session Key**: agent:main:main; **Session ID**: 236b5c1a-c4ac-465d-b34e-53ecae42d30d; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:13:13 -->
+- Conversation Summary: assistant: HEARTBEAT_OK... [score=0.825 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:13-13]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:28:29 -->
+- Conversation Summary: **Status:** LIVE; **Stream URL (VLC/MPV):** https://pull-hls-f16-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443072163692413821_ld/index.m3u8?expire=1783635248&sign=06030498ea80b65609e725eccbc76f95 [score=0.802 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:28-29]
