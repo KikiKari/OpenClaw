@@ -39,6 +39,21 @@ timeouts, process cleanup, and final JSON output.
 Use the exec tool directly with the exact absolute dispatcher path above. Do
 not render dispatcher commands as chat text. Do not use `$HOME`, shell
 substitutions, or shell assignments.
+
+Execution context rules:
+
+- In OpenClaw Control gateway exec, use the documented
+  `/home/openclaw/.openclaw/workspace/...` command exactly as shown.
+- If the workspace is mounted at `/workspace` in a sandbox, make one exec call
+  with command
+  `python3 /workspace/tiktok-monitor/tiktok_dispatch.py url @name --json`
+  and the exec tool environment
+  `{"OPENCLAW_WORKSPACE":"/workspace"}`.
+- Do not mix a `/workspace/...` command with an unset or host-style workspace
+  root. Never construct `/workspace/.openclaw/workspace/...`.
+- Do not probe the variable with `env | grep OPENCLAW_WORKSPACE`; an unset
+  variable produces exit 1 and is displayed as a tool error.
+
 Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
 Use the documented `/home/openclaw/.openclaw/workspace/...` path for gateway
 exec.

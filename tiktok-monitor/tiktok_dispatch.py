@@ -32,9 +32,14 @@ URL_PREFIXES = ("http://", "https://")
 MAX_CAPTURE_BYTES = 1024 * 1024
 NODE_STATUS_TIMEOUT_SECONDS = 30
 
-WORKSPACE = Path(
-    os.environ.get("OPENCLAW_WORKSPACE", "~/.openclaw/workspace")
-).expanduser().resolve()
+def resolve_workspace() -> Path:
+    configured = os.environ.get("OPENCLAW_WORKSPACE", "").strip()
+    if configured:
+        return Path(configured).expanduser().resolve()
+    return Path(__file__).resolve().parent.parent
+
+
+WORKSPACE = resolve_workspace()
 PYTHON_MONITOR = WORKSPACE / "tiktok-monitor" / "tt-live.sh"
 PLAYWRIGHT_MON = WORKSPACE / "skills" / "tiktok-live-mon" / "scripts"
 PLAYWRIGHT_BASIC = WORKSPACE / "skills" / "tiktok-live" / "scripts"

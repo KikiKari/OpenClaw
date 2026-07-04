@@ -16,6 +16,24 @@ SPEC.loader.exec_module(dispatch)
 
 
 class DispatcherTests(unittest.TestCase):
+    def test_workspace_defaults_to_dispatcher_checkout(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(
+                dispatch.resolve_workspace(),
+                MODULE_PATH.parent.parent,
+            )
+
+    def test_workspace_honors_explicit_override(self):
+        with mock.patch.dict(
+            os.environ,
+            {"OPENCLAW_WORKSPACE": "/workspace"},
+            clear=True,
+        ):
+            self.assertEqual(
+                dispatch.resolve_workspace(),
+                Path("/workspace").resolve(),
+            )
+
     def test_username_normalization(self):
         self.assertEqual(dispatch.normalize_username("@example_creator"), "example_creator")
         self.assertEqual(dispatch.normalize_username(" example_creator "), "example_creator")

@@ -27,6 +27,12 @@ Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
 Use the documented `/home/openclaw/.openclaw/workspace/...` path for gateway
 exec.
 
+For a sandbox that mounts this workspace at `/workspace`, issue one exec call
+using `/workspace/tiktok-monitor/tiktok_dispatch.py` and set the exec tool's
+`OPENCLAW_WORKSPACE` environment field to `/workspace`. Do not use a shell
+assignment, do not derive the path from `$HOME`, and do not combine the
+sandbox command path with `~/.openclaw/workspace`.
+
 The dispatcher normalizes the handle, runs bounded Python and Playwright
 methods, distinguishes restricted LIVE from offline, validates extractor
 output, and reports the method that established the result.
