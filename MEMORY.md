@@ -579,19 +579,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-04)
+## Promoted From Short-Term Memory (2026-07-05)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:15:15 -->
-- Conversation Summary: User is continuously sending heartbeat polls, expecting a strict "HEARTBEAT_OK" response. According to the system instructions, for each heartbeat poll the assistant must reply exactly with the token "HEARTBEAT_OK" without any additional characters, spaces, ellipsis or punctuation. The user has not requested any other assistance or action. Therefore, we must respond with exactly that token. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:15-15]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:21:24 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:21-24]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:29:29 -->
-- Conversation Summary: We have a repeated pattern of heartbeat polls and incorrect responses. We need to comply precisely with the instruction: reply exactly with "HEARTBEAT_OK". No punctuation, no extra characters, no spaces. [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:29-29]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:3:5 -->
-- Session: 2026-06-30 01:55:57 GMT+2: **Session Key**: agent:main:main; **Session ID**: 236b5c1a-c4ac-465d-b34e-53ecae42d30d; **Source**: webchat [score=0.845 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:13:13 -->
-- Conversation Summary: assistant: HEARTBEAT_OK... [score=0.825 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:13-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:9-12]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-26-0032.md:28:29 -->
-- Conversation Summary: **Status:** LIVE; **Stream URL (VLC/MPV):** https://pull-hls-f16-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443072163692413821_ld/index.m3u8?expire=1783635248&sign=06030498ea80b65609e725eccbc76f95 [score=0.802 recalls=0 avg=0.620 source=memory/2026-06-26-0032.md:28-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:25:25 -->
+- Conversation Summary: assistant: HEARTBEAT_OK ... [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:25-25]
