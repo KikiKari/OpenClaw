@@ -579,7 +579,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-05)
+## Promoted From Short-Term Memory (2026-07-06)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-0155.md:25:25 -->
-- Conversation Summary: assistant: HEARTBEAT_OK ... [score=0.808 recalls=0 avg=0.620 source=memory/2026-06-30-0155.md:25-25]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-02.md:1:1 -->
+- 2026-07-02 04:33 Europe/Berlin heartbeat: System checks completed. Sandbox-visible load 0.37/0.22/0.19, disk 32% used, MemAvailable 14235464 kB, node xnetx connected. Active cron jobs last status OK and delivery.mode none. Note: sandbox lacks vmstat/ps/free/uptime/journalctl; node exec override not allowed, so diagnostics used /proc + df. No critical issue detected. [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-02.md:1-1]
