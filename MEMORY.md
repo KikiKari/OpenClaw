@@ -579,7 +579,13 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-06)
+## Promoted From Short-Term Memory (2026-07-08)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-07-02.md:1:1 -->
-- 2026-07-02 04:33 Europe/Berlin heartbeat: System checks completed. Sandbox-visible load 0.37/0.22/0.19, disk 32% used, MemAvailable 14235464 kB, node xnetx connected. Active cron jobs last status OK and delivery.mode none. Note: sandbox lacks vmstat/ps/free/uptime/journalctl; node exec override not allowed, so diagnostics used /proc + df. No critical issue detected. [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-02.md:1-1]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-05-0023.md:13:15 -->
+- Conversation Summary: assistant: [[reply_to:4bd599cf-cc28-4b68-b904-c420f5288379]]Audio reply assistant: live @luiisamour (detected via live-icon) assistant: [[reply_to:500a284d-ce46-4688-94c4-0d155494d77a]]Audio reply [score=0.833 recalls=0 avg=0.620 source=memory/2026-07-05-0023.md:13-15]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-05-0023.md:9:12 -->
+- Conversation Summary: assistant: ✅ Session reset. assistant: live https://pull-hls-f16-tt04.tiktokcdn-eu.com/game/stream-1272586854832276813_ld/index.m3u8?expire=1784367663&sign=1bd1482ebbc948abf4113d61c6aeaf5f assistant: [[reply_to:4bd599cf-cc28-4b68-b904-c420f5288379]]Audio reply assistant: live https://pull-hls-f16-tt04.tiktokcdn-eu.com/game/stream-1272586854832276813_ld/index.m3u8?expire=1784367663&sign=1bd1482ebbc948abf4113d61c6aeaf5f [score=0.833 recalls=0 avg=0.620 source=memory/2026-07-05-0023.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-05-0023.md:3:5 -->
+- Session: 2026-07-05 00:23:48 GMT+2: **Session Key**: agent:main:main; **Session ID**: f3a838b3-0aae-4573-a00b-bdde2dcf2ba5; **Source**: webchat [score=0.815 recalls=0 avg=0.620 source=memory/2026-07-05-0023.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-04-1139.md:9:9 -->
+- Conversation Summary: assistant: [[reply_to:d3712f60-fa2d-49df-869e-ca92fb3ff68b]]Audio reply [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-04-1139.md:9-9]
