@@ -69,3 +69,10 @@
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-01-1214.md:21-23]
 <!-- openclaw-memory-promotion:memory:memory/2026-07-01-1214.md:9:12 -->
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-01-1214.md:9-12]
+
+## Promoted From Short-Term Memory (2026-07-08)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-05-0023.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.857 recalls=0 avg=0.620 source=memory/2026-07-05-0023.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-05-0023.md:3:5 -->
+- Session: 2026-07-05 00:23:42 GMT+2: **Session Key**: agent:main:main; **Session ID**: b7850e8c-ef69-42de-a63b-e1a03350b331; **Source**: webchat [score=0.844 recalls=0 avg=0.620 source=memory/2026-07-05-0023.md:3-5]
