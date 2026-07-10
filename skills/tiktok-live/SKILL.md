@@ -5,6 +5,34 @@ description: Check a TikTok account's current LIVE status and resolve a playable
 
 # TikTok LIVE
 
+## Mandatory slash-command behavior
+
+For `/tiktok_live @name` and any handle-only request, the first normal action
+is exactly this dispatcher exec with the exec tool parameter `elevated: true`:
+
+```bash
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+```
+
+Do not read, inspect, copy, install, or execute files under `scripts/`. Do not
+debug Playwright/Chromium before the dispatcher has failed. Standalone scripts
+are diagnostics only after the dispatcher returns `dependency_missing` or
+`technical_error`.
+If the user says a previous URL failed, re-run this same dispatcher command
+once for a fresh signed URL. Do not run dependency probes such as
+`which streamlink`, `which yt-dlp`, `command -v`, `dir_list`, `read`, `sed`,
+`rg`, `node`, `npm`, or `npx` during normal slash-command handling.
+Do not use `~/.openclaw/...` in exec commands.
+In OpenClaw Control, never run this dispatcher as a plain sandbox exec. Set the
+exec tool field `elevated` to `true`; do not set the `host` field. This keeps
+`tools.exec.host: auto` and multi-node routing intact while letting the
+dispatcher run in the gateway environment where Playwright/Chromium and TikTok
+network access work.
+Terminal rule: if any dispatcher run returns JSON with `status: "live"` and
+a non-empty `url`, the next action must be the final user reply containing
+that URL. Do not call any other tool after that result. Do not search for a
+better format, inspect scripts, read files, run Node, or verify fallbacks.
+
 Use the portable installation under:
 
 ```text
@@ -26,10 +54,16 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
 Use `check ... --json` only for diagnostics when no playback URL is needed.
 
 For `/tiktok_live @name`, the complete normal operation is this single exec
-command:
+tool call:
 
 ```bash
 python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+```
+
+Exec tool parameters:
+
+```json
+{"elevated": true}
 ```
 
 Do not use Process/session tools for one-shot TikTok checks. Do not start a
@@ -38,29 +72,48 @@ timeouts, process cleanup, and final JSON output.
 
 Use the exec tool directly with the exact absolute dispatcher path above. Do
 not render dispatcher commands as chat text. Do not use `$HOME`, shell
-substitutions, or shell assignments.
+substitutions, `~`, or shell assignments.
+Set `elevated: true` in the exec tool call. Do not set `host` to `gateway`.
+Leave the exec host unset so OpenClaw uses the configured `tools.exec.host:
+auto` behavior. This preserves multi-node behavior: do not force gateway and
+do not force a specific node for a handle-only request; let OpenClaw and the
+dispatcher keep their automatic gateway/node routing.
 
 Execution context rules:
 
-- In OpenClaw Control gateway exec, use the documented
-  `/home/openclaw/.openclaw/workspace/...` command exactly as shown.
-- If the workspace is mounted at `/workspace` in a sandbox, make one exec call
+- In OpenClaw Control, use the documented
+  `/home/openclaw/.openclaw/workspace/...` command exactly as shown, set
+  `elevated: true`, and omit any exec host override.
+- Outside OpenClaw Control only: if the workspace is mounted at `/workspace`
+  in a sandbox, make one exec call
   with command
   `python3 /workspace/tiktok-monitor/tiktok_dispatch.py url @name --json`
   and the exec tool environment
   `{"OPENCLAW_WORKSPACE":"/workspace"}`.
+- Outside OpenClaw Control only: if the
+  `/home/openclaw/.openclaw/workspace/...` command fails with `can't open file`
+  or `No such file or directory`, treat that as an execution path mismatch,
+  not as a TikTok result. Retry once with the `/workspace/...` command and
+  `OPENCLAW_WORKSPACE=/workspace`, then answer from that result. In OpenClaw
+  Control, do not retry with `/workspace`.
 - Do not mix a `/workspace/...` command with an unset or host-style workspace
   root. Never construct `/workspace/.openclaw/workspace/...`.
 - Do not probe the variable with `env | grep OPENCLAW_WORKSPACE`; an unset
   variable produces exit 1 and is displayed as a tool error.
 
 Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
-Use the documented `/home/openclaw/.openclaw/workspace/...` path for gateway
-exec.
+Use the documented `/home/openclaw/.openclaw/workspace/...` path and leave
+host selection to OpenClaw's configured `auto` mode. If elevated exec is not
+available or is denied, report `technical_error: elevated host exec required
+for TikTok dispatcher` instead of retrying with `/workspace`, Node scripts, or
+sandbox probes.
 
 Do not answer a handle-only `/tiktok_live` request from `check` output alone.
 If the account is `live`, resolve a VLC/MPV URL before replying. Reply
 concisely: status plus VLC/MPV URL, or LIVE plus compact failure reason.
+When the dispatcher JSON contains `status: "live"` and `url`, that URL is the
+resolved VLC/MPV URL for the response. Do not perform any additional
+extraction or diagnostics.
 
 Whitespace and one leading `@` are removed. Valid TikTok handles contain only
 letters, digits, `.`, and `_`, with a maximum length of 24 characters.
@@ -97,11 +150,12 @@ modes are:
 --no-local-fallback
 ```
 
-`auto` selects a connected, paired, suitable node when the calling OpenClaw
-agent can issue `exec host=node`; otherwise it runs on the gateway. A remote
-node runs the same dispatcher with `--execution local` and returns stdout,
-stderr, and the exit code. Missing dependencies, overload, invoke failure, and
-timeout fall back to the gateway unless `--no-local-fallback` is set.
+`auto` remains multi-node capable. It selects a connected, paired, suitable
+node when the calling OpenClaw agent can issue `exec host=node`; otherwise it
+runs on the gateway. A remote node runs the same dispatcher with
+`--execution local` and returns stdout, stderr, and the exit code. Missing
+dependencies, overload, invoke failure, and timeout fall back to the gateway
+unless `--no-local-fallback` is set.
 
 Remote execution is agent-managed. Do not use SSH or
 `openclaw nodes invoke ... system.run`; OpenClaw reserves `system.run` for the
@@ -155,6 +209,8 @@ Resolve a fresh URL immediately before playback:
 python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url example_creator
 ```
 
+Do not replace the absolute path with `~/.openclaw/...`.
+
 Stream URLs are signed and revocable. Do not document or log live signed URLs;
 use placeholders. Re-resolve after expiration, HTTP rejection, or a new LIVE
 session. Do not modify observed URLs to guess another quality.
@@ -175,7 +231,6 @@ session. Do not modify observed URLs to guess another quality.
 - Python 3
 - Node.js
 - Playwright with Chromium in both skill directories
-- Optional `streamlink` and `yt-dlp` fallbacks for the enhanced extractor
 - Outbound HTTPS access to TikTok and TikTok CDN hosts
 
 ## References
