@@ -1,0 +1,6 @@
+ts=2026-07-11T05:39:47Z evt=daemon_start sec_uid=MS4wLjABAAAAMbX7-nT78LZOxYw9BfoMM3f18mAvE0KoBT7N89T4ikpT_VIjKbFrsmXrNvaIkrFN unique_id=iman.hayatiii hours=24 poll_sec=600
+ts=2026-07-11T05:39:48Z evt=poll_ok sec_uid=MS4wLjABAAAAMbX7-nT78LZOxYw9BfoMM3f18mAvE0KoBT7N89T4ikpT_VIjKbFrsmXrNvaIkrFN unique_id=iman.hayatiii alive=false
+ts=2026-07-11T05:39:48Z evt=daemon_end sec_uid=MS4wLjABAAAAMbX7-nT78LZOxYw9BfoMM3f18mAvE0KoBT7N89T4ikpT_VIjKbFrsmXrNvaIkrFN unique_id=iman.hayatiii reason=interrupted transitions=0
+ts=2026-07-11T05:40:00Z evt=daemon_start sec_uid=MS4wLjABAAAAMbX7-nT78LZOxYw9BfoMM3f18mAvE0KoBT7N89T4ikpT_VIjKbFrsmXrNvaIkrFN unique_id=iman.hayatiii hours=48 poll_sec=1200
+ts=2026-07-11T05:40:00Z evt=poll_ok sec_uid=MS4wLjABAAAAMbX7-nT78LZOxYw9BfoMM3f18mAvE0KoBT7N89T4ikpT_VIjKbFrsmXrNvaIkrFN unique_id=iman.hayatiii alive=false
+ts=2026-07-11T05:40:00Z evt=daemon_end sec_uid=MS4wLjABAAAAMbX7-nT78LZOxYw9BfoMM3f18mAvE0KoBT7N89T4ikpT_VIjKbFrsmXrNvaIkrFN unique_id=iman.hayatiii reason=interrupted transitions=0

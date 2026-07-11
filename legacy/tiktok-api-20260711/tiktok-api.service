@@ -4,12 +4,13 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/openclaw/.openclaw/workspace/tiktok-live-app
-ExecStart=/usr/bin/python3 app.py
-Restart=on-failure
-RestartSec=5
 User=openclaw
 Group=openclaw
+WorkingDirectory=/home/openclaw/.openclaw/workspace/tiktok-live-app
+ExecStart=/usr/local/bin/tiktok-api-launch.sh
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
 Environment=PORT=5001
 
 [Install]

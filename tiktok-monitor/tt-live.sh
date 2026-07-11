@@ -59,7 +59,7 @@ Subcommands:
            Exit 0 = ok, 1 = offline, 2 = error.
 
   daemon   Spawn a background daemon that polls the user for --hours hours
-           (default 12) at --poll-min minute intervals (floor 5).
+           (default 24) at --poll-min minute intervals (minimum 10).
            Prints pid, log path, workspace, and events dir to stdout.
            Exit 0 = spawned, 2 = spawn failed.
 

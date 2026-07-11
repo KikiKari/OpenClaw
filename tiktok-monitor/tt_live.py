@@ -12,7 +12,7 @@ Subcommands
   url    <username>   Resolve current m3u8 stream URL; URL to stdout
                       Exit 0 = ok, 1 = offline, 2 = error
   daemon <username>   Poll over a timer window; emit events on transitions
-                      Args: --hours N (default 12), --poll-min M (min 5)
+                      Args: --hours N (default 24), --poll-min M (min 10)
                       Exit 0 always at clean end
 
 Design
@@ -20,6 +20,7 @@ Design
 - stdlib only (urllib + json + subprocess for optional fallbacks)
 - Identity store: secUid is the primary key; uniqueId is a pointer with a
   "current" flag and a rename history
+- Atomic identity/pointer upserts with passive 90-day retention
 - State store: per-secUid, stream URLs retained 3 days via passive stale-strip
 - Event log: append-only line file per secUid; sub-agents tail it and announce
 - SIGI_STATE only; no UNIVERSAL_DATA fallback
@@ -46,6 +47,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -59,9 +61,10 @@ from typing import Any
 # ============================================================================
 
 FORMAT_CAP = "360"               # hardcoded; not configurable
-MIN_POLL_MINUTES = 5             # daemon poll floor
-DEFAULT_DAEMON_HOURS = 12        # daemon default duration
+MIN_POLL_MINUTES = 10            # daemon poll floor
+DEFAULT_DAEMON_HOURS = 24        # daemon default duration
 URL_RETENTION_DAYS = 3           # stream URL retention in state store
+IDENTITY_RETENTION_DAYS = 90     # identity/pointer passive cleanup
 REQUEST_TIMEOUT_SEC = 15         # per HTTP request
 TT_AID = "1988"                  # TikTok webcast app id
 
@@ -71,6 +74,7 @@ USER_AGENT = (
 )
 
 DEFAULT_WORKSPACE = Path.home() / ".openclaw" / "workspace" / "tiktok-monitor"
+DEFAULT_IDENTITY_DIR = Path.home() / ".openclaw" / "workspace" / "tiktok-names"
 
 
 # ============================================================================
@@ -87,9 +91,36 @@ def resolve_workspace() -> Path:
 
 def ensure_dirs(ws: Path) -> None:
     """Create workspace subdirectories if missing."""
-    (ws / "tiktok-names" / "identities").mkdir(parents=True, exist_ok=True)
-    (ws / "tiktok-names" / "pointers").mkdir(parents=True, exist_ok=True)
     (ws / "state" / "tt-live").mkdir(parents=True, exist_ok=True)
+
+
+def resolve_identity_dir(ws: Path) -> Path:
+    """Use the shared store unless an isolated workspace was explicitly set."""
+    configured = os.environ.get("TT_LIVE_IDENTITY_DIR", "").strip()
+    if configured:
+        return Path(configured).expanduser().resolve()
+    if os.environ.get("TT_LIVE_WORKSPACE", "").strip():
+        return ws / "tiktok-names"
+    return DEFAULT_IDENTITY_DIR
+
+
+def atomic_json_write(path: Path, value: dict) -> None:
+    """Durably replace one JSON object without exposing partial content."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(value, stream, indent=2, ensure_ascii=False)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    except BaseException:
+        try:
+            os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        raise
 
 
 def now_iso() -> str:
@@ -393,14 +424,17 @@ class IdentityStore:
     """
 
     def __init__(self, workspace: Path):
-        self.ident_dir = workspace / "tiktok-names" / "identities"
-        self.ptr_dir = workspace / "tiktok-names" / "pointers"
+        root = resolve_identity_dir(workspace)
+        self.ident_dir = root / "identities"
+        self.ptr_dir = root / "pointers"
+        self.ident_dir.mkdir(parents=True, exist_ok=True)
+        self.ptr_dir.mkdir(parents=True, exist_ok=True)
 
     def _ident_path(self, sec_uid: str) -> Path:
         return self.ident_dir / f"{sec_uid}.json"
 
     def _ptr_path(self, unique_id: str) -> Path:
-        return self.ptr_dir / f"{unique_id}.json"
+        return self.ptr_dir / f"{unique_id.lstrip('@').lower()}.json"
 
     def load_identity(self, sec_uid: str) -> dict | None:
         p = self._ident_path(sec_uid)
@@ -416,10 +450,7 @@ class IdentityStore:
         record["last_seen"] = now_iso()
         if "first_seen" not in record:
             record["first_seen"] = record["last_seen"]
-        self._ident_path(sec_uid).write_text(
-            json.dumps(record, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        atomic_json_write(self._ident_path(sec_uid), record)
 
     def load_pointer(self, unique_id: str) -> dict | None:
         p = self._ptr_path(unique_id)
@@ -432,6 +463,7 @@ class IdentityStore:
 
     def write_pointer(self, unique_id: str, sec_uid: str,
                       current: bool = True) -> None:
+        unique_id = unique_id.lstrip("@").lower()
         existing = self.load_pointer(unique_id) or {}
         ts = now_iso()
         record = {
@@ -441,15 +473,36 @@ class IdentityStore:
             "first_pointed_at": existing.get("first_pointed_at", ts),
             "last_pointed_at": ts,
         }
-        self._ptr_path(unique_id).write_text(
-            json.dumps(record, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        atomic_json_write(self._ptr_path(unique_id), record)
 
     def resolve_sec_uid(self, username: str) -> str | None:
         """Look up sec_uid via pointer file. Returns None if no pointer."""
-        ptr = self.load_pointer(username)
+        ptr = self.load_pointer(username.lstrip("@").lower())
         return ptr.get("sec_uid") if ptr else None
+
+    @staticmethod
+    def _older_than(value: Any, days: int) -> bool:
+        if not isinstance(value, str):
+            return False
+        try:
+            seen = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        except ValueError:
+            return False
+        return (datetime.now(timezone.utc) - seen).total_seconds() > days * 86400
+
+    def cleanup_stale(self, days: int = IDENTITY_RETENTION_DAYS) -> None:
+        """Passively remove well-formed records not observed within retention."""
+        records = [
+            *((item, "last_seen") for item in self.ident_dir.glob("*.json")),
+            *((item, "last_pointed_at") for item in self.ptr_dir.glob("*.json")),
+        ]
+        for path, field in records:
+            try:
+                record = json.loads(path.read_text("utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if self._older_than(record.get(field), days):
+                path.unlink(missing_ok=True)
 
     def update_from_scrape(self, scrape: dict) -> tuple[str | None, bool]:
         """
@@ -457,7 +510,7 @@ class IdentityStore:
         Returns (sec_uid, rename_detected).
         """
         sec_uid = scrape.get("sec_uid")
-        unique_id = scrape.get("unique_id")
+        unique_id = str(scrape.get("unique_id") or "").lstrip("@").lower()
         if not sec_uid or not unique_id:
             return None, False
 
@@ -468,32 +521,34 @@ class IdentityStore:
         new_record: dict[str, Any] = {
             "sec_uid": sec_uid,
             "unique_id_current": unique_id,
-            "nickname": scrape.get("nickname"),
-            "user_id": scrape.get("user_id"),
+            "nickname": scrape.get("nickname") or existing.get("nickname"),
+            "user_id": scrape.get("user_id") or existing.get("user_id"),
         }
         if existing:
             new_record["first_seen"] = existing.get("first_seen")
             history = existing.get("rename_history") or []
             if rename_detected:
-                history.append({
-                    "from": prev_unique,
-                    "to": unique_id,
-                    "detected_at": now_iso(),
-                })
+                if not any(
+                    item.get("from") == prev_unique and item.get("to") == unique_id
+                    for item in history if isinstance(item, dict)
+                ):
+                    history.append({
+                        "from": prev_unique,
+                        "to": unique_id,
+                        "detected_at": now_iso(),
+                    })
                 # Mark old pointer not-current
                 old_ptr = self.load_pointer(prev_unique) or {}
                 if old_ptr.get("sec_uid") == sec_uid:
                     old_ptr["current"] = False
                     old_ptr["last_pointed_at"] = now_iso()
-                    self._ptr_path(prev_unique).write_text(
-                        json.dumps(old_ptr, indent=2, ensure_ascii=False),
-                        encoding="utf-8",
-                    )
+                    atomic_json_write(self._ptr_path(prev_unique), old_ptr)
             if history:
                 new_record["rename_history"] = history
 
         self.save_identity(sec_uid, new_record)
         self.write_pointer(unique_id, sec_uid, current=True)
+        self.cleanup_stale()
         return sec_uid, rename_detected
 
 
@@ -543,10 +598,7 @@ class StateStore:
 
     def write(self, sec_uid: str, state: dict) -> None:
         state["sec_uid"] = sec_uid
-        self._path(sec_uid).write_text(
-            json.dumps(state, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        atomic_json_write(self._path(sec_uid), state)
 
     def add_url(self, sec_uid: str, room_id: str, url: str) -> None:
         state = self.read(sec_uid)
@@ -772,7 +824,12 @@ def cmd_daemon(args: argparse.Namespace) -> int:
 
     username = args.username
     hours = max(1, int(args.hours))
-    poll_min = max(MIN_POLL_MINUTES, int(args.poll_min))
+    poll_min = int(args.poll_min)
+    if poll_min < MIN_POLL_MINUTES:
+        sys.stderr.write(
+            f"error: --poll-min must be at least {MIN_POLL_MINUTES}\n"
+        )
+        return 64
     poll_sec = poll_min * 60
 
     # Anchor identity with first scrape

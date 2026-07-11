@@ -211,7 +211,7 @@ JSON="$(tt-live.sh check example_creator)"
 SEC_UID="$(echo "$JSON" | python3 -c 'import json,sys; print(json.load(sys.stdin)["sec_uid"])')"
 
 # Step 2: spawn the daemon
-DAEMON_OUT="$(tt-live.sh daemon example_creator --hours 12 --poll-min 5)"
+DAEMON_OUT="$(tt-live.sh daemon example_creator --hours 24 --poll-min 10)"
 EVENTS_DIR="$(echo "$DAEMON_OUT" | awk -F= '/^events_dir=/{print $2}')"
 EVENTS_FILE="$EVENTS_DIR/$SEC_UID.events"
 

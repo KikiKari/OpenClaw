@@ -173,7 +173,7 @@ For audit purposes, the following keys were considered and
 
 - No `format_cap` — 360p cap is hardcoded in `tt_live.py` and is
   required for the bandwidth profile assumed by the skill
-- No `min_poll_minutes` — 5-minute floor is hardcoded; lowering it
+- No `min_poll_minutes` — 10-minute minimum is hardcoded; lowering it
   risks TikTok rate-limit pushback
 - No `default_daemon_hours` — already exposed via `--hours` CLI flag
 - No `tt_aid` — `1988` is a TikTok constant, not a user choice

@@ -68,8 +68,8 @@ Die ursprüngliche 3-Tier API-Architektur ist **obsolet**:
 
 | Skript | Zweck | Aufruf |
 |--------|-------|--------|
-| `tiktok-check-profile.js` | Live-Status prüfen | `/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-check-profile.js <username>` |
-| `tiktok-get-stream.js` | FLV-Stream-URL extrahieren | `/usr/bin/node /home/openclaw/.openclaw/workspace/skills/tiktok-live/scripts/tiktok-get-stream.js <username>` |
+| `tiktok-check-profile.js` | Interner Dispatcher-Fallback für Live-Status | Nicht direkt aufrufen |
+| `tiktok-get-stream.js` | Interner Dispatcher-Fallback für Stream-URLs | Nicht direkt aufrufen |
 
 **Pfad:** `/home/openclaw/.openclaw/workspace/`
 

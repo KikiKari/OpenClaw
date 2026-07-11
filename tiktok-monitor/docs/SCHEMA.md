@@ -1,5 +1,10 @@
 # Schema Reference
 
+> Runtime contract (2026-07-11): identities live in the shared sibling
+> `tiktok-names` store, are keyed by `sec_uid`, and are atomically replaced.
+> Sparse updates preserve existing `nickname` and `user_id`. Identity/pointer
+> retention is 90 days; stream URL retention remains three days.
+
 > Diese Schemas gehören zum separaten browserfreien `tiktok-monitor`.
 > Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 

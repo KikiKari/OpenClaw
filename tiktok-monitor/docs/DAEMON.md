@@ -1,5 +1,11 @@
 # Daemon Mode
 
+> Runtime contract (2026-07-11): monitors are managed through
+> `tiktok-monitorctl.sh` as transient systemd user timer/service units.
+> Defaults are 24 hours and 10 minutes; intervals below 10 minutes are rejected.
+> Duplicate starts for a normalized handle fail. Stop uses SIGINT so the Python
+> daemon writes `daemon_end reason=interrupted`.
+
 > Diese Dokumentation gehört zum separaten browserfreien `tiktok-monitor`.
 > Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
 
@@ -23,8 +29,8 @@ python3 tt_live.py daemon <user> [--hours N] [--poll-min M]
 ```
 
 - **Default duration:** 12 hours
-- **Default poll interval:** 5 minutes
-- **Hard floor on poll interval:** 5 minutes (lower values clamped silently)
+- **Default poll interval:** 10 minutes
+- **Hard minimum poll interval:** 10 minutes (lower values are rejected)
 - **Hard floor on duration:** 1 hour (lower values clamped silently)
 
 The daemon does not background itself. The `tt-live.sh` wrapper is
@@ -214,7 +220,7 @@ the previous sleep ended. Total run time is at most
 `hours * 3600 + poll_sec` (one extra sleep if we just barely missed
 deadline check).
 
-**Example: `--hours 12 --poll-min 5`:**
+**Example: `--hours 24 --poll-min 10`:**
 - `poll_sec = 300`
 - `deadline ≈ now + 43200`
 - Expected poll count: ~144 (`43200 / 300`)
@@ -410,7 +416,7 @@ the next event emission.
 | Limitation | Workaround |
 |---|---|
 | Single user per daemon | Spawn one daemon per user; each gets its own events file |
-| 5-minute resolution | TikTok rate limits prevent faster polling; no workaround |
+| 10-minute resolution | TikTok rate limits prevent faster polling; smaller values are rejected |
 | No stream-content capture | Use the URL with VLC, ffmpeg, or yt-dlp externally |
 | No SIGTERM handling | Use SIGINT to stop cleanly |
 | Events file grows unbounded | Periodic external rotation (e.g. logrotate) is the caller's responsibility |

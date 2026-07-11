@@ -1,33 +1,33 @@
 ---
 name: tiktok-live-mon
-description: TikTok Live stream monitoring and recording automation. Uses Playwright for visual detection and network traffic monitoring to capture FLV stream URLs. Supports automatic live status checks, stream recording to disk, and notification integration.
+description: Run a TikTok one-shot request by default or explicitly manage a parameterized long-running monitor.
+command-dispatch: tool
+command-tool: tiktok_live_mon_direct
 ---
 
-> Legacy-Kopie. Nicht als ausführbaren Skill-Pfad verwenden. Aktueller
-> Betriebsstand: `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
+# TikTok LIVE monitor contract
 
-# TikTok Live Monitor
-
-Automated TikTok Live stream monitoring with Playwright-based visual detection.
-
-## Features
-
-- **Visual Detection:** Uses Chromium/Playwright to detect live status (red border around profile)
-- **Stream URL Extraction:** Captures FLV stream URLs from network traffic
-- **Automatic Recording:** Saves streams to disk when live
-- **Notifications:** Alerts when stream goes live/offline
-
-## Usage
+A bare `/tiktok_live_mon @handle` is a one-shot request. Follow the complete
+one-shot contract from `tiktok-live` and invoke exactly:
 
 ```bash
-# Check if user is live
-node check-profile.js @username
-
-# Get stream URL
-node get-stream.js @username
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @handle --json
 ```
 
-## Requirements
+A long-running monitor starts only when the current user input explicitly uses
+`start`:
 
-- Node.js 16+
-- Playwright with Chromium
+```bash
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh start @handle --hours 48 --poll-min 20
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh status @handle
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh stop @handle
+```
+
+Defaults are 24 hours and 10 minutes. Poll intervals below 10 minutes are
+invalid. The controller uses transient systemd user timer/service units,
+prevents duplicate starts for the same normalized handle, and stops with
+SIGINT so the daemon can write `daemon_end`.
+
+Do not start the Python daemon, Node scripts, npm, npx, or Playwright directly.
+Do not infer `start` from earlier conversation or queued requests. Only the
+current user input may select the handle and long-running action.

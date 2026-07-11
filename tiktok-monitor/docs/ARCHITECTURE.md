@@ -1,5 +1,10 @@
 # Architecture
 
+> Runtime contract (2026-07-11): `tiktok_dispatch.py` is the only public
+> one-shot entry. It runs Python/API first and bounded Node/Playwright fallbacks
+> internally. Long-running monitors use `tiktok-monitorctl.sh` and transient
+> systemd user units; the legacy Port-5001 API is not part of this architecture.
+
 This architecture belongs to the browser-free `tiktok-monitor` component. It
 is independent of the Playwright skills under `workspace/skills/tiktok-live*`.
 The cross-component current-state document is
@@ -383,9 +388,9 @@ resort.
 supported. This is intentional. Sub-agent announce flows need
 predictable bandwidth.
 
-### 7.9 5-minute poll floor
+### 7.9 10-minute poll minimum
 
-`MIN_POLL_MINUTES = 5` clamps the daemon's `--poll-min`. TikTok rate-
+`MIN_POLL_MINUTES = 10` rejects smaller `--poll-min` values. TikTok rate-
 limits aggressive polling, and the `go_live` / `go_offline` resolution
 this provides is sufficient for any announcement use case.
 
