@@ -316,8 +316,9 @@ When a rename is detected, the old pointer file stays on disk with
 `current=false`. This means historical references to the old `@handle`
 still resolve to the right user.
 
-**Trade-off:** the pointer directory accumulates files over time. There
-is no built-in cleanup. Given typical pointer file size (~150 bytes)
+**Trade-off:** the pointer directory accumulates files within the 90-day
+identity retention window. Passive cleanup runs after successful identity
+updates. Given typical pointer file size (~150 bytes)
 and rename frequency (rare), this is acceptable indefinitely.
 
 ### 7.2 Identity record carries `rename_history`
@@ -432,7 +433,7 @@ a release bump.
 | OpenClaw cron mode | OpenClaw 2026.5.x cron has `ask=always` enforcement that breaks ~16k tokens per run; explicitly disabled at the gateway |
 | `--quality` / `--format` flags | 360p hardcoded; bandwidth predictability |
 | HTTP retry logic | Single attempt; transient failure → caller decides whether to re-run |
-| Identity-store cleanup | Pointer/identity files are tiny; never deleted automatically |
+| Identity-store cleanup | Passive 90-day cleanup after successful identity updates |
 | `__UNIVERSAL_DATA_FOR_REHYDRATION__` fallback | Schema unreliable for live-room data |
 | Per-user config files | All knobs live in `tt-live.json` (defaults reference) and `tt_live.py` (live constants) |
 

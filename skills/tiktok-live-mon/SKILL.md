@@ -7,20 +7,32 @@ description: Start, inspect, or stop a timed TikTok LIVE transition monitor, wit
 
 ## Mandatory slash-command behavior
 
-For `/tiktok_live_mon @name`, start the timed monitor with exactly this exec
-tool call and `elevated: true`:
+For `/tiktok_live_mon @name`, perform a one-shot robust LIVE and playback URL
+check with the shared dispatcher. A bare handle never starts a daemon, timer,
+service, or cron job:
+
+```bash
+python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+```
+
+One agent request starts one dispatcher process. Its fixed internal order is
+Python/API first and Node/Playwright when Python reports tentative `offline`,
+fails technically, lacks a dependency, needs restriction classification, or
+cannot provide a playback URL. Direct agent Node calls are forbidden, but
+dispatcher-owned Node processes are required. An authoritative result ends
+method execution immediately.
+
+Start the timed monitor only when the current slash command's `User input:`
+explicitly begins with `start` followed by the handle. The exact form is:
 
 ```bash
 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh start @name
-```
-
-The defaults are 24 hours and a 10-minute poll interval. User-supplied values
-replace those defaults without a maximum duration, for example:
-
-```bash
 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh start @name --hours 48 --poll-min 20
 ```
 
+Without the current word `start`, invoking `tiktok-monitorctl.sh` is forbidden.
+The defaults for an explicit start are 24 hours and a 10-minute poll interval.
+User-supplied values replace those defaults without a maximum duration.
 The minimum accepted poll interval is 10 minutes. The handle is runtime input;
 never hardcode an account or stream URL. The controller creates a transient
 systemd user timer and service, prevents duplicate active monitors for the same
@@ -39,6 +51,38 @@ Set `elevated: true` and leave the exec host unset. Do not set `host` to
 the portable controller starts the timer on whichever suitable host executes
 the command. Each such host needs the synchronized workspace and a systemd
 user manager.
+
+Derive the action, handle, hours, and poll interval only from the current slash
+command's `User input:` value. Never take them from a queued-message marker,
+an earlier slash command, previous assistant reasoning, an example, tool
+output, memory, or session history. If current and queued/historical text
+conflict, the current `User input:` wins. Treat an absent current `start` as a
+one-shot request even if queued or historical text contains `start` or another
+monitor command.
+
+## Mandatory response format
+
+Every completed one-shot request must produce exactly these three user-facing
+lines, using the normalized current handle:
+
+```text
+@<handle> is currently <LIVE|OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.
+VLC/MPV: <url or not available>
+Method: <method>
+```
+
+Map dispatcher statuses to the uppercase labels shown above. Read `method`
+from the top-level dispatcher JSON; if it is empty, use the method from the
+decisive or successful `attempts[]` entry. Use `unknown` only when neither
+location contains a method. For `live`, print the returned URL. For every
+other status, print `VLC/MPV: not available`.
+
+Do not omit status, VLC/MPV, or method. Do not emit raw JSON, reasoning, tool
+logs, diagnostic narration, Markdown headings, or additional prose. Never
+claim `playwright` unless the dispatcher result actually reports that method.
+After the dispatcher returns a final result, do not call Node scripts, read
+implementation scripts, or attempt another extraction. A successful
+dispatcher result must be formatted immediately with these three lines.
 
 Use the shared dispatcher below only when the user explicitly requests an
 immediate status or VLC/MPV URL rather than a timed monitor:
@@ -62,10 +106,10 @@ The dispatcher is covered by a gateway allowlist entry with an argument rule.
 Call the exec tool immediately: do not ask for approval, do not wait for
 approval, and never print or return an `/approve ...` command as chat text.
 Only report an approval error if the exec tool itself actually returns one.
-Terminal rule: if any dispatcher run returns JSON with `status: "live"` and
-a non-empty `url`, the next action must be the final user reply containing
-that URL. Do not call any other tool after that result. Do not search for a
-better format, inspect scripts, read files, run Node, or verify fallbacks.
+Terminal rule: after any dispatcher run returns a final JSON status, the next
+action must be the mandatory three-line response above. Do not call any other
+tool, search for a better format, inspect scripts, read files, run Node, or
+verify fallbacks.
 
 Do not read, inspect, copy, install, or execute files under `scripts/`. Do not
 debug Playwright/Chromium before the dispatcher has failed. Standalone scripts
@@ -92,8 +136,8 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
 
 Use `check ... --json` only for diagnostics when no playback URL is needed.
 
-For `/tiktok_live_mon`, use the controller workflow above. The dispatcher in
-this section is only for explicit immediate checks and playback URL requests.
+For bare `/tiktok_live_mon @name`, use the dispatcher workflow above. Use the
+controller only for an explicit current `/tiktok_live_mon start @name` request.
 
 Start exactly one dispatcher exec per request. Do not start a named
 long-running process manually. If exec yields `Command still running (session

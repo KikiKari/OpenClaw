@@ -48,6 +48,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -64,6 +65,7 @@ from typing import Any
 FORMAT_CAP = "360"               # hardcoded; not configurable
 MIN_POLL_MINUTES = 10            # daemon poll floor
 DEFAULT_DAEMON_HOURS = 24        # daemon default duration
+IDENTITY_RETENTION_DAYS = 90     # identity/address-book retention
 URL_RETENTION_DAYS = 3           # stream URL retention in state store
 REQUEST_TIMEOUT_SEC = 15         # per HTTP request
 TT_AID = "1988"                  # TikTok webcast app id
@@ -446,13 +448,40 @@ class IdentityStore:
       pointers/<unique_id>.json   — uniqueId -> sec_uid pointer with current flag
 
     Username renames are detected by comparing prior unique_id_current with the
-    fresh scrape's unique_id for the same sec_uid. Old pointer rows stay on
-    disk but get current=false so historical lookups still resolve.
+    fresh scrape's unique_id for the same sec_uid. Old pointer rows get
+    current=false and remain available until the 90-day retention expires.
     """
 
     def __init__(self, identity_dir: Path):
         self.ident_dir = identity_dir / "identities"
         self.ptr_dir = identity_dir / "pointers"
+
+    @staticmethod
+    def _write_json_atomic(path: Path, record: dict) -> None:
+        """Replace one JSON record atomically so concurrent readers see no partial file."""
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as tmp:
+                json.dump(record, tmp, indent=2, ensure_ascii=False)
+                tmp.write("\n")
+                tmp.flush()
+                os.fsync(tmp.fileno())
+            os.replace(tmp_name, path)
+        finally:
+            try:
+                os.unlink(tmp_name)
+            except FileNotFoundError:
+                pass
+
+    @staticmethod
+    def _iso_epoch(value: Any) -> float | None:
+        if not isinstance(value, str) or not value.strip():
+            return None
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+        except (TypeError, ValueError, OverflowError):
+            return None
 
     def _ident_path(self, sec_uid: str) -> Path:
         if not validate_sec_uid(sec_uid):
@@ -477,10 +506,7 @@ class IdentityStore:
         record["last_seen"] = now_iso()
         if "first_seen" not in record:
             record["first_seen"] = record["last_seen"]
-        self._ident_path(sec_uid).write_text(
-            json.dumps(record, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        self._write_json_atomic(self._ident_path(sec_uid), record)
 
     def load_pointer(self, unique_id: str) -> dict | None:
         p = self._ptr_path(unique_id)
@@ -502,10 +528,45 @@ class IdentityStore:
             "first_pointed_at": existing.get("first_pointed_at", ts),
             "last_pointed_at": ts,
         }
-        self._ptr_path(unique_id).write_text(
-            json.dumps(record, indent=2, ensure_ascii=False),
-            encoding="utf-8",
-        )
+        self._write_json_atomic(self._ptr_path(unique_id), record)
+
+    def cleanup_stale(self, days: int = IDENTITY_RETENTION_DAYS) -> None:
+        """Remove identity and pointer records not observed within the retention window."""
+        cutoff = time.time() - max(1, int(days)) * 86400
+        expired_sec_uids: set[str] = set()
+
+        for path in self.ident_dir.glob("*.json"):
+            try:
+                record = json.loads(path.read_text("utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            observed = self._iso_epoch(record.get("last_seen") or record.get("first_seen"))
+            if observed is None or observed >= cutoff:
+                continue
+            sec_uid = validate_sec_uid(record.get("sec_uid"))
+            if sec_uid:
+                expired_sec_uids.add(sec_uid)
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
+
+        for path in self.ptr_dir.glob("*.json"):
+            try:
+                record = json.loads(path.read_text("utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            observed = self._iso_epoch(
+                record.get("last_pointed_at") or record.get("first_pointed_at")
+            )
+            if record.get("sec_uid") not in expired_sec_uids and (
+                observed is None or observed >= cutoff
+            ):
+                continue
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                pass
 
     def resolve_sec_uid(self, username: str) -> str | None:
         """Look up sec_uid via pointer file. Returns None if no pointer."""
@@ -532,32 +593,38 @@ class IdentityStore:
         new_record: dict[str, Any] = {
             "sec_uid": sec_uid,
             "unique_id_current": unique_id,
-            "nickname": scrape.get("nickname"),
-            "user_id": scrape.get("user_id"),
+            "nickname": (
+                scrape.get("nickname")
+                if scrape.get("nickname") is not None
+                else existing.get("nickname")
+            ),
+            "user_id": (
+                scrape.get("user_id")
+                if scrape.get("user_id") is not None
+                else existing.get("user_id")
+            ),
         }
         if existing:
             new_record["first_seen"] = existing.get("first_seen")
             history = existing.get("rename_history") or []
             if rename_detected:
-                history.append({
-                    "from": prev_unique,
-                    "to": unique_id,
-                    "detected_at": now_iso(),
-                })
+                transition = {"from": prev_unique, "to": unique_id}
+                if not history or any(
+                    history[-1].get(key) != value for key, value in transition.items()
+                ):
+                    history.append({**transition, "detected_at": now_iso()})
                 # Mark old pointer not-current
                 old_ptr = self.load_pointer(prev_unique) or {}
                 if old_ptr.get("sec_uid") == sec_uid:
                     old_ptr["current"] = False
                     old_ptr["last_pointed_at"] = now_iso()
-                    self._ptr_path(prev_unique).write_text(
-                        json.dumps(old_ptr, indent=2, ensure_ascii=False),
-                        encoding="utf-8",
-                    )
+                    self._write_json_atomic(self._ptr_path(prev_unique), old_ptr)
             if history:
                 new_record["rename_history"] = history
 
         self.save_identity(sec_uid, new_record)
         self.write_pointer(unique_id, sec_uid, current=True)
+        self.cleanup_stale()
         return sec_uid, rename_detected
 
 

@@ -78,8 +78,14 @@ URL.
 
 ## Execution and fallback order
 
-The dispatcher runs bounded attempts and preserves method attribution. The
-enhanced URL extractor uses:
+The dispatcher runs bounded attempts and preserves method attribution. It
+always tries the lightweight Python/Webcast/API component first. A valid
+Python playback URL is final, while Python `offline` remains tentative because
+the Webcast path can produce false negatives. The fixed Node/Playwright path
+then handles confirmation, restriction classification, technical/dependency
+failures, and missing URLs.
+
+Within the enhanced Node URL extractor, the order is:
 
 1. Playwright response interception;
 2. `streamlink`;
@@ -87,6 +93,10 @@ enhanced URL extractor uses:
 
 Fallback executables receive fixed argument arrays. Their stdout/stderr is
 bounded and their whole process group is terminated on timeout.
+
+The Port-5001 legacy API is retired and never runs in parallel with this path.
+One user request starts one dispatcher process. Internal methods may run
+sequentially, but no method runs after an authoritative final result.
 
 ## Gateway/node routing
 

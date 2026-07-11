@@ -105,6 +105,12 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
   An entry per detected rename, in chronological order.
 - `nickname` and `user_id` can be `null` if a malformed SIGI returned
   partial data, but the file is still written.
+- Repeated observations of the same `sec_uid` atomically replace this file,
+  preserve `first_seen`, and update `last_seen`; no duplicate identity file is
+  created.
+- Identity records whose `last_seen` is older than 90 days are removed during
+  a later successful identity update. Missing or malformed timestamps are
+  preserved rather than deleted blindly.
 
 ---
 
@@ -156,8 +162,11 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
   historical `@handle`).
 - Exactly **one** pointer per `sec_uid` has `current: true` at any
   time — the one matching `identities/<sec_uid>.json::unique_id_current`.
-- Old pointers are **never deleted**, only marked `current=false`. This
-  preserves historical lookups by old `@handle`.
+- Old pointers are marked `current=false`, preserving historical lookups for
+  90 days after their last observation. They are then removed by passive
+  identity cleanup.
+- Repeated observations of a handle atomically update the same pointer file,
+  preserve `first_pointed_at`, and update `last_pointed_at`.
 
 ---
 

@@ -7,6 +7,50 @@ description: Check a TikTok account's current LIVE status and resolve a playable
 
 ## Mandatory slash-command behavior
 
+`/tiktok_live` is strictly a one-shot dispatcher operation. This skill must
+never invoke `tiktok-monitorctl.sh`, `tt-live.sh daemon`, `systemd-run`, a
+timer, a service, or cron. Do not read `tiktok-live-mon/SKILL.md` while
+handling `/tiktok_live`.
+
+That prohibition applies only to direct agent tool calls. The one dispatcher
+process must retain its fixed internal Node/Playwright fallbacks. It runs
+Python/API first, treats Python `offline` as tentative, and invokes
+Node/Playwright for confirmation, restriction checks, technical/dependency
+failure, or a missing playback URL. Most real successes may therefore report
+a Node/Playwright method. An authoritative result ends internal execution.
+
+Derive the handle only from the current slash command's `User input:` value.
+Never take or replace a handle from a queued-message marker, an earlier slash
+command, previous assistant reasoning, an example, tool output, memory, or
+session history. If queued or historical text conflicts with the current
+command, the current `/tiktok_live` command and its current `User input:` win.
+An unrelated queued `/tiktok_live_mon` command must be ignored and must never
+start a monitor during this request.
+
+## Mandatory response format
+
+Every completed one-shot request must produce exactly these three user-facing
+lines, using the normalized current handle:
+
+```text
+@<handle> is currently <LIVE|OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.
+VLC/MPV: <url or not available>
+Method: <method>
+```
+
+Map dispatcher statuses to the uppercase labels shown above. Read `method`
+from the top-level dispatcher JSON; if it is empty, use the method from the
+decisive or successful `attempts[]` entry. Use `unknown` only when neither
+location contains a method. For `live`, print the returned URL. For every
+other status, print `VLC/MPV: not available`.
+
+Do not omit status, VLC/MPV, or method. Do not emit raw JSON, reasoning, tool
+logs, diagnostic narration, Markdown headings, or additional prose. Never
+claim `playwright` unless the dispatcher result actually reports that method.
+After the dispatcher returns a final result, do not call Node scripts, read
+implementation scripts, or attempt another extraction. A successful
+dispatcher result must be formatted immediately with these three lines.
+
 For `/tiktok_live @name` and any handle-only request, the first normal action
 is exactly this dispatcher exec with the exec tool parameter `elevated: true`:
 
@@ -32,10 +76,10 @@ The dispatcher command is already covered by the gateway exec allowlist. Call
 the exec tool immediately: do not ask for approval, do not wait for approval,
 and never print or return an `/approve ...` command as chat text. Only report an
 approval error if the exec tool itself actually returns one.
-Terminal rule: if any dispatcher run returns JSON with `status: "live"` and
-a non-empty `url`, the next action must be the final user reply containing
-that URL. Do not call any other tool after that result. Do not search for a
-better format, inspect scripts, read files, run Node, or verify fallbacks.
+Terminal rule: after any dispatcher run returns a final JSON status, the next
+action must be the mandatory three-line response above. Do not call any other
+tool, search for a better format, inspect scripts, read files, run Node, or
+verify fallbacks.
 
 Use the portable installation under:
 

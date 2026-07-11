@@ -374,8 +374,18 @@ def dispatch_local(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
                 break
         assert attempt is not None
         attempts.append(attempt)
+        if attempt.status == "overloaded":
+            return result_payload("overloaded", method, 75, attempts), 75
         if args.operation == "url" and attempt.status == "live" and attempt.url:
             return result_payload("live", method, 0, attempts, attempt.url), 0
+        if args.operation == "url" and attempt.status == "restricted":
+            return result_payload("restricted", method, 1, attempts), 1
+        if args.operation == "url" and attempt.status == "offline":
+            if method == "python_api_fallbacks":
+                # Python/Webcast negatives can be false. The enhanced browser
+                # fallback owns the authoritative offline decision.
+                continue
+            return result_payload("offline", method, 1, attempts), 1
         if args.operation == "check" and attempt.status == "restricted":
             return result_payload("restricted", method, 1, attempts), 1
         if args.operation == "check" and attempt.status == "live":
@@ -392,6 +402,11 @@ def dispatch_local(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
                 attempts,
                 url,
             ), 0
+        if args.operation == "check" and attempt.status == "offline":
+            if method == "python_webcast":
+                # Confirm the tentative Python negative with Node/Playwright.
+                continue
+            return result_payload("offline", method, 1, attempts), 1
     statuses = {attempt.status for attempt in attempts}
     if "overloaded" in statuses:
         return result_payload("overloaded", "all_available_methods", 75, attempts), 75
@@ -407,10 +422,44 @@ def dispatch_local(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
             attempts,
             url,
         ), 0
+    if "restricted" in statuses:
+        restricted = next(
+            attempt for attempt in reversed(attempts)
+            if attempt.status == "restricted"
+        )
+        return result_payload("restricted", restricted.method, 1, attempts), 1
     if statuses == {"offline"}:
-        return result_payload("offline", "all_available_methods", 1, attempts), 1
+        offline = next(
+            attempt for attempt in reversed(attempts)
+            if attempt.status == "offline"
+        )
+        return result_payload("offline", offline.method, 1, attempts), 1
     status = "dependency_missing" if statuses == {"dependency_missing"} else "technical_error"
     return result_payload(status, "all_available_methods", 2, attempts), 2
+
+
+def sync_identity_after_fallback(args: argparse.Namespace, payload: dict[str, Any]) -> None:
+    """Best-effort identity upsert when a non-Python fallback decided the result."""
+    if payload.get("status") not in {"live", "offline", "restricted"}:
+        return
+    attempts = payload.get("attempts") or []
+    python_attempts = [
+        item for item in attempts
+        if isinstance(item, dict) and str(item.get("method", "")).startswith("python_")
+    ]
+    if any(item.get("status") in {"live", "offline", "restricted"} for item in python_attempts):
+        return
+
+    exit_code, stdout, stderr = run_command(
+        ["bash", str(PYTHON_MONITOR), "check", args.username],
+        args.timeout,
+    )
+    emit_log({
+        "method": "identity_sync",
+        "status": "updated" if exit_code in {0, 1} and bool(stdout) else "unavailable",
+        "exit_code": exit_code,
+        "detail": "tiktok-names upsert after fallback" if exit_code in {0, 1} else stderr,
+    })
 
 
 def dispatch(args: argparse.Namespace) -> int:
@@ -451,6 +500,7 @@ def dispatch(args: argparse.Namespace) -> int:
             return 2
 
     payload, code = dispatch_local(args)
+    sync_identity_after_fallback(args, payload)
     if args.json:
         print(json.dumps(payload, ensure_ascii=False))
     elif args.operation == "url" and payload.get("url"):

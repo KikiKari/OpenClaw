@@ -187,6 +187,12 @@ The durable identity/address-book store defaults to
 `TT_LIVE_IDENTITY_DIR` is not, identities remain under
 `$TT_LIVE_WORKSPACE/tiktok-names/` for compatibility.
 
+Identity files are unique by `secUid`, and pointer files are unique by
+normalized handle. Repeated observations atomically update the existing
+records and preserve their first-seen timestamps. Records not observed for 90
+days are removed on a later successful identity update. The dispatcher retries
+a best-effort identity sync when a non-Python fallback decided the result.
+
 Layout details, including the per-file JSON schemas, are in
 [`SCHEMA.md`](SCHEMA.md).
 
@@ -199,6 +205,7 @@ Layout details, including the per-file JSON schemas, are in
 | Stream format cap | 360p (HLS m3u8) | Predictable bandwidth for sub-agent use cases |
 | Poll interval floor | 10 minutes | TikTok rate-limits aggressive polling |
 | URL cache retention | 3 days | Bounds state/history; not a playability guarantee |
+| Identity/pointer retention | 90 days since last observation | Shared by both TikTok skills and dispatcher methods |
 | HTTP request timeout | 15 seconds | Calibrated to TikTok's observed response latency |
 | Notifications | none | The skill is a data provider; sub-agents announce |
 | Cron mode | not supported | OpenClaw cron has ask=always; out of scope |

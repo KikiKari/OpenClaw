@@ -73,6 +73,14 @@ The dispatcher normalizes the handle, runs bounded Python and Playwright
 methods, distinguishes restricted LIVE from offline, validates extractor
 output, and reports the method that established the result.
 
+One agent request starts exactly one dispatcher process. Inside that process,
+Python/Webcast/API runs first because it is cheaper, but Python `offline` is
+tentative and must be confirmed by the fixed Node/Playwright fallback.
+Node/Playwright also runs after Python dependency/technical failure, for
+restriction checks, or when LIVE was detected without a playback URL. An
+authoritative Node result or valid Python URL is final; no later method runs.
+Every child command uses bounded timeout and process-group cleanup.
+
 ### Exit/status contract
 
 | Status | Exit |
@@ -145,6 +153,13 @@ $HOME/.openclaw/workspace/
 `TT_LIVE_WORKSPACE` and `TT_LIVE_IDENTITY_DIR` override these defaults.
 Identity/address-book/history data is preserved independently of active
 runtime examples.
+
+Identity records are upserted by stable `secUid`; handle pointers are upserted
+by normalized `uniqueId`. Repeated checks update the existing files rather
+than creating duplicates. Both `tiktok-live` and `tiktok-live-mon` use this
+shared store through the dispatcher. Identity and pointer records not observed
+for 90 days are removed during a later successful identity update. Stream URL
+history remains governed separately by the three-day URL retention.
 
 ## Daemon event contract
 
