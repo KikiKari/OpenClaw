@@ -56,7 +56,7 @@ never talk to chat.
 tt_live.py
 │
 ├── Constants
-│     FORMAT_CAP="360"   MIN_POLL_MINUTES=5   DEFAULT_DAEMON_HOURS=12
+│     FORMAT_CAP="360"   MIN_POLL_MINUTES=10  DEFAULT_DAEMON_HOURS=24
 │     URL_RETENTION_DAYS=3   REQUEST_TIMEOUT_SEC=15   TT_AID="1988"
 │     USER_AGENT   DEFAULT_WORKSPACE   DEFAULT_IDENTITY_DIR
 │
@@ -386,9 +386,9 @@ resort.
 supported. This is intentional. Sub-agent announce flows need
 predictable bandwidth.
 
-### 7.9 5-minute poll floor
+### 7.9 10-minute poll floor
 
-`MIN_POLL_MINUTES = 5` clamps the daemon's `--poll-min`. TikTok rate-
+`MIN_POLL_MINUTES = 10` clamps the daemon's `--poll-min`. TikTok rate-
 limits aggressive polling, and the `go_live` / `go_offline` resolution
 this provides is sufficient for any announcement use case.
 

@@ -1,15 +1,47 @@
 ---
 name: tiktok-live-mon
-description: Classify a TikTok account as accessible LIVE, restricted LIVE, or offline and resolve an allowed TikTok CDN playback URL through the shared dispatcher. Use for robust one-shot checks; not for recording or notifications.
+description: Start, inspect, or stop a timed TikTok LIVE transition monitor, with optional one-shot classification and playback URL resolution through the shared dispatcher. Not for recording.
 ---
 
 # TikTok LIVE Enhanced Monitor
 
 ## Mandatory slash-command behavior
 
-For `/tiktok_live_mon @name` and any handle-only request, the first normal
-action is exactly this dispatcher exec with the exec tool parameter
-`elevated: true`:
+For `/tiktok_live_mon @name`, start the timed monitor with exactly this exec
+tool call and `elevated: true`:
+
+```bash
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh start @name
+```
+
+The defaults are 24 hours and a 10-minute poll interval. User-supplied values
+replace those defaults without a maximum duration, for example:
+
+```bash
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh start @name --hours 48 --poll-min 20
+```
+
+The minimum accepted poll interval is 10 minutes. The handle is runtime input;
+never hardcode an account or stream URL. The controller creates a transient
+systemd user timer and service, prevents duplicate active monitors for the same
+handle, and runs the stateful Python daemon. Do not start `tiktok-api.service`;
+that Port-5001 service is retired.
+
+For monitor status or stop requests, run exactly one of:
+
+```bash
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh status @name
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok-monitorctl.sh stop @name
+```
+
+Set `elevated: true` and leave the exec host unset. Do not set `host` to
+`gateway` or a fixed node. This lets OpenClaw retain `tools.exec.host: auto`;
+the portable controller starts the timer on whichever suitable host executes
+the command. Each such host needs the synchronized workspace and a systemd
+user manager.
+
+Use the shared dispatcher below only when the user explicitly requests an
+immediate status or VLC/MPV URL rather than a timed monitor:
 
 ```bash
 python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
@@ -26,6 +58,10 @@ exec tool field `elevated` to `true`; do not set the `host` field. This keeps
 `tools.exec.host: auto` and multi-node routing intact while letting the
 dispatcher run in the gateway environment where Playwright/Chromium and TikTok
 network access work.
+The dispatcher is covered by a gateway allowlist entry with an argument rule.
+Call the exec tool immediately: do not ask for approval, do not wait for
+approval, and never print or return an `/approve ...` command as chat text.
+Only report an approval error if the exec tool itself actually returns one.
 Terminal rule: if any dispatcher run returns JSON with `status: "live"` and
 a non-empty `url`, the next action must be the final user reply containing
 that URL. Do not call any other tool after that result. Do not search for a
@@ -44,7 +80,7 @@ be surfaced as a tool error for a handle-only request.
 Use this skill for direct-page classification and resilient URL extraction.
 It does not record streams and does not send notifications.
 
-## Preferred usage
+## One-shot usage
 
 Run the shared dispatcher. For normal slash-command requests with only a
 handle, run `url ... --json` directly so the reply can include the VLC/MPV URL
@@ -56,22 +92,16 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
 
 Use `check ... --json` only for diagnostics when no playback URL is needed.
 
-For `/tiktok_live_mon @name`, the complete normal operation is this single
-exec tool call:
+For `/tiktok_live_mon`, use the controller workflow above. The dispatcher in
+this section is only for explicit immediate checks and playback URL requests.
 
-```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
-```
-
-Exec tool parameters:
-
-```json
-{"elevated": true}
-```
-
-Do not use Process/session tools for one-shot TikTok checks. Do not start a
-named long-running process. The dispatcher owns browser startup, fallback
-timeouts, process cleanup, and final JSON output.
+Start exactly one dispatcher exec per request. Do not start a named
+long-running process manually. If exec yields `Command still running (session
+NAME, pid PID)`, do not rerun exec: call the process tool with action `poll`
+and `sessionId: "NAME"`. The process session id is the textual `NAME`, never
+the numeric PID. Continue polling that same name until completion. The
+dispatcher owns browser startup, fallback timeouts, process cleanup, and final
+JSON output.
 
 Use the exec tool directly with the exact absolute dispatcher path above. Do
 not render dispatcher commands as chat text. Do not use `$HOME`, shell

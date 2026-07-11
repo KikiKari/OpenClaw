@@ -18,13 +18,20 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
 Use the exec tool directly with the absolute dispatcher command before
 discussing permissions. In OpenClaw Control, set the exec tool parameter
 `elevated: true` for this dispatcher call and do not set the `host` field.
+The dispatcher is already covered by a gateway allowlist entry with a strict
+argument rule. Call exec immediately; do not ask for approval, wait for
+approval, or return an `/approve ...` command as chat text. Only report an
+approval error if the exec tool itself returns one.
 For handle-only slash-command requests and VLC-link requests, run
 `url ... --json` and answer with live/offline/restricted status plus the
 resolved URL or a compact failure reason.
 Use `check ... --json` only for diagnostics when no playback URL is needed.
-Do not use Process/session tools for one-shot TikTok checks. Do not start a
-named long-running process. The dispatcher owns browser startup, fallback
-timeouts, process cleanup, and final JSON output.
+Start exactly one dispatcher exec per request. Do not start a named
+long-running process manually. If exec yields `Command still running (session
+NAME, pid PID)`, do not rerun exec: poll the existing process using the textual
+`NAME` as `sessionId`, never the numeric PID. Continue polling that same name
+until completion. The dispatcher owns browser startup, fallback timeouts,
+process cleanup, and final JSON output.
 Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
 Use the documented `/home/openclaw/.openclaw/workspace/...` path and do not
 set `host` to `gateway`; set `elevated: true` and leave exec host unset so
@@ -104,7 +111,7 @@ Use the wrapper for identity/state persistence or daemon monitoring:
 ```bash
 "$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" check example_creator
 "$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" url example_creator
-"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" daemon example_creator --hours 12 --poll-min 5
+"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" daemon example_creator --hours 24 --poll-min 10
 ```
 
 The Python component uses `secUid` as the stable primary key and stores
@@ -163,7 +170,7 @@ do not place working signed URLs in documentation.
 ## Constraints
 
 - one handle per daemon;
-- five-minute minimum daemon poll interval;
+- ten-minute minimum daemon poll interval;
 - Python resolver targets a bounded 360p HLS format;
 - no recording and no outbound notification integration;
 - validated handles only; `secUid` remains the durable identity key;

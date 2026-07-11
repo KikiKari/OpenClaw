@@ -9,7 +9,7 @@ Subcommands
   url    <username>   Resolve current m3u8 stream URL; URL to stdout
                       Exit 0 = ok, 1 = offline, 2 = error
   daemon <username>   Poll over a timer window; emit events on transitions
-                      Args: --hours N (default 12), --poll-min M (min 5)
+                      Args: --hours N (default 24), --poll-min M (min 10)
                       Exit 0 always at clean end
 
 Design
@@ -62,8 +62,8 @@ from typing import Any
 # ============================================================================
 
 FORMAT_CAP = "360"               # hardcoded; not configurable
-MIN_POLL_MINUTES = 5             # daemon poll floor
-DEFAULT_DAEMON_HOURS = 12        # daemon default duration
+MIN_POLL_MINUTES = 10            # daemon poll floor
+DEFAULT_DAEMON_HOURS = 24        # daemon default duration
 URL_RETENTION_DAYS = 3           # stream URL retention in state store
 REQUEST_TIMEOUT_SEC = 15         # per HTTP request
 TT_AID = "1988"                  # TikTok webcast app id

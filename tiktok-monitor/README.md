@@ -23,7 +23,7 @@ Für den zustandsbehafteten Monitor und Daemon:
 "$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" help
 "$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" check example_creator
 "$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" url example_creator
-"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" daemon example_creator --hours 12
+"$HOME/.openclaw/workspace/tiktok-monitor/tt-live.sh" daemon example_creator --hours 24 --poll-min 10
 ```
 
 Details stehen in `SKILL.md` und `docs/`.

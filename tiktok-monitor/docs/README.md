@@ -40,7 +40,7 @@ shell wrapper and three subcommands.
 |---|---|
 | "Is @&lt;user&gt; live right now?" | `tt-live.sh check <user>` |
 | "Give me the stream URL for @&lt;user&gt;" | `tt-live.sh url <user>` |
-| "Watch @&lt;user&gt; for the next 12 hours and tell me when they go live" | `tt-live.sh daemon <user> --hours 12 --poll-min 5`, then tail the events file |
+| "Watch @&lt;user&gt; for the next 24 hours and tell me when they go live" | `tt-live.sh daemon <user> --hours 24 --poll-min 10`, then tail the events file |
 | "Did @&lt;user&gt; rename recently?" | `tt-live.sh check <user>`, read `rename_detected` field |
 | "I have room_id X — is it still alive?" | `check_alive.py X` (standalone, no workspace touch) |
 | "I have a username, just give me the IDs" | `get_room_id.py <user>` (standalone, no workspace touch) |
@@ -110,7 +110,7 @@ direct webcast API → yt-dlp → streamlink.
 ### Watch for transitions
 
 ```bash
-$ tt-live.sh daemon <user> --hours 12 --poll-min 5
+$ tt-live.sh daemon <user> --hours 24 --poll-min 10
 pid=12345
 username=<user>
 workspace=$HOME/.openclaw/workspace/tiktok-monitor
@@ -135,7 +135,7 @@ JSON="$(tt-live.sh check <user>)"
 SEC_UID="$(echo "$JSON" | python3 -c 'import json,sys; print(json.load(sys.stdin)["sec_uid"])')"
 
 # 2) Spawn daemon. Capture events_dir from its key=value output.
-DAEMON_OUT="$(tt-live.sh daemon <user> --hours 12 --poll-min 5)"
+DAEMON_OUT="$(tt-live.sh daemon <user> --hours 24 --poll-min 10)"
 EVENTS_DIR="$(echo "$DAEMON_OUT" | awk -F= '/^events_dir=/{print $2}')"
 EVENTS_FILE="$EVENTS_DIR/$SEC_UID.events"
 
@@ -197,7 +197,7 @@ Layout details, including the per-file JSON schemas, are in
 | Constraint | Value | Why |
 |---|---|---|
 | Stream format cap | 360p (HLS m3u8) | Predictable bandwidth for sub-agent use cases |
-| Poll interval floor | 5 minutes | TikTok rate-limits aggressive polling |
+| Poll interval floor | 10 minutes | TikTok rate-limits aggressive polling |
 | URL cache retention | 3 days | Bounds state/history; not a playability guarantee |
 | HTTP request timeout | 15 seconds | Calibrated to TikTok's observed response latency |
 | Notifications | none | The skill is a data provider; sub-agents announce |

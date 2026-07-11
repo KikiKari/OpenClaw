@@ -76,11 +76,11 @@ selector `best[height<=360]/worst[height<=360]/worst`, and
 `extract_via_streamlink()` quality argument `360p,worst`. **Not exposed
 to the CLI or config.**
 
-### `MIN_POLL_MINUTES = 5`
-Floor for the daemon's `--poll-min` argument. Any value below 5 is
+### `MIN_POLL_MINUTES = 10`
+Floor for the daemon's `--poll-min` argument. Any value below 10 is
 silently clamped to 5 in `cmd_daemon()`.
 
-### `DEFAULT_DAEMON_HOURS = 12`
+### `DEFAULT_DAEMON_HOURS = 24`
 Default value for `daemon --hours` when the flag is omitted.
 
 ### `URL_RETENTION_DAYS = 3`
@@ -659,7 +659,7 @@ python3 tt_live.py daemon <username> [--hours N] [--poll-min M]
 
 ### Function: `cmd_daemon(args) -> int`
 
-Default duration 12 hours, default poll interval 5 minutes (floor).
+Default duration 24 hours, default poll interval 10 minutes (floor).
 Values below the floor are silently clamped: `max(MIN_POLL_MINUTES, poll_min)`.
 
 **Behavior:**

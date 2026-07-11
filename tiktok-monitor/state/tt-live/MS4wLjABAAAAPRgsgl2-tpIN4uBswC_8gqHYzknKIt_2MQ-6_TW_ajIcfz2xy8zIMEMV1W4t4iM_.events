@@ -1,0 +1,4 @@
+ts=2026-07-11T04:15:19Z evt=daemon_start sec_uid=MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_ unique_id=luiisamour hours=24 poll_sec=600
+ts=2026-07-11T04:15:20Z evt=poll_ok sec_uid=MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_ unique_id=luiisamour alive=false
+ts=2026-07-11T04:15:20Z evt=go_offline sec_uid=MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_ unique_id=luiisamour last_room_id=7655420532719962912
+ts=2026-07-11T04:19:10Z evt=daemon_end sec_uid=MS4wLjABAAAAPRgsgl2-tpIN4uBswC_8gqHYzknKIt_2MQ-6_TW_ajIcfz2xy8zIMEMV1W4t4iM_ unique_id=luiisamour reason=interrupted transitions=1

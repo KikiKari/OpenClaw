@@ -28,6 +28,10 @@ exec tool field `elevated` to `true`; do not set the `host` field. This keeps
 `tools.exec.host: auto` and multi-node routing intact while letting the
 dispatcher run in the gateway environment where Playwright/Chromium and TikTok
 network access work.
+The dispatcher command is already covered by the gateway exec allowlist. Call
+the exec tool immediately: do not ask for approval, do not wait for approval,
+and never print or return an `/approve ...` command as chat text. Only report an
+approval error if the exec tool itself actually returns one.
 Terminal rule: if any dispatcher run returns JSON with `status: "live"` and
 a non-empty `url`, the next action must be the final user reply containing
 that URL. Do not call any other tool after that result. Do not search for a
@@ -66,9 +70,13 @@ Exec tool parameters:
 {"elevated": true}
 ```
 
-Do not use Process/session tools for one-shot TikTok checks. Do not start a
-named long-running process. The dispatcher owns browser startup, fallback
-timeouts, process cleanup, and final JSON output.
+Start exactly one dispatcher exec per request. Do not start a named
+long-running process manually. If exec yields `Command still running (session
+NAME, pid PID)`, do not rerun exec: call the process tool with action `poll`
+and `sessionId: "NAME"`. The process session id is the textual `NAME`, never
+the numeric PID. Continue polling that same name until completion. The
+dispatcher owns browser startup, fallback timeouts, process cleanup, and final
+JSON output.
 
 Use the exec tool directly with the exact absolute dispatcher path above. Do
 not render dispatcher commands as chat text. Do not use `$HOME`, shell

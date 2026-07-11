@@ -24,9 +24,9 @@ append-only log file.
 python3 tt_live.py daemon <user> [--hours N] [--poll-min M]
 ```
 
-- **Default duration:** 12 hours
-- **Default poll interval:** 5 minutes
-- **Hard floor on poll interval:** 5 minutes (lower values clamped silently)
+- **Default duration:** 24 hours
+- **Default poll interval:** 10 minutes
+- **Hard floor on poll interval:** 10 minutes (lower values clamped silently)
 - **Hard floor on duration:** 1 hour (lower values clamped silently)
 
 The daemon does not background itself. The `tt-live.sh` wrapper is
@@ -205,7 +205,7 @@ one second when very close to deadline.
 | Parameter | Source | Notes |
 |---|---|---|
 | `hours` | `--hours` arg | clamped to `max(1, int(args.hours))` |
-| `poll_min` | `--poll-min` arg | clamped to `max(5, int(args.poll_min))` |
+| `poll_min` | `--poll-min` arg | clamped to `max(10, int(args.poll_min))` |
 | `poll_sec` | derived | `poll_min * 60` |
 | `deadline` | derived | `time.time() + hours * 3600` (captured once, at loop entry) |
 
@@ -216,10 +216,10 @@ the previous sleep ended. Total run time is at most
 `hours * 3600 + poll_sec` (one extra sleep if we just barely missed
 deadline check).
 
-**Example: `--hours 12 --poll-min 5`:**
-- `poll_sec = 300`
-- `deadline ≈ now + 43200`
-- Expected poll count: ~144 (`43200 / 300`)
+**Example: `--hours 24 --poll-min 10`:**
+- `poll_sec = 600`
+- `deadline ≈ now + 86400`
+- Expected poll count: ~144 (`86400 / 600`)
 - Expected event count (worst case): 1 (start) + 144 (poll_ok or
   poll_err) + 1 (daemon_end) + transitions + renames ≈ 150 events
 
@@ -412,7 +412,7 @@ the next event emission.
 | Limitation | Workaround |
 |---|---|
 | Single user per daemon | Spawn one daemon per user; each gets its own events file |
-| 5-minute resolution | TikTok rate limits prevent faster polling; no workaround |
+| 10-minute resolution | TikTok rate limits prevent faster polling; no workaround |
 | No stream-content capture | Use the URL with VLC, ffmpeg, or yt-dlp externally |
 | No SIGTERM handling | Use SIGINT to stop cleanly |
 | Events file grows unbounded | Periodic external rotation (e.g. logrotate) is the caller's responsibility |

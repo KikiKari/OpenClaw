@@ -579,7 +579,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-10)
+## Promoted From Short-Term Memory (2026-07-11)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-07-06-0515.md:3:5 -->
-- Session: 2026-07-06 05:15:03 GMT+2: **Session Key**: agent:main:main; **Session ID**: f31085c4-b5b1-4dca-8e5d-c3f5ce7df3a3; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-06-0515.md:3-5]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-06-0515.md:9:9 -->
+- Conversation Summary: assistant: ✅ Session reset. [score=0.843 recalls=0 avg=0.620 source=memory/2026-07-06-0515.md:9-9]
