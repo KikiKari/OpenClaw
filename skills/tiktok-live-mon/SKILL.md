@@ -1,8 +1,6 @@
 ---
 name: tiktok-live-mon
 description: Run a TikTok one-shot request by default or explicitly manage a parameterized long-running monitor.
-command-dispatch: tool
-command-tool: tiktok_live_mon_direct
 ---
 
 # TikTok LIVE monitor contract
@@ -13,6 +11,10 @@ one-shot contract from `tiktok-live` and invoke exactly:
 ```bash
 python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @handle --json
 ```
+
+The first attempt uses configured `host: auto`. Only a final
+`overloaded`/`concurrency_preflight` result may delegate the identical command
+once with `host=node`. All other gateway or node failures are terminal.
 
 A long-running monitor starts only when the current user input explicitly uses
 `start`:

@@ -1,8 +1,6 @@
 ---
 name: tiktok-live
 description: Run exactly one canonical TikTok LIVE dispatcher for one-shot status and playback URL requests.
-command-dispatch: tool
-command-tool: tiktok_live_direct
 ---
 
 # TikTok LIVE one-shot contract
@@ -20,11 +18,16 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
   or session history.
 - Never invoke this tool during a heartbeat for a request found only in session
   history. A TikTok invocation requires a TikTok request in the current prompt.
-- Do not set an exec host. The configured `tools.exec.host: auto` preserves
-  multi-node behavior.
-- Start exactly one dispatcher process per request. If it runs in the
+- Keep the first `exec` call on configured `host: auto`; do not set `host`.
+- If and only if that dispatcher returns `status: overloaded`, exit code `75`,
+  and `method: concurrency_preflight`, retry the exact same command once with
+  `host=node`. Let OpenClaw process routing select the connected node; do not
+  run node diagnostics or retry another node.
+- Gateway failures, node failures, denials, and approval errors are terminal.
+  Never create a fallback or approval loop.
+- Start at most one dispatcher process per host for a request. If it runs in the
   background, poll its textual session name, never its PID. Never rerun the
-  dispatcher during that request.
+  dispatcher on that host during that request.
 - After final dispatcher JSON, do not run further Node or extraction attempts.
 - Never expose raw JSON, tool logs, fallback attempts, or reasoning.
 

@@ -93,7 +93,9 @@ class DispatcherTests(unittest.TestCase):
         return mock.Mock(operation=operation, handle="example", timeout=5, quality="ld", json=True)
 
     def test_terminal_python_url_does_not_run_node(self):
-        with mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("live", "python_api", 0, "https://x/live.m3u8")), \
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("live", "python_api", 0, "https://x/live.m3u8")), \
              mock.patch.object(dispatcher, "node_fallback") as fallback:
             with mock.patch("builtins.print"):
                 code = dispatcher.dispatch(self.args())
@@ -101,7 +103,9 @@ class DispatcherTests(unittest.TestCase):
         fallback.assert_not_called()
 
     def test_python_error_runs_one_internal_fallback(self):
-        with mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("technical_error", "python_api", 2)), \
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("technical_error", "python_api", 2)), \
              mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("restricted", "playwright_enhanced", 1)) as fallback, \
              mock.patch.object(dispatcher, "identity_sync"), \
              mock.patch("builtins.print"):
@@ -110,13 +114,30 @@ class DispatcherTests(unittest.TestCase):
         fallback.assert_called_once()
 
     def test_python_offline_is_provisional_and_runs_node(self):
-        with mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("offline", "python_webcast", 1)), \
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("offline", "python_webcast", 1)), \
              mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("offline", "playwright_enhanced", 1)) as fallback, \
              mock.patch.object(dispatcher, "identity_sync"), \
              mock.patch("builtins.print"):
             code = dispatcher.dispatch(self.args("check"))
         self.assertEqual(code, 1)
         fallback.assert_called_once()
+
+    def test_overloaded_preflight_is_immediate_and_runs_no_resolver(self):
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=None), \
+             mock.patch.object(dispatcher, "python_first") as python_first, \
+             mock.patch("builtins.print") as output:
+            code = dispatcher.dispatch(self.args())
+        self.assertEqual(code, dispatcher.EXIT_OVERLOADED)
+        python_first.assert_not_called()
+        payload = json.loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "overloaded")
+        self.assertEqual(payload["method"], "concurrency_preflight")
+
+    def test_default_dispatcher_capacity_is_one(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(dispatcher.max_active_dispatchers(), 1)
 
 
 if __name__ == "__main__":

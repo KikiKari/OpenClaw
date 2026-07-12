@@ -8,6 +8,7 @@ internal fallbacks only; callers must never invoke the Node scripts directly.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import re
@@ -26,6 +27,7 @@ EXIT_OVERLOADED = 75
 HANDLE_RE = re.compile(r"^[A-Za-z0-9._]{1,24}$")
 URL_RE = re.compile(r"https?://[^\s\"'<>]+")
 MAX_CAPTURE = 1024 * 1024
+DEFAULT_MAX_ACTIVE = 1
 
 ROOT = Path(__file__).resolve().parent.parent
 MONITOR = ROOT / "tiktok-monitor" / "tt-live.sh"
@@ -39,6 +41,41 @@ class Result:
     method: str
     exit_code: int
     url: str | None = None
+
+
+def max_active_dispatchers() -> int:
+    raw = os.environ.get("TIKTOK_DISPATCH_MAX_ACTIVE", str(DEFAULT_MAX_ACTIVE))
+    try:
+        return max(1, min(int(raw), 32))
+    except ValueError:
+        return DEFAULT_MAX_ACTIVE
+
+
+def acquire_dispatch_slot() -> Any | None:
+    """Acquire one non-blocking, per-host dispatcher slot."""
+    lock_root = Path(os.environ.get("TIKTOK_DISPATCH_LOCK_DIR", "/tmp"))
+    lock_root.mkdir(parents=True, exist_ok=True)
+    for slot in range(max_active_dispatchers()):
+        lock_file = (lock_root / f"openclaw-tiktok-dispatch-{os.getuid()}-{slot}.lock").open("a+")
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return lock_file
+        except BlockingIOError:
+            lock_file.close()
+    return None
+
+
+def payload_for(result: Result) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "status": result.status,
+        "execution": os.environ.get("TIKTOK_EXECUTION_CONTEXT", "auto"),
+        "node": os.environ.get("TIKTOK_NODE_ID"),
+        "method": result.method,
+        "exit_code": result.exit_code,
+    }
+    if result.url:
+        payload["url"] = result.url
+    return payload
 
 
 def normalize_handle(raw: str) -> str:
@@ -213,29 +250,29 @@ def identity_sync(handle: str, timeout: int) -> None:
 
 
 def dispatch(args: argparse.Namespace) -> int:
-    first = python_first(args.operation, args.handle, args.timeout)
-    if args.operation == "url" and first.status == "live" and first.url:
-        final = first
+    slot = acquire_dispatch_slot()
+    if slot is None:
+        final = Result("overloaded", "concurrency_preflight", EXIT_OVERLOADED)
     else:
-        fallback = node_fallback(args.operation, args.handle, args.quality, args.timeout)
-        if fallback.status in {"live", "offline", "restricted"}:
-            final = fallback
-            if not fallback.method.startswith("python_"):
-                identity_sync(args.handle, min(args.timeout, 20))
-        elif first.status == "live":
-            final = first
-        else:
-            final = fallback
-    payload: dict[str, Any] = {
-        "status": final.status,
-        "execution": os.environ.get("TIKTOK_EXECUTION_CONTEXT", "auto"),
-        "node": os.environ.get("TIKTOK_NODE_ID"),
-        "method": final.method,
-        "exit_code": final.exit_code,
-    }
-    if final.url:
-        payload["url"] = final.url
-    if args.json or args.operation == "check":
+        try:
+            first = python_first(args.operation, args.handle, args.timeout)
+            if args.operation == "url" and first.status == "live" and first.url:
+                final = first
+            else:
+                fallback = node_fallback(args.operation, args.handle, args.quality, args.timeout)
+                if fallback.status in {"live", "offline", "restricted"}:
+                    final = fallback
+                    if not fallback.method.startswith("python_"):
+                        identity_sync(args.handle, min(args.timeout, 20))
+                elif first.status == "live":
+                    final = first
+                else:
+                    final = fallback
+        finally:
+            fcntl.flock(slot.fileno(), fcntl.LOCK_UN)
+            slot.close()
+    payload = payload_for(final)
+    if args.json or args.operation == "check" or final.status == "overloaded":
         print(json.dumps(payload, ensure_ascii=False))
     elif final.url:
         print(final.url)
