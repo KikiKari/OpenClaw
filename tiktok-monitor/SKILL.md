@@ -16,8 +16,9 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
 ```
 
 Use the exec tool directly with the absolute dispatcher command before
-discussing permissions. In OpenClaw Control, set the exec tool parameter
-`elevated: true` for this dispatcher call and do not set the `host` field.
+discussing permissions. In OpenClaw Control, set `elevated: true` and omit the
+`host` and `node` fields so `tools.exec.host: auto` selects the normal local
+execution path.
 The dispatcher is already covered by a gateway allowlist entry with a strict
 argument rule. Call exec immediately; do not ask for approval, wait for
 approval, or return an `/approve ...` command as chat text. Only report an
@@ -33,12 +34,15 @@ NAME, pid PID)`, do not rerun exec: poll the existing process using the textual
 until completion. The dispatcher owns browser startup, fallback timeouts,
 process cleanup, and final JSON output.
 Do not translate the dispatcher path to `/workspace/...` in OpenClaw Control.
-Use the documented `/home/openclaw/.openclaw/workspace/...` path and do not
-set `host` to `gateway`; set `elevated: true` and leave exec host unset so
-OpenClaw uses the configured `tools.exec.host: auto` behavior.
-This preserves multi-node behavior: do not force gateway and do not force a
-specific node for a handle-only request; let OpenClaw and the dispatcher keep
-their automatic gateway/node routing.
+Use the documented `/home/openclaw/.openclaw/workspace/...` path and never
+substitute `~`, `$HOME`, or `/workspace` in OpenClaw Control. Keep
+`tools.exec.host: auto`; do not force the first invocation to gateway or node.
+If the local result is `technical_error`, `dependency_missing`, or
+`overloaded`, or has no valid final JSON, the caller may retry exactly once on
+the least-loaded connected paired node using explicit per-call `host=node`,
+`--execution local`, and the node execution-context environment. OpenClaw
+2026.6.11 allows that per-call node request from the global `auto` default.
+Never change the global host for routing and never retry a failed node run.
 If the user says a previous URL failed, re-run the same dispatcher command
 once for a fresh signed URL. Do not run dependency probes such as
 `which streamlink`, `which yt-dlp`, `command -v`, `dir_list`, `read`, `sed`,
@@ -111,6 +115,10 @@ overload, timeout, or invoke failure fall back to the gateway unless disabled.
 
 The load threshold is the 1-minute load divided by CPU count. Its default is
 `1.5`; set `TIKTOK_MAX_LOAD_PER_CPU` to override it.
+Each executor also accepts one active dispatcher by default. A concurrent
+additional request exits `75` with method `concurrency_preflight`, allowing
+the caller to send it to another node immediately instead of waiting for the
+1-minute load average. Set `TIKTOK_MAX_CONCURRENT` to tune per-host capacity.
 
 ## Stateful Python component
 

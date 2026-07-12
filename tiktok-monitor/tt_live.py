@@ -871,13 +871,10 @@ def cmd_url(args: argparse.Namespace) -> int:
         return 2
     room_id = str(room_id)
 
-    cached = state_store.get_latest_url(sec_uid, room_id)
-    if cached:
-        print(cached)
-        if args.verbose:
-            sys.stderr.write("# source: cache\n")
-        return 0
-
+    # Stored stream URLs are history only. TikTok can revoke a signed URL
+    # before its query-string expiry or reuse a room id for a new playback
+    # session, so returning a cached value here can hand VLC a dead manifest.
+    # Resolve every public playback request from the current room metadata.
     url, source = extract_stream_url(room_id, username)
     if not url:
         sys.stderr.write(

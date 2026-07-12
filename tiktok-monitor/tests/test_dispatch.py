@@ -62,6 +62,16 @@ class DispatcherTests(unittest.TestCase):
         attempt = dispatch.classify("playwright", 2, '{"live":true}', "", "check")
         self.assertEqual(attempt.status, "technical_error")
 
+    def test_browser_crash_with_exit_one_is_technical_error(self):
+        attempt = dispatch.classify(
+            "playwright_network_basic",
+            1,
+            "",
+            "browserType.launch: Target page, context or browser has been closed",
+            "url",
+        )
+        self.assertEqual(attempt.status, "technical_error")
+
     def test_remote_title_does_not_override_structured_live(self):
         attempt = dispatch.classify(
             "python", 0, '{"live":true,"title":"age-restricted promotion"}', "", "check"
@@ -126,6 +136,24 @@ class DispatcherTests(unittest.TestCase):
         with mock.patch.dict(os.environ, {"TIKTOK_TEST_LOAD_PER_CPU": "2.0",
                                           "TIKTOK_MAX_LOAD_PER_CPU": "1.5"}):
             self.assertEqual(dispatch.load_state(), (2.0, 1.5))
+
+    def test_concurrency_state_override(self):
+        with mock.patch.dict(
+            os.environ,
+            {"TIKTOK_TEST_ACTIVE_DISPATCHES": "2", "TIKTOK_MAX_CONCURRENT": "1"},
+        ):
+            self.assertEqual(dispatch.concurrency_state(), (2, 1))
+
+    @mock.patch.object(dispatch, "emit_log")
+    def test_concurrent_request_returns_overloaded(self, _emit_log):
+        args = Namespace(json=True)
+        with mock.patch.object(dispatch, "concurrency_state", return_value=(2, 1)):
+            with mock.patch("builtins.print") as output:
+                code = dispatch.dispatch(args)
+        self.assertEqual(code, 75)
+        payload = __import__("json").loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "overloaded")
+        self.assertEqual(payload["method"], "concurrency_preflight")
 
     @mock.patch.object(dispatch, "emit_log")
     @mock.patch.object(dispatch, "run_command")

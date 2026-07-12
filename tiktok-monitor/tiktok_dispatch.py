@@ -31,6 +31,7 @@ USERNAME_PATTERN = re.compile(r"^[A-Za-z0-9._]{1,24}$")
 URL_PREFIXES = ("http://", "https://")
 MAX_CAPTURE_BYTES = 1024 * 1024
 NODE_STATUS_TIMEOUT_SECONDS = 30
+DEFAULT_MAX_CONCURRENT = 1
 
 def resolve_workspace() -> Path:
     configured = os.environ.get("OPENCLAW_WORKSPACE", "").strip()
@@ -72,6 +73,32 @@ def load_state() -> tuple[float, float]:
     if observed < 0 or maximum <= 0:
         raise ValueError("invalid TikTok load configuration")
     return observed, maximum
+
+
+def active_dispatch_count() -> int:
+    override = os.environ.get("TIKTOK_TEST_ACTIVE_DISPATCHES")
+    if override is not None:
+        return max(0, int(override))
+    count = 0
+    proc = Path("/proc")
+    for entry in proc.iterdir():
+        if not entry.name.isdigit():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+        except (FileNotFoundError, PermissionError, ProcessLookupError):
+            continue
+        if any(arg.endswith(b"/tiktok_dispatch.py") for arg in argv):
+            count += 1
+    return count
+
+
+def concurrency_state() -> tuple[int, int]:
+    active = active_dispatch_count()
+    maximum = int(os.environ.get("TIKTOK_MAX_CONCURRENT", str(DEFAULT_MAX_CONCURRENT)))
+    if maximum < 1:
+        raise ValueError("TIKTOK_MAX_CONCURRENT must be at least 1")
+    return active, maximum
 
 
 def emit_log(value: Any) -> None:
@@ -290,6 +317,12 @@ def classify(
     )):
         return Attempt(method, "dependency_missing", exit_code, stderr or stdout, data=data)
     if any(marker in combined for marker in (
+        "browsertype.launch", "target page, context or browser has been closed",
+        "failed to resolve", "operation not permitted", "sigtrap",
+        "all extraction methods failed",
+    )):
+        return Attempt(method, "technical_error", exit_code, stderr or stdout, data=data)
+    if any(marker in combined for marker in (
         "age-restricted", "altersbeschränkt", "mature content",
         "login erforderlich", "stream restricted",
     )):
@@ -463,6 +496,15 @@ def sync_identity_after_fallback(args: argparse.Namespace, payload: dict[str, An
 
 
 def dispatch(args: argparse.Namespace) -> int:
+    active, concurrency_maximum = concurrency_state()
+    if active > concurrency_maximum:
+        payload = result_payload("overloaded", "concurrency_preflight", 75, [])
+        payload.update({"activeDispatches": active, "maximum": concurrency_maximum})
+        emit_log(payload)
+        if args.json:
+            print(json.dumps(payload, ensure_ascii=False))
+        return 75
+
     observed, maximum = load_state()
     if observed > maximum:
         payload = result_payload("overloaded", "preflight", 75, [])
