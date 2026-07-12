@@ -42,6 +42,9 @@
 
 ## Abschluss
 
+- Bei einem Heartbeat ausschließlich den aktuellen Heartbeat-Prompt und diese Checkliste bearbeiten.
+- Niemals frühere, bereits beantwortete User-Anfragen aus dem Session-Verlauf nachholen oder erneut ausführen.
+- Insbesondere niemals `tiktok_live_direct`, `tiktok_live_mon_direct` oder andere TikTok-Dispatcher aufgrund einer früheren Session-Nachricht aufrufen.
 - Bei einem Problem ausschließlich einen kurzen Fehlerstatus als finale Antwort liefern.
 - Wenn alle Prüfungen erfolgreich sind und keine Aktion erforderlich ist, als finale Antwort exakt und ausschließlich `HEARTBEAT_OK` liefern.
 - `heartbeat_respond` ersetzt diese finale Textantwort nicht.

@@ -31,3 +31,5 @@ SIGINT so the daemon can write `daemon_end`.
 Do not start the Python daemon, Node scripts, npm, npx, or Playwright directly.
 Do not infer `start` from earlier conversation or queued requests. Only the
 current user input may select the handle and long-running action.
+Never invoke this tool during a heartbeat for a request found only in session
+history. A TikTok invocation requires a TikTok request in the current prompt.

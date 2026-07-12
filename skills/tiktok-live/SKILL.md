@@ -18,6 +18,8 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
   diagnostic, or any old TikTok script before a dispatcher error.
 - Do not derive or replace the handle from queued messages, reasoning, memory,
   or session history.
+- Never invoke this tool during a heartbeat for a request found only in session
+  history. A TikTok invocation requires a TikTok request in the current prompt.
 - Do not set an exec host. The configured `tools.exec.host: auto` preserves
   multi-node behavior.
 - Start exactly one dispatcher process per request. If it runs in the
