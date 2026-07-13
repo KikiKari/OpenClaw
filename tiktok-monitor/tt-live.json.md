@@ -166,8 +166,9 @@ library (e.g. `pyjson5`) if more advanced features are needed.
 For audit purposes, the following keys were considered and
 **deliberately excluded** based on confirmed requirements:
 
-- No `format_cap` — 360p cap is hardcoded in `tt_live.py` and is
-  required for the bandwidth profile assumed by the skill
+- No `format_cap` — quality is a per-request CLI choice. The canonical ladder
+  is `original`, `1080p60`, `720p60`, `720p`, `540p`, `360p`, and `auto`;
+  `auto` is the default.
 - No `min_poll_minutes` — 10-minute floor is hardcoded; lowering it
   risks TikTok rate-limit pushback
 - No `default_daemon_hours` — already exposed via `--hours` CLI flag

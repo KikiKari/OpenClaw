@@ -466,7 +466,9 @@ def commands(operation: str, username: str, quality: str) -> list[tuple[str, lis
             ("playwright_basic", ["node", str(PLAYWRIGHT_BASIC / "tiktok-check-profile.js"), username]),
         ]
     return [
-        ("python_api_fallbacks", ["bash", str(PYTHON_MONITOR), "url", username]),
+        ("python_api_fallbacks", [
+            "bash", str(PYTHON_MONITOR), "url", username, "--quality", quality,
+        ]),
         ("playwright_streamlink_ytdlp", [
             "node", str(PLAYWRIGHT_MON / "tiktok-get-stream.js"),
             username, quality, "--json",
@@ -680,7 +682,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=("check", "url"))
     parser.add_argument("username", type=normalize_username)
-    parser.add_argument("--quality", default="ld", choices=("ld", "sd", "hd", "origin", "auto"))
+    parser.add_argument(
+        "--quality", default="auto",
+        choices=("original", "1080p60", "720p60", "720p", "540p", "360p", "auto",
+                 "origin", "uhd_60", "hd_60", "hd", "sd", "ld"),
+    )
     parser.add_argument("--timeout", type=positive_bounded_timeout, default=45)
     parser.add_argument("--retries", type=int, choices=(0, 1), default=1)
     parser.add_argument("--json", action="store_true")

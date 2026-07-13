@@ -1,11 +1,20 @@
 ---
 name: tiktok-live-mon
 description: Start, inspect, or stop a timed TikTok LIVE transition monitor, with optional one-shot classification and playback URL resolution through the shared dispatcher. Not for recording.
+command-dispatch: tool
+command-tool: tiktok_live_mon_command
+command-arg-mode: raw
 ---
 
 # TikTok LIVE Enhanced Monitor
 
 ## Mandatory slash-command behavior
+
+Every one-shot query uses fresh tool instances. Never reuse a Playwright
+browser, Chromium context/page, Streamlink process, yt-dlp process, or prior
+tool session. Poll only the still-running process belonging to that query.
+Persistent state is reserved for explicit `start`, `status`, and `stop` monitor
+operations.
 
 For `/tiktok_live_mon @name`, perform a one-shot robust LIVE and playback URL
 check with the shared dispatcher. The dispatcher exec must be the first tool
@@ -13,7 +22,7 @@ call of the request. A bare handle never starts a daemon, timer, service, or
 cron job:
 
 ```bash
-/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --quality auto --json
 ```
 
 Invoke that executable directly as the exec command. Do not invoke `bash`,
@@ -113,7 +122,7 @@ Use the shared dispatcher below only when the user explicitly requests an
 immediate status or VLC/MPV URL rather than a timed monitor:
 
 ```bash
-/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --quality auto --json
 ```
 
 If the dispatcher returns `status: "live"` with a `url`, reply with that URL
@@ -156,7 +165,7 @@ handle, run `url ... --json` directly so the reply can include the VLC/MPV URL
 when the account is live:
 
 ```bash
-/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --quality auto --json
 ```
 
 Use `check ... --json` only for diagnostics when no playback URL is needed.
@@ -188,7 +197,7 @@ for TikTok dispatcher` instead of retrying with sandbox probes.
 If that absolute command fails with `can't open file` or
 `No such file or directory` outside OpenClaw Control, treat it as an execution
 path mismatch, not as a TikTok result. Retry once with
-`/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json` and
+`/workspace/tiktok-monitor/tiktok_dispatch.py url @name --quality auto --json` and
 the exec tool environment `{"OPENCLAW_WORKSPACE":"/workspace"}`, then answer
 from that result.
 In OpenClaw Control, do not retry with `/workspace`; if elevated exec is not

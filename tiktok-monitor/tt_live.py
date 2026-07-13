@@ -25,7 +25,7 @@ Design
 - Stream extraction order: direct webcast API -> yt-dlp -> streamlink
 - A Webcast ``live`` result may still be login/content restricted; the
   dispatcher resolves that distinction with the direct Playwright LIVE page
-- Hardcoded 360p format cap; not configurable
+- HD is preferred; lower qualities are bounded fallbacks
 - No Notifier class. No outbound notifications. Sub-agents own announcement.
 
 Workspace
@@ -62,7 +62,7 @@ from typing import Any
 # Constants — none of these are configurable at runtime by design
 # ============================================================================
 
-FORMAT_CAP = "360"               # hardcoded; not configurable
+DEFAULT_QUALITY = "auto"
 MIN_POLL_MINUTES = 10            # daemon poll floor
 DEFAULT_DAEMON_HOURS = 24        # daemon default duration
 IDENTITY_RETENTION_DAYS = 90     # identity/address-book retention
@@ -271,7 +271,7 @@ def fetch_check_alive(room_id: str) -> bool | None:
 # Stream URL extraction
 # ============================================================================
 
-# Quality key → estimated height. Used for the 360p cap preference.
+# Quality key → estimated height.
 # TikTok keys observed in stream_data: origin, uhd_60, hd_60, hd, sd, ld, ao
 QUALITY_HEIGHT = {
     "ao": 0,        # audio-only; excluded unless nothing else
@@ -283,15 +283,42 @@ QUALITY_HEIGHT = {
     "origin": 1080,
 }
 
+# Public names mirror the quality labels exposed by TikTok's player.  Legacy
+# names remain accepted so existing monitor jobs and skill calls keep working.
+QUALITY_ALIASES = {
+    "original": "original", "origin": "original",
+    "1080p60": "1080p60", "uhd_60": "1080p60",
+    "720p60": "720p60", "hd_60": "720p60",
+    "720p": "720p", "hd": "720p",
+    "540p": "540p", "sd": "540p",
+    "360p": "360p", "ld": "360p",
+    "auto": "auto",
+}
+QUALITY_CHOICES = tuple(QUALITY_ALIASES)
 
-def pick_360p_hls(room_info: dict) -> str | None:
+
+def canonical_quality(quality: str) -> str:
+    return QUALITY_ALIASES.get(quality, "auto")
+
+
+def quality_preference(quality: str) -> list[str]:
+    """Return exact-first quality order with lower resolutions as fallback."""
+    quality = canonical_quality(quality)
+    return {
+        "360p": ["ld", "sd", "hd", "hd_60", "uhd_60", "origin"],
+        "540p": ["sd", "ld", "hd", "hd_60", "uhd_60", "origin"],
+        "720p": ["hd", "sd", "ld", "hd_60", "uhd_60", "origin"],
+        "720p60": ["hd_60", "hd", "sd", "ld", "uhd_60", "origin"],
+        "1080p60": ["uhd_60", "hd_60", "hd", "sd", "ld", "origin"],
+        "original": ["origin", "uhd_60", "hd_60", "hd", "sd", "ld"],
+        "auto": ["origin", "uhd_60", "hd_60", "hd", "sd", "ld"],
+    }[quality]
+
+
+def pick_hls(room_info: dict, quality: str = DEFAULT_QUALITY) -> str | None:
     """
-    Pick the best HLS m3u8 URL under the 360p cap.
-
-    Preference:
-      1. "ld" (360p) exact match
-      2. closest available <= 360 by height
-      3. lowest-quality available over the cap (better than nothing)
+    Pick an allowed HLS URL, preferring the requested quality. For HD, SD and
+    LD are fallbacks only when HD is unavailable.
     Audio-only ("ao") is excluded unless nothing else is available.
     """
     if not room_info:
@@ -334,14 +361,14 @@ def pick_360p_hls(room_info: dict) -> str | None:
     non_audio = [c for c in candidates if c[0] != "ao"]
     pool = non_audio if non_audio else candidates
 
+    preference = quality_preference(quality)
+
     def sort_key(kv: tuple[str, str]) -> tuple[int, int]:
         key, _url = kv
-        height = QUALITY_HEIGHT.get(key, 9999)
-        if key == "ld":
-            return (0, 0)             # best preference
-        if height <= 360:
-            return (1, -height)       # under cap; larger height under cap = better
-        return (2, height)            # over cap; smaller height = closer to cap
+        try:
+            return (0, preference.index(key))
+        except ValueError:
+            return (1, -QUALITY_HEIGHT.get(key, 0))
 
     pool.sort(key=sort_key)
     for _, value in pool:
@@ -360,14 +387,23 @@ def is_allowed_media_url(value: str) -> bool:
     return parsed.scheme == "https" and bool(ALLOWED_MEDIA_HOST_RE.search(hostname))
 
 
-def extract_via_ytdlp(username: str) -> str | None:
-    """Use yt-dlp -g if available; respect 360p cap."""
+def extract_via_ytdlp(username: str, quality: str = DEFAULT_QUALITY) -> str | None:
+    """Use yt-dlp -g with requested quality and bounded lower fallbacks."""
     if not shutil.which("yt-dlp"):
         return None
+    quality = canonical_quality(quality)
     cmd = [
         "yt-dlp",
         "-g",
-        "-f", "best[height<=360]/worst[height<=360]/worst",
+        "-f", {
+            "360p": "hls-ld/flv-ld",
+            "540p": "hls-sd/hls-ld/flv-sd/flv-ld",
+            "720p": "hls-hd/hls-sd/hls-ld/flv-hd/flv-sd/flv-ld",
+            "720p60": "hls-hd_60/hls-hd/hls-sd/hls-ld/flv-hd_60/flv-hd/flv-ld",
+            "1080p60": "hls-uhd_60/hls-hd_60/hls-hd/hls-sd/hls-ld/flv-uhd_60/flv-hd_60/flv-hd/flv-ld",
+            "original": "hls-origin/hls-pull/hls-uhd_60/hls-hd_60/hls-hd/hls-sd/hls-ld/flv-origin/flv-hd/flv-ld",
+            "auto": "hls-origin/hls-hd/hls-sd/hls-ld/hls-pull/flv-origin/flv-hd/flv-ld",
+        }[quality],
         f"https://www.tiktok.com/@{username}/live",
     ]
     try:
@@ -388,15 +424,24 @@ def extract_via_ytdlp(username: str) -> str | None:
     return next((ln for ln in lines if is_allowed_media_url(ln)), None)
 
 
-def extract_via_streamlink(username: str) -> str | None:
+def extract_via_streamlink(username: str, quality: str = DEFAULT_QUALITY) -> str | None:
     """Use streamlink --stream-url if available."""
     if not shutil.which("streamlink"):
         return None
+    quality = canonical_quality(quality)
     cmd = [
         "streamlink",
         "--stream-url",
         f"https://www.tiktok.com/@{username}/live",
-        "360p,worst",
+        {
+            "360p": "ld,worst",
+            "540p": "sd,ld,worst",
+            "720p": "hd,sd,ld,worst",
+            "720p60": "hd_60,hd,sd,ld,worst",
+            "1080p60": "uhd_60,hd_60,hd,sd,ld,worst",
+            "original": "origin,uhd_60,hd_60,hd,sd,ld,best,worst",
+            "auto": "best,origin,uhd_60,hd_60,hd,sd,ld,worst",
+        }[quality],
     ]
     try:
         out = subprocess.run(
@@ -411,7 +456,8 @@ def extract_via_streamlink(username: str) -> str | None:
     return line if line and is_allowed_media_url(line) else None
 
 
-def extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]:
+def extract_stream_url(room_id: str, username: str,
+                       quality: str = DEFAULT_QUALITY) -> tuple[str | None, str]:
     """
     Orchestrate primary (direct API) and optional fallbacks (yt-dlp, streamlink).
     Returns (url, source). Source is 'api' / 'yt-dlp' / 'streamlink' / 'none'.
@@ -419,17 +465,17 @@ def extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]:
     # Primary: direct webcast API
     info = fetch_room_info(room_id)
     if info:
-        url = pick_360p_hls(info)
+        url = pick_hls(info, quality)
         if url:
             return url, "api"
 
     # Fallback 1: yt-dlp
-    url = extract_via_ytdlp(username)
+    url = extract_via_ytdlp(username, quality)
     if url:
         return url, "yt-dlp"
 
     # Fallback 2: streamlink
-    url = extract_via_streamlink(username)
+    url = extract_via_streamlink(username, quality)
     if url:
         return url, "streamlink"
 
@@ -875,7 +921,7 @@ def cmd_url(args: argparse.Namespace) -> int:
     # before its query-string expiry or reuse a room id for a new playback
     # session, so returning a cached value here can hand VLC a dead manifest.
     # Resolve every public playback request from the current room metadata.
-    url, source = extract_stream_url(room_id, username)
+    url, source = extract_stream_url(room_id, username, args.quality)
     if not url:
         sys.stderr.write(
             "error: could not extract stream URL "
@@ -989,7 +1035,7 @@ def cmd_daemon(args: argparse.Namespace) -> int:
             if live and not last_was_live:
                 room_id = str(scrape.get("room_id") or "")
                 if room_id:
-                    url, _src = extract_stream_url(room_id, username)
+                    url, _src = extract_stream_url(room_id, username, args.quality)
                     if url:
                         state_store.add_url(sec_uid, room_id, url)
                 else:
@@ -1080,6 +1126,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Print current m3u8 stream URL (cached or fresh)",
     )
     p_url.add_argument("username", type=normalize_username)
+    p_url.add_argument("--quality", choices=QUALITY_CHOICES, default=DEFAULT_QUALITY)
     p_url.add_argument(
         "--verbose", "-v", action="store_true",
         help="Print extraction source to stderr",
@@ -1091,6 +1138,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Poll user over a timer window; emit events on transitions",
     )
     p_daemon.add_argument("username", type=normalize_username)
+    p_daemon.add_argument("--quality", choices=QUALITY_CHOICES, default=DEFAULT_QUALITY)
     p_daemon.add_argument(
         "--hours", type=int, default=DEFAULT_DAEMON_HOURS,
         help=f"Watch duration in hours (default {DEFAULT_DAEMON_HOURS})",

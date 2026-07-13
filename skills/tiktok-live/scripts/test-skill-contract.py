@@ -8,7 +8,7 @@ import unittest
 SKILL = Path(__file__).resolve().parents[1] / "SKILL.md"
 CANONICAL_COMMAND = (
     "/home/openclaw/.openclaw/workspace/tiktok-monitor/"
-    "tiktok_dispatch.py url @handle --json"
+    "tiktok_dispatch.py url @handle --quality auto --json"
 )
 NODE_COMMAND = CANONICAL_COMMAND
 
@@ -23,6 +23,15 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("Make the existing dispatcher the first action", self.text)
         self.assertIn("first tool call of the request", self.normalized_text)
         self.assertEqual(self.text.count(CANONICAL_COMMAND), 2)
+
+    def test_slash_command_bypasses_the_model(self):
+        for expected in (
+            "command-dispatch: tool",
+            "command-tool: tiktok_live_command",
+            "command-arg-mode: raw",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.text)
 
     def test_no_preliminary_playwright_or_dependency_probe(self):
         for expected in (

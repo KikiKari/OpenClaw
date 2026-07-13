@@ -56,7 +56,7 @@ never talk to chat.
 tt_live.py
 │
 ├── Constants
-│     FORMAT_CAP="360"   MIN_POLL_MINUTES=10  DEFAULT_DAEMON_HOURS=24
+│     DEFAULT_QUALITY="auto"   MIN_POLL_MINUTES=10  DEFAULT_DAEMON_HOURS=24
 │     URL_RETENTION_DAYS=3   REQUEST_TIMEOUT_SEC=15   TT_AID="1988"
 │     USER_AGENT   DEFAULT_WORKSPACE   DEFAULT_IDENTITY_DIR
 │
@@ -78,7 +78,7 @@ tt_live.py
 │
 ├── Stream URL extraction
 │     QUALITY_HEIGHT dict
-│     pick_360p_hls(room_info) → url|None
+│     pick_hls(room_info, quality) → url|None
 │     extract_via_ytdlp(username) → url|None       (subprocess fallback)
 │     extract_via_streamlink(username) → url|None  (subprocess fallback)
 │     extract_stream_url(room_id, username) → (url, source)
@@ -178,13 +178,13 @@ StateStore.get_latest_url(sec_uid, room_id)
        ▼ cache miss
 extract_stream_url(room_id, username):
        │
-       ├── try 1: fetch_room_info → pick_360p_hls
+       ├── try 1: fetch_room_info → pick_hls
        │            │ direct webcast API → JSON envelope → stream_url paths
        │            │ source = "api"
        │            ▼ success: return url
        │
        ├── try 2: extract_via_ytdlp (if yt-dlp on PATH)
-       │            │ subprocess: yt-dlp -g -f "best[height<=360]/..."
+       │            │ subprocess: yt-dlp -g -f "<TikTok HLS format-id chain>"
        │            │ source = "yt-dlp"
        │            ▼ success: return url
        │
@@ -376,16 +376,16 @@ The orchestrator (`extract_stream_url`) tries them in fixed order and
 records which one produced the URL (`source` field). The order is not
 configurable.
 
-### 7.8 360p hardcoded
+### 7.8 Quality-aware extraction
 
-The format cap is fixed at 360p. The selection logic in
-`pick_360p_hls` prefers (1) the `ld` quality key, (2) the largest
-quality under 360p, (3) the smallest quality above 360p as last
-resort.
+The canonical levels are `original`, `1080p60`, `720p60`, `720p`, `540p`,
+`360p`, and `auto`. They map to TikTok keys `origin`, `uhd_60`, `hd_60`,
+`hd`, `sd`, and `ld`. Missing or login-restricted variants fall back only to
+available lower levels; signed URLs are never rewritten. API, Streamlink, and
+yt-dlp use the same ordering and exclude audio-only formats.
 
-**Trade-off:** higher-bandwidth use cases (1080p archival) are not
-supported. This is intentional. Sub-agent announce flows need
-predictable bandwidth.
+Each request owns fresh extractor instances. Browser/context/page and external
+processes are never shared between one-shot requests.
 
 ### 7.9 10-minute poll floor
 
@@ -431,7 +431,6 @@ a release bump.
 | External notifications (Slack, Discord, webhooks) | Sub-agent's job, not skill's |
 | Stop / pause / resume daemon commands | Sub-agent has the pid; `kill <pid>` triggers a clean `daemon_end reason=interrupted` |
 | OpenClaw cron mode | OpenClaw 2026.5.x cron has `ask=always` enforcement that breaks ~16k tokens per run; explicitly disabled at the gateway |
-| `--quality` / `--format` flags | 360p hardcoded; bandwidth predictability |
 | HTTP retry logic | Single attempt; transient failure → caller decides whether to re-run |
 | Identity-store cleanup | Passive 90-day cleanup after successful identity updates |
 | `__UNIVERSAL_DATA_FOR_REHYDRATION__` fallback | Schema unreliable for live-room data |

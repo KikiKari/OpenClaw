@@ -27,10 +27,18 @@ if [[ ! "$USERNAME" =~ ^[A-Za-z0-9._]{1,24}$ ]]; then
     echo "Invalid TikTok username" >&2
     exit 64
 fi
-if [[ ! "$FORMAT" =~ ^(best|worst|ld|sd|hd|origin|auto|[0-9]+p)$ ]]; then
+case "$FORMAT" in
+    hls-origin/hls-pull/hls-uhd_60/hls-hd_60/hls-hd/hls-sd/hls-ld/flv-origin/flv-hd/flv-ld|\
+    hls-uhd_60/hls-hd_60/hls-hd/hls-sd/hls-ld/flv-hd/flv-ld|\
+    hls-hd_60/hls-hd/hls-sd/hls-ld/flv-hd/flv-ld|\
+    hls-hd/hls-sd/hls-ld/flv-hd/flv-sd/flv-ld|\
+    hls-sd/hls-ld/flv-sd/flv-ld|hls-ld/flv-ld|\
+    hls-origin/hls-hd/hls-sd/hls-ld/hls-pull/flv-origin/flv-hd/flv-ld) ;;
+    *)
     echo "Invalid yt-dlp format" >&2
     exit 64
-fi
+    ;;
+esac
 
 LOAD_PER_CPU=$(python3 -c 'import os; print(os.getloadavg()[0] / max(1, os.cpu_count() or 1))')
 MAX_LOAD="${TIKTOK_MAX_LOAD_PER_CPU:-1.5}"
@@ -70,13 +78,14 @@ for item in d.get("formats", []) or []:
     if isinstance(item, dict) and isinstance(item.get("url"), str):
         candidates.append(item["url"])
 for value in candidates:
-    if value.startswith("https://") and ".flv" in value.lower():
+    low = value.lower()
+    if value.startswith("https://") and (".m3u8" in low or ".flv" in low) and "only_audio=1" not in low:
         print(value)
         break
 ' <"$TMP_DIR/stdout.json" 2>/dev/null)
 if [ -z "$URL" ]; then
     emit_json "false" "yt-dlp" "$USERNAME" "" "$FORMAT" \
-        "could not extract HTTPS FLV URL" "$TIMESTAMP" "offline" >&2
+        "could not extract HTTPS video URL" "$TIMESTAMP" "offline" >&2
     exit 1
 fi
 if [ "$JSON_FLAG" = "--json" ]; then

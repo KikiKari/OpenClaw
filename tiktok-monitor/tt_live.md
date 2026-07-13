@@ -51,7 +51,7 @@ Workspace helpers      resolve_workspace, ensure_dirs, now_iso
 HTTP layer             http_get
 SIGI_STATE scrape      parse_sigi_state, fetch_user_live_page, is_live_from_sigi
 Webcast API            fetch_room_info, fetch_check_alive
-Stream URL extraction  pick_360p_hls, extract_via_ytdlp, extract_via_streamlink,
+Stream URL extraction  pick_hls, extract_via_ytdlp, extract_via_streamlink,
                        extract_stream_url
 IdentityStore (class)  load/save identity, pointer, update_from_scrape
 StateStore (class)     read/write state, add_url, strip_stale_urls,
@@ -69,12 +69,11 @@ All constants are **module-level and intentionally not configurable** at
 runtime. Values are part of the contract; changes require a code edit
 and a docs update.
 
-### `FORMAT_CAP = "360"`
-Hardcoded 360p cap for stream-URL selection. Applied in three places:
-`pick_360p_hls()` quality preference order, `extract_via_ytdlp()` format
-selector `best[height<=360]/worst[height<=360]/worst`, and
-`extract_via_streamlink()` quality argument `360p,worst`. **Not exposed
-to the CLI or config.**
+### `DEFAULT_QUALITY = "auto"` and `QUALITY_CHOICES`
+
+The public ladder is `original`, `1080p60`, `720p60`, `720p`, `540p`,
+`360p`, and `auto`. Compatibility aliases (`origin`, `uhd_60`, `hd_60`,
+`hd`, `sd`, `ld`) normalize to the same canonical levels.
 
 ### `MIN_POLL_MINUTES = 10`
 Floor for the daemon's `--poll-min` argument. Any value below 10 is
@@ -241,7 +240,7 @@ on any failure (non-200 status, empty body, JSON decode error, missing
 `data` field).
 
 The returned `data` dict contains `stream_url`, `room_id`, host info,
-and other room metadata. `pick_360p_hls()` consumes it.
+and other room metadata. `pick_hls()` consumes it.
 
 ### `fetch_check_alive(room_id: str) -> bool | None`
 GET `https://webcast.tiktok.com/webcast/room/check_alive/?aid=1988&room_ids=<id>`.
@@ -275,11 +274,11 @@ Maps TikTok stream quality keys to estimated pixel heights:
 }
 ```
 
-Used only by `pick_360p_hls()` to apply the cap.
+Used as metadata when ordering otherwise unknown API candidates.
 
-### `pick_360p_hls(room_info: dict) -> str | None`
+### `pick_hls(room_info: dict, quality="auto") -> str | None`
 Walks the `stream_url` block of a `room/info` response and picks one
-HLS m3u8 URL under the 360p cap.
+allowed HLS URL for the requested canonical quality.
 
 **Two stream_url layouts are handled:**
 
@@ -293,60 +292,59 @@ HLS m3u8 URL under the 360p cap.
 Both layouts feed into a unified `candidates` list of `(quality_key,
 url)` tuples.
 
-**Selection rules:**
-
-1. Audio-only (`ao`) excluded unless nothing else is available.
-2. Sort by preference:
-   - `ld` (exact 360p) always wins
-   - Then closest to 360p without exceeding (larger height under the
-     cap is better, because TikTok rarely has discrete <360p)
-   - Then lowest height above the cap (closer to 360p is better than
-     1080p)
-3. Return the first candidate's URL.
+**Selection rules:** audio-only is excluded while video exists. Requested
+levels map to `origin`, `uhd_60`, `hd_60`, `hd`, `sd`, and `ld`, then fall
+back through available lower levels. `auto` prefers the best public variant.
+Only returned, allowlisted TikTok-CDN HTTPS URLs are used; signed URLs are
+never synthesized by rewriting a suffix.
 
 Returns `None` if no candidates are present.
 
-### `extract_via_ytdlp(username: str) -> str | None`
+### `extract_via_ytdlp(username: str, quality="auto") -> str | None`
 Subprocess shell-out to `yt-dlp` if it exists on `PATH`.
 
 **Command:**
 ```
-yt-dlp -g -f "best[height<=360]/worst[height<=360]/worst"
+yt-dlp -g -f "<TikTok HLS format-id fallback chain>"
        "https://www.tiktok.com/@<username>/live"
 ```
 
 - `-g` prints the resolved URL(s) to stdout
 - Timeout: `2 × REQUEST_TIMEOUT_SEC` (30s default)
-- Returns the first line containing `.m3u8`, or the first non-empty
-  output line if no m3u8 is found
+- Prefers TikTok format IDs such as `hls-hd`, `hls-sd`, and `hls-ld`
+- Excludes audio-only URLs
 - Returns `None` if yt-dlp isn't installed, exits non-zero, times out,
   or produces no usable output
 
-### `extract_via_streamlink(username: str) -> str | None`
+### `extract_via_streamlink(username: str, quality="auto") -> str | None`
 Subprocess shell-out to `streamlink` if it exists on `PATH`.
 
 **Command:**
 ```
 streamlink --stream-url
            "https://www.tiktok.com/@<username>/live"
-           "360p,worst"
+           "best,origin,uhd_60,hd_60,hd,sd,ld,worst"
 ```
 
-The quality selector `"360p,worst"` means "give me 360p; if not
-available, the worst available."
+The selector is derived from the requested level and uses the TikTok plugin's
+actual stream names, not generic guessed resolutions.
 
 Returns the trimmed stdout, or `None` on any failure mode.
 
-### `extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]`
+### `extract_stream_url(room_id: str, username: str, quality="auto") -> tuple[str | None, str]`
 Orchestrator that tries each strategy in order. Returns
 `(url, source)`:
 
 | Strategy | Source string | When |
 |---|---|---|
-| `fetch_room_info` → `pick_360p_hls` | `"api"` | Direct API succeeds |
+| `fetch_room_info` → `pick_hls` | `"api"` | Direct API succeeds |
 | `extract_via_ytdlp` | `"yt-dlp"` | API failed, yt-dlp on PATH |
 | `extract_via_streamlink` | `"streamlink"` | yt-dlp failed/missing |
 | (nothing) | `"none"` | All three failed |
+
+Each one-shot request starts fresh extractor instances. Browser contexts,
+Streamlink processes, yt-dlp processes, and their sessions are never shared
+between requests.
 
 The `source` string is also surfaced via `cmd_url --verbose`.
 

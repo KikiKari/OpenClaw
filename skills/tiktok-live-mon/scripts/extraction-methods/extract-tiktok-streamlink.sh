@@ -26,7 +26,7 @@ if [[ ! "$USERNAME" =~ ^[A-Za-z0-9._]{1,24}$ ]]; then
     echo "Invalid TikTok username" >&2
     exit 64
 fi
-if [[ ! "$QUALITY" =~ ^(best|worst|ld|sd|hd|origin|auto|[0-9]+p)$ ]]; then
+if [[ ! "$QUALITY" =~ ^(best|worst|original|1080p60|720p60|720p|540p|360p|auto)$ ]]; then
     echo "Invalid stream quality" >&2
     exit 64
 fi
@@ -46,10 +46,20 @@ if ! command -v streamlink >/dev/null 2>&1; then
 fi
 
 LIVE_URL="https://www.tiktok.com/@${USERNAME}/live"
-OUTPUT=$(streamlink --json "$LIVE_URL" "$QUALITY" 2>/dev/null)
+case "$QUALITY" in
+    original) SELECTOR="origin,uhd_60,hd_60,hd,sd,ld,best,worst" ;;
+    auto) SELECTOR="best,origin,uhd_60,hd_60,hd,sd,ld,worst" ;;
+    1080p60) SELECTOR="uhd_60,hd_60,hd,sd,ld,worst" ;;
+    720p60) SELECTOR="hd_60,hd,sd,ld,worst" ;;
+    720p) SELECTOR="hd,sd,ld,worst" ;;
+    540p) SELECTOR="sd,ld,worst" ;;
+    360p) SELECTOR="ld,worst" ;;
+    *) SELECTOR="$QUALITY" ;;
+esac
+OUTPUT=$(streamlink --json "$LIVE_URL" "$SELECTOR" 2>/dev/null)
 EXIT_CODE=$?
 if [ "$EXIT_CODE" -ne 0 ] || [ -z "$OUTPUT" ]; then
-    URL=$(streamlink --stream-url "$LIVE_URL" "$QUALITY" 2>/dev/null)
+    URL=$(streamlink --stream-url "$LIVE_URL" "$SELECTOR" 2>/dev/null)
     if [ $? -ne 0 ] || [ -z "$URL" ]; then
         emit_json "false" "streamlink" "$USERNAME" "" "$QUALITY" "" "" \
             "streamlink failed or no stream found" "$TIMESTAMP" "offline" >&2

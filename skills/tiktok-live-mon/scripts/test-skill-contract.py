@@ -8,7 +8,7 @@ import unittest
 SKILL = Path(__file__).resolve().parents[1] / "SKILL.md"
 DISPATCHER = (
     "/home/openclaw/.openclaw/workspace/tiktok-monitor/"
-    "tiktok_dispatch.py url @name --json"
+    "tiktok_dispatch.py url @name --quality auto --json"
 )
 CONTROLLER = (
     "/home/openclaw/.openclaw/workspace/tiktok-monitor/"
@@ -29,6 +29,15 @@ class MonitorSkillContractTests(unittest.TestCase):
         )
         self.assertIn(DISPATCHER, self.text)
         self.assertIn("A bare handle never starts a daemon", self.text)
+
+    def test_slash_command_bypasses_the_model(self):
+        for expected in (
+            "command-dispatch: tool",
+            "command-tool: tiktok_live_mon_command",
+            "command-arg-mode: raw",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.text)
 
     def test_no_preliminary_playwright_or_dependency_probe(self):
         for expected in (

@@ -45,13 +45,13 @@ class IdentityValidationTests(unittest.TestCase):
 
 class PublicUrlResolutionTests(unittest.TestCase):
     def test_cmd_url_resolves_fresh_even_when_history_has_url(self):
-        stale = "https://pull-hls.tiktokcdn.com/old.m3u8"
-        fresh = "https://pull-hls.tiktokcdn.com/fresh.m3u8"
+        stale = "https://pull-hls.tiktokcdn.com/old_ld.m3u8"
+        fresh = "https://pull-hls.tiktokcdn.com/fresh_hd.m3u8"
         identity = mock.Mock()
         identity.update_from_scrape.return_value = ("MS4wLjAB_valid", False)
         state = mock.Mock()
         state.get_latest_url.return_value = stale
-        args = SimpleNamespace(username="example_creator", verbose=False)
+        args = SimpleNamespace(username="example_creator", verbose=False, quality="hd")
         scrape = {"room_id": "123"}
 
         with mock.patch.object(tt_live, "resolve_workspace", return_value=Path("/tmp/ws")), \
@@ -69,6 +69,74 @@ class PublicUrlResolutionTests(unittest.TestCase):
         output.assert_called_once_with(fresh)
         state.get_latest_url.assert_not_called()
         state.add_url.assert_called_once_with("MS4wLjAB_valid", "123", fresh)
+
+    def test_streamlink_720p_fallback_order(self):
+        with mock.patch.object(tt_live.shutil, "which", return_value="/usr/bin/streamlink"), \
+             mock.patch.object(tt_live.subprocess, "run") as run:
+            run.return_value = SimpleNamespace(
+                returncode=0,
+                stdout="https://pull-hls.tiktokcdn.com/live_hd.m3u8\n",
+            )
+            tt_live.extract_via_streamlink("example_creator", "720p")
+        self.assertEqual(run.call_args.args[0][-1], "hd,sd,ld,worst")
+
+    def test_ytdlp_hd_caps_preferred_resolution_at_720p(self):
+        with mock.patch.object(tt_live.shutil, "which", return_value="/usr/bin/yt-dlp"), \
+             mock.patch.object(tt_live.subprocess, "run") as run:
+            run.return_value = SimpleNamespace(
+                returncode=0,
+                stdout="https://pull-hls.tiktokcdn.com/live_hd.m3u8\n",
+            )
+            tt_live.extract_via_ytdlp("example_creator", "hd")
+        selector = run.call_args.args[0][run.call_args.args[0].index("-f") + 1]
+        self.assertTrue(selector.startswith("hls-hd/"))
+
+    def test_hd_is_preferred_and_sd_ld_are_fallbacks(self):
+        room = {"stream_url": {"hls_pull_url_map": {
+            "ld": "https://pull-hls.tiktokcdn.com/live_ld.m3u8",
+            "sd": "https://pull-hls.tiktokcdn.com/live_sd.m3u8",
+            "hd": "https://pull-hls.tiktokcdn.com/live_hd.m3u8",
+        }}}
+        self.assertIn("_hd", tt_live.pick_hls(room, "hd"))
+        del room["stream_url"]["hls_pull_url_map"]["hd"]
+        self.assertIn("_sd", tt_live.pick_hls(room, "hd"))
+
+    def test_streamlink_models_all_tiktok_player_levels(self):
+        expected = {
+            "original": "origin,uhd_60,hd_60,hd,sd,ld,best,worst",
+            "1080p60": "uhd_60,hd_60,hd,sd,ld,worst",
+            "720p60": "hd_60,hd,sd,ld,worst",
+            "720p": "hd,sd,ld,worst",
+            "540p": "sd,ld,worst",
+            "360p": "ld,worst",
+            "auto": "best,origin,uhd_60,hd_60,hd,sd,ld,worst",
+        }
+        with mock.patch.object(tt_live.shutil, "which", return_value="/usr/bin/streamlink"), \
+             mock.patch.object(tt_live.subprocess, "run") as run:
+            run.return_value = SimpleNamespace(
+                returncode=0,
+                stdout="https://pull-hls.tiktokcdn.com/live.m3u8\n",
+            )
+            for quality, selector in expected.items():
+                tt_live.extract_via_streamlink("example_creator", quality)
+                self.assertEqual(run.call_args.args[0][-1], selector)
+
+    def test_api_models_all_tiktok_player_levels(self):
+        expected = {
+            "original": "origin", "1080p60": "uhd_60",
+            "720p60": "hd_60", "720p": "hd",
+            "540p": "sd", "360p": "ld", "auto": "origin",
+        }
+        room = {"stream_url": {"hls_pull_url_map": {
+            key: f"https://pull-hls.tiktokcdn.com/live_{key}.m3u8"
+            for key in ("origin", "uhd_60", "hd_60", "hd", "sd", "ld")
+        }}}
+        for quality, key in expected.items():
+            self.assertIn(f"_{key}.m3u8", tt_live.pick_hls(room, quality))
+
+    def test_url_parser_defaults_to_auto(self):
+        args = tt_live.build_parser().parse_args(["url", "example_creator"])
+        self.assertEqual(args.quality, "auto")
 
 
 if __name__ == "__main__":

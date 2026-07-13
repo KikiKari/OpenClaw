@@ -25,7 +25,8 @@ returns the m3u8 stream URLs for a known `roomId`. Combining the two
 gives a reliable, browser-free way to:
 
 1. Check if a TikTok user is live right now
-2. Resolve a VLC-playable 360p m3u8 URL for an active stream
+2. Resolve a VLC-playable HLS URL using TikTok's real quality ladder
+   (`original`, `1080p60`, `720p60`, `720p`, `540p`, `360p`, `auto`)
 3. Watch a user over hours and detect `go_live` / `go_offline` /
    `rename_detected` transitions without keeping a browser open
 

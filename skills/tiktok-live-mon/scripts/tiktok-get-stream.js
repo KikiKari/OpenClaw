@@ -266,16 +266,28 @@ async function extractWithPlaywright(username, qualityPreference) {
         const uniqueUrls = [...new Map(collectedUrls.map(item => [item.url.split('?')[0], item])).values()];
 
         // Qualitäts-Präferenz anwenden
-        const qualityOrder = qualityPreference === 'auto'
-            ? ['_hd.flv', '_sd.flv', '_ld.flv', '.flv']
-            : [`_${qualityPreference}.flv`, '.flv'];
+        const qualityOrder = {
+            original: ['_origin.flv', '_uhd_60.flv', '_hd_60.flv', '_hd.flv', '_sd.flv', '_ld.flv'],
+            '1080p60': ['_uhd_60.flv', '_hd_60.flv', '_hd.flv', '_sd.flv', '_ld.flv'],
+            '720p60': ['_hd_60.flv', '_hd.flv', '_sd.flv', '_ld.flv'],
+            '720p': ['_hd.flv', '_sd.flv', '_ld.flv'],
+            '540p': ['_sd.flv', '_ld.flv'],
+            '360p': ['_ld.flv'],
+            auto: ['_origin.flv', '_uhd_60.flv', '_hd_60.flv', '_hd.flv', '_sd.flv', '_ld.flv'],
+        }[qualityPreference];
 
         let bestUrl = null;
         for (const suffix of qualityOrder) {
             bestUrl = uniqueUrls.find(u => u.url.includes(suffix));
             if (bestUrl) break;
         }
-        if (!bestUrl) bestUrl = uniqueUrls[0];
+        if (!bestUrl && (qualityPreference === 'auto' || qualityPreference === 'original')) {
+            bestUrl = uniqueUrls[0];
+        }
+        if (!bestUrl) {
+            return { success: false, method: 'playwright', status: 'quality_unavailable',
+                     reason: `Requested quality ${qualityPreference} was not captured in this fresh browser session` };
+        }
 
         return {
             success: true,
@@ -307,13 +319,20 @@ async function tryStreamlink(username, quality) {
 // yt-dlp Fallback
 async function tryYtDlp(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-yt-dlp.sh');
-    const ytFormat = quality === 'ld' ? 'worst' : (quality === 'auto' ? 'best' : quality);
+    const ytFormat = {
+        original: 'hls-origin/hls-pull/hls-uhd_60/hls-hd_60/hls-hd/hls-sd/hls-ld/flv-origin/flv-hd/flv-ld',
+        '1080p60': 'hls-uhd_60/hls-hd_60/hls-hd/hls-sd/hls-ld/flv-hd/flv-ld',
+        '720p60': 'hls-hd_60/hls-hd/hls-sd/hls-ld/flv-hd/flv-ld',
+        '720p': 'hls-hd/hls-sd/hls-ld/flv-hd/flv-sd/flv-ld',
+        '540p': 'hls-sd/hls-ld/flv-sd/flv-ld', '360p': 'hls-ld/flv-ld',
+        auto: 'hls-origin/hls-hd/hls-sd/hls-ld/hls-pull/flv-origin/flv-hd/flv-ld',
+    }[quality];
     const execution = await runFallback(scriptPath, [username, ytFormat, '--json']);
     return parseFallbackResult('yt-dlp', username, execution);
 }
 
 // Hauptfunktion mit Fallback-Kette
-async function getStreamUrl(username, qualityPreference = 'ld') {
+async function getStreamUrl(username, qualityPreference = 'auto') {
     const timestamp = new Date().toISOString();
 
     // --- 1. Playwright ---
@@ -366,7 +385,7 @@ async function getStreamUrl(username, qualityPreference = 'ld') {
 
 // --- CLI ---
 if (process.argv.length < 3) {
-    console.error('Usage: node tiktok-get-stream.js <username> [quality: ld|sd|hd|origin|auto] [--json]');
+    console.error('Usage: node tiktok-get-stream.js <username> [quality: original|1080p60|720p60|720p|540p|360p|auto] [--json]');
     process.exit(1);
 }
 
@@ -383,10 +402,10 @@ if (forcedOffline('playwright_streamlink_ytdlp', cliUsername)) {
 }
 const cliQuality = process.argv
     .slice(3)
-    .find(argument => !argument.startsWith('--')) || 'ld';
+    .find(argument => !argument.startsWith('--')) || 'auto';
 const cliJson = process.argv.includes('--json');
-if (!['ld', 'sd', 'hd', 'origin', 'auto'].includes(cliQuality)) {
-    console.error('Invalid quality; expected ld, sd, hd, origin, or auto');
+if (!['original', '1080p60', '720p60', '720p', '540p', '360p', 'auto'].includes(cliQuality)) {
+    console.error('Invalid quality; expected original, 1080p60, 720p60, 720p, 540p, 360p, or auto');
     process.exit(64);
 }
 

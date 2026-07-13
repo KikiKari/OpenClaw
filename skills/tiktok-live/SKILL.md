@@ -1,11 +1,19 @@
 ---
 name: tiktok-live
 description: Check a TikTok account's current LIVE status and return a validated three-line TikTok LIVE response with an optional VLC/MPV URL. Use for one-shot /tiktok_live live, offline, restricted, overloaded, or technical-error checks; not for monitoring, recording, notifications, analytics, or recorded videos.
+command-dispatch: tool
+command-tool: tiktok_live_command
+command-arg-mode: raw
 ---
 
 # TikTok LIVE
 
 ## Normal one-shot flow
+
+Every separately submitted query uses fresh tool instances. Never reuse a
+Playwright browser, Chromium context/page, Streamlink process, yt-dlp process,
+or prior tool session. Polling is allowed only for the still-running process
+created by that same query.
 
 For a normal `/tiktok_live @handle` request, take the handle from the current `User input:`, remove whitespace and one leading `@`, and validate it against `^[A-Za-z0-9._]{1,24}$`.
 
@@ -20,7 +28,7 @@ Make the existing dispatcher the first action and the first tool call of the
 request:
 
 ```bash
-/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @handle --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @handle --quality auto --json
 ```
 
 Invoke that executable directly as the exec command. Do not invoke `bash`,
@@ -63,7 +71,7 @@ current single-node pool this is `xnetx`. Keep the global
 `TIKTOK_EXECUTION_CONTEXT=node` and `TIKTOK_NODE_ID=<selected-node-id>`, and:
 
 ```bash
-/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @handle --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @handle --quality auto --json
 ```
 
 OpenClaw 2026.6.11 currently rejects this explicit per-call node request when

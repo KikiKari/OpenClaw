@@ -208,7 +208,7 @@ class DispatcherTests(unittest.TestCase):
         args = Namespace(
             operation="check",
             username="example_creator",
-            quality="ld",
+            quality="hd",
             retries=0,
             timeout=45,
         )

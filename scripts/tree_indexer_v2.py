@@ -313,7 +313,7 @@ def main():
     indexer.init_schema_v2()
     
     print("\n--- Scanning Workspace ---")
-    entries = indexer.scan_directory_detailed('/home/openclaw/.openclaw/workspace/', max_depth=8)
+    entries = indexer.scan_directory_detailed(str(WORKSPACE), max_depth=8)
     print(f"Gefunden: {len(entries)} Einträge")
     
     print("\n--- Aktualisiere Datenbank ---")
