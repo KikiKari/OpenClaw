@@ -1,6 +1,11 @@
 # DREI-NODE OPENCLAW SYSTEM
 
-**Letzte Aktualisierung:** 2026-04-06
+**Letzte Aktualisierung:** 2026-07-12
+
+> **Aktueller Netzwerkvertrag:** OpenClaw-Pairing und Node-Traffic erfolgen
+> ausschließlich über Tailscale. Es gibt keinen Public-IP-Fallback. Die unten
+> genannten Reverse-Tunnel sind historische Angaben und auf dem aktuellen
+> Gateway nicht als Pairing-Transport aktiv.
 
 ---
 
@@ -30,29 +35,27 @@ Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.
 
 ## Node 2
 - **Provider:** Netcup
-- **IP:** 159.195.78.116
+- **Externe IP:** 159.195.78.116 (nur Administration)
+- **Tailscale-IP:** 100.92.155.34
 - **Hostname:** v2202603104722445775
 - **OS:** Ubuntu 24.04
-- **OpenClaw:** Gateway
-- **Port:** 18789
+- **OpenClaw:** gepaarter Node
+- **Transport:** Tailscale
 - **User:** openclaw
-- **Tunnels:** Port 15000, 18790 (Reverse zu Node 1)
-- **SSH-Key:** /root/.ssh/node1_tunnel (für Reverse-Tunnel zu Node 1)
-- **Systemd-Services:** tunnel-15000, tunnel-18790, openclaw-tunnel (alle enabled)
+- **Public-IP-Fallback:** nicht eingerichtet und nicht vorgesehen
 
 ---
 
 ## Node 3
 - **Provider:** xNetX
-- **IP:** 185.162.248.90
+- **Externe IP:** 185.162.248.90 (nur Administration)
+- **Tailscale-IP:** 100.73.154.125
 - **Hostname:** xnetx
 - **OS:** CentOS Stream 8
-- **OpenClaw:** Gateway
-- **Port:** 18789
+- **OpenClaw:** gepaarter Node
+- **Transport:** Tailscale zum Gateway `100.82.198.122:18790`
 - **User:** root (wegen systemd Einschränkungen)
-- **Tunnel:** Port 18792 (Reverse zu Node 1)
-- **Auth:** Passwort (sshpass), kein SSH-Key-Auth aktiv
-- **Bekanntes Problem:** fail2ban blockt Node 1 IP regelmäßig
+- **Public-IP-Fallback:** nicht eingerichtet und nicht vorgesehen
 
 ---
 

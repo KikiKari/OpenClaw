@@ -1,6 +1,7 @@
 import importlib.util
 import os
 import sys
+import tempfile
 import unittest
 from argparse import Namespace
 from pathlib import Path
@@ -71,6 +72,23 @@ class DispatcherTests(unittest.TestCase):
             "url",
         )
         self.assertEqual(attempt.status, "technical_error")
+
+    def test_python_incomplete_read_cannot_be_reported_offline(self):
+        attempt = dispatch.classify(
+            "python_api_fallbacks",
+            1,
+            '{"status":"offline","detail":"Traceback (most recent call last): IncompleteRead(54096 bytes read)"}',
+            "",
+            "url",
+        )
+        self.assertEqual(attempt.status, "technical_error")
+        self.assertNotIn("Traceback", attempt.detail)
+
+    def test_clean_explicit_offline_remains_offline(self):
+        attempt = dispatch.classify(
+            "python_api_fallbacks", 1, '{"status":"offline"}', "", "url"
+        )
+        self.assertEqual(attempt.status, "offline")
 
     def test_remote_title_does_not_override_structured_live(self):
         attempt = dispatch.classify(
@@ -154,6 +172,24 @@ class DispatcherTests(unittest.TestCase):
         payload = __import__("json").loads(output.call_args.args[0])
         self.assertEqual(payload["status"], "overloaded")
         self.assertEqual(payload["method"], "concurrency_preflight")
+
+    def test_request_id_replays_completed_result_without_dispatch(self):
+        request_id = "a" * 64
+        args = Namespace(request_id=request_id, timeout=1, retries=0, json=True)
+        payload = '{"status":"live","method":"test","url":"https://example.test/live.flv"}\n'
+        with tempfile.TemporaryDirectory() as directory, \
+             mock.patch.object(dispatch, "REQUEST_STATE_DIR", Path(directory)), \
+             mock.patch.object(
+                 dispatch,
+                 "dispatch",
+                 side_effect=lambda _args: (print(payload, end=""), 0)[1],
+             ) as run, \
+             mock.patch("builtins.print") as output:
+            first = dispatch.dispatch_idempotent(args)
+            second = dispatch.dispatch_idempotent(args)
+        self.assertEqual((first, second), (0, 0))
+        self.assertEqual(run.call_count, 1)
+        self.assertEqual(output.call_count, 2)
 
     @mock.patch.object(dispatch, "emit_log")
     @mock.patch.object(dispatch, "run_command")

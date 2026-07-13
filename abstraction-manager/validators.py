@@ -16,7 +16,14 @@ Version: 1.0.0
 import re
 import os
 import logging
+import sys
 from pathlib import Path
+
+WORKSPACE = Path(os.environ.get("OPENCLAW_WORKSPACE", "/home/openclaw/.openclaw/workspace"))
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+
+from openclaw_models import ModelConfigError, configured_models
 
 from exceptions import ValidationError, ApiKeyError
 
@@ -36,13 +43,10 @@ ALLOWED_SOURCE_DIRECTORIES: list[Path] = [
 ]
 
 #: Erlaubte KI-Modell-Namen (Allowlist gegen unerlaubte Modell-Strings).
-ALLOWED_AI_MODELS: frozenset[str] = frozenset({
-    "openrouter/anthropic/claude-3-5-sonnet-20241022",
-    "openrouter/anthropic/claude-3-haiku-20240307",
-    "openrouter/anthropic/claude-opus-4",
-    "openrouter/openai/gpt-4o",
-    "openrouter/openai/gpt-4o-mini",
-})
+try:
+    ALLOWED_AI_MODELS: frozenset[str] = frozenset(configured_models())
+except ModelConfigError as exc:
+    raise RuntimeError(f"Modellkonfiguration kann nicht geladen werden: {exc}") from exc
 
 #: Erlaubte Zielsprachen für Script-Portierungen.
 ALLOWED_TARGET_LANGUAGES: frozenset[str] = frozenset({
@@ -208,7 +212,7 @@ def validate_ai_model_name(raw_model_name: str) -> str:
 
     Example:
         >>> model = validate_ai_model_name(
-        ...     "openrouter/anthropic/claude-3-5-sonnet-20241022"
+        ...     "openrouter/anthropic/claude-haiku-4.5"
         ... )
     """
     if raw_model_name not in ALLOWED_AI_MODELS:

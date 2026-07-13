@@ -112,7 +112,7 @@ python3 create_abstraction.py \
 cd /home/openclaw/.openclaw/workspace/skills/sub-agents-utils/scripts
 python3 spawn_agent.py \
   --task "Port json_processor.py to Go with full error handling" \
-  --model openrouter/anthropic/claude-3-5-sonnet-20241022 \
+  --model openrouter/anthropic/claude-haiku-4.5 \
   --timeout 1800
 ```
 

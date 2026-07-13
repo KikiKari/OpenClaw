@@ -45,6 +45,19 @@ shell wrapper and three subcommands.
 | "I have room_id X — is it still alive?" | `check_alive.py X` (standalone, no workspace touch) |
 | "I have a username, just give me the IDs" | `get_room_id.py <user>` (standalone, no workspace touch) |
 
+### Gespeicherte TikTok-Namen im Chat
+
+Der exakte OpenClaw-Control-Befehl `/tiktok-names` startet einen sichtbaren
+Agentenlauf und genau einen Aufruf des read-only Tools `tiktok_names_list`.
+Das Tool liest ausschließlich `workspace/tiktok-names/identities/*.json` und
+gibt pro aktueller Identität `@unique_id_current — nickname` aus. Technische
+Felder wie `sec_uid` und `user_id` werden nicht angezeigt. Die Liste wird nach
+Handle ohne Beachtung der Groß-/Kleinschreibung dedupliziert und alphabetisch
+sortiert; ungültige JSON-Dateien werden übersprungen und gezählt.
+
+Der Befehl akzeptiert keine Argumente oder Unterbefehle und verändert weder
+Identity- noch Pointer-Dateien.
+
 ---
 
 ## File index

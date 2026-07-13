@@ -7,10 +7,10 @@ import unittest
 
 SKILL = Path(__file__).resolve().parents[1] / "SKILL.md"
 CANONICAL_COMMAND = (
-    "python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/"
+    "/home/openclaw/.openclaw/workspace/tiktok-monitor/"
     "tiktok_dispatch.py url @handle --json"
 )
-NODE_COMMAND = CANONICAL_COMMAND + " --execution local"
+NODE_COMMAND = CANONICAL_COMMAND
 
 
 class SkillContractTests(unittest.TestCase):
@@ -21,7 +21,39 @@ class SkillContractTests(unittest.TestCase):
 
     def test_dispatcher_is_the_documented_first_action(self):
         self.assertIn("Make the existing dispatcher the first action", self.text)
+        self.assertIn("first tool call of the request", self.normalized_text)
         self.assertEqual(self.text.count(CANONICAL_COMMAND), 2)
+
+    def test_no_preliminary_playwright_or_dependency_probe(self):
+        for expected in (
+            "Before this dispatcher call, do not invoke or inspect",
+            "`tiktok-check-profile.js`",
+            "Do not attempt to install or repair browser dependencies",
+            "failed preliminary tool call",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.normalized_text)
+
+    def test_direct_exec_without_shell_wrapper(self):
+        for expected in (
+            "Invoke that executable directly as the exec command",
+            "Do not invoke `bash`",
+            "`bash -lc`",
+            "wrapper must not be attempted in the first place",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.normalized_text)
+
+    def test_success_json_wins_over_trailing_diagnostics(self):
+        for expected in (
+            "display the final stdout JSON before trailing stderr diagnostics",
+            "regardless of its visual position",
+            "the tool execution succeeded",
+            "Never replace such a result with a generic tool-failure message",
+            "`node_available`",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.normalized_text)
 
     def test_auto_host_and_bounded_node_fallback(self):
         for expected in (
@@ -30,7 +62,6 @@ class SkillContractTests(unittest.TestCase):
             "retry exactly once",
             "least-loaded connected paired node",
             "host=node",
-            "TIKTOK_EXECUTION_CONTEXT=node",
             NODE_COMMAND,
             "Never replace it with",
         ):
@@ -43,6 +74,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertNotIn("host=gateway", self.text)
         self.assertIn("Never start a second node retry", self.text)
         self.assertIn("never\nchange the global exec host", self.text)
+        self.assertIn("runtime block occurs before the Node allowlist", self.text)
         self.assertEqual(self.text.count(CANONICAL_COMMAND), 2)
 
     def test_public_contract_is_exactly_three_template_lines(self):
@@ -69,8 +101,10 @@ class SkillContractTests(unittest.TestCase):
         for expected in (
             "send them atomically",
             "Preserve a returned URL byte-for-byte",
-            "pass exactly that same text to TTS",
-            "Never invoke TTS before the final text is complete",
+            "channel voice output set to `always`",
+            "Do not invoke the `tts` tool",
+            "do not emit `[[tts:text]]` wrappers",
+            "visible text remains the authoritative source",
         ):
             with self.subTest(expected=expected):
                 self.assertIn(expected, self.normalized_text)

@@ -21,8 +21,8 @@ All paths are below `$HOME/.openclaw/workspace/`.
 ## Dispatcher examples
 
 ```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py check @example_creator --json
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url example_creator
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py check @example_creator --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
 ```
 
 `@example_creator` and `example_creator` identify the same account. No account
@@ -108,9 +108,8 @@ The OpenClaw agent invokes the node through `exec host=node`. On that node it
 runs:
 
 ```bash
-TIKTOK_EXECUTION_CONTEXT=node TIKTOK_NODE_ID=<node-id> \
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py \
-url example_creator --execution local --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py \
+url @example_creator --json
 ```
 
 The caller validates the returned JSON, status, URL, exit code, and node
@@ -142,7 +141,7 @@ non-JSON stdout and exit `75`.
 ## VLC
 
 ```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url example_creator
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
 ```
 
 Signed URLs may expire or be revoked at any time. Resolve again instead of

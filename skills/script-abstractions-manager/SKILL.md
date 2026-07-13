@@ -69,7 +69,7 @@ python3 create_abstraction.py --source /path/to/script.py --target-lang perl5
 
 # Sub-Agent managen
 cd skills/sub-agents-utils/scripts
-python3 spawn_agent.py --task "Review code" --model openrouter/openai/gpt-4o
+python3 spawn_agent.py --task "Review code" --model openai/gpt-5.4-mini
 
 # Nodes checken
 cd skills/multi-nodes-utils/scripts
@@ -106,13 +106,10 @@ python3 check_nodes.py --format table
 
 ## KI-Modelle für Interpolation
 
-Standardmäßig rotiert der Manager durch diese Modelle:
-- `openrouter/moonshotai/kimi-k2.5`
-- `openrouter/openai/gpt-4o`
-- `openrouter/anthropic/claude-3-5-sonnet-20241022`
-- `openrouter/google/gemini-2.0-flash-001`
-- `openrouter/nvidia/llama-3.3-nemotron-super-49b-v1`
-- `openrouter/qwen/qwen-2.5-coder-32b-instruct`
+Der Manager lädt den Modellpool dynamisch aus `agents.defaults` in
+`/home/openclaw/.openclaw/openclaw.json`: zuerst das Primärmodell, dann die
+Fallbacks und anschließend alle übrigen registrierten Modelle. IDs und Aliases
+werden deshalb ausschließlich in der Hauptkonfiguration gepflegt.
 
 ## Git Integration
 

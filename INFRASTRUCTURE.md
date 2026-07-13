@@ -1,5 +1,11 @@
 # OpenClaw Infrastructure Documentation
 
+> **Aktueller Netzwerkvertrag (2026-07-12):** OpenClaw-Pairing und Node-Traffic
+> laufen ausschließlich über Tailscale. Ein Fallback über externe IP-Adressen
+> oder historische SSH-/WireGuard-Reverse-Tunnel ist weder aktiv noch
+> vorgesehen. Externe IPs und alte Tunnelbeispiele weiter unten sind
+> historische Bestandsangaben und keine aktuelle Betriebsanweisung.
+
 ## Übersicht
 
 Diese Dokumentation beschreibt die komplette OpenClaw-Infrastruktur mit WireGuard VPN, Node Mode und allen Verbindungen.

@@ -131,7 +131,7 @@ python3 create_abstraction.py \
 ```bash
 python3 spawn_agent.py \
     --task "Port db_maintainer.py to Go with full error handling and tests" \
-    --model openrouter/anthropic/claude-3-5-sonnet-20241022 \
+    --model openrouter/anthropic/claude-haiku-4.5 \
     --timeout 1800
 ```
 
@@ -186,7 +186,7 @@ Alle Einstellungen werden über die `.env`-Datei gesteuert:
 | `OPENCLAW_WORKSPACE` | Absoluter Workspace-Pfad | `/home/openclaw/.openclaw/workspace` |
 | `ABSTRACTIONS_LOG_LEVEL` | Log-Level (DEBUG/INFO/WARNING/ERROR) | `INFO` |
 | `ABSTRACTIONS_JSON_LOGGING` | JSON-Logging aktivieren (1/0) | `1` |
-| `ABSTRACTIONS_DEFAULT_MODEL` | Standard-KI-Modell | `openrouter/anthropic/claude-3-5-sonnet-20241022` |
+| `OPENCLAW_CONFIG` | Pfad zur zentralen Modellkonfiguration | `/home/openclaw/.openclaw/openclaw.json` |
 | `ABSTRACTIONS_MAX_WORKERS` | Parallele Portierungs-Worker | `4` |
 | `ABSTRACTIONS_DRY_RUN` | Dry-Run-Modus (1/0) | `0` |
 | `GIT_AUTHOR_NAME` | Git-Commit-Autor-Name | `Abstractions Manager` |
@@ -230,7 +230,7 @@ Options:
 Beispiele:
   python3 spawn_agent.py \
       --task "Port json_processor.py to Perl 5 with error handling" \
-      --model openrouter/anthropic/claude-3-5-sonnet-20241022 \
+      --model openrouter/anthropic/claude-haiku-4.5 \
       --timeout 1800
 ```
 

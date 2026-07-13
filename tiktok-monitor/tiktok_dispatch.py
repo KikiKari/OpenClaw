@@ -10,6 +10,9 @@ technical_error/overloaded contract; non-JSON URL mode keeps stdout URL-only.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import fcntl
+import io
 import json
 import math
 import os
@@ -18,6 +21,7 @@ import signal
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -32,6 +36,9 @@ URL_PREFIXES = ("http://", "https://")
 MAX_CAPTURE_BYTES = 1024 * 1024
 NODE_STATUS_TIMEOUT_SECONDS = 30
 DEFAULT_MAX_CONCURRENT = 1
+REQUEST_TTL_SECONDS = 10 * 60
+REQUEST_ID_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+REQUEST_STATE_DIR = Path(tempfile.gettempdir()) / "openclaw-tiktok-requests"
 
 def resolve_workspace() -> Path:
     configured = os.environ.get("OPENCLAW_WORKSPACE", "").strip()
@@ -99,6 +106,103 @@ def concurrency_state() -> tuple[int, int]:
     if maximum < 1:
         raise ValueError("TIKTOK_MAX_CONCURRENT must be at least 1")
     return active, maximum
+
+
+def cleanup_request_states(now: float | None = None) -> None:
+    now = time.time() if now is None else now
+    if not REQUEST_STATE_DIR.exists():
+        return
+    for path in REQUEST_STATE_DIR.glob("*.json"):
+        try:
+            if now - path.stat().st_mtime >= REQUEST_TTL_SECONDS:
+                path.unlink()
+        except FileNotFoundError:
+            continue
+
+
+def request_paths(request_id: str) -> tuple[Path, Path]:
+    if not REQUEST_ID_PATTERN.fullmatch(request_id):
+        raise ValueError("invalid request id")
+    REQUEST_STATE_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    return REQUEST_STATE_DIR / f"{request_id}.json", REQUEST_STATE_DIR / f"{request_id}.lock"
+
+
+def read_request_state(path: Path) -> dict[str, Any] | None:
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def write_request_state(path: Path, state: dict[str, Any]) -> None:
+    temp = path.with_suffix(f".{os.getpid()}.tmp")
+    temp.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+    os.replace(temp, path)
+
+
+def dispatch_idempotent(args: argparse.Namespace) -> int:
+    if not args.request_id:
+        return dispatch(args)
+    cleanup_request_states()
+    state_path, lock_path = request_paths(args.request_id)
+    deadline = time.monotonic() + args.timeout * (args.retries + 1) + 15
+
+    while True:
+        with lock_path.open("a+", encoding="utf-8") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            state = read_request_state(state_path)
+            if state and state.get("status") in {"completed", "failed"}:
+                stdout = state.get("stdout")
+                if isinstance(stdout, str) and stdout:
+                    print(stdout, end="" if stdout.endswith("\n") else "\n")
+                return int(state.get("exit_code", EXIT_TECHNICAL))
+            if not state:
+                write_request_state(state_path, {
+                    "request_id": args.request_id,
+                    "status": "running",
+                    "created_at": time.time(),
+                    "pid": os.getpid(),
+                })
+                break
+        if time.monotonic() >= deadline:
+            payload = result_payload("technical_error", "request_wait_timeout", EXIT_TECHNICAL, [])
+            if args.json:
+                print(json.dumps(payload, ensure_ascii=False))
+            return EXIT_TECHNICAL
+        time.sleep(0.1)
+
+    output = io.StringIO()
+    try:
+        with contextlib.redirect_stdout(output):
+            code = dispatch(args)
+        stdout = output.getvalue()
+        print(stdout, end="" if stdout.endswith("\n") else "\n")
+        payload = parse_json_output(stdout)
+        terminal_status = "failed" if payload and payload.get("status") in {
+            "dependency_missing", "technical_error"
+        } else "completed"
+    except Exception:
+        with lock_path.open("a+", encoding="utf-8") as lock:
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+            write_request_state(state_path, {
+                "request_id": args.request_id,
+                "status": "failed",
+                "exit_code": EXIT_TECHNICAL,
+                "stdout": "",
+                "updated_at": time.time(),
+            })
+        raise
+    with lock_path.open("a+", encoding="utf-8") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        write_request_state(state_path, {
+            "request_id": args.request_id,
+            "status": terminal_status,
+            "exit_code": code,
+            "stdout": stdout,
+            "updated_at": time.time(),
+        })
+    return code
 
 
 def emit_log(value: Any) -> None:
@@ -284,10 +388,30 @@ def classify(
 ) -> Attempt:
     data = parse_json_output(stdout, stderr)
     url = extract_url(stdout, data)
+    diagnostic_text = f"{stderr}\n{stdout}".lower()
     if exit_code == EXIT_OVERLOADED:
         return Attempt(method, "overloaded", exit_code, stderr or "host overloaded", data=data)
     if exit_code is None and "timeout after" in stderr:
         return Attempt(method, "technical_error", None, stderr)
+    # Exit 1 is also used for a genuine OFFLINE result, so never classify by
+    # exit code alone. A crashed extractor may itself wrap its traceback in an
+    # ``offline`` JSON envelope; detect transport/runtime failures before
+    # trusting that status.
+    if exit_code != 0 and any(marker in diagnostic_text for marker in (
+        "traceback (most recent call last)",
+        "incompleteread",
+        "connectionreseterror",
+        "remote end closed connection",
+        "chunkedencodingerror",
+        "sslerror",
+    )):
+        return Attempt(
+            method,
+            "technical_error",
+            exit_code,
+            "extractor transport/runtime failure",
+            data=data,
+        )
     if data:
         explicit_status = data.get("status")
         if explicit_status in {
@@ -310,7 +434,7 @@ def classify(
             return Attempt(method, "live", exit_code, "live=true", url=url, data=data)
         if live is False:
             return Attempt(method, "offline", exit_code, "live=false", data=data)
-    combined = stderr.lower()
+    combined = diagnostic_text
     if any(marker in combined for marker in (
         "cannot find module", "executable doesn't exist", "not installed",
         "no such file or directory", "command not found",
@@ -564,10 +688,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--node")
     parser.add_argument("--no-local-fallback", action="store_true")
     parser.add_argument("--idempotency-key", default=None)
+    parser.add_argument("--request-id")
     return parser
 
 
 if __name__ == "__main__":
     parsed = build_parser().parse_args()
+    parsed.request_id = parsed.request_id or os.environ.get("TIKTOK_REQUEST_ID")
     parsed.idempotency_key = parsed.idempotency_key or str(uuid.uuid4())
-    raise SystemExit(dispatch(parsed))
+    raise SystemExit(dispatch_idempotent(parsed))

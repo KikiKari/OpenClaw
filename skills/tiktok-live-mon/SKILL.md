@@ -8,12 +8,19 @@ description: Start, inspect, or stop a timed TikTok LIVE transition monitor, wit
 ## Mandatory slash-command behavior
 
 For `/tiktok_live_mon @name`, perform a one-shot robust LIVE and playback URL
-check with the shared dispatcher. A bare handle never starts a daemon, timer,
-service, or cron job:
+check with the shared dispatcher. The dispatcher exec must be the first tool
+call of the request. A bare handle never starts a daemon, timer, service, or
+cron job:
 
 ```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
 ```
+
+Invoke that executable directly as the exec command. Do not invoke `bash`,
+`sh`, `bash -lc`, or any other shell wrapper, and do not split the executable
+and arguments across a shell command plus a separate `args` field. A wrapper
+attempt that returns empty output must not be followed by another dispatcher
+launch; the wrapper must not be attempted in the first place.
 
 One agent request starts one dispatcher process. Its fixed internal order is
 Python/API first and Node/Playwright when Python reports tentative `offline`,
@@ -21,6 +28,24 @@ fails technically, lacks a dependency, needs restriction classification, or
 cannot provide a playback URL. Direct agent Node calls are forbidden, but
 dispatcher-owned Node processes are required. An authoritative result ends
 method execution immediately.
+
+Some tool renderers display the final stdout JSON before trailing stderr
+diagnostics. Treat the complete JSON object containing top-level `status`,
+`execution`, `method`, `exit_code`, `attempts`, and optional `url` as the final
+dispatcher result regardless of its visual position in the combined Process
+output. When that object reports `exit_code: 0` and the Process reports exit
+code `0`, the tool execution succeeded. Never replace such a result with a
+generic tool-failure message. Ignore separate diagnostic objects such as
+`node_available` or per-method progress after locating the complete result.
+
+Before this dispatcher call, do not invoke or inspect
+`tiktok-check-profile.js`, `tiktok-get-stream.js`, Node, Playwright, Chromium,
+`npm`, `npx`, dependency probes, files, directories, configuration, memory, or
+session history. Do not attempt to install or repair browser dependencies.
+Those are diagnostic capabilities for a separately requested troubleshooting
+task, not preliminary steps in a normal slash-command request. This invariant
+prevents a failed preliminary tool call from marking an otherwise successful
+dispatcher request as an error.
 
 Start the timed monitor only when the current slash command's `User input:`
 explicitly begins with `start` followed by the handle. The exact form is:
@@ -88,7 +113,7 @@ Use the shared dispatcher below only when the user explicitly requests an
 immediate status or VLC/MPV URL rather than a timed monitor:
 
 ```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json
 ```
 
 If the dispatcher returns `status: "live"` with a `url`, reply with that URL
@@ -131,7 +156,7 @@ handle, run `url ... --json` directly so the reply can include the VLC/MPV URL
 when the account is live:
 
 ```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
 ```
 
 Use `check ... --json` only for diagnostics when no playback URL is needed.
@@ -163,7 +188,7 @@ for TikTok dispatcher` instead of retrying with sandbox probes.
 If that absolute command fails with `can't open file` or
 `No such file or directory` outside OpenClaw Control, treat it as an execution
 path mismatch, not as a TikTok result. Retry once with
-`python3 /workspace/tiktok-monitor/tiktok_dispatch.py url @name --json` and
+`/workspace/tiktok-monitor/tiktok_dispatch.py url @name --json` and
 the exec tool environment `{"OPENCLAW_WORKSPACE":"/workspace"}`, then answer
 from that result.
 In OpenClaw Control, do not retry with `/workspace`; if elevated exec is not

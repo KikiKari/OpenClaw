@@ -1,5 +1,9 @@
 # Nodes Overview (Network Status)
 
+> **Netzwerkvertrag seit 2026-07-12:** Node-Pairing und Node-Traffic laufen
+> ausschließlich über Tailscale. Angaben zu Reverse-Tunneln und externen IPs in
+> automatisch erzeugten Altbeständen sind nicht als aktiver Fallback zu werten.
+
 | Node | Name          | OS           | IP             | Mode       | Primär WG IP       | Sekundär/SSH Tunnel | StatusVPN | StatusSSH | SSH Key (Deployed) | Letzter Check       |
 |------|---------------|--------------|----------------|------------|--------------------|---------------------|-----------|-----------|---------------------|---------------------|
 | 1    | Gateway | Ubuntu 22.04 | 152.53.145.65 | Gateway       | 10.10.0.1             | – | ⚠️ | ❌ | Local (id_ed25519) | – |
@@ -11,10 +15,10 @@
 
 > 💡 **Legende:** 
 > - **Primär WG IP**: Die WireGuard-VPN-IP des Nodes
-> - **Sekundär/SSH Tunnel**: Fallback-Mechanismus (z. B. Reverse-Tunnel)
+> - **Sekundär/SSH Tunnel**: historische Diagnoseangabe; kein Pairing-Fallback
 > - **StatusVPN**: Verbunden über OpenClaw/WireGuard
 > - **StatusSSH**: SSH-Zugriff via Reverse-Tunnel aktiv
 > - **SSH Key (Deployed)**: Zeigt an, ob der Gateway-Schlüssel (`id_ed25519`) auf dem Ziel bereitgestellt ist
-> - Letzter Stand: **18.4.2026, 18:00:01 CET**
+> - Tabellenstand: **18.4.2026, 18:00:01 CET** (veraltet; Vertragshinweis oben ist maßgeblich)
 
 *Größe: ~1.8 KB | Automatisch aktualisiert via `update-nodes-report.js`*

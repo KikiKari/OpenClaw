@@ -7,82 +7,8 @@
 const fs = require('fs');
 const path = require('path');
 
-// Model definitions with pricing
-const MODELS = {
-  'openrouter/auto': {
-    name: 'OpenRouter Auto',
-    promptPrice: 'Auto',
-    completionPrice: 'Auto',
-    context: 'Variable',
-    thinking: 'off'
-  },
-  'moonshotai/kimi-k2.5': {
-    name: 'Kimi K2.5',
-    promptPrice: 0.57,
-    completionPrice: 2.30,
-    context: '131K',
-    thinking: 'off'
-  },
-  'meta-llama/llama-4-maverick': {
-    name: 'Llama 4 Maverick',
-    promptPrice: 0.15,
-    completionPrice: 0.60,
-    context: '1M',
-    thinking: 'off'
-  },
-  'openai/gpt-4.1': {
-    name: 'GPT-4.1',
-    promptPrice: 2.00,
-    completionPrice: 8.00,
-    context: '1M',
-    thinking: 'off'
-  },
-  'deepseek/deepseek-r1-0528': {
-    name: 'DeepSeek R1',
-    promptPrice: 0.45,
-    completionPrice: 2.15,
-    context: '164K',
-    thinking: 'on'
-  },
-  'anthropic/claude-opus-4': {
-    name: 'Claude Opus 4',
-    promptPrice: 15.00,
-    completionPrice: 75.00,
-    context: '200K',
-    thinking: 'on'
-  },
-  'qwen/qwen3-235b-a22b-2507': {
-    name: 'Qwen3 235B',
-    promptPrice: 0.07,
-    completionPrice: 0.10,
-    context: '131K',
-    thinking: 'off'
-  }
-};
-
-// Task recommendations
-const TASK_RECOMMENDATIONS = {
-  simple: {
-    primary: 'moonshotai/kimi-k2.5',
-    fallback: 'meta-llama/llama-4-maverick',
-    description: 'Simple tasks (weather, time, basic queries)'
-  },
-  long_context: {
-    primary: 'meta-llama/llama-4-maverick',
-    fallback: 'openai/gpt-4.1',
-    description: 'Long context tasks (RAG, documents)'
-  },
-  complex_logic: {
-    primary: 'deepseek/deepseek-r1-0528',
-    fallback: 'anthropic/claude-opus-4',
-    description: 'Complex logic (code, reasoning)'
-  },
-  web_agents: {
-    primary: 'moonshotai/kimi-k2.5',
-    fallback: 'qwen/qwen3-235b-a22b-2507',
-    description: 'Web agents and tool use'
-  }
-};
+// Optional metadata only. Availability and aliases always come from openclaw.json.
+const MODEL_METADATA = {};
 
 class ModelUsageSkill {
   constructor() {
@@ -99,6 +25,23 @@ class ModelUsageSkill {
     }
   }
 
+  getModels() {
+    const config = this.readConfig();
+    const entries = config?.agents?.defaults?.models;
+    if (!entries || typeof entries !== 'object' || Array.isArray(entries)) {
+      throw new Error('agents.defaults.models fehlt oder ist ungültig');
+    }
+    return Object.fromEntries(Object.entries(entries).map(([id, details]) => {
+      if (!details?.alias) throw new Error(`Alias fehlt für Modell: ${id}`);
+      return [id, { name: details.alias, ...(MODEL_METADATA[id] || {}) }];
+    }));
+  }
+
+  getFallbacks() {
+    const config = this.readConfig();
+    return config?.agents?.defaults?.model?.fallbacks || [];
+  }
+
   getCurrentModel() {
     const config = this.readConfig();
     if (!config) return null;
@@ -106,45 +49,30 @@ class ModelUsageSkill {
   }
 
   listModels(provider = null) {
+    const models = this.getModels();
     console.log('\n📊 Available Models\n');
-    console.log('Model                           | Prompt  | Completion | Context | Thinking');
-    console.log('--------------------------------|---------|------------|---------|----------');
+    console.log('Model ID                                         | Alias');
+    console.log('-------------------------------------------------|---------------------');
     
-    Object.entries(MODELS).forEach(([id, model]) => {
-      const name = model.name.padEnd(31);
-      const prompt = String(model.promptPrice).padEnd(7);
-      const completion = String(model.completionPrice).padEnd(10);
-      const context = model.context.padEnd(7);
-      const thinking = model.thinking;
-      console.log(`${name}| ${prompt} | ${completion} | ${context} | ${thinking}`);
+    Object.entries(models).forEach(([id, model]) => {
+      console.log(`${id.padEnd(49)}| ${model.name}`);
     });
-    
-    console.log('\nPrices per 1M tokens (USD)\n');
   }
 
   recommendTask(taskType) {
-    const rec = TASK_RECOMMENDATIONS[taskType];
-    if (!rec) {
-      console.log(`Unknown task type: ${taskType}`);
-      console.log('Available types: simple, long_context, complex_logic, web_agents');
-      return;
-    }
-
-    console.log(`\n🎯 Recommendation for: ${rec.description}\n`);
-    console.log(`Primary:   ${rec.primary} (${MODELS[rec.primary]?.name})`);
-    console.log(`Fallback:  ${rec.fallback} (${MODELS[rec.fallback]?.name})`);
-    console.log();
+    const models = this.getModels();
+    const fallbacks = this.getFallbacks();
+    console.log(`\n🎯 Configured routing for: ${taskType}\n`);
+    console.log(`Primary:   ${this.getCurrentModel()} (${models[this.getCurrentModel()]?.name})`);
+    console.log(`Fallbacks: ${fallbacks.map(id => `${id} (${models[id]?.name})`).join(', ')}`);
   }
 
   showCurrent() {
     const current = this.getCurrentModel();
     console.log(`\n🔧 Current Model: ${current}`);
-    const model = MODELS[current];
+    const model = this.getModels()[current];
     if (model) {
       console.log(`   Name: ${model.name}`);
-      console.log(`   Prompt: $${model.promptPrice}/1M tokens`);
-      console.log(`   Completion: $${model.completionPrice}/1M tokens`);
-      console.log(`   Context: ${model.context}`);
     }
     console.log();
   }

@@ -369,7 +369,7 @@ python3 create_abstraction.py --source /path/to/script.py --target-lang perl5
 
 Sub-Agent für komplexe Portierung:
 ```bash
-python3 spawn_agent.py --task "Port script.py to Go" --model claude-3-5-sonnet
+python3 spawn_agent.py --task "Port script.py to Go" --model openrouter/anthropic/claude-haiku-4.5
 ```
 READMEEOF
         fi

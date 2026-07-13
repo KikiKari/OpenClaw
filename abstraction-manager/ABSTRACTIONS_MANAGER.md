@@ -163,16 +163,9 @@ Fünf Nodes, konfiguriert in `NODES`:
 | lua | `.lua` | `local function main() ... end main()` |
 | go | `.go` | `func main() { ... }` |
 
-**Verfügbare Modelle** (für zukünftige KI-gestützte Portierung via OpenRouter):
-
-```
-openrouter/moonshotai/kimi-k2.5
-openrouter/openai/gpt-4o
-openrouter/anthropic/claude-3-5-sonnet-20241022
-openrouter/google/gemini-2.0-flash-001
-openrouter/nvidia/llama-3.3-nemotron-super-49b-v1
-openrouter/qwen/qwen-2.5-coder-32b-instruct
-```
+**Verfügbare Modelle** werden dynamisch aus `agents.defaults` in
+`/home/openclaw/.openclaw/openclaw.json` geladen. Die Reihenfolge ist:
+Primärmodell, Fallbacks und danach die übrigen registrierten Modelle.
 
 ### Git-Integration
 

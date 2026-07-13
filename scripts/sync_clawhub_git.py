@@ -12,10 +12,10 @@ from pathlib import Path
 from datetime import datetime
 
 # Konfiguration
-CLAWHUB_DIR = Path("/home/openclaw/.openclaw/workspace/skills")
-GIT_DIR = Path("/home/openclaw/.openclaw/workspace/git/skills")
-BACKUP_DIR = Path("/home/openclaw/.openclaw/workspace/backups/sync")
-LOG_FILE = Path("/home/openclaw/.openclaw/workspace/logs/sync-agent.log")
+CLAWHUB_DIR = Path("/workspace/skills")
+GIT_DIR = Path("/workspace/git/skills")
+BACKUP_DIR = Path("/workspace/backups/sync")
+LOG_FILE = Path("/workspace/logs/sync-agent.log")
 IGNORED_NAMES = {".git", ".clawhub", "node_modules", "__pycache__", ".pytest_cache"}
 RESERVED_SKILL_NAMES = {"github-clones", "skills", "backups", ".restore", "git", "Abstraktionen"}
 PRESERVED_TARGET_NAMES = IGNORED_NAMES

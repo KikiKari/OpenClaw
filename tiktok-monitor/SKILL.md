@@ -12,7 +12,7 @@ events.
 ## One-shot dispatcher
 
 ```bash
-python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
+/home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url @example_creator --json
 ```
 
 Use the exec tool directly with the absolute dispatcher command before
@@ -107,11 +107,12 @@ is empty otherwise.
 --no-local-fallback
 ```
 
-The gateway is always a valid local executor, and `auto` remains multi-node
-capable. In node mode, the calling OpenClaw agent uses `exec host=node` to run
-the same dispatcher with `--execution local` on a connected paired node. Node
-execution is not SSH and not direct CLI `system.run`. Missing dependencies,
-overload, timeout, or invoke failure fall back to the gateway unless disabled.
+The gateway is always a valid local executor. In node mode, the calling
+OpenClaw agent uses `exec host=node` to run the exact same direct-Shebang
+dispatcher command on a connected paired node. Node execution is not SSH and
+not direct CLI `system.run`. OpenClaw 2026.6.11 rejects an `auto` to `node`
+per-call override while the agent sandbox is active, before Node allowlist
+evaluation. Do not bypass that runtime policy by changing the global host.
 
 The load threshold is the 1-minute load divided by CPU count. Its default is
 `1.5`; set `TIKTOK_MAX_LOAD_PER_CPU` to override it.

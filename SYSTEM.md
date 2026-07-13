@@ -1,21 +1,23 @@
 # DREI-NODE OPENCLAW SYSTEM
 
-**Letzte Aktualisierung:** 2026-04-06
+**Letzte Aktualisierung:** 2026-07-12
 
 ---
 
 ## Übersicht
-Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.2)
+OpenClaw-Gateway mit gepaarten Nodes. Die Transportverbindung für Node-Pairing
+und Node-Betrieb erfolgt ausschließlich über Tailscale. Es gibt keinen
+Fallback über öffentliche IP-Adressen.
 
 ---
 
 ## Node 1 (Hauptnode)
-- **Provider:** Hetzner
-- **IP:** 152.53.145.65
-- **Hostname:** v2202604104722446711
+- **Hostname:** v2202604104722449961
+- **Tailscale-IP:** 100.82.198.122
 - **OS:** Ubuntu 24.04
 - **OpenClaw:** Gateway via `openclaw gateway restart`
-- **Port:** 18789
+- **Gateway-Port:** 18790
+- **Erreichbarkeit:** Loopback und Tailscale; kein Public-IP-Listener
 - **TikTok:** Gateway-lokaler Dispatcher mit optionaler agent-gesteuerter Node-Ausführung
 - **User:** openclaw
 - **Config:** /home/openclaw/.openclaw/openclaw.json
@@ -30,29 +32,28 @@ Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.
 
 ## Node 2
 - **Provider:** Netcup
-- **IP:** 159.195.78.116
+- **Externe IP:** 159.195.78.116 (Administration, nicht für OpenClaw-Pairing)
+- **Tailscale-IP:** 100.92.155.34
 - **Hostname:** v2202603104722445775
 - **OS:** Ubuntu 24.04
-- **OpenClaw:** Gateway
-- **Port:** 18789
+- **OpenClaw:** gepaarter Node
+- **Transport:** Tailscale zum Gateway
 - **User:** openclaw
-- **Tunnels:** Port 15000, 18790 (Reverse zu Node 1)
-- **SSH-Key:** /root/.ssh/node1_tunnel (für Reverse-Tunnel zu Node 1)
-- **Systemd-Services:** tunnel-15000, tunnel-18790, openclaw-tunnel (alle enabled)
+- **Public-IP-Fallback:** nicht eingerichtet und nicht vorgesehen
 
 ---
 
 ## Node 3
 - **Provider:** xNetX
-- **IP:** 185.162.248.90
+- **Externe IP:** 185.162.248.90 (nur Administration, nicht für OpenClaw-Pairing)
+- **Tailscale-IP:** 100.73.154.125
 - **Hostname:** xnetx
 - **OS:** CentOS Stream 8
-- **OpenClaw:** Gateway
-- **Port:** 18789
+- **OpenClaw:** gepaarter Node
+- **Transport:** Tailscale zum Gateway `100.82.198.122:18790`
 - **User:** root (wegen systemd Einschränkungen)
-- **Tunnel:** Port 18792 (Reverse zu Node 1)
-- **Auth:** Passwort (sshpass), kein SSH-Key-Auth aktiv
-- **Bekanntes Problem:** fail2ban blockt Node 1 IP regelmäßig
+- **Public-IP-Fallback:** nicht eingerichtet und nicht vorgesehen
+- **Administration:** SSH kann separat als `root` erfolgen; dies ist vom OpenClaw-Pairing unabhängig
 
 ---
 
@@ -91,17 +92,20 @@ Die alte Port-5001-API und die TikTok-Cron-Beispiele sind nicht aktiv.
 
 ---
 
-## SSH Keys
-- `/root/.ssh/node2_tunnel` → Zugang zu Node 2
-- `/root/.ssh/node1_tunnel` → Zugang von Node 2 zu Node 1
-- `/root/.ssh/node3_tunnel` → Zugang zu Node 3 (Key-Auth nicht aktiv)
-- `/home/openclaw/.ssh/.node2_root` → Passwort für Node 3
+## Netzwerk- und SSH-Vertrag
+
+- OpenClaw-Pairing und Node-Traffic: ausschließlich Tailscale.
+- Kein automatischer oder manueller Pairing-Fallback über externe IPs.
+- Root-SSH-Schlüssel dienen nur administrativen Aufgaben wie Updates und Dienstneustarts.
+- SSH-Schlüssel, Tailscale-SSH und OpenClaw-Pairing sind getrennte Authentisierungsebenen.
 
 ---
 
-## Systemd-Services auf Node 1
-- `tunnel-to-node2` → Local Forward Port 5002 zu Node 2 (enabled)
-- `tunnel-to-node3` → Local Forward Port 18793 zu Node 3 via sshpass (enabled)
+## Transportdienste auf dem Gateway
+
+Die früher dokumentierten Dienste `tunnel-18790`, `openclaw-tunnel` und
+Public-IP-Reverse-Tunnel sind auf diesem Gateway nicht vorhanden. Tailscale ist
+der einzige vorgesehene Node-Transport.
 
 ---
 

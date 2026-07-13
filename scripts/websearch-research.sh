@@ -24,7 +24,7 @@ curl -s -X POST https://openrouter.ai/api/v1/chat/completions \
   -H "Authorization: Bearer $OPENROUTER_API_KEY" \
   -H "Content-Type: application/json" \
   -d "{
-    \"model\": \"openai/gpt-4.1\",
+    \"model\": \"openai/gpt-5.4-mini\",
     \"messages\": [{\"role\": \"user\", \"content\": \"$QUERY\"}],
     \"plugins\": [{\"id\": \"web\", \"engine\": \"exa\", \"max_results\": 5}]
   }" 2>/dev/null | jq -r '.choices[0].message.content // "Keine Ergebnisse"' >> "$OUTPUT_FILE"

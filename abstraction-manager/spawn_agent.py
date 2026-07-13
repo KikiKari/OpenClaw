@@ -15,7 +15,7 @@ Verwendung (CLI)::
 
     python3 spawn_agent.py \\
         --task "Port db_maintainer.py to Go with full error handling" \\
-        --model openrouter/anthropic/claude-3-5-sonnet-20241022 \\
+        --model openrouter/anthropic/claude-haiku-4.5 \\
         --timeout 1800
 
 Verwendung (programmatisch)::
@@ -23,7 +23,7 @@ Verwendung (programmatisch)::
     from spawn_agent import spawn_portation_agent
     result = spawn_portation_agent(
         task_description="Port json_processor.py to Perl 5",
-        ai_model_name="openrouter/anthropic/claude-3-5-sonnet-20241022",
+        ai_model_name="openrouter/anthropic/claude-haiku-4.5",
         timeout_seconds=1800,
     )
 
@@ -37,7 +37,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv() -> bool:
+        """Allow environment-only operation when python-dotenv is unavailable."""
+        return False
 
 from exceptions import ValidationError, ApiKeyError, AbstractionsManagerError
 from validators import (
@@ -103,7 +108,7 @@ def spawn_portation_agent(
     Example:
         >>> result = spawn_portation_agent(
         ...     task_description="Port db_maintainer.py to Go",
-        ...     ai_model_name="openrouter/anthropic/claude-3-5-sonnet-20241022",
+        ...     ai_model_name="openrouter/anthropic/claude-haiku-4.5",
         ...     timeout_seconds=1800,
         ... )
         >>> print("Exit-Code:", result.returncode)
@@ -113,15 +118,14 @@ def spawn_portation_agent(
     validated_model = validate_ai_model_name(ai_model_name)
     validated_timeout = validate_timeout_seconds(timeout_seconds)
 
-    # API-Schlüssel prüfen
-    provider_name = _extract_provider_name(validated_model)
-    load_and_validate_api_key(provider_name)
-
-    # Agent-Script prüfen
-    if not agent_runner_path.is_file():
-        raise FileNotFoundError(
-            f"Agent-Runner-Script nicht gefunden: {agent_runner_path}"
-        )
+    if not dry_run:
+        # API-Schlüssel und Runner werden nur für reale Ausführungen benötigt.
+        provider_name = _extract_provider_name(validated_model)
+        load_and_validate_api_key(provider_name)
+        if not agent_runner_path.is_file():
+            raise FileNotFoundError(
+                f"Agent-Runner-Script nicht gefunden: {agent_runner_path}"
+            )
 
     # Befehl als Liste aufbauen (KEIN shell=True → kein Shell-Injection-Risiko)
     command = [
@@ -197,7 +201,7 @@ def _extract_provider_name(model_name: str) -> str:
         Provider-Name in Großbuchstaben (z. B. ``"ANTHROPIC"``).
 
     Example:
-        >>> _extract_provider_name("openrouter/anthropic/claude-3-5-sonnet")
+        >>> _extract_provider_name("openrouter/anthropic/openrouter/anthropic/claude-haiku-4.5")
         'ANTHROPIC'
     """
     parts = model_name.split("/")
@@ -223,7 +227,7 @@ def _build_argument_parser() -> argparse.ArgumentParser:
 Beispiele:
   python3 spawn_agent.py \\
       --task "Port db_maintainer.py to Go" \\
-      --model openrouter/anthropic/claude-3-5-sonnet-20241022 \\
+      --model openrouter/anthropic/claude-haiku-4.5 \\
       --timeout 1800
 
   python3 spawn_agent.py --task "Port json_processor.py to Perl 5" --dry-run

@@ -8,16 +8,17 @@ import json
 import sys
 from pathlib import Path
 
+WORKSPACE = Path("/home/openclaw/.openclaw/workspace")
+if str(WORKSPACE) not in sys.path:
+    sys.path.insert(0, str(WORKSPACE))
+
+from openclaw_models import ModelConfigError, configured_models
+
 # Verfügbare Modelle
-MODELS = [
-    "openrouter/moonshotai/kimi-k2.5",
-    "openrouter/openai/gpt-4o",
-    "openrouter/anthropic/claude-3-5-sonnet-20241022",
-    "openrouter/google/gemini-2.0-flash-001",
-    "openrouter/nvidia/llama-3.3-nemotron-super-49b-v1",
-    "openrouter/meta-llama/llama-3.3-70b-instruct",
-    "openrouter/qwen/qwen-2.5-coder-32b-instruct",
-]
+try:
+    MODELS = configured_models()
+except ModelConfigError as exc:
+    raise SystemExit(f"Modellkonfiguration kann nicht geladen werden: {exc}") from exc
 
 class SubAgentSpawner:
     """Hilft beim Spawnen von Sub-Agents"""
@@ -94,7 +95,7 @@ def main():
         epilog="""
 Beispiele:
   %(prog)s -t "Analyze logs" 
-  %(prog)s -t "Code review" -m openrouter/openai/gpt-4o --timeout 1800
+  %(prog)s -t "Code review" -m openrouter/anthropic/claude-haiku-4.5 --timeout 1800
   %(prog)s -t "Batch process" -l "batch-worker" --thread
         """
     )

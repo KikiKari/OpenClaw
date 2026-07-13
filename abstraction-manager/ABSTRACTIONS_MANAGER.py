@@ -24,6 +24,12 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from logging.handlers import RotatingFileHandler
 
+_WORKSPACE_IMPORT_ROOT = Path(os.environ.get("OPENCLAW_WORKSPACE", "/home/openclaw/.openclaw/workspace"))
+if str(_WORKSPACE_IMPORT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_WORKSPACE_IMPORT_ROOT))
+
+from openclaw_models import ModelConfigError, configured_models
+
 # ---------------------------------------------------------------------------
 # Konfiguration
 # ---------------------------------------------------------------------------
@@ -42,14 +48,10 @@ NODES: Dict[str, Dict] = {
     "node7": {"always_available": True,  "capacity": "high",   "priority": 1},
 }
 
-AVAILABLE_MODELS: List[str] = [
-    "openrouter/moonshotai/kimi-k2.5",
-    "openrouter/openai/gpt-4o",
-    "openrouter/anthropic/claude-3-5-sonnet-20241022",
-    "openrouter/google/gemini-2.0-flash-001",
-    "openrouter/nvidia/llama-3.3-nemotron-super-49b-v1",
-    "openrouter/qwen/qwen-2.5-coder-32b-instruct",
-]
+try:
+    AVAILABLE_MODELS: List[str] = configured_models()
+except ModelConfigError as exc:
+    raise RuntimeError(f"Modellkonfiguration kann nicht geladen werden: {exc}") from exc
 
 TARGET_LANGUAGES: Dict[str, Dict[str, str]] = {
     "perl5": {

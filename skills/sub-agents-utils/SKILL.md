@@ -13,13 +13,13 @@
 result = sessions_spawn(
     task="Analyze logs for errors",
     label="log-analyzer",
-    model="openrouter/moonshotai/kimi-k2.5"
+    model="openrouter/moonshotai/kimi-k2.6"
 )
 ```
 
 ### Via Slash Command
 ```
-/subagents spawn my-agent "Task description" --model openrouter/openai/gpt-4o
+/subagents spawn my-agent "Task description" --model openai/gpt-5.4-mini
 ```
 
 ## Verfügbare Scripts
@@ -47,7 +47,7 @@ result = sessions_spawn(
   "task": "Aufgabenbeschreibung",
   "label": "mein-agent",
   "agentId": "optional-agent-id",
-  "model": "openrouter/moonshotai/kimi-k2.5",
+  "model": "openrouter/moonshotai/kimi-k2.6",
   "thinking": "high",
   "runTimeoutSeconds": 900,
   "thread": false,
@@ -92,7 +92,7 @@ python3 .../spawn_agent.py --task "Summarize yesterday's logs"
 ```bash
 python3 .../spawn_agent.py \
   --task "Code review" \
-  --model openrouter/anthropic/claude-3-5-sonnet-20241022 \
+  --model openrouter/anthropic/claude-haiku-4.5 \
   --timeout 1800
 ```
 
