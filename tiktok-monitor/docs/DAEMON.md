@@ -183,9 +183,9 @@ prevents re-emission while the user remains live.
 **Stream URL extraction at `go_live` time** uses the same orchestrator
 as `cmd_url`: direct API → yt-dlp → streamlink. If all three fail, the
 `go_live` event is **still emitted**, but without a `stream_url=`
-field. Sub-agents that need a URL can call `tt-live.sh url <user>` on
-the side; the URL cache will be populated on the next successful
-extraction.
+field. Callers that need a URL can call `tt-live.sh url <user>` separately;
+that call starts a fresh resolver session and records the successful URL for
+diagnostics.
 
 ### 4.5 Sleep
 
@@ -237,7 +237,7 @@ deadline check).
 | Single poll scrape fails | emit `poll_err reason=fetch_failed`; sleep; continue |
 | sec_uid changes mid-run | emit `poll_err reason=sec_uid_changed new_sec_uid=<X>`; stay bound to anchor; sleep; continue |
 | Stream URL extraction fails on `go_live` | emit `go_live` **without** `stream_url=`; mark live in state; next `url` call will retry extraction |
-| State file becomes unreadable | `StateStore.read` returns `_default()`; the run proceeds as if state was fresh (loses cached URLs and `last_was_live` memory) |
+| State file becomes unreadable | `StateStore.read` returns `_default()`; the run proceeds as if state was fresh (loses diagnostic URL history and `last_was_live` memory) |
 | Identity file becomes unreadable | `IdentityStore.load_identity` returns `None`; treated as a fresh user (no rename detection until next save) |
 | SIGINT / Ctrl-C | caught by `except KeyboardInterrupt`; `end_reason = "interrupted"`; emits `daemon_end`; exits 0 |
 | SIGTERM | not explicitly caught; default Python behavior is exit with no `daemon_end` emitted. To stop a daemon cleanly, send SIGINT. |
@@ -420,4 +420,4 @@ the next event emission.
 | No stream-content capture | Use the URL with VLC, ffmpeg, or yt-dlp externally |
 | No SIGTERM handling | Use SIGINT to stop cleanly |
 | Events file grows unbounded | Periodic external rotation (e.g. logrotate) is the caller's responsibility |
-| Stream URL may expire before daemon ends | Caller can re-run `tt-live.sh url <user>` to refresh the cache mid-watch |
+| Stream URL may expire before daemon ends | Caller can re-run `tt-live.sh url <user>` for a new isolated resolution mid-watch |

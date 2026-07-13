@@ -182,7 +182,7 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 }
 ```
 
-### 4.2 Example (currently live, with one cached URL)
+### 4.2 Example (currently live, with one diagnostic URL-history entry)
 
 ```json
 {
@@ -339,7 +339,7 @@ stdout: a single line containing the m3u8 URL. Not JSON.
 
 With `--verbose|-v`, stderr also contains one line:
 ```
-# source: cache|api|yt-dlp|streamlink
+# source: api|yt-dlp|streamlink
 ```
 
 Exit `0` = ok, `1` = offline, `2` = error.

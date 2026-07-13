@@ -171,7 +171,7 @@ library (e.g. `pyjson5`) if more advanced features are needed.
 For audit purposes, the following keys were considered and
 **deliberately excluded** based on confirmed requirements:
 
-- No `format_cap` — 360p cap is hardcoded in `tt_live.py` and is
+- No `format_cap` — HD-preferred selection is implemented in `tt_live.py` and is
   required for the bandwidth profile assumed by the skill
 - No `min_poll_minutes` — 10-minute minimum is hardcoded; lowering it
   risks TikTok rate-limit pushback

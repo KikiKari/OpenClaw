@@ -76,6 +76,7 @@ def acquire_dispatch_slot() -> Any | None:
 def payload_for(result: Result) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "status": result.status,
+        "query_session": os.environ.get("TIKTOK_QUERY_SESSION_ID"),
         "execution": os.environ.get("TIKTOK_EXECUTION_CONTEXT", "auto"),
         "node": os.environ.get("TIKTOK_NODE_ID"),
         "method": result.method,
@@ -244,12 +245,16 @@ def direct_media_fallback(handle: str, timeout: int) -> Result:
     candidates = [
         (
             "direct_streamlink",
-            ["streamlink", "--stream-url", f"https://www.tiktok.com/@{handle}/live", "360p,worst"],
+            [
+                "streamlink", "--stream-url",
+                f"https://www.tiktok.com/@{handle}/live",
+                "720p,best,480p,360p,worst",
+            ],
         ),
         (
             "direct_yt_dlp",
             [
-                "yt-dlp", "-g", "-f", "best[height<=360]/worst[height<=360]/worst",
+                "yt-dlp", "-g", "-f", "best[height<=720]/best",
                 f"https://www.tiktok.com/@{handle}/live",
             ],
         ),
@@ -385,7 +390,14 @@ def parser() -> argparse.ArgumentParser:
     value.add_argument("operation", choices=("check", "url"))
     value.add_argument("handle", type=normalize_handle)
     value.add_argument("--json", action="store_true")
-    value.add_argument("--quality", choices=("ld", "sd", "hd", "origin", "auto"), default="ld")
+    value.add_argument(
+        "--quality",
+        choices=(
+            "ld", "sd", "hd", "hd_60", "uhd_60", "origin", "auto",
+            "360p", "540p", "720p", "720p60", "1080p60", "original",
+        ),
+        default="hd",
+    )
     value.add_argument("--timeout", type=int, choices=range(1, 121), default=45)
     return value
 

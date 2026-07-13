@@ -106,8 +106,9 @@ https://pull-hls-f16-tt04.tiktokcdn-eu.com/.../index.m3u8?expire=1748800000&sign
 $ vlc "$(tt-live.sh url <user>)"
 ```
 
-URL is cache-first (3-day retention). Cache miss falls back to direct
-webcast API → yt-dlp → streamlink.
+Every call freshly resolves the URL through direct webcast API → yt-dlp →
+streamlink. Recorded URLs are retained for diagnostics only and never serve a
+later query.
 
 ### Watch for transitions
 
@@ -192,9 +193,9 @@ Layout details, including the per-file JSON schemas, are in
 
 | Constraint | Value | Why |
 |---|---|---|
-| Stream format cap | 360p (HLS m3u8) | Predictable bandwidth for sub-agent use cases |
+| Stream quality | Prefer 720p/HD; retain 540p/360p fallbacks | Compatible playback without discarding lower tiers |
 | Poll interval minimum | 10 minutes | Smaller values are rejected |
-| URL cache retention | 3 days | Matches practical signature validity |
+| Diagnostic URL-history retention | 3 days | Supports troubleshooting without query reuse |
 | HTTP request timeout | 15 seconds | Calibrated to TikTok's observed response latency |
 | Notifications | none | The skill is a data provider; sub-agents announce |
 | Cron mode | not supported | OpenClaw cron has ask=always; out of scope |

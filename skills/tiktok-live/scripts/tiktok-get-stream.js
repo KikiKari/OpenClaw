@@ -128,6 +128,13 @@ async function getStreamUrl(username) {
             // Sort by quality indicator (if present in URL)
             uniqueUrls.sort((a, b) => {
                 const getQuality = url => {
+                    const suffixRanks = [
+                        ['_origin.', 600], ['_uhd_60.', 550], ['_uhd.', 540],
+                        ['_hd_60.', 500], ['_hd.', 450], ['_sd.', 350], ['_ld.', 250]
+                    ];
+                    for (const [suffix, rank] of suffixRanks) {
+                        if (url.includes(suffix)) return rank;
+                    }
                     const match = url.match(/(\d+)p/);
                     return match ? parseInt(match[1]) : 0;
                 };

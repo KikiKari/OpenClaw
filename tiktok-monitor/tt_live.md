@@ -51,7 +51,7 @@ Workspace helpers      resolve_workspace, ensure_dirs, now_iso
 HTTP layer             http_get
 SIGI_STATE scrape      parse_sigi_state, fetch_user_live_page, is_live_from_sigi
 Webcast API            fetch_room_info, fetch_check_alive
-Stream URL extraction  pick_360p_hls, extract_via_ytdlp, extract_via_streamlink,
+Stream URL extraction  pick_hd_hls, extract_via_ytdlp, extract_via_streamlink,
                        extract_stream_url
 IdentityStore (class)  load/save identity, pointer, update_from_scrape
 StateStore (class)     read/write state, add_url, strip_stale_urls,
@@ -69,12 +69,12 @@ All constants are **module-level and intentionally not configurable** at
 runtime. Values are part of the contract; changes require a code edit
 and a docs update.
 
-### `FORMAT_CAP = "360"`
-Hardcoded 360p cap for stream-URL selection. Applied in three places:
-`pick_360p_hls()` quality preference order, `extract_via_ytdlp()` format
-selector `best[height<=360]/worst[height<=360]/worst`, and
-`extract_via_streamlink()` quality argument `360p,worst`. **Not exposed
-to the CLI or config.**
+### Stream quality policy
+The URL resolver prefers anonymous 720p/HD for broad player compatibility,
+then higher captured tiers, then 540p and 360p fallbacks. The normalized TikTok
+tiers are `origin`, `uhd_60`, `hd_60`, `hd`, `sd`, and `ld`. A tier shown by
+TikTok but not captured anonymously may require login and is treated as
+unknown/login-limited rather than absent.
 
 ### `MIN_POLL_MINUTES = 10`
 Floor for the daemon's `--poll-min` argument. Any value below 5 is
@@ -228,7 +228,7 @@ on any failure (non-200 status, empty body, JSON decode error, missing
 `data` field).
 
 The returned `data` dict contains `stream_url`, `room_id`, host info,
-and other room metadata. `pick_360p_hls()` consumes it.
+and other room metadata. `pick_hd_hls()` consumes it.
 
 ### `fetch_check_alive(room_id: str) -> bool | None`
 GET `https://webcast.tiktok.com/webcast/room/check_alive/?aid=1988&room_ids=<id>`.
@@ -262,11 +262,11 @@ Maps TikTok stream quality keys to estimated pixel heights:
 }
 ```
 
-Used only by `pick_360p_hls()` to apply the cap.
+Used by `pick_hd_hls()` to apply the shared quality preference.
 
-### `pick_360p_hls(room_info: dict) -> str | None`
+### `pick_hd_hls(room_info: dict) -> str | None`
 Walks the `stream_url` block of a `room/info` response and picks one
-HLS m3u8 URL under the 360p cap.
+HLS m3u8 URL, preferring anonymous 720p/HD.
 
 **Two stream_url layouts are handled:**
 
@@ -284,11 +284,9 @@ url)` tuples.
 
 1. Audio-only (`ao`) excluded unless nothing else is available.
 2. Sort by preference:
-   - `ld` (exact 360p) always wins
-   - Then closest to 360p without exceeding (larger height under the
-     cap is better, because TikTok rarely has discrete <360p)
-   - Then lowest height above the cap (closer to 360p is better than
-     1080p)
+   - `hd` (720p) for broad anonymous playback compatibility
+   - `hd_60`, `uhd_60`, and `origin` when captured
+   - `sd` (540p), then `ld` (360p) as fallbacks
 3. Return the first candidate's URL.
 
 Returns `None` if no candidates are present.
@@ -298,7 +296,7 @@ Subprocess shell-out to `yt-dlp` if it exists on `PATH`.
 
 **Command:**
 ```
-yt-dlp -g -f "best[height<=360]/worst[height<=360]/worst"
+yt-dlp -g -f "best[height<=720]/best"
        "https://www.tiktok.com/@<username>/live"
 ```
 
@@ -316,11 +314,11 @@ Subprocess shell-out to `streamlink` if it exists on `PATH`.
 ```
 streamlink --stream-url
            "https://www.tiktok.com/@<username>/live"
-           "360p,worst"
+           "720p,best,480p,360p,worst"
 ```
 
-The quality selector `"360p,worst"` means "give me 360p; if not
-available, the worst available."
+The selector prefers 720p/HD, then the best available stream, while retaining
+480p, 360p, and worst as compatibility fallbacks.
 
 Returns the trimmed stdout, or `None` on any failure mode.
 
@@ -330,7 +328,7 @@ Orchestrator that tries each strategy in order. Returns
 
 | Strategy | Source string | When |
 |---|---|---|
-| `fetch_room_info` → `pick_360p_hls` | `"api"` | Direct API succeeds |
+| `fetch_room_info` → `pick_hd_hls` | `"api"` | Direct API succeeds |
 | `extract_via_ytdlp` | `"yt-dlp"` | API failed, yt-dlp on PATH |
 | `extract_via_streamlink` | `"streamlink"` | yt-dlp failed/missing |
 | (nothing) | `"none"` | All three failed |
@@ -437,7 +435,7 @@ The main write path. Called by every subcommand after a successful
 
 ## 9. `StateStore` class
 
-Per-`sec_uid` live state and stream URL cache.
+Per-`sec_uid` live state and diagnostic stream URL history.
 
 ### Layout
 
@@ -499,7 +497,8 @@ Returns the most recently captured URL.
 - Otherwise: return the last URL in the list regardless of room_id
 - Returns `None` if `stream_urls` is empty
 
-Used by `cmd_url` for cache-first behavior.
+Used for diagnostics and daemon state inspection. `cmd_url` deliberately does
+not call this method: every URL request performs a fresh resolution.
 
 ---
 
@@ -612,9 +611,9 @@ python3 tt_live.py url <username> [--verbose|-v]
 2. Fresh scrape (also serves to find current `room_id`)
 3. Update identity store
 4. If offline → exit 1 (stderr error message)
-5. Cache-first: check `StateStore.get_latest_url(sec_uid, room_id)`
-6. On cache hit → print cached URL, exit 0
-7. On cache miss → `extract_stream_url(room_id, username)`:
+5. Start a fresh resolver session; stored URLs never short-circuit a query
+6. Start new API/yt-dlp/Streamlink work as needed
+7. Run `extract_stream_url(room_id, username)`:
    - Direct API first
    - yt-dlp if API fails and yt-dlp is on PATH
    - streamlink if yt-dlp fails too
@@ -623,7 +622,6 @@ python3 tt_live.py url <username> [--verbose|-v]
 9. If `--verbose`/`-v` → print `# source: <source>` to stderr
 
 **Sources reported with `--verbose`:**
-- `cache` — served from `StateStore`
 - `api` — direct webcast API
 - `yt-dlp` — subprocess fallback
 - `streamlink` — subprocess fallback

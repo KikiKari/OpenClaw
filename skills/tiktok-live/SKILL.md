@@ -12,6 +12,12 @@ trusted slash-command router envelope. Its `User input:` value is the current
 command input. Invoke `tiktok_live_direct` immediately with that value; never
 ask the user to repeat `/tiktok_live`.
 
+Every request is an isolated query session. Start a new dispatcher process;
+never reuse or attach to a browser, Chromium context, Playwright page,
+Streamlink process, yt-dlp process, or resolved-URL cache from another request.
+Concurrent identical requests remain separate sessions. Close every browser,
+context, and child process belonging to the query before returning.
+
 For `/tiktok_live @handle`, handle-only requests, and VLC/MPV requests, invoke
 exactly this command once, using the handle from the current user input:
 
@@ -65,10 +71,10 @@ Method: <dispatcher method>
 `playwright`. The dispatcher internally owns Python-first resolution, bounded
 Node/Playwright fallbacks, timeouts, and process cleanup.
 
-The dispatcher probes cached and freshly resolved media URLs before returning
-them. A cached URL that answers with HTTP 403 or does not contain valid HLS
-content is discarded and resolved again. Never describe such a failure as a
-VLC, expiry, or regional problem without an actual probe result.
+The dispatcher freshly resolves and probes media URLs in the current query
+session before returning them. Previously recorded URLs are diagnostic history
+only and must never satisfy a later request. Never describe a probe failure as
+a VLC, expiry, or regional problem without an actual probe result.
 
 If the user reports that VLC cannot open the immediately preceding URL, rerun
 this same direct command for the same handle. Do not introduce any handle that

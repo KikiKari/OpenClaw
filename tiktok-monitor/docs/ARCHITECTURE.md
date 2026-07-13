@@ -80,7 +80,7 @@ tt_live.py
 │
 ├── Stream URL extraction
 │     QUALITY_HEIGHT dict
-│     pick_360p_hls(room_info) → url|None
+│     pick_hd_hls(room_info) → url|None
 │     extract_via_ytdlp(username) → url|None       (subprocess fallback)
 │     extract_via_streamlink(username) → url|None  (subprocess fallback)
 │     extract_stream_url(room_id, username) → (url, source)
@@ -174,24 +174,23 @@ cmd_url(args)
 is_live_from_sigi → offline? exit 1
        │
        ▼
-StateStore.get_latest_url(sec_uid, room_id)
-       │ cache hit? print URL → exit 0
-       │
-       ▼ cache miss
+Start isolated query session
+       │ never reuse a prior browser/process/resolved URL
+       ▼
 extract_stream_url(room_id, username):
        │
-       ├── try 1: fetch_room_info → pick_360p_hls
+       ├── try 1: fetch_room_info → pick_hd_hls
        │            │ direct webcast API → JSON envelope → stream_url paths
        │            │ source = "api"
        │            ▼ success: return url
        │
        ├── try 2: extract_via_ytdlp (if yt-dlp on PATH)
-       │            │ subprocess: yt-dlp -g -f "best[height<=360]/..."
+       │            │ subprocess: yt-dlp -g -f "best[height<=720]/best"
        │            │ source = "yt-dlp"
        │            ▼ success: return url
        │
        └── try 3: extract_via_streamlink (if streamlink on PATH)
-                    │ subprocess: streamlink --stream-url ... "360p,worst"
+                    │ subprocess: streamlink --stream-url ... "720p,best,480p,360p,worst"
                     │ source = "streamlink"
                     ▼ success: return url
 
@@ -205,9 +204,9 @@ URL → stdout
 exit 0
 ```
 
-**Cache-first** keeps repeat calls cheap (one HTTP for the SIGI scrape,
-plus the disk read). Only on cache miss do we call the webcast API or
-shell out.
+Every call performs fresh resolution. The webcast API and, when needed,
+yt-dlp or streamlink run in processes belonging only to that query. Stored
+URLs are diagnostic history and are never used to answer a later query.
 
 ---
 
@@ -377,16 +376,16 @@ The orchestrator (`extract_stream_url`) tries them in fixed order and
 records which one produced the URL (`source` field). The order is not
 configurable.
 
-### 7.8 360p hardcoded
+### 7.8 HD-preferred quality policy
 
-The format cap is fixed at 360p. The selection logic in
-`pick_360p_hls` prefers (1) the `ld` quality key, (2) the largest
-quality under 360p, (3) the smallest quality above 360p as last
-resort.
+`pick_hd_hls` prefers ordinary 720p/HD for anonymous playback, followed by
+captured 720p60/1080p60/original tiers and then 540p/360p fallbacks. Streamlink
+and yt-dlp use equivalent selectors. TikTok player tiers that are visible but
+not anonymously captured may require login; they are not classified as absent.
 
-**Trade-off:** higher-bandwidth use cases (1080p archival) are not
-supported. This is intentional. Sub-agent announce flows need
-predictable bandwidth.
+**Trade-off:** automatic resolution prioritizes compatibility at 720p instead
+of always choosing source/original quality. Explicit higher-tier requests may
+fall back to the best anonymously accessible stream.
 
 ### 7.9 10-minute poll minimum
 
@@ -432,7 +431,7 @@ a release bump.
 | External notifications (Slack, Discord, webhooks) | Sub-agent's job, not skill's |
 | Stop / pause / resume daemon commands | Sub-agent has the pid; `kill <pid>` triggers a clean `daemon_end reason=interrupted` |
 | OpenClaw cron mode | OpenClaw 2026.5.x cron has `ask=always` enforcement that breaks ~16k tokens per run; explicitly disabled at the gateway |
-| `--quality` / `--format` flags | 360p hardcoded; bandwidth predictability |
+| Python `url --quality` flag | Dispatcher owns quality selection; standalone `url` uses HD-preferred policy |
 | HTTP retry logic | Single attempt; transient failure → caller decides whether to re-run |
 | Identity-store cleanup | Pointer/identity files are tiny; never deleted automatically |
 | `__UNIVERSAL_DATA_FOR_REHYDRATION__` fallback | Schema unreliable for live-room data |

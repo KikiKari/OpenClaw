@@ -12,6 +12,10 @@ trusted slash-command router envelope. Its `User input:` value is the current
 command input. Invoke `tiktok_live_mon_direct` immediately with that value;
 never ask the user to repeat `/tiktok_live_mon`.
 
+Every one-shot request is an isolated query session. Start fresh Playwright,
+Chromium, Streamlink, yt-dlp, and dispatcher processes; never reuse a browser,
+context, page, process, or cached resolved URL from another request.
+
 A bare `/tiktok_live_mon @handle` is a one-shot request. Follow the complete
 one-shot contract from `tiktok-live` and invoke exactly:
 

@@ -276,7 +276,7 @@ def fetch_check_alive(room_id: str) -> bool | None:
 # Stream URL extraction
 # ============================================================================
 
-# Quality key → estimated height. Used for the 360p cap preference.
+# Quality key → estimated height. Used for the HD preference.
 # TikTok keys observed in stream_data: origin, uhd_60, hd_60, hd, sd, ld, ao
 QUALITY_HEIGHT = {
     "ao": 0,        # audio-only; excluded unless nothing else
@@ -288,15 +288,29 @@ QUALITY_HEIGHT = {
     "origin": 1080,
 }
 
+# TikTok UI label → internal stream key. Higher variants may be shown in the
+# player but require login; anonymous resolvers must treat an uncaptured tier
+# as unknown/login-limited rather than proof that the tier does not exist.
+QUALITY_LABELS = {
+    "origin": "Original",
+    "uhd_60": "1080p60",
+    "hd_60": "720p60",
+    "hd": "720p",
+    "sd": "540p",
+    "ld": "360p",
+    "ao": "Audio",
+}
+ANONYMOUS_QUALITY_ORDER = ("origin", "uhd_60", "hd_60", "hd", "sd", "ld")
 
-def pick_360p_hls(room_info: dict) -> str | None:
+
+def pick_hd_hls(room_info: dict) -> str | None:
     """
-    Pick the best HLS m3u8 URL under the 360p cap.
+    Pick an HD HLS m3u8 URL, retaining lower qualities as fallbacks.
 
     Preference:
-      1. "ld" (360p) exact match
-      2. closest available <= 360 by height
-      3. lowest-quality available over the cap (better than nothing)
+      1. "hd" (720p) exact match
+      2. other HD-or-better video qualities
+      3. best lower video quality
     Audio-only ("ao") is excluded unless nothing else is available.
     """
     if not room_info:
@@ -339,27 +353,30 @@ def pick_360p_hls(room_info: dict) -> str | None:
     non_audio = [c for c in candidates if c[0] != "ao"]
     pool = non_audio if non_audio else candidates
 
+    # Prefer ordinary 720p for broad anonymous playback compatibility, then
+    # higher tiers and finally lower tiers. Their absence from an anonymous
+    # response does not mean TikTok's logged-in player cannot offer them.
+    preferred_order = {
+        "hd": 0, "hd_60": 1, "uhd_60": 2, "origin": 3,
+        "sd": 4, "ld": 5, "ao": 6,
+    }
+
     def sort_key(kv: tuple[str, str]) -> tuple[int, int]:
         key, _url = kv
-        height = QUALITY_HEIGHT.get(key, 9999)
-        if key == "ld":
-            return (0, 0)             # best preference
-        if height <= 360:
-            return (1, -height)       # under cap; larger height under cap = better
-        return (2, height)            # over cap; smaller height = closer to cap
+        return (preferred_order.get(key, 99), -QUALITY_HEIGHT.get(key, 0))
 
     pool.sort(key=sort_key)
     return pool[0][1]
 
 
 def extract_via_ytdlp(username: str) -> str | None:
-    """Use yt-dlp -g if available; respect 360p cap."""
+    """Use yt-dlp -g if available; prefer video up to 720p."""
     if not shutil.which("yt-dlp"):
         return None
     cmd = [
         "yt-dlp",
         "-g",
-        "-f", "best[height<=360]/worst[height<=360]/worst",
+        "-f", "best[height<=720]/best",
         f"https://www.tiktok.com/@{username}/live",
     ]
     try:
@@ -388,7 +405,7 @@ def extract_via_streamlink(username: str) -> str | None:
         "streamlink",
         "--stream-url",
         f"https://www.tiktok.com/@{username}/live",
-        "360p,worst",
+        "720p,best,480p,360p,worst",
     ]
     try:
         out = subprocess.run(
@@ -411,7 +428,7 @@ def extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]:
     # Primary: direct webcast API
     info = fetch_room_info(room_id)
     if info:
-        url = pick_360p_hls(info)
+        url = pick_hd_hls(info)
         if url and stream_url_is_playable(url):
             return url, "api"
 
@@ -579,7 +596,7 @@ class IdentityStore:
 
 class StateStore:
     """
-    Per-secUid live state + stream URL cache.
+    Per-secUid live state + diagnostic stream URL history.
 
       <sec_uid>.state.json = {
         "sec_uid": "...",
@@ -818,15 +835,9 @@ def cmd_url(args: argparse.Namespace) -> int:
         return 2
     room_id = str(room_id)
 
-    cached = state_store.get_latest_url(sec_uid, room_id)
-    if cached and stream_url_is_playable(cached):
-        print(cached)
-        if args.verbose:
-            sys.stderr.write("# source: cache\n")
-        return 0
-    if cached:
-        state_store.discard_url(sec_uid, room_id, cached)
-
+    # Historical URLs remain available to monitoring/audit consumers, but a
+    # user query always starts a fresh resolver session and never returns a
+    # URL solely because a previous query cached it.
     url, source = extract_stream_url(room_id, username)
     if not url:
         sys.stderr.write(
@@ -1033,7 +1044,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_url = sub.add_parser(
         "url",
-        help="Print current m3u8 stream URL (cached or fresh)",
+        help="Freshly resolve and print the current stream URL",
     )
     p_url.add_argument("username")
     p_url.add_argument(

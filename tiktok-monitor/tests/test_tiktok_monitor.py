@@ -88,9 +88,74 @@ class IdentityStoreTests(unittest.TestCase):
         self.assertFalse(pointer.exists())
 
 
+class StreamQualityTests(unittest.TestCase):
+    def room_info(self, qualities):
+        return {
+            "stream_url": {
+                "hls_pull_url_map": {
+                    quality: f"https://media.example/stream_{quality}.m3u8"
+                    for quality in qualities
+                }
+            }
+        }
+
+    def test_api_prefers_hd_over_ld_sd_and_origin(self):
+        url = core.pick_hd_hls(self.room_info(["ld", "sd", "origin", "hd"]))
+        self.assertEqual(url, "https://media.example/stream_hd.m3u8")
+
+    def test_api_uses_hd_60_when_plain_hd_is_missing(self):
+        url = core.pick_hd_hls(self.room_info(["ld", "hd_60", "origin"]))
+        self.assertEqual(url, "https://media.example/stream_hd_60.m3u8")
+
+    def test_api_keeps_ld_as_last_video_fallback(self):
+        url = core.pick_hd_hls(self.room_info(["ao", "ld"]))
+        self.assertEqual(url, "https://media.example/stream_ld.m3u8")
+
+    def test_streamlink_requests_hd_before_lower_fallbacks(self):
+        completed = mock.Mock(returncode=0, stdout="https://media.example/stream_hd.flv\n")
+        with mock.patch.object(core.shutil, "which", return_value="/usr/bin/streamlink"), \
+             mock.patch.object(core.subprocess, "run", return_value=completed) as run:
+            url = core.extract_via_streamlink("example")
+        self.assertEqual(url, "https://media.example/stream_hd.flv")
+        self.assertEqual(run.call_args.args[0][-1], "720p,best,480p,360p,worst")
+
+    def test_ytdlp_caps_preferred_quality_at_720p(self):
+        completed = mock.Mock(returncode=0, stdout="https://media.example/stream_hd.m3u8\n")
+        with mock.patch.object(core.shutil, "which", return_value="/usr/bin/yt-dlp"), \
+             mock.patch.object(core.subprocess, "run", return_value=completed) as run:
+            url = core.extract_via_ytdlp("example")
+        self.assertEqual(url, "https://media.example/stream_hd.m3u8")
+        self.assertIn("best[height<=720]/best", run.call_args.args[0])
+
+
+class FreshQuerySessionTests(unittest.TestCase):
+    def test_cmd_url_never_short_circuits_from_cached_url(self):
+        identity = mock.Mock()
+        identity.update_from_scrape.return_value = ("stable_sec_uid", False)
+        state = mock.Mock()
+        state.get_latest_url.return_value = "https://media.example/old_hd.flv"
+        args = mock.Mock(username="example", verbose=False)
+        scrape = {"room_id": "123", "unique_id": "example"}
+
+        with mock.patch.object(core, "resolve_workspace", return_value=Path("/tmp/fresh-query")), \
+             mock.patch.object(core, "ensure_dirs"), \
+             mock.patch.object(core, "IdentityStore", return_value=identity), \
+             mock.patch.object(core, "StateStore", return_value=state), \
+             mock.patch.object(core, "fetch_user_live_page", return_value=scrape), \
+             mock.patch.object(core, "is_live_from_sigi", return_value=True), \
+             mock.patch.object(core, "extract_stream_url", return_value=("https://media.example/new_hd.flv", "api")) as extract, \
+             mock.patch("builtins.print") as output:
+            code = core.cmd_url(args)
+
+        self.assertEqual(code, 0)
+        extract.assert_called_once_with("123", "example")
+        state.get_latest_url.assert_not_called()
+        output.assert_called_once_with("https://media.example/new_hd.flv")
+
+
 class DispatcherTests(unittest.TestCase):
     def args(self, operation="url"):
-        return mock.Mock(operation=operation, handle="example", timeout=5, quality="ld", json=True)
+        return mock.Mock(operation=operation, handle="example", timeout=5, quality="hd", json=True)
 
     def test_terminal_python_url_does_not_run_node(self):
         with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \

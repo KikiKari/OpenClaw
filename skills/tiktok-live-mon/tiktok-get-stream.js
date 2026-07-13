@@ -20,6 +20,59 @@ const execFilePromise = util.promisify(require('child_process').execFile);
 // Optional extra wait (ms) to allow Playwright to capture FLV requests
 const PLAYWRIGHT_CAPTURE_MS = parseInt(process.env.PLAYWRIGHT_CAPTURE_MS, 10) || 0;
 
+// TikTok player labels and their observed anonymous CDN suffixes. The player
+// can advertise higher tiers with "Anmelden"; a missing anonymous URL is
+// therefore unknown/login-limited, not proof that the tier does not exist.
+const QUALITY_PROFILES = {
+    auto: {
+        suffixes: ['_origin.flv', '_or4.flv', '_uhd_60.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '_hd_60.flv', '_hd.flv', '_sd.flv', '_ld.flv', '.flv', '.m3u8'],
+        streamlink: 'best', ytdlp: 'best'
+    },
+    origin: {
+        suffixes: ['_origin.flv', '_or4.flv', '_uhd_60.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '.flv', '.m3u8'],
+        streamlink: 'best', ytdlp: 'best'
+    },
+    uhd_60: {
+        suffixes: ['_uhd_60.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '.flv', '.m3u8'],
+        streamlink: 'best', ytdlp: 'best[height<=1080]/best'
+    },
+    hd_60: {
+        suffixes: ['_hd_60.flv', '_hd.flv', '.flv', '.m3u8'],
+        streamlink: 'best', ytdlp: 'best[height<=720]/best'
+    },
+    hd: {
+        suffixes: ['_hd.flv', '_hd_60.flv', '.flv', '.m3u8'],
+        streamlink: 'hd,best', ytdlp: 'best[height<=720]/best'
+    },
+    sd: {
+        suffixes: ['_sd.flv', '_ld.flv', '.flv', '.m3u8'],
+        streamlink: 'sd,540p,best', ytdlp: 'best[height<=540]/best'
+    },
+    ld: {
+        suffixes: ['_ld.flv', '.flv', '.m3u8'],
+        streamlink: 'ld,360p,worst', ytdlp: 'best[height<=360]/worst'
+    }
+};
+
+const QUALITY_ALIASES = {
+    automatic: 'auto', automatisch: 'auto', original: 'origin',
+    '1080p60': 'uhd_60', '720p60': 'hd_60', '720p': 'hd',
+    '540p': 'sd', '360p': 'ld'
+};
+
+function normalizeQuality(value) {
+    const key = String(value || 'auto').toLowerCase();
+    return QUALITY_ALIASES[key] || (QUALITY_PROFILES[key] ? key : 'auto');
+}
+
+function resolvedQualityFromUrl(url) {
+    for (const key of ['origin', 'uhd_60', 'hd_60', 'hd', 'sd', 'ld']) {
+        if (url.includes(`_${key}.`)) return key;
+    }
+    if (url.includes('_uhd.') || url.includes('_full_hd')) return 'uhd_60';
+    return 'unknown';
+}
+
 
 function humanDelay(min = 2000, max = 4000) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -188,11 +241,8 @@ async function extractWithPlaywright(username, qualityPreference) {
         const uniqueUrls = [...new Map(collectedUrls.map(item => [item.url.split('?')[0], item])).values()];
 
         // Qualitäts-Präferenz anwenden
-        const qualityOrder = qualityPreference === 'auto'
-            ? ['_origin.flv', '_or4.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '_hd.flv', '_sd.flv', '_ld.flv', '.flv', '.m3u8']
-            : qualityPreference === 'origin'
-                ? ['_origin.flv', '_or4.flv', '_uhd.flv', '_full_hd1.flv', '_full_hd.flv', '.flv', '.m3u8']
-                : [`_${qualityPreference}.flv`, '.flv', '.m3u8'];
+        const normalizedQuality = normalizeQuality(qualityPreference);
+        const qualityOrder = QUALITY_PROFILES[normalizedQuality].suffixes;
 
         let bestUrl = null;
         for (const suffix of qualityOrder) {
@@ -206,7 +256,10 @@ async function extractWithPlaywright(username, qualityPreference) {
             method: 'playwright',
             username,
             url: bestUrl.url,
-            quality: qualityPreference,
+            quality: normalizedQuality,
+            resolvedQuality: resolvedQualityFromUrl(bestUrl.url),
+            qualityAccess: 'anonymous',
+            uncapturedHigherQualitiesMayRequireLogin: true,
             allUrls: uniqueUrls.length,
             timestamp: new Date().toISOString()
         };
@@ -223,7 +276,9 @@ async function extractWithPlaywright(username, qualityPreference) {
 async function tryStreamlink(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-streamlink.sh');
     try {
-        const { stdout } = await execPromise(`bash "${scriptPath}" ${username} ${quality} --json`);
+        const normalizedQuality = normalizeQuality(quality);
+        const selector = QUALITY_PROFILES[normalizedQuality].streamlink;
+        const { stdout } = await execPromise(`bash "${scriptPath}" ${username} "${selector}" --json`);
         return JSON.parse(stdout);
     } catch (error) {
         if (error.stdout) {
@@ -236,7 +291,8 @@ async function tryStreamlink(username, quality) {
 // yt-dlp Fallback
 async function tryYtDlp(username, quality) {
     const scriptPath = path.join(__dirname, 'extraction-methods', 'extract-tiktok-yt-dlp.sh');
-    const ytFormat = quality === 'ld' ? 'worst' : (quality === 'auto' ? 'best' : quality);
+    const normalizedQuality = normalizeQuality(quality);
+    const ytFormat = QUALITY_PROFILES[normalizedQuality].ytdlp;
     try {
         const { stdout } = await execPromise(`bash "${scriptPath}" ${username} ${ytFormat} --json`);
         return JSON.parse(stdout);
@@ -271,7 +327,7 @@ async function verifyLiveStatus(username) {
 }
 
 // Hauptfunktion mit Fallback-Kette
-async function getStreamUrl(username, qualityPreference = 'ld') {
+async function getStreamUrl(username, qualityPreference = 'hd') {
     const timestamp = new Date().toISOString();
 
     const isLive = await verifyLiveStatus(username);
@@ -332,7 +388,7 @@ if (!cliUsername) {
     console.error('Username must not be empty');
     process.exit(1);
 }
-const cliQuality = process.argv[3] || 'ld';
+const cliQuality = process.argv[3] || 'hd';
 const cliJson = process.argv.includes('--json');
 
 function rejectBusyNode() {

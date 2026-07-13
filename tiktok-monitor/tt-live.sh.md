@@ -73,7 +73,10 @@ Foreground passthrough to `python3 tt_live.py url <username> [-v]`.
 | 2 | All extraction strategies failed |
 
 **stdout**: one line containing the m3u8 URL.
-**stderr with `-v`**: `# source: <api|yt-dlp|streamlink|cache>`.
+**stderr with `-v`**: `# source: <api|yt-dlp|streamlink>`.
+
+Every invocation is a new resolver session. It never returns a URL merely
+because a previous invocation recorded it.
 
 ---
 
