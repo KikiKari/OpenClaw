@@ -1,8 +1,8 @@
 # Script Abstractions - Status Report
 
-**Letzte Aktualisierung:** 2026-07-13 00:03
+**Letzte Aktualisierung:** 2026-07-13 06:03
 
-- Aktuelle Priorität: high
+- Aktuelle Priorität: medium
 - Verarbeitete Scripts: 0
 - Abstraktionen gesamt: 122
 
@@ -17,10 +17,10 @@
 
 ## Verfügbare Modelle
 
-- `openrouter/moonshotai/kimi-k2.5`
-- `openrouter/openai/gpt-4o`
-- `openrouter/anthropic/claude-3-5-sonnet-20241022`
-- ... und 3 weitere
+- `openrouter/auto`
+- `openai/gpt-5.6-sol`
+- `openai/gpt-5.6-terra`
+- ... und 5 weitere
 
 ## Multi-Node Support
 
