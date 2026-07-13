@@ -215,7 +215,7 @@ bash pty:true workdir:~/project command:"pi 'Your task'"
 bash pty:true command:"pi -p 'Summarize src/'"
 
 # Different provider/model
-bash pty:true command:"pi --provider openai --model gpt-4o-mini -p 'Your task'"
+bash pty:true command:"pi --provider openai --model gpt-5.6-sol -p 'Your task'"
 ```
 
 **Note:** Pi now has Anthropic prompt caching enabled (PR #584, merged Jan 2026)!

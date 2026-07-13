@@ -7,86 +7,33 @@
 const fs = require('fs');
 const path = require('path');
 
-// Model definitions with pricing
-const MODELS = {
-  'openrouter/auto': {
-    name: 'OpenRouter Auto',
-    promptPrice: 'Auto',
-    completionPrice: 'Auto',
-    context: 'Variable',
-    thinking: 'off'
-  },
-  'moonshotai/kimi-k2.5': {
-    name: 'Kimi K2.5',
-    promptPrice: 0.57,
-    completionPrice: 2.30,
-    context: '131K',
-    thinking: 'off'
-  },
-  'meta-llama/llama-4-maverick': {
-    name: 'Llama 4 Maverick',
-    promptPrice: 0.15,
-    completionPrice: 0.60,
-    context: '1M',
-    thinking: 'off'
-  },
-  'openai/gpt-4.1': {
-    name: 'GPT-4.1',
-    promptPrice: 2.00,
-    completionPrice: 8.00,
-    context: '1M',
-    thinking: 'off'
-  },
-  'deepseek/deepseek-r1-0528': {
-    name: 'DeepSeek R1',
-    promptPrice: 0.45,
-    completionPrice: 2.15,
-    context: '164K',
-    thinking: 'on'
-  },
-  'anthropic/claude-opus-4': {
-    name: 'Claude Opus 4',
-    promptPrice: 15.00,
-    completionPrice: 75.00,
-    context: '200K',
-    thinking: 'on'
-  },
-  'qwen/qwen3-235b-a22b-2507': {
-    name: 'Qwen3 235B',
-    promptPrice: 0.07,
-    completionPrice: 0.10,
-    context: '131K',
-    thinking: 'off'
-  }
-};
-
 // Task recommendations
 const TASK_RECOMMENDATIONS = {
   simple: {
-    primary: 'moonshotai/kimi-k2.5',
-    fallback: 'meta-llama/llama-4-maverick',
+    primary: 'openai/gpt-5.6-luna',
+    fallback: 'openrouter/moonshotai/kimi-k2.6',
     description: 'Simple tasks (weather, time, basic queries)'
   },
   long_context: {
-    primary: 'meta-llama/llama-4-maverick',
-    fallback: 'openai/gpt-4.1',
+    primary: 'openrouter/meta-llama/llama-4-maverick',
+    fallback: 'openrouter/qwen/qwen3-235b-a22b-2507',
     description: 'Long context tasks (RAG, documents)'
   },
   complex_logic: {
-    primary: 'deepseek/deepseek-r1-0528',
-    fallback: 'anthropic/claude-opus-4',
+    primary: 'openai/gpt-5.6-sol',
+    fallback: 'openai/gpt-5.6-terra',
     description: 'Complex logic (code, reasoning)'
   },
   web_agents: {
-    primary: 'moonshotai/kimi-k2.5',
-    fallback: 'qwen/qwen3-235b-a22b-2507',
+    primary: 'openrouter/moonshotai/kimi-k2.6',
+    fallback: 'openrouter/meta-llama/llama-4-maverick',
     description: 'Web agents and tool use'
   }
 };
 
 class ModelUsageSkill {
   constructor() {
-    this.configPath = path.join(process.env.HOME, '.openclaw', 'openclaw.json');
+    this.configPath = process.env.OPENCLAW_CONFIG || path.join(process.env.HOME, '.openclaw', 'openclaw.json');
   }
 
   readConfig() {
@@ -105,21 +52,23 @@ class ModelUsageSkill {
     return config.agents?.defaults?.model?.primary || 'openrouter/auto';
   }
 
+  getModels() {
+    const config = this.readConfig();
+    if (!config) throw new Error('Model configuration is unavailable');
+    const modelConfig = config.agents?.defaults?.model;
+    const catalog = config.agents?.defaults?.models || {};
+    if (!modelConfig?.primary || !Array.isArray(modelConfig.fallbacks)) {
+      throw new Error('General primary/fallback model configuration is invalid');
+    }
+    return [...new Set([modelConfig.primary, ...modelConfig.fallbacks])]
+      .filter(id => !id.startsWith('anthropic/'))
+      .map(id => ({ id, name: catalog[id]?.alias || id }));
+  }
+
   listModels(provider = null) {
     console.log('\n📊 Available Models\n');
-    console.log('Model                           | Prompt  | Completion | Context | Thinking');
-    console.log('--------------------------------|---------|------------|---------|----------');
-    
-    Object.entries(MODELS).forEach(([id, model]) => {
-      const name = model.name.padEnd(31);
-      const prompt = String(model.promptPrice).padEnd(7);
-      const completion = String(model.completionPrice).padEnd(10);
-      const context = model.context.padEnd(7);
-      const thinking = model.thinking;
-      console.log(`${name}| ${prompt} | ${completion} | ${context} | ${thinking}`);
-    });
-    
-    console.log('\nPrices per 1M tokens (USD)\n');
+    this.getModels().forEach(model => console.log(`${model.id} — ${model.name}`));
+    console.log('\nClaude models are agent-specific and are not listed for general use.\n');
   }
 
   recommendTask(taskType) {
@@ -131,21 +80,17 @@ class ModelUsageSkill {
     }
 
     console.log(`\n🎯 Recommendation for: ${rec.description}\n`);
-    console.log(`Primary:   ${rec.primary} (${MODELS[rec.primary]?.name})`);
-    console.log(`Fallback:  ${rec.fallback} (${MODELS[rec.fallback]?.name})`);
+    const models = new Map(this.getModels().map(model => [model.id, model.name]));
+    console.log(`Primary:   ${rec.primary} (${models.get(rec.primary) || rec.primary})`);
+    console.log(`Fallback:  ${rec.fallback} (${models.get(rec.fallback) || rec.fallback})`);
     console.log();
   }
 
   showCurrent() {
     const current = this.getCurrentModel();
     console.log(`\n🔧 Current Model: ${current}`);
-    const model = MODELS[current];
-    if (model) {
-      console.log(`   Name: ${model.name}`);
-      console.log(`   Prompt: $${model.promptPrice}/1M tokens`);
-      console.log(`   Completion: $${model.completionPrice}/1M tokens`);
-      console.log(`   Context: ${model.context}`);
-    }
+    const model = this.getModels().find(candidate => candidate.id === current);
+    if (model) console.log(`   Name: ${model.name}`);
     console.log();
   }
 
@@ -184,7 +129,7 @@ Model Usage Skill - AI Model Management
 
 Commands:
   current              Show currently configured model
-  list                 List all available models with pricing
+  list                 List all generally available models
   recommend <task>     Recommend model for task type
                        Tasks: simple, long_context, complex_logic, web_agents
   usage                Show usage information

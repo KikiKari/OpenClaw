@@ -155,6 +155,27 @@ def http_get(url: str,
         return 0, b""
 
 
+def stream_url_is_playable(url: str, timeout: int = REQUEST_TIMEOUT_SEC) -> bool:
+    """Probe a resolved media URL before exposing it to VLC/MPV."""
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "application/vnd.apple.mpegurl,application/x-mpegURL,*/*",
+        "Referer": "https://www.tiktok.com/",
+        "Range": "bytes=0-4095",
+    }
+    req = urllib.request.Request(url, headers=headers, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            sample = resp.read(4096)
+            if resp.status not in (200, 206) or not sample:
+                return False
+            if ".m3u8" in url.lower():
+                return b"#EXTM3U" in sample
+            return True
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError):
+        return False
+
+
 # ============================================================================
 # SIGI_STATE scrape
 # ============================================================================
@@ -391,17 +412,17 @@ def extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]:
     info = fetch_room_info(room_id)
     if info:
         url = pick_360p_hls(info)
-        if url:
+        if url and stream_url_is_playable(url):
             return url, "api"
 
     # Fallback 1: yt-dlp
     url = extract_via_ytdlp(username)
-    if url:
+    if url and stream_url_is_playable(url):
         return url, "yt-dlp"
 
     # Fallback 2: streamlink
     url = extract_via_streamlink(username)
-    if url:
+    if url and stream_url_is_playable(url):
         return url, "streamlink"
 
     return None, "none"
@@ -614,6 +635,18 @@ class StateStore:
         state["stream_urls"] = urls
         self.write(sec_uid, state)
 
+    def discard_url(self, sec_uid: str, room_id: str, url: str) -> None:
+        """Remove one rejected cached URL without disturbing diagnostic history files."""
+        state = self.read(sec_uid)
+        urls = state.get("stream_urls") or []
+        kept = [
+            entry for entry in urls
+            if not (entry.get("room_id") == room_id and entry.get("url") == url)
+        ]
+        if len(kept) != len(urls):
+            state["stream_urls"] = kept
+            self.write(sec_uid, state)
+
     def strip_stale_urls(self, sec_uid: str,
                          days: int = URL_RETENTION_DAYS) -> None:
         state = self.read(sec_uid)
@@ -786,11 +819,13 @@ def cmd_url(args: argparse.Namespace) -> int:
     room_id = str(room_id)
 
     cached = state_store.get_latest_url(sec_uid, room_id)
-    if cached:
+    if cached and stream_url_is_playable(cached):
         print(cached)
         if args.verbose:
             sys.stderr.write("# source: cache\n")
         return 0
+    if cached:
+        state_store.discard_url(sec_uid, room_id, cached)
 
     url, source = extract_stream_url(room_id, username)
     if not url:

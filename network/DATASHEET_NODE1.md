@@ -7,14 +7,14 @@
 | **Server** | VPS (Hetzner) |
 | **Standort** | Nürnberg |
 | **IPv4** | 152.53.145.65 |
-| **Tailscale IP** | 100.111.216.40 |
+| **Tailscale IP** | 100.64.80.9 |
 | **OS** | Ubuntu |
 | **Rolle** | OpenClaw Gateway / WireGuard Hub / Tailscale Node |
 
 ## VPN
 | Attribut | Wert |
 |----------|------|
-| **Tailscale IP** | 100.111.216.40 |
+| **Tailscale IP** | 100.64.80.9 |
 | **WireGuard IP** | 10.10.0.1/24 |
 | **WireGuard PublicKey** | Tkqb+IHDsyHTBw/nKWQ91WFRF9/51XrLZe1FjC+zqzk= |
 | **WireGuard Port** | 51820/udp |

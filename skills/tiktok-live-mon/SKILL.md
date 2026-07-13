@@ -1,9 +1,16 @@
 ---
 name: tiktok-live-mon
 description: Run a TikTok one-shot request by default or explicitly manage a parameterized long-running monitor.
+command-dispatch: tool
+command-tool: tiktok_live_mon_direct
 ---
 
 # TikTok LIVE monitor contract
+
+The native prompt `Use the "tiktok-live-mon" skill for this request.` is the
+trusted slash-command router envelope. Its `User input:` value is the current
+command input. Invoke `tiktok_live_mon_direct` immediately with that value;
+never ask the user to repeat `/tiktok_live_mon`.
 
 A bare `/tiktok_live_mon @handle` is a one-shot request. Follow the complete
 one-shot contract from `tiktok-live` and invoke exactly:
@@ -13,8 +20,14 @@ python3 /home/openclaw/.openclaw/workspace/tiktok-monitor/tiktok_dispatch.py url
 ```
 
 The first attempt uses configured `host: auto`. Only a final
-`overloaded`/`concurrency_preflight` result may delegate the identical command
-once with `host=node`. All other gateway or node failures are terminal.
+`overloaded`/`concurrency_preflight` result may delegate exactly once with
+`host=node`:
+
+```bash
+/usr/bin/node /home/linuxbrew/.openclaw/workspace/skills/tiktok-live-mon/tiktok-get-stream.js @handle ld --json
+```
+
+All other gateway or node failures are terminal.
 
 A long-running monitor starts only when the current user input explicitly uses
 `start`:

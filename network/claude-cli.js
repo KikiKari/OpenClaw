@@ -9,14 +9,14 @@
  * 
  * Environment:
  *   ANTHROPIC_API_KEY - Required API key
- *   CLAUDE_MODEL      - Optional model (default: claude-3-opus-20240229)
+ *   CLAUDE_MODEL      - Optional model (default: claude-fable-5)
  */
 
 import { Anthropic } from '@anthropic-ai/sdk';
 import fs from 'fs';
 import path from 'path';
 
-const MODEL = process.env.CLAUDE_MODEL || 'claude-3-opus-20240229';
+const MODEL = process.env.CLAUDE_MODEL || 'claude-fable-5';
 
 async function main() {
   // Check API key

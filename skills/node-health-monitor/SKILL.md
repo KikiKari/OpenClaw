@@ -42,7 +42,7 @@ python3 scripts/node_health.py --node all --check ping
 # Alle 3 Stunden via Cron (geändert 2026-04-20, vorher: */45 bzw. */55)
 0 */3 * * * python3 /workspace/skills/node-health-monitor/scripts/node_health.py --node all --alert
 ```
-**Modell:** `openrouter/moonshotai/kimi-k2.5`
+**Modell:** `openrouter/moonshotai/kimi-k2.6`
 
 ## Node-Konfiguration
 
@@ -57,7 +57,7 @@ python3 scripts/node_health.py --node all --check ping
     },
     "node2": {
       "name": "Worker",
-      "host": "100.92.155.34",
+      "host": "100.109.255.27",
       "ssh_port": 22,
       "via": "tailscale"
     },

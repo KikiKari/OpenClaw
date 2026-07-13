@@ -57,13 +57,13 @@ Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.
 ---
 
 ## Modell-Konfiguration (Stand 2026-04-06)
-- **Primary:** openrouter/moonshotai/kimi-k2.5
-- **Fallbacks:** claude-3.5-sonnet, deepseek-v3, llama-3.3-70b, minimax-01
+- **Primary:** `openrouter/auto`
+- **Fallbacks:** werden zentral aus `openclaw.json` geladen
 - **Registrierte Modelle:**
-  - openrouter/moonshotai/kimi-k2.5
+  - openrouter/moonshotai/kimi-k2.6
   - openrouter/auto (Alias: OpenRouter)
-  - openrouter/openai/gpt-4o (Alias: OpenAI GPT-4o)
-  - openrouter/openai/gpt-4o-mini (Alias: OpenAI GPT-4o Mini)
+  - openai/gpt-5.6-terra (Alias: Terra)
+  - openai/gpt-5.6-luna (Alias: Luna)
 
 ---
 

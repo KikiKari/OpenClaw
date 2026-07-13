@@ -22,7 +22,8 @@ returns the m3u8 stream URLs for a known `roomId`. Combining the two
 gives a reliable, browser-free way to:
 
 1. Check if a TikTok user is live right now
-2. Resolve a VLC-playable 360p m3u8 URL for an active stream
+2. Resolve and probe a VLC-playable media URL for an active stream; cached
+   URLs returning HTTP 403 are discarded and refreshed
 3. Watch a user over hours and detect `go_live` / `go_offline` /
    `rename_detected` transitions without keeping a browser open
 
@@ -41,6 +42,11 @@ shell wrapper and three subcommands.
 | "Did @&lt;user&gt; rename recently?" | `tt-live.sh check <user>`, read `rename_detected` field |
 | "I have room_id X — is it still alive?" | `check_alive.py X` (standalone, no workspace touch) |
 | "I have a username, just give me the IDs" | `get_room_id.py <user>` (standalone, no workspace touch) |
+
+The OpenClaw Control command `/tiktok-names` is a separate read-only listing
+surface. It reads `../tiktok-names/identities/*.json` and prints only the
+alphabetically sorted current handles and nicknames. It accepts no arguments
+and never modifies the identity store.
 
 ---
 

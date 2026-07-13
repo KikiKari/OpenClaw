@@ -32,6 +32,24 @@ WORKSPACE: Path = Path(os.environ.get("OPENCLAW_WORKSPACE", "/home/openclaw/.ope
 ABSTRACTIONS_REPO: Path = WORKSPACE / "git" / "Abstraktionen"
 LOG_DIR: Path = WORKSPACE / "logs" / "abstractions-manager"
 STATE_FILE: Path = WORKSPACE / "db" / "abstractions_state.json"
+OPENCLAW_CONFIG: Path = Path(os.environ.get("OPENCLAW_CONFIG", "/home/openclaw/.openclaw/openclaw.json"))
+
+
+def load_available_models(config_path: Path = OPENCLAW_CONFIG) -> List[str]:
+    """Lädt allgemeine Modelle zentral und schließt direkte Anthropic-Modelle aus."""
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        model_config = config["agents"]["defaults"]["model"]
+        candidates = [model_config["primary"], *model_config["fallbacks"]]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as error:
+        raise RuntimeError(f"Modellkonfiguration kann nicht geladen werden: {config_path}: {error}") from error
+    models = list(dict.fromkeys(
+        model for model in candidates
+        if isinstance(model, str) and model and not model.startswith("anthropic/")
+    ))
+    if not models:
+        raise RuntimeError(f"Keine allgemein verfügbaren Modelle in {config_path}")
+    return models
 
 NODES: Dict[str, Dict] = {
     "node1": {"always_available": True,  "capacity": "medium", "priority": 2},
@@ -42,14 +60,7 @@ NODES: Dict[str, Dict] = {
     "node7": {"always_available": True,  "capacity": "high",   "priority": 1},
 }
 
-AVAILABLE_MODELS: List[str] = [
-    "openrouter/moonshotai/kimi-k2.5",
-    "openrouter/openai/gpt-4o",
-    "openrouter/anthropic/claude-3-5-sonnet-20241022",
-    "openrouter/google/gemini-2.0-flash-001",
-    "openrouter/nvidia/llama-3.3-nemotron-super-49b-v1",
-    "openrouter/qwen/qwen-2.5-coder-32b-instruct",
-]
+AVAILABLE_MODELS: List[str] = load_available_models()
 
 TARGET_LANGUAGES: Dict[str, Dict[str, str]] = {
     "perl5": {

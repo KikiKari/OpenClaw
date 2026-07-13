@@ -166,12 +166,12 @@ Fünf Nodes, konfiguriert in `NODES`:
 **Verfügbare Modelle** (für zukünftige KI-gestützte Portierung via OpenRouter):
 
 ```
-openrouter/moonshotai/kimi-k2.5
-openrouter/openai/gpt-4o
-openrouter/anthropic/claude-3-5-sonnet-20241022
-openrouter/google/gemini-2.0-flash-001
-openrouter/nvidia/llama-3.3-nemotron-super-49b-v1
-openrouter/qwen/qwen-2.5-coder-32b-instruct
+openrouter/moonshotai/kimi-k2.6
+openai/gpt-5.6-terra
+openai/gpt-5.6-sol
+openai/gpt-5.6-luna
+nvidia/nemotron-3-super-120b-a12b
+openrouter/qwen/qwen3-235b-a22b-2507
 ```
 
 ### Git-Integration

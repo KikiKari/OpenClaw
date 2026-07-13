@@ -14,6 +14,19 @@ Benutzernamen werden als CLI-Parameter übergeben und dürfen ein führendes
 `example_creator`. Reale Handles dürfen nur im TikTok-Namensspeicher
 `tiktok-names` sowie in ausdrücklich historischen Protokollen stehen.
 
+## Namensliste in OpenClaw Control
+
+Der exakte Chatbefehl `/tiktok-names` zeigt den aktuellen Inhalt aus
+`workspace/tiktok-names/identities/*.json` an. Er akzeptiert keine Argumente
+und führt ausschließlich die rein lesende Operation `list` aus.
+
+Die Ausgabe enthält alphabetisch sortiert nur den aktuellen `@handle` und den
+Nickname. `sec_uid`, `user_id` und andere technische Felder werden nicht
+ausgegeben. Die Verarbeitung läuft über das parameterlose Tool
+`tiktok_names_list`, damit der erfolgreiche Lesevorgang in der Control-UI als
+Activity sichtbar bleibt. Der Befehl verändert weder Identity- noch
+Pointer-Dateien.
+
 ## Live-Erkennung
 
 Nur profilgebundene Indikatoren sind gültig. Der allgemeine TikTok-

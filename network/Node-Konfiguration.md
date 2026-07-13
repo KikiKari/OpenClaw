@@ -23,7 +23,7 @@
 |-------------|------|
 | Hostname | v2202604104722446711 |
 | IP (Public) | 152.53.145.65 |
-| IP (Tailscale) | 100.111.216.40 |
+| IP (Tailscale) | 100.64.80.9 |
 | IP (WireGuard) | 10.10.0.1 |
 | OS | Ubuntu 24.04 LTS |
 | Kernel | 6.8.0-107-generic |
@@ -41,7 +41,7 @@
 ### VPN-Verbindungen
 | Typ | Ziel | Status |
 |-----|------|--------|
-| Tailscale | Node 2 (100.92.155.34) | ✅ 1ms |
+| Tailscale | Node 2 (100.109.255.27) | ✅ 1ms |
 | Tailscale | Node 3 (100.73.154.125) | ✅ 1ms |
 | WireGuard | Node 2 (10.10.0.2) | ✅ Active |
 | SSH Tunnel | Node 2 (18790, 15000) | ✅ Active |
@@ -56,7 +56,7 @@
 |-------------|------|
 | Hostname | v2202603104722445775 |
 | IP (Public) | 159.195.78.116 |
-| IP (Tailscale) | 100.92.155.34 |
+| IP (Tailscale) | 100.109.255.27 |
 | IP (WireGuard) | 10.10.0.2 |
 | OS | Ubuntu 24.04 LTS (Noble) |
 | Kernel | 6.8.x |
@@ -74,7 +74,7 @@
 ### VPN-Verbindungen
 | Typ | Ziel | Status |
 |-----|------|--------|
-| Tailscale | Node 1 (100.111.216.40) | ✅ 1ms |
+| Tailscale | Node 1 (100.64.80.9) | ✅ 1ms |
 | Tailscale | Node 3 (100.73.154.125) | ✅ 1ms |
 | WireGuard | Node 1 (10.10.0.1) | ✅ Active |
 | SSH Reverse | Node 1 (18790, 15000) | ✅ Active |
@@ -110,8 +110,8 @@
 ### VPN-Verbindungen
 | Typ | Ziel | Status |
 |-----|------|--------|
-| Tailscale | Node 1 (100.111.216.40) | ✅ 1ms |
-| Tailscale | Node 2 (100.92.155.34) | ✅ 1ms |
+| Tailscale | Node 1 (100.64.80.9) | ✅ 1ms |
+| Tailscale | Node 2 (100.109.255.27) | ✅ 1ms |
 | SSH Reverse | Node 1 (18792) | ✅ Active |
 
 ---
@@ -136,7 +136,7 @@
 │  ┌──────────────────────────────────────────────────────────────┐ │     │
 │  │                    TAILSCALE MESH (100.x.x.x)                │ │     │
 │  │  ┌──────────────┐      ┌──────────────┐      ┌────────────┐  │ │     │
-│  │  │ 100.111.216.40│◄────►│ 100.92.155.34│◄────►│100.73.154.│  │ │     │
+│  │  │ 100.64.80.9   │◄────►│100.109.255.27│◄────►│100.73.154.│  │ │     │
 │  │  │ openclaw-node1│ 1ms  │ openclaw-node2│ 1ms  │  openclaw  │  │ │     │
 │  │  │ (Hetzner)     │      │ (Netcup)      │      │  -node3    │  │ │     │
 │  │  │ Node 1 Gateway│      │ TikTok API    │      │  (xNetX)   │  │ │     │

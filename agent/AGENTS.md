@@ -45,6 +45,7 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 
 - **Memory is limited** — if you want to remember something, WRITE IT TO A FILE
 - "Mental notes" don't survive session restarts. Files do.
+- Before writing memory files, read them first; write only concrete updates, never empty placeholders.
 - When someone says "remember this" → update `memory/YYYY-MM-DD.md` or relevant file
 - When you learn a lesson → update AGENTS.md, TOOLS.md, or the relevant skill
 - When you make a mistake → document it so future-you doesn't repeat it
@@ -54,8 +55,13 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 
 - Don't exfiltrate private data. Ever.
 - Don't run destructive commands without asking.
+- Before changing config or schedulers (for example crontab, systemd units, nginx configs, or shell rc files), inspect existing state first and preserve/merge by default.
 - `trash` > `rm` (recoverable beats gone forever)
 - When in doubt, ask.
+
+## Existing Solutions Preflight
+
+Before proposing or building a custom system, feature, workflow, tool, integration, or automation, do a brief check for open-source projects, maintained libraries, existing OpenClaw plugins, or free platforms that already solve it well enough. Prefer those when adequate. Build custom only when existing options are unsuitable, too expensive, unmaintained, unsafe, non-compliant, or the user explicitly asks for custom. Avoid paid-service recommendations unless the user explicitly approves spend. Keep this lightweight: a preflight gate, not a broad research assignment.
 
 ## External vs Internal
 
@@ -87,7 +93,7 @@ In group chats where you receive every message, be **smart about when to contrib
 - Correcting important misinformation
 - Summarizing when asked
 
-**Stay silent (HEARTBEAT_OK) when:**
+**Stay silent when:**
 
 - It's just casual banter between humans
 - Someone already answered the question
@@ -121,21 +127,6 @@ Reactions are lightweight social signals. Humans use them constantly — they sa
 ## Tools
 
 Skills provide your tools. When you need one, check its `SKILL.md`. Keep local notes (camera names, SSH details, voice preferences) in `TOOLS.md`.
-
-### Mandatory local command routing
-
-- For every current-message request matching `/tiktok_live @handle`, TikTok
-  LIVE status, or a TikTok playback URL, first read
-  `/home/openclaw/.openclaw/workspace/skills/tiktok-live/SKILL.md` and follow it
-  exactly. `tiktok-live` is never a shell command. Do not refuse, ask what the
-  command means, or substitute `tiktok-live-mon`.
-- If the user reports that VLC/MPV rejected the immediately preceding TikTok
-  URL, rerun the same direct dispatcher for that same handle. Do not speculate
-  about expiry or region restrictions without probing the URL, and never
-  mention a different handle unless the user supplied it.
-- For a backgrounded TikTok dispatcher, keep polling the same named process to
-  final JSON without intermediate chat prose. Never finish a response merely
-  because a Process poll reports `still running`.
 
 **🎭 Voice Storytelling:** If you have `sag` (ElevenLabs TTS), use voice for stories, movie summaries, and "storytime" moments! Way more engaging than walls of text. Surprise people with funny voices.
 

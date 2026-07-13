@@ -8,8 +8,8 @@
 
 | Node | Typ | Standort | Externe IP | Tailscale IP | WireGuard IP | Status | SSH | SSL/TLS | OpenClaw |
 |------|-----|----------|------------|--------------|--------------|--------|-----|---------|----------|
-| **1** | Gateway (VPS) | Hetzner (DE) | 152.53.145.65 | 100.111.216.40 | 10.10.0.1/24 | ✅ OK | — | ❌ | ✅ Gateway läuft |
-| **2** | Node Host (VPS) | Netcup (DE) | 159.195.78.116 | 100.92.155.34 | 10.10.0.2/32 | ✅ OK | ✅ | — | ⚠️ Disconnected |
+| **1** | Gateway (VPS) | Hetzner (DE) | 152.53.145.65 | 100.64.80.9 | 10.10.0.1/24 | ✅ OK | — | ❌ | ✅ Gateway läuft |
+| **2** | Node Host (VPS) | Netcup (DE) | 159.195.78.116 | 100.109.255.27 | 10.10.0.2/32 | ✅ OK | ✅ | — | ✅ Connected |
 | **3** | Node Host (VPS) | Netcup (DE) | 185.162.248.90 | 100.73.154.125 | 10.10.0.3/32 | ✅ OK | ✅ | — | ⚠️ Disconnected |
 | **4** | Webhosting | Netcup (DE) | 91.204.46.22 | — | — | ✅ Aktiv | — | ✅ | — |
 | **5** | Mobile Client | — | DHCP/Mobil | — | 10.10.0.5/32 | ✅ Ping OK | ❌ | — | ⚠️ Disconnected |
@@ -37,8 +37,8 @@
 #### Tailscale (Primär)
 | Node | Tailscale IP | Status |
 |------|--------------|--------|
-| Node 1 (Gateway) | 100.111.216.40 | ✅ Online |
-| Node 2 (Netcup) | 100.92.155.34 | ✅ Online |
+| Node 1 (Gateway) | 100.64.80.9 | ✅ Online |
+| Node 2 (Netcup) | 100.109.255.27 | ✅ Online |
 | Node 3 (xNetX) | 100.73.154.125 | ✅ Online |
 
 #### WireGuard (Sekundär)

@@ -5,19 +5,28 @@ Sub-Agent spawner - Einfache CLI für sessions_spawn
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
-# Verfügbare Modelle
-MODELS = [
-    "openrouter/moonshotai/kimi-k2.5",
-    "openrouter/openai/gpt-4o",
-    "openrouter/anthropic/claude-3-5-sonnet-20241022",
-    "openrouter/google/gemini-2.0-flash-001",
-    "openrouter/nvidia/llama-3.3-nemotron-super-49b-v1",
-    "openrouter/meta-llama/llama-3.3-70b-instruct",
-    "openrouter/qwen/qwen-2.5-coder-32b-instruct",
-]
+def load_models() -> list[str]:
+    config_path = Path(os.environ.get("OPENCLAW_CONFIG", "/home/openclaw/.openclaw/openclaw.json"))
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        model_config = config["agents"]["defaults"]["model"]
+        candidates = [model_config["primary"], *model_config["fallbacks"]]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as error:
+        raise RuntimeError(f"Modellkonfiguration kann nicht geladen werden: {config_path}: {error}") from error
+    models = list(dict.fromkeys(
+        model for model in candidates
+        if isinstance(model, str) and model and not model.startswith("anthropic/")
+    ))
+    if not models:
+        raise RuntimeError(f"Keine allgemein verfügbaren Modelle in {config_path}")
+    return models
+
+
+MODELS = load_models()
 
 class SubAgentSpawner:
     """Hilft beim Spawnen von Sub-Agents"""
@@ -94,7 +103,7 @@ def main():
         epilog="""
 Beispiele:
   %(prog)s -t "Analyze logs" 
-  %(prog)s -t "Code review" -m openrouter/openai/gpt-4o --timeout 1800
+  %(prog)s -t "Code review" -m openai/gpt-5.6-sol --timeout 1800
   %(prog)s -t "Batch process" -l "batch-worker" --thread
         """
     )

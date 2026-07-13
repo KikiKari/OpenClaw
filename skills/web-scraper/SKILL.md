@@ -692,7 +692,7 @@ def extract_entities_chunked(text: str, metadata: dict) -> dict:
 | `google/gemini-2.5-flash-lite` | Very fast | Very low | Great | Bulk extraction |
 | `google/gemini-2.5-flash` | Fast | Low | Excellent | Complex articles |
 | `anthropic/claude-haiku-4-5` | Fast | Medium | Excellent | High precision |
-| `openai/gpt-4o-mini` | Medium | Medium | Very good | Alternative |
+| `openai/gpt-5.6-luna` | Medium | Medium | Very good | Alternative |
 
 **Always use `temperature: 0.1` for structured extraction.** Higher values produce hallucinated entities.
 

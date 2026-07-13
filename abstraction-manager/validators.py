@@ -15,6 +15,7 @@ Version: 1.0.0
 
 import re
 import os
+import json
 import logging
 from pathlib import Path
 
@@ -35,14 +36,38 @@ ALLOWED_SOURCE_DIRECTORIES: list[Path] = [
     ))
 ]
 
-#: Erlaubte KI-Modell-Namen (Allowlist gegen unerlaubte Modell-Strings).
-ALLOWED_AI_MODELS: frozenset[str] = frozenset({
-    "openrouter/anthropic/claude-3-5-sonnet-20241022",
-    "openrouter/anthropic/claude-3-haiku-20240307",
-    "openrouter/anthropic/claude-opus-4",
-    "openrouter/openai/gpt-4o",
-    "openrouter/openai/gpt-4o-mini",
-})
+OPENCLAW_CONFIG_PATH = Path(os.environ.get(
+    "OPENCLAW_CONFIG",
+    "/home/openclaw/.openclaw/openclaw.json",
+))
+
+
+def load_allowed_ai_models(config_path: Path = OPENCLAW_CONFIG_PATH) -> frozenset[str]:
+    """Lädt die allgemeine Primär-/Fallbackkette aus openclaw.json."""
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        model_config = config["agents"]["defaults"]["model"]
+        candidates = [model_config["primary"], *model_config["fallbacks"]]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as error:
+        raise RuntimeError(
+            f"Allgemeine Modellkonfiguration kann nicht geladen werden: {config_path}: {error}"
+        ) from error
+
+    models: list[str] = []
+    for model in candidates:
+        if not isinstance(model, str) or not model.strip():
+            raise RuntimeError(f"Ungültiger Modellwert in {config_path}: {model!r}")
+        if model.startswith("anthropic/"):
+            continue
+        if model not in models:
+            models.append(model)
+
+    if not models:
+        raise RuntimeError(f"Keine allgemein verfügbaren Modelle in {config_path}")
+    return frozenset(models)
+
+
+ALLOWED_AI_MODELS: frozenset[str] = load_allowed_ai_models()
 
 #: Erlaubte Zielsprachen für Script-Portierungen.
 ALLOWED_TARGET_LANGUAGES: frozenset[str] = frozenset({
@@ -208,7 +233,7 @@ def validate_ai_model_name(raw_model_name: str) -> str:
 
     Example:
         >>> model = validate_ai_model_name(
-        ...     "openrouter/anthropic/claude-3-5-sonnet-20241022"
+        ...     "openai/gpt-5.6-sol"
         ... )
     """
     if raw_model_name not in ALLOWED_AI_MODELS:
@@ -226,6 +251,17 @@ def validate_ai_model_name(raw_model_name: str) -> str:
         )
 
     return raw_model_name
+
+
+def extract_provider_name(model_name: str) -> str:
+    """Ermittelt den äußeren Provider, bei dem die Anfrage authentifiziert wird."""
+    if not isinstance(model_name, str) or "/" not in model_name:
+        raise ValidationError(
+            field_name="ai_model",
+            invalid_value=model_name,
+            reason="Modellname muss das Format provider/model besitzen.",
+        )
+    return model_name.split("/", 1)[0].upper()
 
 
 # ---------------------------------------------------------------------------

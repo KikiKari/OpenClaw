@@ -26,7 +26,7 @@
 ## Verbindung zum Gateway
 
 - **Gateway:** Node 1 (Hetzner Gateway)
-- **Gateway IP:** 100.111.216.40 (Tailscale)
+- **Gateway IP:** 100.64.80.9 (Tailscale)
 - **Gateway Port:** 18789
 - **Verbindungsprotokoll:** ws:// (unverschlüsselt, falls OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1 gesetzt ist)
 - **Authentifizierung:** Token-basiert (laut `gateway.auth` in `openclaw.json`)
@@ -36,7 +36,7 @@
 
 - **openclaw.service** (systemd)
   - User: openclaw
-  - ExecStart: `/home/openclaw/.nvm/versions/node/v22.22.2/bin/node /home/openclaw/.npm-global/lib/node_modules/openclaw/openclaw.mjs node run --host 100.111.216.40 --port 18789`
+  - ExecStart: `/home/openclaw/.nvm/versions/node/v22.22.2/bin/node /home/openclaw/.npm-global/lib/node_modules/openclaw/openclaw.mjs node run --host 100.64.80.9 --port 18789`
   - **Status:** Läuft (nach Korrektur der Konfiguration)
 
 ## Sicherheitskontext

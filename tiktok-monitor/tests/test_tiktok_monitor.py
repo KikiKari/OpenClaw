@@ -110,19 +110,120 @@ class DispatcherTests(unittest.TestCase):
              mock.patch.object(dispatcher, "identity_sync"), \
              mock.patch("builtins.print"):
             code = dispatcher.dispatch(self.args())
-        self.assertEqual(code, 1)
+        self.assertEqual(code, 0)
         fallback.assert_called_once()
+
+    def test_python_error_and_node_offline_reports_uncertainty(self):
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("technical_error", "python_api", 2)), \
+             mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("offline", "all_node_fallbacks", 1)), \
+             mock.patch("builtins.print") as output:
+            code = dispatcher.dispatch(self.args())
+        self.assertEqual(code, dispatcher.EXIT_TECHNICAL)
+        payload = json.loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "technical_error")
+        self.assertEqual(payload["method"], "source_disagreement")
+
+    def test_node_offline_requires_all_available_playwright_sources(self):
+        with mock.patch.object(dispatcher, "run_bounded", side_effect=[
+            (1, '{"isLive": false}', ""),
+            (2, "", "browser failed"),
+        ]):
+            result = dispatcher.node_fallback("url", "example", "ld", 5)
+        self.assertEqual(result.status, "technical_error")
+        self.assertEqual(result.method, "all_available_methods")
+
+    def test_node_offline_when_all_available_playwright_sources_agree(self):
+        with mock.patch.object(dispatcher, "run_bounded", side_effect=[
+            (1, '{"isLive": false}', "user is offline"),
+            (1, '{"isLive": false}', "user is offline"),
+        ]):
+            result = dispatcher.node_fallback("url", "example", "ld", 5)
+        self.assertEqual(result.status, "offline")
+        self.assertEqual(result.method, "all_node_fallbacks")
 
     def test_python_offline_is_provisional_and_runs_node(self):
         with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
              mock.patch.object(dispatcher.fcntl, "flock"), \
              mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("offline", "python_webcast", 1)), \
+             mock.patch.object(dispatcher, "direct_media_fallback", return_value=dispatcher.Result("technical_error", "direct_media_fallbacks", 2)), \
              mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("offline", "playwright_enhanced", 1)) as fallback, \
+             mock.patch.object(dispatcher.time, "sleep"), \
              mock.patch.object(dispatcher, "identity_sync"), \
              mock.patch("builtins.print"):
             code = dispatcher.dispatch(self.args("check"))
-        self.assertEqual(code, 1)
+        self.assertEqual(code, 0)
         fallback.assert_called_once()
+
+    def test_delayed_python_recheck_overrides_stale_offline(self):
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", side_effect=[
+                 dispatcher.Result("offline", "python_webcast", 1),
+                 dispatcher.Result("live", "python_streamlink", 0, "https://x/live.flv"),
+             ]), \
+             mock.patch.object(dispatcher, "direct_media_fallback", return_value=dispatcher.Result("technical_error", "direct_media_fallbacks", 2)), \
+             mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("offline", "playwright_network_basic", 1)), \
+             mock.patch.object(dispatcher.time, "sleep") as sleep, \
+             mock.patch.object(dispatcher, "identity_sync"), \
+             mock.patch("builtins.print") as output:
+            code = dispatcher.dispatch(self.args())
+        self.assertEqual(code, 0)
+        sleep.assert_called_once_with(dispatcher.OFFLINE_RECHECK_DELAY_SECONDS)
+        payload = json.loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "live")
+        self.assertEqual(payload["method"], "python_streamlink")
+
+    def test_delayed_direct_media_recheck_overrides_stale_offline(self):
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("offline", "python_api", 1)), \
+             mock.patch.object(dispatcher, "direct_media_fallback", side_effect=[
+                 dispatcher.Result("technical_error", "direct_media_fallbacks", 2),
+                 dispatcher.Result("live", "direct_streamlink", 0, "https://x/live.flv"),
+             ]), \
+             mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("offline", "playwright_network_basic", 1)), \
+             mock.patch.object(dispatcher.time, "sleep"), \
+             mock.patch.object(dispatcher, "identity_sync"), \
+             mock.patch("builtins.print") as output:
+            code = dispatcher.dispatch(self.args())
+        self.assertEqual(code, 0)
+        payload = json.loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "live")
+        self.assertEqual(payload["method"], "direct_streamlink")
+
+    def test_inconclusive_delayed_recheck_does_not_publish_offline(self):
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", side_effect=[
+                 dispatcher.Result("offline", "python_api", 1),
+                 dispatcher.Result("technical_error", "python_api", 2),
+             ]), \
+             mock.patch.object(dispatcher, "direct_media_fallback", return_value=dispatcher.Result("technical_error", "direct_media_fallbacks", 2)), \
+             mock.patch.object(dispatcher, "node_fallback", return_value=dispatcher.Result("offline", "all_node_fallbacks", 1)), \
+             mock.patch.object(dispatcher.time, "sleep"), \
+             mock.patch("builtins.print") as output:
+            code = dispatcher.dispatch(self.args())
+        self.assertEqual(code, dispatcher.EXIT_TECHNICAL)
+        payload = json.loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "technical_error")
+        self.assertEqual(payload["method"], "offline_recheck_inconclusive")
+
+    def test_direct_media_overrides_lagging_profile_offline(self):
+        with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=mock.mock_open()()), \
+             mock.patch.object(dispatcher.fcntl, "flock"), \
+             mock.patch.object(dispatcher, "python_first", return_value=dispatcher.Result("offline", "python_api", 1)), \
+             mock.patch.object(dispatcher, "direct_media_fallback", return_value=dispatcher.Result("live", "direct_streamlink", 0, "https://x/live.flv")), \
+             mock.patch.object(dispatcher, "node_fallback") as node_fallback, \
+             mock.patch.object(dispatcher, "identity_sync"), \
+             mock.patch("builtins.print") as output:
+            code = dispatcher.dispatch(self.args())
+        self.assertEqual(code, 0)
+        node_fallback.assert_not_called()
+        payload = json.loads(output.call_args.args[0])
+        self.assertEqual(payload["status"], "live")
+        self.assertEqual(payload["method"], "direct_streamlink")
 
     def test_overloaded_preflight_is_immediate_and_runs_no_resolver(self):
         with mock.patch.object(dispatcher, "acquire_dispatch_slot", return_value=None), \
@@ -138,6 +239,20 @@ class DispatcherTests(unittest.TestCase):
     def test_default_dispatcher_capacity_is_one(self):
         with mock.patch.dict(os.environ, {}, clear=True):
             self.assertEqual(dispatcher.max_active_dispatchers(), 1)
+
+    def test_second_dispatcher_on_same_host_gets_no_slot(self):
+        with tempfile.TemporaryDirectory() as lock_dir, mock.patch.dict(
+            os.environ,
+            {"TIKTOK_DISPATCH_LOCK_DIR": lock_dir, "TIKTOK_DISPATCH_MAX_ACTIVE": "1"},
+            clear=False,
+        ):
+            first = dispatcher.acquire_dispatch_slot()
+            try:
+                self.assertIsNotNone(first)
+                self.assertIsNone(dispatcher.acquire_dispatch_slot())
+            finally:
+                dispatcher.fcntl.flock(first.fileno(), dispatcher.fcntl.LOCK_UN)
+                first.close()
 
 
 if __name__ == "__main__":

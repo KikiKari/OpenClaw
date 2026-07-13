@@ -15,7 +15,7 @@ Verwendung (CLI)::
 
     python3 spawn_agent.py \\
         --task "Port db_maintainer.py to Go with full error handling" \\
-        --model openrouter/anthropic/claude-3-5-sonnet-20241022 \\
+        --model openai/gpt-5.6-sol \\
         --timeout 1800
 
 Verwendung (programmatisch)::
@@ -23,7 +23,7 @@ Verwendung (programmatisch)::
     from spawn_agent import spawn_portation_agent
     result = spawn_portation_agent(
         task_description="Port json_processor.py to Perl 5",
-        ai_model_name="openrouter/anthropic/claude-3-5-sonnet-20241022",
+        ai_model_name="openai/gpt-5.6-sol",
         timeout_seconds=1800,
     )
 
@@ -45,6 +45,7 @@ from validators import (
     validate_ai_model_name,
     validate_timeout_seconds,
     load_and_validate_api_key,
+    extract_provider_name,
 )
 from logger import configure_application_logging
 
@@ -103,7 +104,7 @@ def spawn_portation_agent(
     Example:
         >>> result = spawn_portation_agent(
         ...     task_description="Port db_maintainer.py to Go",
-        ...     ai_model_name="openrouter/anthropic/claude-3-5-sonnet-20241022",
+        ...     ai_model_name="openai/gpt-5.6-sol",
         ...     timeout_seconds=1800,
         ... )
         >>> print("Exit-Code:", result.returncode)
@@ -114,7 +115,7 @@ def spawn_portation_agent(
     validated_timeout = validate_timeout_seconds(timeout_seconds)
 
     # API-Schlüssel prüfen
-    provider_name = _extract_provider_name(validated_model)
+    provider_name = extract_provider_name(validated_model)
     load_and_validate_api_key(provider_name)
 
     # Agent-Script prüfen
@@ -197,13 +198,10 @@ def _extract_provider_name(model_name: str) -> str:
         Provider-Name in Großbuchstaben (z. B. ``"ANTHROPIC"``).
 
     Example:
-        >>> _extract_provider_name("openrouter/anthropic/claude-3-5-sonnet")
-        'ANTHROPIC'
+        >>> _extract_provider_name("openrouter/moonshotai/kimi-k2.6")
+        'OPENROUTER'
     """
-    parts = model_name.split("/")
-    # Format: openrouter/anthropic/model → Provider = anthropic (Index 1)
-    provider = parts[1] if len(parts) >= 3 else parts[0]
-    return provider.upper()
+    return extract_provider_name(model_name)
 
 
 # ---------------------------------------------------------------------------
@@ -223,7 +221,7 @@ def _build_argument_parser() -> argparse.ArgumentParser:
 Beispiele:
   python3 spawn_agent.py \\
       --task "Port db_maintainer.py to Go" \\
-      --model openrouter/anthropic/claude-3-5-sonnet-20241022 \\
+      --model openai/gpt-5.6-sol \\
       --timeout 1800
 
   python3 spawn_agent.py --task "Port json_processor.py to Perl 5" --dry-run

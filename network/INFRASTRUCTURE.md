@@ -29,13 +29,24 @@ Diese Dokumentation beschreibt die komplette OpenClaw-Infrastruktur mit WireGuar
   - Node 1 ↔ Node 2: 365.77 KiB received / 99.28 KiB sent
   - Node 1 ↔ localhost: 11.75 MiB received / 169.24 MiB sent
 - **Tailscale**: 
-  - openclaw-node1 (100.111.216.40): Online
-  - openclaw-node2 (100.92.155.34): Active mit direkter Verbindung
+  - v2202604104722446711 (100.64.80.9): Online
+  - openclaw-node2 (100.109.255.27): Active mit direkter Verbindung
   - v2202604104722449961 (100.104.68.51): Online
 
 ### OpenClaw Versionen
 - Node 1 (Gateway): v2026.4.15 (aktualisiert)
 - Node 2: v2026.4.9
+
+### Betriebsmodell (aktualisiert 2026-07-12)
+
+- Tailscale läuft auf Gateway und Node als systemweiter Dienst und stellt das
+  Netzwerk für das OpenClaw-Pairing bereit; es ist nicht benutzerspezifisch.
+- Die OpenClaw-Dienste laufen auf beiden Servern als Benutzer `openclaw`.
+- Administrative Updates und Dienstneustarts erfolgen getrennt davon per
+  klassischem SSH als `root` über die Tailscale-IP des Nodes.
+- Gateway-Admin-Key: `/root/.ssh/id_ed25519_openclaw_admin` nach lokaler
+  Installation; der öffentliche Schlüssel gehört auf Node 2 in
+  `/root/.ssh/authorized_keys`.
 
 ## Netzwerk-Topologie
 

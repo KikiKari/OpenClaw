@@ -19,9 +19,9 @@ Neuer ARM-basierter Worker-Node im Cluster, ersetzt xNetX (Node 3).
 
 ## Verbindung zum Gateway
 
-- **Gateway:** Node 1 (Hetzner) — 100.111.216.40:18789
+- **Gateway:** Node 1 (Hetzner) — 100.64.80.9:18789
 - **Verbindungsart:** Tailscale (WireGuard-verschlüsselt) über ws://
-- **Config:** `gateway.mode: "remote"` mit `gateway.remote.url: "ws://100.111.216.40:18789"`
+- **Config:** `gateway.mode: "remote"` mit `gateway.remote.url: "ws://100.64.80.9:18789"`
 - **Auth:** Token-basiert
 - **Pairing:** ✅ Abgeschlossen (devices approve)
 - **Status:** ✅ paired · connected
@@ -40,7 +40,7 @@ Neuer ARM-basierter Worker-Node im Cluster, ersetzt xNetX (Node 3).
 
 - **openclaw.service** (`/etc/systemd/system/openclaw.service`)
   - User: openclaw
-  - ExecStart: `openclaw node run --host 100.111.216.40 --port 18789`
+  - ExecStart: `openclaw node run --host 100.64.80.9 --port 18789`
   - Environment: `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`
   - Restart: on-failure / RestartSec: 5
   - Status: ✅ active (running)
@@ -49,7 +49,7 @@ Neuer ARM-basierter Worker-Node im Cluster, ersetzt xNetX (Node 3).
 
 - **openclaw.json:** `/home/openclaw/.openclaw/openclaw.json`
   - gateway.mode: "remote"
-  - gateway.remote.url: "ws://100.111.216.40:18789"
+  - gateway.remote.url: "ws://100.64.80.9:18789"
   - gateway.auth: token-basiert
 
 ## SSH-Zugang
