@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 /**
- * TikTok Stream URL Extractor v2.4
- * 
+ * TikTok Stream URL Extractor v2.5
+ *
  * Strategie:
  * 1. Status-Preflight mit dem profilgebundenen Checker
  * 2. Nur bei bestätigtem Live-Status: FLV/HLS-Capture mit Playwright
  * 3. Streamlink und yt-dlp als Extraktions-Fallbacks
- * 
+ *
  * Offline wird keine URL ausgegeben. Optionaler Node-Lastschutz:
  * TIKTOK_MAX_LOAD_PER_CPU, Exit-Code 75 bei NODE_BUSY.
+ *
+ * v2.5: Erfolgs-JSON enthält zusätzlich `streams` (alle eindeutig
+ * erfassten URLs mit Container/Qualität) und `identity`
+ * ({uniqueId, nickname, secUid, userId, roomId} aus SIGI_STATE bzw.
+ * UNIVERSAL_DATA), damit der Dispatcher Namen auch über den
+ * Playwright-Pfad aufzeichnen kann. `url`/`allUrls` bleiben erhalten.
  */
 
 const { chromium } = require('playwright');
@@ -136,6 +142,45 @@ async function checkRestrictions(page) {
     return { restricted: false, reason: null };
 }
 
+// Identität (SIGI_STATE, Fallback UNIVERSAL_DATA) aus der geladenen Seite lesen.
+// Liefert null bei jedem Fehler; wirft nie.
+async function extractIdentity(page) {
+    try {
+        return await page.evaluate(() => {
+            const pick = (user) => {
+                if (!user || !user.secUid || !user.uniqueId) return null;
+                return {
+                    uniqueId: user.uniqueId,
+                    nickname: user.nickname || null,
+                    secUid: user.secUid,
+                    userId: user.id || null,
+                    roomId: user.roomId || null
+                };
+            };
+            try {
+                const sigi = document.getElementById('SIGI_STATE');
+                if (sigi && sigi.textContent) {
+                    const state = JSON.parse(sigi.textContent);
+                    const picked = pick(state?.LiveRoom?.liveRoomUserInfo?.user);
+                    if (picked) return picked;
+                }
+            } catch (e) { /* weiter */ }
+            try {
+                const uni = document.getElementById('__UNIVERSAL_DATA_FOR_REHYDRATION__');
+                if (uni && uni.textContent) {
+                    const scope = JSON.parse(uni.textContent)?.__DEFAULT_SCOPE__ || {};
+                    const picked = pick(scope['webapp.live-detail']?.liveInfo?.liveRoomUserInfo?.user);
+                    if (picked) return picked;
+                    return pick(scope['webapp.user-detail']?.userInfo?.user);
+                }
+            } catch (e) { /* weiter */ }
+            return null;
+        });
+    } catch (error) {
+        return null;
+    }
+}
+
 // Playwright-basierte FLV-Extraktion
 async function extractWithPlaywright(username, qualityPreference) {
     let browser;
@@ -185,11 +230,15 @@ async function extractWithPlaywright(username, qualityPreference) {
         await page.waitForTimeout(humanDelay(3000, 5000));
         try { await page.waitForLoadState('networkidle', { timeout: 10000 }); } catch (e) { /* ok */ }
 
+        // Identität lesen, solange die Seite steht — auch restricted-Ergebnisse
+        // sollen den Namen für den Identity-Store mitliefern.
+        const identity = await extractIdentity(page);
+
         // Prüfe auf Einschränkungen
         const restrictions = await checkRestrictions(page);
         if (restrictions.restricted) {
             console.log(`Playwright: Stream restricted - ${restrictions.reason}`);
-            return { success: false, method: 'playwright', restricted: true, reason: restrictions.reason };
+            return { success: false, method: 'playwright', restricted: true, reason: restrictions.reason, identity };
         }
 
         // Versuche Video abzuspielen falls nötig
@@ -214,7 +263,7 @@ async function extractWithPlaywright(username, qualityPreference) {
         const restrictions2 = await checkRestrictions(page);
         if (restrictions2.restricted) {
             console.log(`Playwright: Stream became restricted after wait - ${restrictions2.reason}`);
-            return { success: false, method: 'playwright', restricted: true, reason: restrictions2.reason };
+            return { success: false, method: 'playwright', restricted: true, reason: restrictions2.reason, identity };
         }
 
         // Zusätzlicher Fallback: Stream-URLs aus dem Seitenquelltext übernehmen.
@@ -234,7 +283,7 @@ async function extractWithPlaywright(username, qualityPreference) {
         // URLs auswerten
         if (collectedUrls.length === 0) {
             console.log('Playwright: No FLV or HLS URLs captured.');
-            return { success: false, method: 'playwright', restricted: false, reason: 'No FLV or HLS URLs found' };
+            return { success: false, method: 'playwright', restricted: false, reason: 'No FLV or HLS URLs found', identity };
         }
 
         // Deduplizieren und nach Qualität sortieren
@@ -261,6 +310,13 @@ async function extractWithPlaywright(username, qualityPreference) {
             qualityAccess: 'anonymous',
             uncapturedHigherQualitiesMayRequireLogin: true,
             allUrls: uniqueUrls.length,
+            streams: uniqueUrls.map(u => ({
+                url: u.url,
+                source: u.source,
+                resolvedQuality: resolvedQualityFromUrl(u.url),
+                container: u.url.includes('.m3u8') ? 'hls' : 'flv'
+            })),
+            identity,
             timestamp: new Date().toISOString()
         };
 

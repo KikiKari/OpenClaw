@@ -1,9 +1,20 @@
 # Schema Reference
 
-> Runtime contract (2026-07-11): identities live in the shared sibling
+> Runtime contract (2026-07-13): identities live in the shared sibling
 > `tiktok-names` store, are keyed by `sec_uid`, and are atomically replaced.
 > Sparse updates preserve existing `nickname` and `user_id`. Identity/pointer
-> retention is 90 days; stream URL retention remains three days.
+> retention defaults to 90 days and can be overridden via
+> `TT_LIVE_IDENTITY_RETENTION_DAYS` (0 = never delete); every retention
+> deletion is appended to `tiktok-names/cleanup.log` as
+> `ts=<iso> evt=identity_expired file=<name> field=<field> value=<ts>
+> retention_days=<N>`. Stream URL retention remains three days.
+> Identities are recorded from three sources: SIGI scrapes
+> (`update_from_scrape`), webcast room-info owners (`update_from_owner`),
+> and Playwright fallback results (dispatcher `record_identity` from the
+> embedded `identity` object).
+>
+> Dispatcher payload (tiktok_dispatch.py --json) may additionally contain
+> `info` (§6.2.1), `qualities` (§6.2.2), and `room_id` on live results.
 
 > Diese Schemas gehören zum separaten browserfreien `tiktok-monitor`.
 > Siehe `/home/openclaw/.openclaw/workspace/TIKTOK-CURRENT.md`.
@@ -342,7 +353,68 @@ With `--verbose|-v`, stderr also contains one line:
 # source: api|yt-dlp|streamlink
 ```
 
-Exit `0` = ok, `1` = offline, `2` = error.
+With `--json`, stdout is instead one compact JSON object:
+
+```jsonc
+{
+  "url":       "string",        // chosen primary URL (same pick as bare mode)
+  "source":    "string",        // api | yt-dlp | streamlink
+  "room_id":   "string",
+  "unique_id": "string|null",
+  "nickname":  "string|null",
+  "info":      { ... },         // §6.2.1; {} if room-info fetch failed
+  "qualities": [ ... ]          // §6.2.2; [] if none
+}
+```
+
+Exit `0` = ok, `1` = offline, `2` = error (unchanged in both modes).
+
+#### 6.2.1 `info` object (`summarize_room_info`)
+
+Every field is optional — only values present in the anonymous webcast
+`room/info` response are emitted (availability varies by region):
+
+```jsonc
+{
+  "title":            "string",
+  "viewers":          "int",    // room_info.user_count
+  "total_viewers":    "int",    // room_info.stats.total_user
+  "likes":            "int",    // room_info.stats.like_count
+  "owner_nickname":   "string", // room_info.owner.nickname
+  "owner_handle":     "string", // room_info.owner.display_id
+  "followers":        "int",    // owner.follow_info.follower_count
+  "following":        "int",    // owner.follow_info.following_count
+  "started_at_epoch": "int",    // room_info.create_time|start_time (unix s)
+  "started_at":       "iso"     // derived from started_at_epoch
+}
+```
+
+#### 6.2.2 `qualities` array (`extract_all_qualities`)
+
+Ordered origin → uhd_60 → hd_60 → hd → sd → ld, unknown keys next, `ao`
+last. Parsed from Layout A (`stream_url.live_core_sdk_data.pull_data.
+stream_data` → `data.<key>.main.{hls,flv}`) and Layout B
+(`stream_url.hls_pull_url_map` + `stream_url.flv_pull_url`; keys mapped
+`FULL_HD1→uhd_60, HD1→hd, SD1→sd, SD2→ld`). Layout A wins; duplicate URLs
+(ignoring the query string) are dropped; entries without any URL are omitted.
+
+```jsonc
+[
+  {
+    "key":    "string",       // origin | uhd_60 | hd_60 | hd | sd | ld | ao | raw
+    "label":  "string",       // Original | 1080p60 | 720p60 | 720p | 540p | 360p | Audio
+    "height": "int",          // estimated; refined from sdk_params.resolution
+    "hls":    "string|null",
+    "flv":    "string|null",
+    "source": "sdk|pull_map"
+  }
+]
+```
+
+### 6.2.3 `tt-live.sh check <user> --room-info`
+
+When live and `--room-info` is passed, the §6.1 JSON additionally contains
+`"info"` (§6.2.1).
 
 ### 6.3 `tt-live.sh daemon <user>` (wrapper)
 

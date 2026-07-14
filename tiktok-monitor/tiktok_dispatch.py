@@ -42,6 +42,20 @@ MONITOR = ROOT / "tiktok-monitor" / "tt-live.sh"
 PW_ENHANCED = ROOT / "skills" / "tiktok-live-mon"
 PW_BASIC = ROOT / "skills" / "tiktok-live" / "scripts"
 
+# Engine import (same directory). Used only for identity write-back and the
+# webcast room-info supplement; a broken engine must never break dispatch.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+try:
+    import tt_live
+except Exception:  # noqa: BLE001 - any engine defect disables extras only
+    tt_live = None
+
+QUALITY_LABELS = {
+    "origin": "Original", "uhd_60": "1080p60", "hd_60": "720p60",
+    "hd": "720p", "sd": "540p", "ld": "360p", "ao": "Audio",
+}
+QUALITY_ORDER = ("origin", "uhd_60", "hd_60", "hd", "sd", "ld")
+
 
 @dataclass
 class Result:
@@ -49,6 +63,10 @@ class Result:
     method: str
     exit_code: int
     url: str | None = None
+    info: dict | None = None
+    qualities: list | None = None
+    room_id: str | None = None
+    source_data: dict | None = None  # raw fallback JSON; never serialized
 
 
 def max_active_dispatchers() -> int:
@@ -84,6 +102,12 @@ def payload_for(result: Result) -> dict[str, Any]:
     }
     if result.url:
         payload["url"] = result.url
+    if result.info:
+        payload["info"] = result.info
+    if result.qualities:
+        payload["qualities"] = result.qualities
+    if result.room_id:
+        payload["room_id"] = result.room_id
     return payload
 
 
@@ -215,10 +239,129 @@ def offline_text(*texts: str) -> bool:
     ))
 
 
+def resolved_quality_from_url(url: str) -> str:
+    """Mirror the Playwright extractor's suffix → quality-key matching."""
+    for key in QUALITY_ORDER:
+        if f"_{key}." in url:
+            return key
+    if "_uhd." in url or "_full_hd" in url:
+        return "uhd_60"
+    return "unknown"
+
+
+def qualities_from_streams(streams: Any) -> list:
+    """Group captured Playwright stream URLs into the qualities payload shape."""
+    merged: dict[str, dict] = {}
+    seen: set[str] = set()
+    for stream in streams if isinstance(streams, list) else []:
+        if not isinstance(stream, dict):
+            continue
+        url = stream.get("url")
+        if not isinstance(url, str) or not url:
+            continue
+        base = url.split("?", 1)[0]
+        if base in seen:
+            continue
+        seen.add(base)
+        key = stream.get("resolvedQuality") or resolved_quality_from_url(url)
+        container = stream.get("container") or ("hls" if ".m3u8" in url else "flv")
+        entry = merged.setdefault(key, {
+            "key": key,
+            "label": QUALITY_LABELS.get(key, key),
+            "height": 0,
+            "hls": None,
+            "flv": None,
+            "source": "playwright",
+        })
+        if container in ("hls", "flv") and not entry[container]:
+            entry[container] = url
+    order = {key: index for index, key in enumerate(QUALITY_ORDER)}
+
+    def sort_key(entry: dict) -> tuple[int, int, str]:
+        key = entry["key"]
+        if key == "ao":
+            return (2, 0, key)
+        if key in order:
+            return (0, order[key], "")
+        return (1, 0, key)
+
+    return sorted(merged.values(), key=sort_key)
+
+
+def merge_qualities(primary: list, secondary: list) -> list:
+    """Primary entries win; secondary entries fill missing keys/containers."""
+    by_key: dict[str, dict] = {}
+    ordered_keys: list[str] = []
+    for entry in list(primary or []) + list(secondary or []):
+        if not isinstance(entry, dict) or not entry.get("key"):
+            continue
+        key = entry["key"]
+        if key not in by_key:
+            by_key[key] = dict(entry)
+            ordered_keys.append(key)
+            continue
+        for container in ("hls", "flv"):
+            if not by_key[key].get(container) and entry.get(container):
+                by_key[key][container] = entry[container]
+    return [by_key[key] for key in ordered_keys]
+
+
+def record_identity(data: dict | None) -> bool:
+    """Persist an embedded fallback identity; never affects the dispatch result."""
+    if tt_live is None or not isinstance(data, dict):
+        return False
+    identity = data.get("identity")
+    if not isinstance(identity, dict):
+        return False
+    sec_uid = identity.get("secUid")
+    unique_id = identity.get("uniqueId")
+    if not sec_uid or not unique_id:
+        return False
+    try:
+        store = tt_live.IdentityStore(tt_live.resolve_workspace())
+        recorded, _ = store.update_from_scrape({
+            "sec_uid": sec_uid,
+            "unique_id": unique_id,
+            "nickname": identity.get("nickname"),
+            "user_id": identity.get("userId"),
+        })
+        return bool(recorded)
+    except Exception as exc:  # noqa: BLE001 - observability only
+        sys.stderr.write(f"# identity record failed: {exc}\n")
+        return False
+
+
+def enrich_live_result(result: Result) -> None:
+    """Best-effort webcast room-info supplement for non-python live results."""
+    if tt_live is None or result.info:
+        return
+    data = result.source_data or {}
+    identity = data.get("identity") if isinstance(data, dict) else None
+    room_id = str((identity or {}).get("roomId") or "").strip()
+    if not room_id or room_id == "0":
+        return
+    result.room_id = room_id
+    try:
+        room_info = tt_live.fetch_room_info(room_id)
+        if not room_info:
+            return
+        info = tt_live.summarize_room_info(room_info)
+        if info:
+            result.info = info
+        api_qualities = tt_live.extract_all_qualities(room_info)
+        if api_qualities:
+            result.qualities = merge_qualities(api_qualities, result.qualities or [])
+        owner = room_info.get("owner")
+        if isinstance(owner, dict):
+            tt_live.IdentityStore(tt_live.resolve_workspace()).update_from_owner(owner)
+    except Exception as exc:  # noqa: BLE001 - supplement must never break dispatch
+        sys.stderr.write(f"# room-info supplement failed: {exc}\n")
+
+
 def python_first(operation: str, handle: str, timeout: int) -> Result:
     command = ["bash", str(MONITOR), operation, handle]
     if operation == "url":
-        command.append("--verbose")
+        command.extend(["--verbose", "--json"])
     code, stdout, stderr = run_bounded(command, timeout)
     data = json_object(stdout, stderr)
     url = find_url(stdout, data)
@@ -226,8 +369,18 @@ def python_first(operation: str, handle: str, timeout: int) -> Result:
     match = re.search(r"# source:\s*([A-Za-z0-9_-]+)", stderr)
     if match:
         source = f"python_{match.group(1).replace('-', '_')}"
+    elif isinstance(data, dict) and isinstance(data.get("source"), str):
+        source = f"python_{data['source'].replace('-', '_')}"
     if operation == "url" and code == 0 and url:
-        return Result("live", source, 0, url)
+        info = data.get("info") if isinstance(data, dict) else None
+        qualities = data.get("qualities") if isinstance(data, dict) else None
+        room_id = data.get("room_id") if isinstance(data, dict) else None
+        return Result(
+            "live", source, 0, url,
+            info=info if isinstance(info, dict) and info else None,
+            qualities=qualities if isinstance(qualities, list) and qualities else None,
+            room_id=str(room_id) if room_id else None,
+        )
     if operation == "check" and data:
         live = data.get("live")
         if live is True and code == 0:
@@ -292,19 +445,25 @@ def node_fallback(operation: str, handle: str, quality: str, timeout: int) -> Re
         data = json_object(stdout, stderr)
         url = find_url(stdout, data)
         if restriction_text(stdout, stderr, json.dumps(data or {}, ensure_ascii=False)):
-            return Result("restricted", method, EXIT_OFFLINE)
+            return Result("restricted", method, EXIT_OFFLINE, source_data=data)
         if code == 0 and operation == "url" and url:
             if stream_url_is_playable(url, timeout):
-                return Result("live", method, 0, url)
+                qualities = qualities_from_streams(data.get("streams")) if data else []
+                return Result(
+                    "live", method, 0, url,
+                    qualities=qualities or None,
+                    source_data=data,
+                )
             statuses.append("technical_error")
             continue
         if data and data.get("live", data.get("isLive")) is False:
+            record_identity(data)
             statuses.append("offline")
             continue
         if code == 0 and operation == "check" and data:
             live = data.get("live", data.get("isLive"))
             if live is True:
-                return Result("live", method, 0)
+                return Result("live", method, 0, source_data=data)
         if offline_text(stdout, stderr, json.dumps(data or {}, ensure_ascii=False)):
             statuses.append("offline")
             continue
@@ -316,8 +475,10 @@ def node_fallback(operation: str, handle: str, quality: str, timeout: int) -> Re
     return Result("technical_error", "all_available_methods", EXIT_TECHNICAL)
 
 
-def identity_sync(handle: str, timeout: int) -> None:
-    run_bounded(["bash", str(MONITOR), "check", handle], timeout)
+def identity_sync(handle: str, timeout: int) -> bool:
+    """Re-run the Python check to refresh the identity store; True on success."""
+    code, _stdout, _stderr = run_bounded(["bash", str(MONITOR), "check", handle], timeout)
+    return code in (0, EXIT_OFFLINE)
 
 
 def dispatch(args: argparse.Namespace) -> int:
@@ -364,7 +525,16 @@ def dispatch(args: argparse.Namespace) -> int:
                 elif fallback.status in {"live", "offline", "restricted"}:
                     final = fallback
                     if not fallback.method.startswith("python_"):
-                        identity_sync(args.handle, min(args.timeout, 20))
+                        recorded = record_identity(fallback.source_data)
+                        if not recorded:
+                            recorded = identity_sync(args.handle, min(args.timeout, 20))
+                        if not recorded:
+                            sys.stderr.write(
+                                f"# identity not recorded for @{args.handle}: "
+                                "no embedded identity and python check failed\n"
+                            )
+                        if fallback.status == "live":
+                            enrich_live_result(fallback)
                 elif first.status == "live":
                     final = first
                 else:

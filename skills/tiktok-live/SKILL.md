@@ -59,17 +59,37 @@ exactly this command once, using the handle from the current user input:
 - After final dispatcher JSON, do not run further Node or extraction attempts.
 - Never expose raw JSON, tool logs, fallback attempts, or reasoning.
 
-Reply with exactly these three populated lines:
+Reply with exactly the text returned by `tiktok_live_direct`, verbatim. Its
+live template is (lines without data are omitted; every stream URL sits alone
+inside its own fenced code block, one block per quality and container, HLS
+before FLV, ordered Original → 360p):
 
 ```text
-@<handle> is currently <STATUS> on TikTok.
-VLC/MPV: <URL or not available>
+@<handle> is currently LIVE on TikTok.
+Titel: <title>
+Zuschauer: <viewers> aktuell · <total_viewers> gesamt
+Likes: <likes>
+Follower: <followers> · Gefolgt: <following>
+Live seit: <HH:MM> UTC (<Xh Ym>)
+
+Stream-URLs:
+
+<Label> (HLS):
+<fenced code block containing only the URL>
+<Label> (FLV):
+<fenced code block containing only the URL>
+
 Method: <dispatcher method>
 ```
 
+When no quality list could be resolved, a single block labeled `Stream:`
+carries the primary URL. Offline/restricted replies stay
+`@<handle> is not currently live on TikTok.`
+
 `Method` must come from the dispatcher result and must not be generalized to
 `playwright`. The dispatcher internally owns Python-first resolution, bounded
-Node/Playwright fallbacks, timeouts, and process cleanup.
+Node/Playwright fallbacks, timeouts, and process cleanup. Never re-wrap,
+reformat, translate, or strip the code fences from the tool text.
 
 The dispatcher freshly resolves and probes media URLs in the current query
 session before returning them. Previously recorded URLs are diagnostic history

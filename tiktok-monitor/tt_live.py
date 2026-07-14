@@ -8,8 +8,11 @@ profile-scoped Playwright skills documented in workspace/TIKTOK-CURRENT.md.
 Subcommands
 -----------
   check  <username>   One-shot live status check; JSON to stdout
+                      --room-info adds an 'info' object when live
                       Exit 0 = live, 1 = offline, 2 = error
   url    <username>   Resolve current m3u8 stream URL; URL to stdout
+                      --json prints {url, source, room_id, unique_id,
+                      nickname, info, qualities} instead of a bare URL
                       Exit 0 = ok, 1 = offline, 2 = error
   daemon <username>   Poll over a timer window; emit events on transitions
                       Args: --hours N (default 24), --poll-min M (min 10)
@@ -20,7 +23,9 @@ Design
 - stdlib only (urllib + json + subprocess for optional fallbacks)
 - Identity store: secUid is the primary key; uniqueId is a pointer with a
   "current" flag and a rename history
-- Atomic identity/pointer upserts with passive 90-day retention
+- Atomic identity/pointer upserts with passive retention (default 90 days,
+  override TT_LIVE_IDENTITY_RETENTION_DAYS, 0 = never; deletions logged to
+  tiktok-names/cleanup.log)
 - State store: per-secUid, stream URLs retained 3 days via passive stale-strip
 - Event log: append-only line file per secUid; sub-agents tail it and announce
 - SIGI_STATE only; no UNIVERSAL_DATA fallback
@@ -64,7 +69,7 @@ FORMAT_CAP = "360"               # hardcoded; not configurable
 MIN_POLL_MINUTES = 10            # daemon poll floor
 DEFAULT_DAEMON_HOURS = 24        # daemon default duration
 URL_RETENTION_DAYS = 3           # stream URL retention in state store
-IDENTITY_RETENTION_DAYS = 90     # identity/pointer passive cleanup
+IDENTITY_RETENTION_DAYS = 90     # identity/pointer passive cleanup (default)
 REQUEST_TIMEOUT_SEC = 15         # per HTTP request
 TT_AID = "1988"                  # TikTok webcast app id
 
@@ -126,6 +131,17 @@ def atomic_json_write(path: Path, value: dict) -> None:
 def now_iso() -> str:
     """UTC ISO-8601 with trailing Z, second precision."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def identity_retention_days() -> int:
+    """Retention override via TT_LIVE_IDENTITY_RETENTION_DAYS; 0 = never delete."""
+    raw = os.environ.get("TT_LIVE_IDENTITY_RETENTION_DAYS", "").strip()
+    if raw:
+        try:
+            return max(0, int(raw))
+        except ValueError:
+            pass
+    return IDENTITY_RETENTION_DAYS
 
 
 # ============================================================================
@@ -302,6 +318,133 @@ QUALITY_LABELS = {
 }
 ANONYMOUS_QUALITY_ORDER = ("origin", "uhd_60", "hd_60", "hd", "sd", "ld")
 
+# Layout B pull-map keys (hls_pull_url_map / flv_pull_url) → internal keys.
+LAYOUT_B_KEY_MAP = {
+    "FULL_HD1": "uhd_60",
+    "HD1": "hd",
+    "SD1": "sd",
+    "SD2": "ld",
+}
+
+
+def _sdk_stream_data(stream_url: dict) -> dict:
+    """Decode Layout A stream_data (JSON string) → data dict, {} on failure."""
+    sdk = stream_url.get("live_core_sdk_data") or {}
+    pull = sdk.get("pull_data") or {}
+    raw = pull.get("stream_data")
+    if not isinstance(raw, str):
+        return {}
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+    data = parsed.get("data")
+    return data if isinstance(data, dict) else {}
+
+
+def extract_all_qualities(room_info: dict) -> list[dict]:
+    """
+    Extract every advertised quality tier with both container URLs.
+
+    Returns an ordered list (origin → ld, "ao" last, unknown keys after known
+    ones by height) of:
+      {"key", "label", "height", "hls", "flv", "source"}
+    Layout A (live_core_sdk_data.pull_data.stream_data) wins over Layout B
+    (hls_pull_url_map / flv_pull_url); duplicate URLs (ignoring the query
+    string) are dropped.
+    """
+    if not room_info:
+        return []
+    stream_url = room_info.get("stream_url") or {}
+    if not isinstance(stream_url, dict):
+        return []
+
+    merged: dict[str, dict] = {}
+
+    def entry_for(key: str) -> dict:
+        if key not in merged:
+            merged[key] = {
+                "key": key,
+                "label": QUALITY_LABELS.get(key, key),
+                "height": QUALITY_HEIGHT.get(key, 0),
+                "hls": None,
+                "flv": None,
+                "source": None,
+            }
+        return merged[key]
+
+    # Layout A
+    for key, quality_obj in _sdk_stream_data(stream_url).items():
+        main = (quality_obj or {}).get("main") or {}
+        hls = main.get("hls")
+        flv = main.get("flv")
+        has_hls = isinstance(hls, str) and bool(hls)
+        has_flv = isinstance(flv, str) and bool(flv)
+        if not has_hls and not has_flv:
+            continue
+        entry = entry_for(str(key))
+        if has_hls and not entry["hls"]:
+            entry["hls"] = hls
+        if has_flv and not entry["flv"]:
+            entry["flv"] = flv
+        entry["source"] = "sdk"
+        params_raw = main.get("sdk_params")
+        if isinstance(params_raw, str):
+            try:
+                params = json.loads(params_raw)
+            except json.JSONDecodeError:
+                params = None
+            resolution = str((params or {}).get("resolution") or "")
+            if "x" in resolution:
+                try:
+                    entry["height"] = int(resolution.rsplit("x", 1)[1])
+                except ValueError:
+                    pass
+
+    # Layout B
+    for container, map_key in (("hls", "hls_pull_url_map"), ("flv", "flv_pull_url")):
+        raw_map = stream_url.get(map_key)
+        if not isinstance(raw_map, dict):
+            continue
+        for raw_key, url in raw_map.items():
+            if not (isinstance(url, str) and url):
+                continue
+            key = LAYOUT_B_KEY_MAP.get(str(raw_key), str(raw_key).lower())
+            entry = entry_for(key)
+            if not entry[container]:  # Layout A wins
+                entry[container] = url
+            if entry["source"] is None:
+                entry["source"] = "pull_map"
+
+    order = {key: index for index, key in enumerate(ANONYMOUS_QUALITY_ORDER)}
+
+    def sort_key(entry: dict) -> tuple[int, int, str]:
+        key = entry["key"]
+        if key == "ao":
+            return (2, 0, key)
+        if key in order:
+            return (0, order[key], "")
+        return (1, -int(entry.get("height") or 0), key)
+
+    ordered = sorted(merged.values(), key=sort_key)
+
+    # Cross-entry dedupe by URL without query string (first occurrence wins).
+    seen: set[str] = set()
+    result: list[dict] = []
+    for entry in ordered:
+        for container in ("hls", "flv"):
+            url = entry[container]
+            if not url:
+                continue
+            base = url.split("?", 1)[0]
+            if base in seen:
+                entry[container] = None
+            else:
+                seen.add(base)
+        if entry["hls"] or entry["flv"]:
+            result.append(entry)
+    return result
+
 
 def pick_hd_hls(room_info: dict) -> str | None:
     """
@@ -313,39 +456,11 @@ def pick_hd_hls(room_info: dict) -> str | None:
       3. best lower video quality
     Audio-only ("ao") is excluded unless nothing else is available.
     """
-    if not room_info:
-        return None
-    stream_url = room_info.get("stream_url") or {}
-    if not stream_url:
-        return None
-
-    candidates: list[tuple[str, str]] = []
-
-    # Layout A: stream_url.live_core_sdk_data.pull_data.stream_data
-    # stream_data is JSON-encoded string; data.<quality>.main.hls is the URL
-    sdk = stream_url.get("live_core_sdk_data") or {}
-    pull = sdk.get("pull_data") or {}
-    sd_raw = pull.get("stream_data")
-    if isinstance(sd_raw, str):
-        try:
-            sd = json.loads(sd_raw)
-        except json.JSONDecodeError:
-            sd = None
-        if sd:
-            data = sd.get("data") or {}
-            for key, quality_obj in data.items():
-                main = (quality_obj or {}).get("main") or {}
-                hls = main.get("hls")
-                if isinstance(hls, str) and hls:
-                    candidates.append((key, hls))
-
-    # Layout B: stream_url.hls_pull_url_map (flat dict)
-    hls_map = stream_url.get("hls_pull_url_map")
-    if isinstance(hls_map, dict):
-        for key, url in hls_map.items():
-            if isinstance(url, str) and url:
-                candidates.append((key, url))
-
+    candidates = [
+        (entry["key"], entry["hls"])
+        for entry in extract_all_qualities(room_info)
+        if entry.get("hls")
+    ]
     if not candidates:
         return None
 
@@ -367,6 +482,79 @@ def pick_hd_hls(room_info: dict) -> str | None:
 
     pool.sort(key=sort_key)
     return pool[0][1]
+
+
+def _as_int(value: Any) -> int | None:
+    """Coerce webcast numeric fields (int or numeric string) defensively."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        try:
+            return int(value)
+        except ValueError:
+            return None
+    return None
+
+
+def summarize_room_info(room_info: dict) -> dict:
+    """
+    Condense webcast room/info into display fields.
+
+    Only fields actually present in the response are emitted — anonymous
+    responses vary by region and must never be padded with fabricated values.
+    """
+    if not room_info:
+        return {}
+    summary: dict[str, Any] = {}
+
+    title = room_info.get("title")
+    if isinstance(title, str) and title.strip():
+        summary["title"] = title.strip()
+
+    viewers = _as_int(room_info.get("user_count"))
+    if viewers is not None:
+        summary["viewers"] = viewers
+
+    stats = room_info.get("stats")
+    if isinstance(stats, dict):
+        total = _as_int(stats.get("total_user"))
+        if total is not None:
+            summary["total_viewers"] = total
+        likes = _as_int(stats.get("like_count"))
+        if likes is not None:
+            summary["likes"] = likes
+    if "likes" not in summary:
+        likes = _as_int(room_info.get("like_count"))
+        if likes is not None:
+            summary["likes"] = likes
+
+    owner = room_info.get("owner")
+    if isinstance(owner, dict):
+        nickname = owner.get("nickname")
+        if isinstance(nickname, str) and nickname.strip():
+            summary["owner_nickname"] = nickname.strip()
+        handle = owner.get("display_id")
+        if isinstance(handle, str) and handle.strip():
+            summary["owner_handle"] = handle.strip()
+        follow = owner.get("follow_info")
+        if isinstance(follow, dict):
+            followers = _as_int(follow.get("follower_count"))
+            if followers is not None:
+                summary["followers"] = followers
+            following = _as_int(follow.get("following_count"))
+            if following is not None:
+                summary["following"] = following
+
+    started = _as_int(room_info.get("create_time")) or _as_int(room_info.get("start_time"))
+    if started and started > 0:
+        summary["started_at_epoch"] = started
+        summary["started_at"] = datetime.fromtimestamp(
+            started, timezone.utc
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    return summary
 
 
 def extract_via_ytdlp(username: str) -> str | None:
@@ -420,13 +608,15 @@ def extract_via_streamlink(username: str) -> str | None:
     return line or None
 
 
-def extract_stream_url(room_id: str, username: str) -> tuple[str | None, str]:
+def extract_stream_url(room_id: str, username: str,
+                       room_info: dict | None = None) -> tuple[str | None, str]:
     """
     Orchestrate primary (direct API) and optional fallbacks (yt-dlp, streamlink).
     Returns (url, source). Source is 'api' / 'yt-dlp' / 'streamlink' / 'none'.
+    Pass room_info to reuse an already-fetched webcast response.
     """
     # Primary: direct webcast API
-    info = fetch_room_info(room_id)
+    info = room_info if room_info is not None else fetch_room_info(room_id)
     if info:
         url = pick_hd_hls(info)
         if url and stream_url_is_playable(url):
@@ -528,8 +718,24 @@ class IdentityStore:
             return False
         return (datetime.now(timezone.utc) - seen).total_seconds() > days * 86400
 
-    def cleanup_stale(self, days: int = IDENTITY_RETENTION_DAYS) -> None:
+    def _log_cleanup(self, name: str, field: str, value: Any, days: int) -> None:
+        """Record an expiry so retention deletions are observable; never raises."""
+        try:
+            log_path = self.ident_dir.parent / "cleanup.log"
+            with log_path.open("a", encoding="utf-8") as stream:
+                stream.write(
+                    f"ts={now_iso()} evt=identity_expired file={name} "
+                    f"field={field} value={value} retention_days={days}\n"
+                )
+        except OSError:
+            pass
+
+    def cleanup_stale(self, days: int | None = None) -> None:
         """Passively remove well-formed records not observed within retention."""
+        if days is None:
+            days = identity_retention_days()
+        if days <= 0:
+            return
         records = [
             *((item, "last_seen") for item in self.ident_dir.glob("*.json")),
             *((item, "last_pointed_at") for item in self.ptr_dir.glob("*.json")),
@@ -540,6 +746,7 @@ class IdentityStore:
             except (OSError, json.JSONDecodeError):
                 continue
             if self._older_than(record.get(field), days):
+                self._log_cleanup(path.name, field, record.get(field), days)
                 path.unlink(missing_ok=True)
 
     def update_from_scrape(self, scrape: dict) -> tuple[str | None, bool]:
@@ -588,6 +795,26 @@ class IdentityStore:
         self.write_pointer(unique_id, sec_uid, current=True)
         self.cleanup_stale()
         return sec_uid, rename_detected
+
+    def update_from_owner(self, owner: dict) -> tuple[str | None, bool]:
+        """
+        Merge a webcast room_info "owner" payload into the store.
+
+        Skips silently when sec_uid or display_id is missing — the primary
+        key is never invented from a handle alone.
+        """
+        if not isinstance(owner, dict):
+            return None, False
+        sec_uid = owner.get("sec_uid") or owner.get("secUid")
+        unique_id = owner.get("display_id") or owner.get("displayId")
+        if not sec_uid or not unique_id:
+            return None, False
+        return self.update_from_scrape({
+            "sec_uid": sec_uid,
+            "unique_id": unique_id,
+            "nickname": owner.get("nickname"),
+            "user_id": owner.get("id_str") or owner.get("id"),
+        })
 
 
 # ============================================================================
@@ -795,6 +1022,13 @@ def cmd_check(args: argparse.Namespace) -> int:
         "rename_detected": rename,
         "checked_at": now_iso(),
     }
+    if live and room_id and getattr(args, "room_info", False):
+        room_info = fetch_room_info(str(room_id))
+        if room_info:
+            out["info"] = summarize_room_info(room_info)
+            owner = room_info.get("owner")
+            if isinstance(owner, dict):
+                ids.update_from_owner(owner)
     print(json.dumps(out, indent=2, ensure_ascii=False))
     return 0 if live else 1
 
@@ -835,10 +1069,18 @@ def cmd_url(args: argparse.Namespace) -> int:
         return 2
     room_id = str(room_id)
 
+    # Fetch room info once at command level: it feeds the primary URL pick,
+    # the quality listing, the info summary, and the owner identity merge.
+    room_info = fetch_room_info(room_id)
+    if room_info:
+        owner = room_info.get("owner")
+        if isinstance(owner, dict):
+            ids.update_from_owner(owner)
+
     # Historical URLs remain available to monitoring/audit consumers, but a
     # user query always starts a fresh resolver session and never returns a
     # URL solely because a previous query cached it.
-    url, source = extract_stream_url(room_id, username)
+    url, source = extract_stream_url(room_id, username, room_info=room_info)
     if not url:
         sys.stderr.write(
             "error: could not extract stream URL "
@@ -848,7 +1090,19 @@ def cmd_url(args: argparse.Namespace) -> int:
     state_store.add_url(sec_uid, room_id, url)
     state_store.strip_stale_urls(sec_uid)
 
-    print(url)
+    if getattr(args, "json", False):
+        out = {
+            "url": url,
+            "source": source,
+            "room_id": room_id,
+            "unique_id": scrape.get("unique_id"),
+            "nickname": scrape.get("nickname"),
+            "info": summarize_room_info(room_info) if room_info else {},
+            "qualities": extract_all_qualities(room_info) if room_info else [],
+        }
+        print(json.dumps(out, ensure_ascii=False))
+    else:
+        print(url)
     if args.verbose:
         sys.stderr.write(f"# source: {source}\n")
     return 0
@@ -1040,6 +1294,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="One-shot live status check; JSON to stdout",
     )
     p_check.add_argument("username", help="TikTok @username (no @)")
+    p_check.add_argument(
+        "--room-info", dest="room_info", action="store_true",
+        help="When live, also fetch webcast room info and add an 'info' object",
+    )
     p_check.set_defaults(func=cmd_check)
 
     p_url = sub.add_parser(
@@ -1050,6 +1308,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_url.add_argument(
         "--verbose", "-v", action="store_true",
         help="Print extraction source to stderr",
+    )
+    p_url.add_argument(
+        "--json", action="store_true",
+        help="Print JSON {url, source, room_id, info, qualities} instead of a bare URL",
     )
     p_url.set_defaults(func=cmd_url)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * TikTok Live Status Checker v2.1
+ * TikTok Live Status Checker v2.2
  * Prüft ausschließlich profilgebundene Live-Indikatoren.
  * Der allgemeine TikTok-Navigationspunkt "LIVE" ist kein Statussignal.
  *
@@ -13,6 +13,11 @@
  * - Optionaler Node-Lastschutz via TIKTOK_MAX_LOAD_PER_CPU (Exit 75)
  * - Debug-Modus (DEBUG=1)
  * - Realistische Verzögerungen gegen Bot-Erkennung
+ *
+ * v2.2: JSON enthält zusätzlich `identity`
+ * ({uniqueId, nickname, secUid, userId, roomId} aus SIGI_STATE bzw.
+ * UNIVERSAL_DATA), damit der Dispatcher Namen auch über den
+ * Playwright-Pfad aufzeichnen kann.
  */
 
 const { chromium } = require('playwright');
@@ -115,6 +120,51 @@ async function waitForPageReady(page) {
     await page.waitForTimeout(humanDelay(2000, 3000));
 
     return pageReady;
+}
+
+// Identität (SIGI_STATE, Fallback UNIVERSAL_DATA) aus der geladenen Seite lesen.
+// Liefert null bei jedem Fehler; wirft nie.
+async function extractIdentity(page) {
+    try {
+        return await page.evaluate(() => {
+            const pick = (user) => {
+                if (!user || !user.secUid || !user.uniqueId) return null;
+                return {
+                    uniqueId: user.uniqueId,
+                    nickname: user.nickname || null,
+                    secUid: user.secUid,
+                    userId: user.id || null,
+                    roomId: user.roomId || null
+                };
+            };
+            try {
+                const sigi = document.getElementById('SIGI_STATE');
+                if (sigi && sigi.textContent) {
+                    const state = JSON.parse(sigi.textContent);
+                    const picked = pick(state?.LiveRoom?.liveRoomUserInfo?.user);
+                    if (picked) return picked;
+                    const users = state?.UserModule?.users;
+                    if (users && typeof users === 'object') {
+                        const first = Object.values(users)[0];
+                        const pickedUser = pick(first);
+                        if (pickedUser) return pickedUser;
+                    }
+                }
+            } catch (e) { /* weiter */ }
+            try {
+                const uni = document.getElementById('__UNIVERSAL_DATA_FOR_REHYDRATION__');
+                if (uni && uni.textContent) {
+                    const scope = JSON.parse(uni.textContent)?.__DEFAULT_SCOPE__ || {};
+                    const picked = pick(scope['webapp.user-detail']?.userInfo?.user);
+                    if (picked) return picked;
+                    return pick(scope['webapp.live-detail']?.liveInfo?.liveRoomUserInfo?.user);
+                }
+            } catch (e) { /* weiter */ }
+            return null;
+        });
+    } catch (error) {
+        return null;
+    }
 }
 
 async function detectLiveStatus(page, username) {
@@ -315,6 +365,10 @@ async function checkLiveStatus(username) {
         // Step 3: Live-Status prüfen (priorisiert)
         const liveResult = await detectLiveStatus(page, username);
 
+        // Identität lesen, solange die Profilseite noch steht
+        // (checkAgeRestriction navigiert weg).
+        const identity = await extractIdentity(page);
+
         // Step 4: Age-Restriction prüfen (nur wenn live erkannt)
         let ageResult = { isAgeRestricted: false, reason: null };
         if (liveResult.isLive) {
@@ -329,10 +383,11 @@ async function checkLiveStatus(username) {
             isAgeRestricted: ageResult.isAgeRestricted,
             ageRestrictionReason: ageResult.reason,
             indicators: liveResult.indicators,
+            identity,
             bannerClosed,
             pageFullyLoaded: pageReady,
             timestamp: new Date().toISOString(),
-            version: '2.1'
+            version: '2.2'
         };
 
         console.log(JSON.stringify(result, null, 2));

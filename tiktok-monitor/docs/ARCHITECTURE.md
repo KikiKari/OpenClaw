@@ -177,9 +177,15 @@ is_live_from_sigi → offline? exit 1
 Start isolated query session
        │ never reuse a prior browser/process/resolved URL
        ▼
-extract_stream_url(room_id, username):
+fetch_room_info(room_id)  — fetched once at cmd level
+       │ feeds: pick_hd_hls (primary pick), extract_all_qualities
+       │ (full FLV+HLS tier list), summarize_room_info (title, viewers,
+       │ likes, follower/following, start time), and
+       │ IdentityStore.update_from_owner (owner → identity store)
+       ▼
+extract_stream_url(room_id, username, room_info):
        │
-       ├── try 1: fetch_room_info → pick_hd_hls
+       ├── try 1: room_info → pick_hd_hls
        │            │ direct webcast API → JSON envelope → stream_url paths
        │            │ source = "api"
        │            ▼ success: return url
@@ -200,7 +206,9 @@ StateStore.add_url(sec_uid, room_id, url)
 StateStore.strip_stale_urls(sec_uid)
        │
        ▼
-URL → stdout
+default: URL → stdout
+--json:  {url, source, room_id, unique_id, nickname, info, qualities}
+         → stdout (one line; see docs/SCHEMA.md §6.2)
 exit 0
 ```
 

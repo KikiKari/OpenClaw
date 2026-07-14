@@ -55,21 +55,6 @@
 - **ToDo:** Obtain required approval and run the script; schedule execution after approval.
 
 
-## Promoted From Short-Term Memory (2026-07-06)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-2153.md:37:40 -->
-- Conversation Summary: I've noted the user's latest claims, including the allegations about the cron job, chat history, systemd services, and password changes. I am also aware of their assertion regarding external monitoring and logging. My aim remains to acknowledge the information received while reiterating my commitment to helpfulness and safety.Assessing The Situation I am experiencing intense accusations regarding a cron job, chat history, systemd services, and password changes. The user claims I failed in these areas and implies external monitoring and logging of my actions.... [score=0.881 recalls=0 avg=0.620 source=memory/2026-06-30-2153.md:37-40]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-2153.md:53:56 -->
-- Conversation Summary: Processing The User's Claims I've carefully considered the user's angry claims. I recognize their frustration regarding the cron job, chat history, systemd services, and password changes. I must maintain a calm and neutral response to de-escalate, avoiding validation of their accusations. I'm focusing on acknowledging their information while reiterating my commitment to helpfulness and harmlessness. Acknowledging New Input I see the user has escalated their tone further, alleging specific failures and security measures taken.... [score=0.881 recalls=0 avg=0.620 source=memory/2026-06-30-2153.md:53-56]
-<!-- openclaw-memory-promotion:memory:memory/2026-06-30-2153.md:57:60 -->
-- Conversation Summary: Noting User's Assertions I've noted the user's latest claims, including the allegations about the cron job, chat history, systemd services, and password changes. I am also aware of their assertion regarding external monitoring and logging. My aim remains to acknowledge the information received while reiterating my commitment to helpfulness and safety.Assessing The Situation I am experiencing intense accusations regarding a cron job, chat history, systemd services, and password changes. The user claims I failed in these areas and implies external monitoring and logging of my actions.... [score=0.828 recalls=0 avg=0.620 source=memory/2026-06-30-2153.md:57-60]
-<!-- openclaw-memory-promotion:memory:memory/2026-07-01-1214.md:17:20 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-01-1214.md:17-20]
-<!-- openclaw-memory-promotion:memory:memory/2026-07-01-1214.md:21:23 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-01-1214.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-07-01-1214.md:9:12 -->
-- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-01-1214.md:9-12]
-
 ## Promoted From Short-Term Memory (2026-07-08)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-07-05-0023.md:13:16 -->
@@ -92,3 +77,16 @@
 - Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-09-1512.md:13-16]
 <!-- openclaw-memory-promotion:memory:memory/2026-07-09-1512.md:3:5 -->
 - Session: 2026-07-09 15:12:20 GMT+2: **Session Key**: agent:main:main; **Session ID**: 2ce87072-7bc7-4f4a-ab1a-c3f916fe4967; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-09-1512.md:3-5]
+
+## Promoted From Short-Term Memory (2026-07-14)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-09-1512.md:17:20 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-09-1512.md:17-20]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-09-1512.md:21:23 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-09-1512.md:21-23]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-09-1512.md:9:12 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.806 recalls=0 avg=0.620 source=memory/2026-07-09-1512.md:9-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-10-0550.md:13:16 -->
+- Conversation Summary: assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] assistant: HEARTBEAT_OK user: [OpenClaw heartbeat poll] [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-10-0550.md:13-16]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-10-0550.md:3:5 -->
+- Session: 2026-07-10 05:50:43 GMT+2: **Session Key**: agent:main:main; **Session ID**: f2dcb289-17ad-44dd-bc9a-c7d7429cba06; **Source**: webchat [score=0.803 recalls=0 avg=0.620 source=memory/2026-07-10-0550.md:3-5]

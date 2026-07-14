@@ -46,16 +46,19 @@ err() { printf '%s\n' "$*" >&2; }
 usage() {
   cat <<'EOF'
 Usage:
-  tt-live.sh check  <username>
-  tt-live.sh url    <username> [--verbose|-v]
+  tt-live.sh check  <username> [--room-info]
+  tt-live.sh url    <username> [--verbose|-v] [--json]
   tt-live.sh daemon <username> [--hours N] [--poll-min M]
   tt-live.sh help | --help | -h
 
 Subcommands:
   check    One-shot live status check; JSON to stdout.
+           --room-info: when live, add an 'info' object (title, viewers, …).
            Exit 0 = live, 1 = offline, 2 = error.
 
   url      Resolve current m3u8 stream URL.
+           Default: bare URL to stdout. --json: one JSON object
+           {url, source, room_id, unique_id, nickname, info, qualities}.
            Exit 0 = ok, 1 = offline, 2 = error.
 
   daemon   Spawn a background daemon that polls the user for --hours hours

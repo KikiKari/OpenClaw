@@ -1,6 +1,6 @@
 # TikTok Live – aktueller Betriebsstand
 
-Stand: 2026-06-21
+Stand: 2026-07-13
 
 ## Kanonische Playwright-Skripte
 
@@ -20,12 +20,21 @@ Der exakte Chatbefehl `/tiktok-names` zeigt den aktuellen Inhalt aus
 `workspace/tiktok-names/identities/*.json` an. Er akzeptiert keine Argumente
 und führt ausschließlich die rein lesende Operation `list` aus.
 
-Die Ausgabe enthält alphabetisch sortiert nur den aktuellen `@handle` und den
-Nickname. `sec_uid`, `user_id` und andere technische Felder werden nicht
-ausgegeben. Die Verarbeitung läuft über das parameterlose Tool
-`tiktok_names_list`, damit der erfolgreiche Lesevorgang in der Control-UI als
-Activity sichtbar bleibt. Der Befehl verändert weder Identity- noch
-Pointer-Dateien.
+Die Ausgabe enthält alphabetisch sortiert den aktuellen `@handle`, den
+Nickname sowie – falls vorhanden – frühere Handles (`früher: …` aus
+`rename_history`) und den Beobachtungszeitraum (`gesehen: <erstes Datum> bis
+<letztes Datum>`). `sec_uid`, `user_id` und andere technische Felder werden
+nicht ausgegeben. Der Slash-Command liefert das Ergebnis deterministisch
+direkt aus dem Plugin-Handler (kein Modell im Pfad); das parameterlose Tool
+`tiktok_names_list` bleibt für Natural-Language-Anfragen bestehen. Der Befehl
+verändert weder Identity- noch Pointer-Dateien.
+
+Identitäten werden aus drei Quellen aufgezeichnet: SIGI-Scrapes des
+Python-Monitors, `owner`-Daten der Webcast-room/info-Antwort und in
+Playwright-Ergebnisse eingebettete `identity`-Objekte (Dispatcher
+`record_identity`). Die Aufbewahrung beträgt standardmäßig 90 Tage
+(`TT_LIVE_IDENTITY_RETENTION_DAYS`, 0 = nie löschen); Löschungen werden in
+`workspace/tiktok-names/cleanup.log` protokolliert.
 
 ## Live-Erkennung
 
@@ -46,7 +55,20 @@ mit Exit-Code 1.
 Vor jeder URL-Extraktion wird der Status-Checker als Preflight ausgeführt.
 Ohne bestätigten Live-Status wird keine FLV- oder HLS-URL ausgegeben.
 Erfolgreiche Stream-Ausgabe ist eine nackte URL; offline oder fehlgeschlagene
-Extraktion endet mit Exit-Code 1.
+Extraktion endet mit Exit-Code 1. Das JSON des Enhanced-Extractors enthält
+zusätzlich `streams` (alle erfassten URLs mit Container/Qualität) und
+`identity`.
+
+## Live-Antwortformat (Endnutzer)
+
+Bei LIVE liefert der Dispatcher zusätzlich `info` (Titel, Zuschauer aktuell/
+gesamt, Likes, Follower/Gefolgt, Live-Beginn; die Room-ID bleibt im Payload,
+wird aber nicht angezeigt) und `qualities` (alle
+Tiers Original…360p, je HLS und FLV). Das tiktok-live-dispatch-Plugin rendert
+daraus die finale Antwort: Info-Zeilen, danach pro Qualität und Container eine
+eigene Codebox, die ausschließlich die URL enthält (Copy/Paste-sicher),
+abschließend `Method:`. Details: `workspace/tiktok-monitor/docs/SCHEMA.md`
+§6.2 und `workspace/skills/tiktok-live/SKILL.md`.
 
 ## Gateway und Worker-Nodes
 

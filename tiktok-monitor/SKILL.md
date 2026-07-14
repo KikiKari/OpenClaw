@@ -28,13 +28,32 @@ The mandatory decision sequence is:
 - Enhanced Node technical failure or live without the required URL: run the
   next Node fallback.
 
-After the final result, call no additional extraction tool. User output is:
+After the final result, call no additional extraction tool. The live user
+output (rendered by the tiktok-live-dispatch plugin; lines without data are
+omitted, every stream URL sits alone in its own fenced code block, one block
+per quality and container, HLS before FLV, ordered Original → 360p) is:
 
 ```text
-@<handle> is currently <STATUS> on TikTok.
-VLC/MPV: <URL or not available>
+@<handle> is currently LIVE on TikTok.
+Titel: <title>
+Zuschauer: <viewers> aktuell · <total_viewers> gesamt
+Likes: <likes>
+Follower: <followers> · Gefolgt: <following>
+Live seit: <HH:MM> UTC (<Xh Ym>)
+
+Stream-URLs:
+
+<Label> (HLS):
+<fenced code block containing only the URL>
+<Label> (FLV):
+<fenced code block containing only the URL>
+
 Method: <actual dispatcher method>
 ```
+
+Without a resolvable quality list a single `Stream:` block carries the primary
+URL. Offline/restricted output stays
+`@<handle> is not currently live on TikTok.`
 
 ## Long-running monitor
 
@@ -60,8 +79,13 @@ monitor start.
 - State/events: `state/tt-live/<sec_uid>.*`
 - Logs: `logs/`
 
-Identity and pointer writes are atomic. Identity retention is 90 days from the
-last successful observation; cleanup is passive during a later successful
-upsert. Stream URL retention remains three days.
+Identity and pointer writes are atomic. Identity retention defaults to 90 days
+from the last successful observation and can be overridden via
+`TT_LIVE_IDENTITY_RETENTION_DAYS` (0 = never delete); cleanup is passive during
+a later successful upsert and every deletion is logged to
+`../tiktok-names/cleanup.log`. Stream URL retention remains three days.
+Identities are also recorded from Playwright fallback results (embedded
+`identity`) and from webcast room-info `owner` data, not only from SIGI
+scrapes.
 
 See `docs/ARCHITECTURE.md`, `docs/SCHEMA.md`, and `docs/DAEMON.md`.
