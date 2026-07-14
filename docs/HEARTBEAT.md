@@ -6,7 +6,7 @@
 - [x] System: vmstat
 
 ### Cron-Jobs
-- [ ] Alle Cron-Jobs auf delivery.mode: none prüfen
+- [x] Alle Cron-Jobs auf delivery.mode: none prüfen
 - [x] Ergebnisse in memory/ Dateien geschrieben?
 - [x] Alle kritischen Probleme an Agent ops-hub gemeldet?
 - [x] Alle kritischen Ereignisse an Agent ops-hub gemeldet?
