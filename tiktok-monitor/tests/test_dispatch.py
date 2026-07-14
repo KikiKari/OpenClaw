@@ -218,5 +218,86 @@ class DispatcherTests(unittest.TestCase):
         self.assertEqual(payload["method"], "playwright_enhanced")
 
 
+class EnrichmentTests(unittest.TestCase):
+    QUALITIES = {
+        "origin": {
+            "label": "original",
+            "hls": "https://pull-hls.tiktokcdn.com/live_origin.m3u8",
+            "flv": "https://pull-flv.tiktokcdn.com/live_origin.flv",
+            "resolution": "1920x1080",
+            "bitrate_kbps": 4500,
+        },
+    }
+    ROOM = {"title": "Mein Stream", "viewers": 321}
+
+    def test_python_url_command_requests_json(self):
+        for method, command in dispatch.commands("url", "example_creator", "auto"):
+            if method == "python_api_fallbacks":
+                self.assertIn("--json", command)
+                break
+        else:
+            self.fail("python_api_fallbacks method missing")
+
+    def test_live_payload_passes_python_enrichment_through(self):
+        attempt = dispatch.Attempt(
+            "python_api_fallbacks", "live", 0, "URL resolved",
+            url="https://pull-hls.tiktokcdn.com/live_origin.m3u8",
+            data={"status": "live", "qualities": self.QUALITIES, "room": self.ROOM},
+        )
+        payload = dispatch.result_payload(
+            "live", "python_api_fallbacks", 0, [attempt], attempt.url
+        )
+        self.assertEqual(payload["qualities"], self.QUALITIES)
+        self.assertEqual(payload["room"], self.ROOM)
+        for key in ("status", "execution", "node", "method", "exit_code", "attempts", "url"):
+            self.assertIn(key, payload)
+
+    def test_live_payload_synthesizes_from_playwright_all_urls(self):
+        attempt = dispatch.Attempt(
+            "playwright_streamlink_ytdlp", "live", 0, "URL resolved",
+            url="https://pull-flv.tiktokcdn.com/live_hd.flv?sig=abc",
+            data={"status": "live", "allUrls": [
+                {"url": "https://pull-flv.tiktokcdn.com/live_hd.flv?sig=abc", "quality": "hd"},
+                {"url": "https://pull-flv.tiktokcdn.com/live_sd.flv?sig=def", "quality": "sd"},
+                {"url": "https://attacker.example.com/live.flv", "quality": "origin"},
+                {"url": "https://pull-flv.tiktokcdn.com/mystery.flv", "quality": None},
+            ]},
+        )
+        payload = dispatch.result_payload(
+            "live", "playwright_streamlink_ytdlp", 0, [attempt], attempt.url
+        )
+        qualities = payload["qualities"]
+        self.assertEqual(list(qualities), ["hd", "sd", "stream_4"])
+        self.assertEqual(
+            qualities["hd"]["flv"],
+            "https://pull-flv.tiktokcdn.com/live_hd.flv?sig=abc",
+        )
+        self.assertIsNone(qualities["hd"]["hls"])
+        self.assertNotIn("origin", qualities)
+
+    def test_offline_payload_never_carries_enrichment(self):
+        attempt = dispatch.Attempt(
+            "python_webcast", "offline", 1, "offline",
+            data={"qualities": self.QUALITIES, "room": self.ROOM},
+        )
+        payload = dispatch.result_payload("offline", "python_webcast", 1, [attempt])
+        self.assertNotIn("qualities", payload)
+        self.assertNotIn("room", payload)
+
+    def test_emit_log_redacts_qualities(self):
+        attempt = dispatch.Attempt(
+            "python_api_fallbacks", "live", 0, "URL resolved",
+            url="https://pull-hls.tiktokcdn.com/live_origin.m3u8",
+            data={"qualities": self.QUALITIES, "room": self.ROOM},
+        )
+        stderr = mock.Mock()
+        with mock.patch.object(dispatch.sys, "stderr", stderr), \
+             mock.patch("builtins.print") as output:
+            dispatch.emit_log(attempt)
+        line = output.call_args.args[0]
+        self.assertNotIn("tiktokcdn", line)
+        self.assertIn("<redacted-url>", line)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -73,6 +73,13 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
       "to":          "string",       // new unique_id at detection
       "detected_at": "iso"
     }
+  ],
+  "nickname_history":  [              // optional; present only if nickname changed
+    {
+      "from":        "string",       // previous nickname
+      "to":          "string",       // new nickname at detection
+      "detected_at": "iso"
+    }
   ]
 }
 ```
@@ -103,6 +110,8 @@ Files are JSON, pretty-printed with `indent=2`, UTF-8 encoded.
 - `unique_id_current` is the most recently observed `@handle`.
 - `rename_history` is **append-only**. The skill never removes entries.
   An entry per detected rename, in chronological order.
+- `nickname_history` records display-name changes in chronological order and
+  is capped at the 20 most recent transitions.
 - `nickname` and `user_id` can be `null` if a malformed SIGI returned
   partial data, but the file is still written.
 - Repeated observations of the same `sec_uid` atomically replace this file,
@@ -339,15 +348,72 @@ done < events.log
   "title":           "string|null",   // null when offline
   "start_time":      "int|null",      // unix seconds; null when offline
   "rename_detected": "bool",
-  "checked_at":      "iso"
+  "checked_at":      "iso",
+  "room":            { },             // optional; only when live, see §6.1.1
+  "qualities":       { }              // optional; only when live, see §6.1.2
 }
 ```
 
 Exit `0` = live, `1` = offline, `2` = error.
 
+#### 6.1.1 `room` object (best-effort webcast room/info summary)
+
+Present only when live and the webcast room/info fetch succeeded. Every field
+is optional and omitted when absent or malformed in TikTok's payload:
+
+```jsonc
+{
+  "title":           "string",  // stream title, trimmed
+  "nickname":        "string",  // streamer display name
+  "hashtag":         "string",  // category/hashtag title
+  "viewers":         "int",     // current viewer count (user_count)
+  "total_viewers":   "int",     // total viewers (stats.total_user)
+  "likes":           "int",     // like count
+  "follower_count":  "int",     // owner follow_info
+  "following_count": "int",
+  "start_epoch":     "int",     // unix seconds (create_time)
+  "duration_sec":    "int"      // now - start_epoch, only when plausible
+}
+```
+
+#### 6.1.2 `qualities` object
+
+All available stream qualities, best-first; audio-only (`ao`) is included
+and sorts last. Every URL is validated against the HTTPS TikTok-CDN
+allowlist:
+
+```jsonc
+{
+  "<key>": {                       // origin | uhd_60 | hd_60 | hd | sd | ld | ao | ...
+    "label":        "string",      // public name, e.g. "original", "720p60"
+    "hls":          "string|null", // signed .m3u8 URL
+    "flv":          "string|null", // signed .flv URL
+    "resolution":   "string|null", // e.g. "1920x1080" (from sdk_params)
+    "bitrate_kbps": "int|null"     // video bitrate (from sdk_params)
+  }
+}
+```
+
 ### 6.2 `tt-live.sh url <user>` → `tt_live.py url`
 
 stdout: a single line containing the m3u8 URL. Not JSON.
+
+With `--json`, stdout is instead one compact JSON line (success only;
+failures keep stderr text + exit codes so dispatcher classification is
+unchanged):
+
+```jsonc
+{
+  "status":    "live",
+  "live":      true,
+  "unique_id": "string|null",
+  "url":       "string",          // the resolved playback URL
+  "source":    "api|yt-dlp|streamlink",
+  "quality":   "string",          // canonical requested quality
+  "room":      { },               // optional, see §6.1.1
+  "qualities": { }                // optional, see §6.1.2
+}
+```
 
 With `--verbose|-v`, stderr also contains one line:
 ```

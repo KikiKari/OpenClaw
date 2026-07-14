@@ -51,13 +51,28 @@ shell wrapper and three subcommands.
 Der exakte OpenClaw-Control-Befehl `/tiktok-names` startet einen sichtbaren
 Agentenlauf und genau einen Aufruf des read-only Tools `tiktok_names_list`.
 Das Tool liest ausschließlich `workspace/tiktok-names/identities/*.json` und
-gibt pro aktueller Identität `@unique_id_current — nickname` aus. Technische
-Felder wie `sec_uid` und `user_id` werden nicht angezeigt. Die Liste wird nach
-Handle ohne Beachtung der Groß-/Kleinschreibung dedupliziert und alphabetisch
-sortiert; ungültige JSON-Dateien werden übersprungen und gezählt.
+gibt pro aktueller Identität einen Block aus:
+
+```text
+@unique_id_current — nickname
+  Zuletzt gesehen: YYYY-MM-DD HH:MM UTC
+  Frühere Handles: @alt (bis YYYY-MM-DD), …     ← nur wenn rename_history existiert
+  Frühere Nicknames: Alt-Name (bis YYYY-MM-DD)  ← nur wenn nickname_history existiert
+```
+
+Technische Felder wie `sec_uid` und `user_id` werden nicht angezeigt.
+Historien zeigen maximal die fünf jüngsten Einträge, neueste zuerst. Die Liste
+wird nach Handle ohne Beachtung der Groß-/Kleinschreibung dedupliziert und
+alphabetisch sortiert; ungültige JSON-Dateien werden übersprungen und gezählt.
 
 Der Befehl akzeptiert keine Argumente oder Unterbefehle und verändert weder
 Identity- noch Pointer-Dateien.
+
+**Hinweis zur Vollständigkeit:** Der Store enthält nur Accounts, für die je
+ein `check`/`url`/`daemon`-Lauf ausgeführt wurde (kein Chat-/Zuschauer-Feed),
+und Einträge, die 90 Tage nicht erneut gesehen wurden, werden bewusst
+entfernt (Retention, siehe SCHEMA.md §2.3). "Fehlende" Namen sind in der
+Regel eine Folge dieser beiden Eigenschaften, kein Aufzeichnungsfehler.
 
 ---
 

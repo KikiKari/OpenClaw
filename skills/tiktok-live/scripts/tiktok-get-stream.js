@@ -13,7 +13,8 @@ const {
     enforceLoadLimit,
     forcedOffline,
     isSuccessfulStreamResponse,
-    normalizeUsername
+    normalizeUsername,
+    qualityKeyFromUrl
 } = require('./tiktok-common');
 
 let username;
@@ -114,9 +115,11 @@ async function getStreamUrl(username) {
                 username,
                 isLive: true,
                 streamCount: uniqueUrls.length,
+                // Keep the full signed URL: TikTok stream URLs are unusable
+                // without their query string.
                 streams: uniqueUrls.slice(0, 10).map(item => ({
                     ...item,
-                    url: item.url.split('?')[0]
+                    quality: qualityKeyFromUrl(item.url)
                 })),
                 url: uniqueUrls[0].url,
                 timestamp: new Date().toISOString()

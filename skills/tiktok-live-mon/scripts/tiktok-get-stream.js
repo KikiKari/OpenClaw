@@ -22,7 +22,8 @@ const {
     forcedOffline,
     isSuccessfulStreamResponse,
     normalizeExtractorResult,
-    normalizeUsername
+    normalizeUsername,
+    qualityKeyFromUrl
 } = require('./tiktok-common');
 
 const FALLBACK_TIMEOUT_MS = 45000;
@@ -296,7 +297,11 @@ async function extractWithPlaywright(username, qualityPreference) {
             username,
             url: bestUrl.url,
             quality: qualityPreference,
-            allUrls: uniqueUrls.length,
+            allUrls: uniqueUrls.map(item => ({
+                url: item.url,
+                quality: qualityKeyFromUrl(item.url)
+            })),
+            allUrlsCount: uniqueUrls.length,
             timestamp: new Date().toISOString()
         };
 

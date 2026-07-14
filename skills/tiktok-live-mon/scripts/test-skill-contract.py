@@ -88,13 +88,26 @@ class MonitorSkillContractTests(unittest.TestCase):
         self.assertIn("Without the current word `start`", self.text)
 
     def test_one_shot_response_contract_covers_all_statuses(self):
-        expected = (
+        legacy = (
             "@<handle> is currently "
-            "<LIVE|OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.\n"
-            "VLC/MPV: <url or not available>\n"
+            "<OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.\n"
+            "VLC/MPV: not available\n"
             "Method: <method>"
         )
-        self.assertIn(expected, self.text)
+        self.assertIn(legacy, self.text)
+        self.assertIn(
+            "@<handle> is currently LIVE on TikTok.\nTitel: <room.title>",
+            self.text,
+        )
+        for expected in (
+            "Stream-URLs:",
+            "<label> (HLS):",
+            "<label> (FLV):",
+            "exactly one URL and nothing else",
+            "No raw URL appears in plain text",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, " ".join(self.text.split()))
         for status in (
             "live", "offline", "restricted", "overloaded",
             "dependency_missing", "technical_error",

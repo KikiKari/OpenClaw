@@ -61,6 +61,16 @@ ssh root@10.10.0.2
 
 ---
 
+### ✅ Ausnahme: URL-Codeboxen der TikTok-Ausgaben
+
+Die TikTok-Antworten (`/tiktok_live`, `/tiktok_live_mon`) geben Stream-URLs
+in Codeboxen aus, damit sie fehlerfrei kopiert werden können. Jede dieser
+Codeboxen enthält **ausschließlich eine einzige URL** (Daten, keine
+ausführbaren Befehle) und ist damit ausdrücklich erlaubt. Diese Ausnahme gilt
+nur für reine URL-Inhalte — Codeboxen mit Befehlen bleiben verboten.
+
+---
+
 ## PFLICHTELEMENTE
 
 Jede technische Empfehlung MUSS enthalten:

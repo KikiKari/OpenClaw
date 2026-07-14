@@ -86,14 +86,29 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("runtime block occurs before the Node allowlist", self.text)
         self.assertEqual(self.text.count(CANONICAL_COMMAND), 2)
 
-    def test_public_contract_is_exactly_three_template_lines(self):
-        expected = (
+    def test_public_contract_covers_legacy_and_rich_formats(self):
+        legacy = (
             "@<handle> is currently "
-            "<LIVE|OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.\n"
-            "VLC/MPV: <validated URL or not available>\n"
+            "<OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.\n"
+            "VLC/MPV: not available\n"
             "Method: <validated method>"
         )
-        self.assertIn(expected, self.text)
+        self.assertIn(legacy, self.text)
+        self.assertIn(
+            "@<handle> is currently LIVE on TikTok.\nTitel: <room.title>",
+            self.text,
+        )
+        for expected in (
+            "Stream-URLs:",
+            "<label> (HLS):",
+            "<label> (FLV):",
+            "Live seit: <HH:MM UTC> (<Xh Ym>)",
+            "exactly one URL and nothing else",
+            "degrades to the legacy three lines including the `VLC/MPV:` URL",
+            "No raw URL appears in plain text",
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, self.normalized_text)
 
     def test_existing_capabilities_are_preserved(self):
         for capability in (
@@ -108,8 +123,8 @@ class SkillContractTests(unittest.TestCase):
 
     def test_atomic_output_and_synchronized_audio(self):
         for expected in (
-            "send them atomically",
-            "Preserve a returned URL byte-for-byte",
+            "send it atomically",
+            "Preserve every returned URL byte-for-byte",
             "channel voice output set to `always`",
             "Do not invoke the `tts` tool",
             "do not emit `[[tts:text]]` wrappers",

@@ -21,8 +21,8 @@ and event-format specs live under `docs/`.
 
 | Subcommand | Purpose | Output |
 |---|---|---|
-| `check`  | One-shot live status scrape | JSON to stdout |
-| `url`    | Resolve current m3u8 stream URL | URL to stdout |
+| `check`  | One-shot live status scrape | JSON to stdout (plus `room`/`qualities` when live) |
+| `url`    | Resolve current m3u8 stream URL | URL to stdout; with `--json` one compact JSON line incl. `room`/`qualities` |
 | `daemon` | Poll over a timer window | Events to file |
 
 **The tool produces data. It does not push notifications.** All
@@ -51,7 +51,8 @@ Workspace helpers      resolve_workspace, ensure_dirs, now_iso
 HTTP layer             http_get
 SIGI_STATE scrape      parse_sigi_state, fetch_user_live_page, is_live_from_sigi
 Webcast API            fetch_room_info, fetch_check_alive
-Stream URL extraction  pick_hls, extract_via_ytdlp, extract_via_streamlink,
+Stream URL extraction  pick_hls, collect_qualities, collect_room_summary,
+                       extract_via_ytdlp, extract_via_streamlink,
                        extract_stream_url
 IdentityStore (class)  load/save identity, pointer, update_from_scrape
 StateStore (class)     read/write state, add_url, strip_stale_urls,

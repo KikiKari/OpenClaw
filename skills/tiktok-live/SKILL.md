@@ -92,29 +92,65 @@ The dispatcher retains its complete internal method and fallback sequence. Node,
 
 ## Public response
 
-Read the dispatcher JSON and produce exactly these three public text lines:
+Read the dispatcher JSON. For every **non-live** status produce exactly these
+three public text lines:
 
 ```text
-@<handle> is currently <LIVE|OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.
-VLC/MPV: <validated URL or not available>
+@<handle> is currently <OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.
+VLC/MPV: not available
 Method: <validated method>
 ```
 
+For a **live** status produce the rich format: the same status anchor line,
+then the compact stream metadata from the dispatcher `room` key, then one
+code fence per quality/protocol from the `qualities` key under a
+`Stream-URLs:` heading, then the Method line last. No raw URL appears in
+plain text; every URL lives only in a code fence that contains exactly one
+URL and nothing else (copy/paste safe). Metadata lines with missing values
+are omitted; without a `qualities` map the reply degrades to the legacy
+three lines including the `VLC/MPV:` URL so a playable URL is never lost.
+
+````text
+@<handle> is currently LIVE on TikTok.
+Titel: <room.title>
+Streamer: <room.nickname>
+Kategorie: <room.hashtag>
+Zuschauer: <room.viewers> aktuell · <room.total_viewers> gesamt
+Likes: <room.likes>
+Follower: <n> · Gefolgt: <m>
+Live seit: <HH:MM UTC> (<Xh Ym>)
+
+Stream-URLs:
+
+<label> (HLS):
+```
+<hls-url>
+```
+<label> (FLV):
+```
+<flv-url>
+```
+…
+Method: <method>
+````
+
 - Map `live`, `offline`, `restricted`, and `overloaded` to their uppercase labels; map `dependency_missing` and `technical_error` to `TECHNICAL_ERROR`.
 - Use the top-level `method`; if absent, use the decisive or successful `attempts[]` method, otherwise `unknown`.
-- Print the returned URL only for `live`; otherwise print `not available`.
-- Construct all three lines in memory and send them atomically in one public
-  text response. Preserve a returned URL byte-for-byte as one unshortened
+- Present URLs only for `live` and only inside code fences; otherwise print `not available`.
+- Construct the full response in memory and send it atomically in one public
+  text response. Preserve every returned URL byte-for-byte as one unshortened
   string; do not stream, summarize, link-label, or reformat it.
 - Keep internal reasoning, stderr, progress, fallback history, and tool
   diagnostics in their dedicated channels. Do not copy them into the public
-  three-line text.
-- If the dispatcher cannot run or its JSON is invalid, use `TECHNICAL_ERROR`, `not available`, and `dispatcher_error` in the same three-line format.
+  response.
+- If the dispatcher cannot run or its JSON is invalid, use `TECHNICAL_ERROR`, `not available`, and `dispatcher_error` in the legacy three-line format.
+- The `automation-command-policy` plugin renders and enforces this contract
+  deterministically from the dispatcher JSON.
 
 ## Synchronized audio
 
 OpenClaw Control has channel voice output set to `always`. Deliver only the
-complete final three-line text and let that channel-level voice pipeline create
+complete final response text and let that channel-level voice pipeline create
 the audio from the delivered text. Do not invoke the `tts` tool, do not emit
 `[[tts:text]]` wrappers, and do not create a second textual copy. This avoids
 tool-argument truncation of long signed URLs and guarantees that visible text

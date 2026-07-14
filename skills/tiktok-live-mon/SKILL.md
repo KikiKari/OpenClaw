@@ -96,27 +96,62 @@ monitor command.
 
 ## Mandatory response format
 
-Every completed one-shot request must produce exactly these three user-facing
-lines, using the normalized current handle:
+Every completed one-shot request with a **non-live** result (OFFLINE,
+RESTRICTED, OVERLOADED, TECHNICAL_ERROR) must produce exactly these three
+user-facing lines, using the normalized current handle:
 
 ```text
-@<handle> is currently <LIVE|OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.
-VLC/MPV: <url or not available>
+@<handle> is currently <OFFLINE|RESTRICTED|OVERLOADED|TECHNICAL_ERROR> on TikTok.
+VLC/MPV: not available
 Method: <method>
 ```
+
+A **LIVE** result uses the rich format. Line 1 stays byte-identical to the
+legacy contract; the dispatcher JSON keys `room` and `qualities` fill the
+compact metadata lines and the per-quality code fences under a
+`Stream-URLs:` heading. No raw URL appears in plain text; every code fence
+contains exactly one URL and nothing else so it can be copied verbatim. Omit
+any metadata line whose value is missing; without a `qualities` map the
+reply degrades to the legacy three lines including the `VLC/MPV:` URL.
+
+````text
+@<handle> is currently LIVE on TikTok.
+Titel: <room.title>
+Streamer: <room.nickname>
+Kategorie: <room.hashtag>
+Zuschauer: <room.viewers> aktuell · <room.total_viewers> gesamt
+Likes: <room.likes>
+Follower: <n> · Gefolgt: <m>
+Live seit: <HH:MM UTC> (<Xh Ym>)
+
+Stream-URLs:
+
+<label> (HLS):
+```
+<hls-url>
+```
+<label> (FLV):
+```
+<flv-url>
+```
+…
+Method: <method>
+````
 
 Map dispatcher statuses to the uppercase labels shown above. Read `method`
 from the top-level dispatcher JSON; if it is empty, use the method from the
 decisive or successful `attempts[]` entry. Use `unknown` only when neither
-location contains a method. For `live`, print the returned URL. For every
-other status, print `VLC/MPV: not available`.
+location contains a method. For `live`, present every playback URL only
+inside its own code fence under `Stream-URLs:`. For every other status,
+print `VLC/MPV: not available` in the legacy three-line format.
 
-Do not omit status, VLC/MPV, or method. Do not emit raw JSON, reasoning, tool
+Do not omit the status line or method line. Do not emit raw JSON, reasoning, tool
 logs, diagnostic narration, Markdown headings, or additional prose. Never
 claim `playwright` unless the dispatcher result actually reports that method.
 After the dispatcher returns a final result, do not call Node scripts, read
 implementation scripts, or attempt another extraction. A successful
-dispatcher result must be formatted immediately with these three lines.
+dispatcher result must be formatted immediately in this contract; the
+`automation-command-policy` plugin renders and enforces it deterministically.
 
 Use the shared dispatcher below only when the user explicitly requests an
 immediate status or VLC/MPV URL rather than a timed monitor:

@@ -77,6 +77,18 @@ function isSuccessfulStreamResponse(status, value) {
         isAllowedStreamUrl(value);
 }
 
+// Order matters: longer keys first so `_uhd_60` never matches as `hd_60`/`hd`.
+const QUALITY_URL_PATTERN = /_(uhd_60|hd_60|origin|hd|sd|ld|ao)\.(?:flv|m3u8)/;
+
+function qualityKeyFromUrl(value) {
+    try {
+        const match = new URL(value).pathname.toLowerCase().match(QUALITY_URL_PATTERN);
+        return match ? match[1] : null;
+    } catch (error) {
+        return null;
+    }
+}
+
 function normalizeExtractorResult(value, method, username) {
     const technicalError = {
         success: false,
@@ -215,5 +227,6 @@ module.exports = {
     liveHrefSelectors,
     loadState,
     normalizeExtractorResult,
-    normalizeUsername
+    normalizeUsername,
+    qualityKeyFromUrl
 };

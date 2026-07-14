@@ -22,6 +22,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.parse
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -213,7 +214,11 @@ def emit_log(value: Any) -> None:
         data = payload.get("data")
         if isinstance(data, dict):
             payload["data"] = {
-                key: ("<redacted-url>" if key in {"url", "streams", "allUrls"} else item)
+                key: (
+                    "<redacted-url>"
+                    if key in {"url", "streams", "allUrls", "qualities"}
+                    else item
+                )
                 for key, item in data.items()
             }
     print(json.dumps(payload, ensure_ascii=False), file=sys.stderr)
@@ -467,7 +472,8 @@ def commands(operation: str, username: str, quality: str) -> list[tuple[str, lis
         ]
     return [
         ("python_api_fallbacks", [
-            "bash", str(PYTHON_MONITOR), "url", username, "--quality", quality,
+            "bash", str(PYTHON_MONITOR), "url", username,
+            "--quality", quality, "--json",
         ]),
         ("playwright_streamlink_ytdlp", [
             "node", str(PLAYWRIGHT_MON / "tiktok-get-stream.js"),
@@ -477,6 +483,92 @@ def commands(operation: str, username: str, quality: str) -> list[tuple[str, lis
             "node", str(PLAYWRIGHT_BASIC / "tiktok-get-stream.js"), username, "--json",
         ]),
     ]
+
+
+QUALITY_LABELS = {
+    "origin": "original", "uhd_60": "1080p60", "hd_60": "720p60",
+    "hd": "720p", "sd": "540p", "ld": "360p", "ao": "Audio",
+}
+QUALITY_RANK = {
+    key: index
+    for index, key in enumerate(
+        ("origin", "uhd_60", "hd_60", "hd", "sd", "ld", "ao")
+    )
+}
+MEDIA_HOST_PATTERN = re.compile(r"(^|\.)tiktokcdn(?:-[a-z0-9-]+)?\.com$")
+
+
+def is_allowed_media_url(value: Any) -> bool:
+    """Allow only HTTPS TikTok CDN media URLs."""
+    if not isinstance(value, str):
+        return False
+    try:
+        parsed = urllib.parse.urlparse(value)
+    except ValueError:
+        return False
+    hostname = (parsed.hostname or "").lower()
+    return parsed.scheme == "https" and bool(MEDIA_HOST_PATTERN.search(hostname))
+
+
+def synthesize_qualities(data: dict[str, Any]) -> dict[str, Any] | None:
+    """Build a qualities map from Playwright allUrls/streams fallback data."""
+    items = data.get("allUrls")
+    if not isinstance(items, list):
+        items = data.get("streams")
+    if not isinstance(items, list):
+        return None
+    qualities: dict[str, dict[str, Any]] = {}
+    for index, item in enumerate(items):
+        if not isinstance(item, dict):
+            continue
+        url = item.get("url")
+        if not is_allowed_media_url(url):
+            continue
+        key = item.get("quality")
+        if not isinstance(key, str) or not key:
+            key = f"stream_{index + 1}"
+        proto = "hls" if ".m3u8" in url.lower() else "flv"
+        entry = qualities.setdefault(key, {
+            "label": QUALITY_LABELS.get(key, key),
+            "hls": None,
+            "flv": None,
+            "resolution": None,
+            "bitrate_kbps": None,
+        })
+        if not entry[proto]:
+            entry[proto] = url
+    if not qualities:
+        return None
+    ordered = sorted(qualities, key=lambda key: (QUALITY_RANK.get(key, 99), key))
+    return {key: qualities[key] for key in ordered}
+
+
+def enrichment_from_attempts(
+    attempts: list[Attempt],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Collect room metadata and the qualities map from attempt data.
+
+    The Python webcast method runs first and carries the richest payload, so
+    the first attempt providing a field wins; Playwright fallback data is only
+    synthesized into a qualities map when no explicit map exists.
+    """
+    qualities: dict[str, Any] | None = None
+    room: dict[str, Any] | None = None
+    for attempt in attempts:
+        data = attempt.data
+        if not isinstance(data, dict):
+            continue
+        if room is None:
+            value = data.get("room")
+            if isinstance(value, dict) and value:
+                room = value
+        if qualities is None:
+            value = data.get("qualities")
+            if isinstance(value, dict) and value:
+                qualities = value
+            elif attempt.status == "live":
+                qualities = synthesize_qualities(data)
+    return qualities, room
 
 
 def result_payload(
@@ -498,6 +590,16 @@ def result_payload(
     }
     if url:
         result["url"] = url
+    if status == "live":
+        # Enrichment is best-effort and must never break a decided result.
+        try:
+            qualities, room = enrichment_from_attempts(attempts)
+            if qualities:
+                result["qualities"] = qualities
+            if room:
+                result["room"] = room
+        except Exception:
+            pass
     return result
 
 

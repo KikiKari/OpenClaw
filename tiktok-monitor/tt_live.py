@@ -66,6 +66,7 @@ DEFAULT_QUALITY = "auto"
 MIN_POLL_MINUTES = 10            # daemon poll floor
 DEFAULT_DAEMON_HOURS = 24        # daemon default duration
 IDENTITY_RETENTION_DAYS = 90     # identity/address-book retention
+NICKNAME_HISTORY_MAX = 20        # nickname transitions kept per identity
 URL_RETENTION_DAYS = 3           # stream URL retention in state store
 REQUEST_TIMEOUT_SEC = 15         # per HTTP request
 TT_AID = "1988"                  # TikTok webcast app id
@@ -315,66 +316,198 @@ def quality_preference(quality: str) -> list[str]:
     }[quality]
 
 
+def _quality_sort_key(preference: list[str]):
+    """Sort quality keys by preference order, unknown keys by height desc."""
+    def sort_key(key: str) -> tuple[int, int]:
+        try:
+            return (0, preference.index(key))
+        except ValueError:
+            return (1, -QUALITY_HEIGHT.get(key, 0))
+    return sort_key
+
+
+def _parse_quality_entries(room_info: dict) -> dict[str, dict]:
+    """
+    Parse per-quality stream entries from both known payload layouts,
+    including audio-only ("ao"). Every URL is validated; entries without any
+    allowed URL are dropped. Layout A wins over Layout B for the same key.
+    """
+    entries: dict[str, dict] = {}
+    if not isinstance(room_info, dict):
+        return entries
+    stream_url = room_info.get("stream_url") or {}
+    if not isinstance(stream_url, dict) or not stream_url:
+        return entries
+
+    def entry(key: Any) -> dict:
+        key = str(key)
+        return entries.setdefault(key, {
+            "label": QUALITY_ALIASES.get(key, key),
+            "hls": None,
+            "flv": None,
+            "resolution": None,
+            "bitrate_kbps": None,
+        })
+
+    # Layout A: stream_url.live_core_sdk_data.pull_data.stream_data
+    # stream_data is JSON-encoded string; data.<quality>.main holds hls/flv
+    # URLs plus sdk_params (another JSON-encoded string with resolution and
+    # video bitrate).
+    sdk = stream_url.get("live_core_sdk_data") or {}
+    pull = sdk.get("pull_data") if isinstance(sdk, dict) else None
+    sd_raw = pull.get("stream_data") if isinstance(pull, dict) else None
+    if isinstance(sd_raw, str):
+        try:
+            sd = json.loads(sd_raw)
+        except json.JSONDecodeError:
+            sd = None
+        data = (sd or {}).get("data") or {}
+        if isinstance(data, dict):
+            for key, quality_obj in data.items():
+                main = (quality_obj or {}).get("main") or {}
+                if not isinstance(main, dict):
+                    continue
+                item = entry(key)
+                for proto in ("hls", "flv"):
+                    value = main.get(proto)
+                    if (
+                        isinstance(value, str) and value
+                        and is_allowed_media_url(value)
+                        and not item[proto]
+                    ):
+                        item[proto] = value
+                params_raw = main.get("sdk_params")
+                if isinstance(params_raw, str):
+                    try:
+                        params = json.loads(params_raw)
+                    except json.JSONDecodeError:
+                        params = None
+                    if isinstance(params, dict):
+                        resolution = params.get("resolution")
+                        if (
+                            isinstance(resolution, str)
+                            and re.fullmatch(r"\d{2,5}x\d{2,5}", resolution)
+                            and not item["resolution"]
+                        ):
+                            item["resolution"] = resolution
+                        try:
+                            vbitrate = int(params.get("vbitrate"))
+                        except (TypeError, ValueError):
+                            vbitrate = 0
+                        if vbitrate > 0 and not item["bitrate_kbps"]:
+                            item["bitrate_kbps"] = max(1, vbitrate // 1000)
+
+    # Layout B: flat {quality: url} dicts
+    for proto, map_key in (("hls", "hls_pull_url_map"), ("flv", "flv_pull_url_map")):
+        url_map = stream_url.get(map_key)
+        if isinstance(url_map, dict):
+            for key, url in url_map.items():
+                if isinstance(url, str) and url and is_allowed_media_url(url):
+                    item = entry(key)
+                    if not item[proto]:
+                        item[proto] = url
+
+    return {
+        key: item for key, item in entries.items()
+        if item["hls"] or item["flv"]
+    }
+
+
+def collect_qualities(room_info: dict) -> dict[str, dict]:
+    """
+    Enumerate all available stream qualities, best-first. Audio-only ("ao")
+    is included and sorts last. Returns
+    {key: {label, hls, flv, resolution, bitrate_kbps}}.
+    """
+    entries = _parse_quality_entries(room_info)
+    sort_key = _quality_sort_key(quality_preference("auto"))
+    return {key: entries[key] for key in sorted(entries, key=sort_key)}
+
+
 def pick_hls(room_info: dict, quality: str = DEFAULT_QUALITY) -> str | None:
     """
     Pick an allowed HLS URL, preferring the requested quality. For HD, SD and
     LD are fallbacks only when HD is unavailable.
     Audio-only ("ao") is excluded unless nothing else is available.
     """
-    if not room_info:
-        return None
-    stream_url = room_info.get("stream_url") or {}
-    if not stream_url:
-        return None
-
-    candidates: list[tuple[str, str]] = []
-
-    # Layout A: stream_url.live_core_sdk_data.pull_data.stream_data
-    # stream_data is JSON-encoded string; data.<quality>.main.hls is the URL
-    sdk = stream_url.get("live_core_sdk_data") or {}
-    pull = sdk.get("pull_data") or {}
-    sd_raw = pull.get("stream_data")
-    if isinstance(sd_raw, str):
-        try:
-            sd = json.loads(sd_raw)
-        except json.JSONDecodeError:
-            sd = None
-        if sd:
-            data = sd.get("data") or {}
-            for key, quality_obj in data.items():
-                main = (quality_obj or {}).get("main") or {}
-                hls = main.get("hls")
-                if isinstance(hls, str) and hls:
-                    candidates.append((key, hls))
-
-    # Layout B: stream_url.hls_pull_url_map (flat dict)
-    hls_map = stream_url.get("hls_pull_url_map")
-    if isinstance(hls_map, dict):
-        for key, url in hls_map.items():
-            if isinstance(url, str) and url:
-                candidates.append((key, url))
-
-    if not candidates:
+    entries = {
+        key: item for key, item in _parse_quality_entries(room_info).items()
+        if item["hls"]
+    }
+    if not entries:
         return None
 
     # Exclude audio-only first; if all are audio-only, allow them
-    non_audio = [c for c in candidates if c[0] != "ao"]
-    pool = non_audio if non_audio else candidates
+    non_audio = {key: item for key, item in entries.items() if key != "ao"}
+    pool = non_audio if non_audio else entries
 
-    preference = quality_preference(quality)
-
-    def sort_key(kv: tuple[str, str]) -> tuple[int, int]:
-        key, _url = kv
-        try:
-            return (0, preference.index(key))
-        except ValueError:
-            return (1, -QUALITY_HEIGHT.get(key, 0))
-
-    pool.sort(key=sort_key)
-    for _, value in pool:
-        if is_allowed_media_url(value):
-            return value
+    sort_key = _quality_sort_key(quality_preference(quality))
+    for key in sorted(pool, key=sort_key):
+        return pool[key]["hls"]
     return None
+
+
+def _safe_count(value: Any) -> int | None:
+    """Coerce a payload value into a non-negative int, else None."""
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return None
+    return number if number >= 0 else None
+
+
+def collect_room_summary(room_info: dict) -> dict:
+    """
+    Defensive summary of public room metadata for user-facing output.
+    Field names vary per region/app version; every field is optional and
+    omitted when absent or malformed.
+    """
+    info = room_info if isinstance(room_info, dict) else {}
+    stats = info.get("stats") if isinstance(info.get("stats"), dict) else {}
+    owner = info.get("owner") if isinstance(info.get("owner"), dict) else {}
+    follow = (
+        owner.get("follow_info")
+        if isinstance(owner.get("follow_info"), dict) else {}
+    )
+    owner_stats = (
+        owner.get("stats") if isinstance(owner.get("stats"), dict) else {}
+    )
+
+    def clean_text(value: Any) -> str | None:
+        return value.strip() if isinstance(value, str) and value.strip() else None
+
+    hashtag = info.get("hashtag")
+    if isinstance(hashtag, dict):
+        hashtag = hashtag.get("title")
+
+    start_epoch = _safe_count(info.get("create_time"))
+    duration_sec = None
+    if start_epoch:
+        elapsed = int(time.time()) - start_epoch
+        if 0 < elapsed < 7 * 86400:
+            duration_sec = elapsed
+        elif elapsed < 0 or start_epoch < 10**9:
+            start_epoch = None  # implausible epoch
+
+    summary = {
+        "title": clean_text(info.get("title")),
+        "nickname": clean_text(owner.get("nickname")),
+        "hashtag": clean_text(hashtag),
+        "viewers": _safe_count(info.get("user_count")),
+        "total_viewers": _safe_count(
+            stats.get("total_user") or info.get("total_user")
+        ),
+        "likes": _safe_count(info.get("like_count") or stats.get("like_count")),
+        "follower_count": _safe_count(
+            follow.get("follower_count") or owner_stats.get("follower_count")
+        ),
+        "following_count": _safe_count(
+            follow.get("following_count") or owner_stats.get("following_count")
+        ),
+        "start_epoch": start_epoch,
+        "duration_sec": duration_sec,
+    }
+    return {key: value for key, value in summary.items() if value is not None}
 
 
 def is_allowed_media_url(value: str) -> bool:
@@ -456,14 +589,19 @@ def extract_via_streamlink(username: str, quality: str = DEFAULT_QUALITY) -> str
     return line if line and is_allowed_media_url(line) else None
 
 
+_ROOM_INFO_UNSET = object()
+
+
 def extract_stream_url(room_id: str, username: str,
-                       quality: str = DEFAULT_QUALITY) -> tuple[str | None, str]:
+                       quality: str = DEFAULT_QUALITY,
+                       room_info: Any = _ROOM_INFO_UNSET) -> tuple[str | None, str]:
     """
     Orchestrate primary (direct API) and optional fallbacks (yt-dlp, streamlink).
     Returns (url, source). Source is 'api' / 'yt-dlp' / 'streamlink' / 'none'.
+    Pass a pre-fetched room_info (may be None) to avoid a duplicate API call.
     """
     # Primary: direct webcast API
-    info = fetch_room_info(room_id)
+    info = fetch_room_info(room_id) if room_info is _ROOM_INFO_UNSET else room_info
     if info:
         url = pick_hls(info, quality)
         if url:
@@ -652,6 +790,21 @@ class IdentityStore:
         }
         if existing:
             new_record["first_seen"] = existing.get("first_seen")
+            nick_history = list(existing.get("nickname_history") or [])
+            prev_nick = existing.get("nickname")
+            new_nick = new_record.get("nickname")
+            if (
+                isinstance(prev_nick, str) and isinstance(new_nick, str)
+                and prev_nick != new_nick
+            ):
+                nick_history.append({
+                    "from": prev_nick,
+                    "to": new_nick,
+                    "detected_at": now_iso(),
+                })
+                nick_history = nick_history[-NICKNAME_HISTORY_MAX:]
+            if nick_history:
+                new_record["nickname_history"] = nick_history
             history = existing.get("rename_history") or []
             if rename_detected:
                 transition = {"from": prev_unique, "to": unique_id}
@@ -876,6 +1029,20 @@ def cmd_check(args: argparse.Namespace) -> int:
         "rename_detected": rename,
         "checked_at": now_iso(),
     }
+    if live and room_id and str(room_id) != "0":
+        # Enrichment is best-effort: a parsing problem must never turn a
+        # correct live result into an error.
+        try:
+            info = fetch_room_info(str(room_id))
+            if info:
+                room = collect_room_summary(info)
+                qualities = collect_qualities(info)
+                if room:
+                    out["room"] = room
+                if qualities:
+                    out["qualities"] = qualities
+        except Exception:
+            pass
     print(json.dumps(out, indent=2, ensure_ascii=False))
     return 0 if live else 1
 
@@ -921,7 +1088,11 @@ def cmd_url(args: argparse.Namespace) -> int:
     # before its query-string expiry or reuse a room id for a new playback
     # session, so returning a cached value here can hand VLC a dead manifest.
     # Resolve every public playback request from the current room metadata.
-    url, source = extract_stream_url(room_id, username, args.quality)
+    emit_json = bool(getattr(args, "json", False))
+    room_info = fetch_room_info(room_id) if emit_json else _ROOM_INFO_UNSET
+    url, source = extract_stream_url(
+        room_id, username, args.quality, room_info=room_info
+    )
     if not url:
         sys.stderr.write(
             "error: could not extract stream URL "
@@ -931,7 +1102,29 @@ def cmd_url(args: argparse.Namespace) -> int:
     state_store.add_url(sec_uid, room_id, url)
     state_store.strip_stale_urls(sec_uid)
 
-    print(url)
+    if emit_json:
+        payload: dict[str, Any] = {
+            "status": "live",
+            "live": True,
+            "unique_id": scrape.get("unique_id"),
+            "url": url,
+            "source": source,
+            "quality": canonical_quality(args.quality),
+        }
+        # Enrichment is best-effort; never fail a resolved URL over metadata.
+        try:
+            if isinstance(room_info, dict) and room_info:
+                room = collect_room_summary(room_info)
+                qualities = collect_qualities(room_info)
+                if room:
+                    payload["room"] = room
+                if qualities:
+                    payload["qualities"] = qualities
+        except Exception:
+            pass
+        print(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
+    else:
+        print(url)
     if args.verbose:
         sys.stderr.write(f"# source: {source}\n")
     return 0
@@ -1127,6 +1320,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_url.add_argument("username", type=normalize_username)
     p_url.add_argument("--quality", choices=QUALITY_CHOICES, default=DEFAULT_QUALITY)
+    p_url.add_argument(
+        "--json", action="store_true",
+        help="Emit compact JSON with url, source, room metadata and all "
+             "available qualities (success only; failures stay on stderr)",
+    )
     p_url.add_argument(
         "--verbose", "-v", action="store_true",
         help="Print extraction source to stderr",

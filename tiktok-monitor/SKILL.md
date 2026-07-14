@@ -137,11 +137,20 @@ send notifications.
 
 ### Component scope
 
-- `check`: Webcast/profile status and identity update;
+- `check`: Webcast/profile status and identity update; when live, the JSON
+  additionally carries best-effort `room` metadata (title, viewers, likes,
+  start/duration, owner nickname/followers, hashtag) and a `qualities` map
+  with every available HLS/FLV URL (see docs/SCHEMA.md §6.1);
 - `url`: cached/direct API playback URL resolution through the dispatcher;
+  with `--json` it emits one compact JSON line including `room`/`qualities`;
 - `daemon`: transition polling and append-only events;
 - `get_room_id.py`: standalone profile/room probe;
 - `check_alive.py`: standalone room liveness probe.
+
+Dispatcher `live` payloads pass `room` and `qualities` through top-level keys;
+when only Playwright fallback data exists, a qualities map is synthesized from
+the captured URLs. Identity records additionally keep a capped
+`nickname_history` alongside `rename_history`.
 
 A Python `live=true` result is tentative for public accessibility. Use the
 dispatcher or enhanced Playwright checker to identify `restricted`.
