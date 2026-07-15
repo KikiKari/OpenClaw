@@ -6,6 +6,12 @@
 
 ## 📓 Letzte Änderungen
 
+### 2026-07-15 - Daily Memory-Maintenance & Erkenntnisse vom 14./15.07.
+- ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
+- ❌ Keine Datei memory/2026-07-14.md gefunden – keine neuen Einträge zu Entscheidungen, Projekten, ToDos.
+- ❌ Keine Datei memory/2026-07-15.md gefunden – keine neuen Einträge zu Entscheidungen, Projekten, ToDos.
+- ✅ Archiv-Check: Dateien >30 Tage werden archiviert (Ausführung pending – Approval erforderlich).
+
 ### 2026-06-03 - Daily Memory-Maintenance & Erkenntnisse vom 02.06./03.06.
 - ✅ `memory/2026-06-02.md` war leer; analysiert wurden außerdem `memory/2026-06-02-2131.md`, `memory/2026-06-02-2145.md`, `memory/2026-06-02-2351.md` und `memory/2026-06-03-0038.md`.
 - ✅ Aus dem gestrigen Material keine neuen produktrelevanten Entscheidungen, Projekte oder offenen ToDos; der Inhalt war überwiegend Loganalyse, Skill-/Gateway-Status und Eskalationskontext.
