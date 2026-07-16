@@ -13,8 +13,9 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from shutil import copy2
 import sys
+import os
 
-WORKSPACE = Path("/home/openclaw/.openclaw/workspace")
+WORKSPACE = Path(os.getenv('OPENCLAW_WORKSPACE', '/workspace'))
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"

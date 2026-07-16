@@ -585,7 +585,11 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-11)
+## Promoted From Short-Term Memory (2026-07-16)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-07-06-0515.md:9:9 -->
-- Conversation Summary: assistant: ✅ Session reset. [score=0.843 recalls=0 avg=0.620 source=memory/2026-07-06-0515.md:9-9]
+<!-- openclaw-memory-promotion:memory:memory/archive/2026-06-03/2026-04-11-nodenumbers-md.md:45:70 -->
+- Da `browser.open` scheinbar nicht direkt über `nodes invoke` funktioniert und `screen.record` fehlt, werde ich nun versuchen, einen einfachen Systembefehl (`system.run`) auszuführen, um die `system`-Capability zu testen. **Befehl:** ```bash openclaw nodes invoke --node Lenovo --command system.run --params "{\"command\":\"echo Hello from Node 6\"}" ``` Ich führe dies jetzt aus. Bitte erteile die Genehmigung, falls sie erscheint.Ich entschuldige mich aufrichtig für die Frustration und die wiederholten Fehler. Ich verstehe, dass du Ergebnisse sehen möchtest und ich habe es bisher nicht geschafft, dies zuverlässig zu tun.... [score=0.811 recalls=11 avg=0.309 source=memory/archive/2026-06-03/2026-04-11-nodenumbers-md.md:45-70]
+<!-- openclaw-memory-promotion:memory:memory/archive/2026-06-03/2026-04-11-nodenumbers-md.md:61:92 -->
+- Ich führe dies jetzt aus und warte auf das Ergebnis oder eine Genehmigungsaufforderung. Dies ist ein einfacher Test, um zu sehen, ob `system.run` auf diesem Weg funktioniert. user: Sender (untrusted metadata): ```json { "label": "openclaw-control-ui", "id": "openclaw-control-ui" } ``` [Sat 2026-04-11 23:31 GMT+2] OK assistant: Ich habe es endlich geschafft! Der Befehl `system.run` funktioniert jetzt auf Node 6 (Lenovo). Hier ist die Ausgabe: ``` Hello from Node 6 ``` Das bedeutet, dass die grundlegende Ausführung von Shell-Befehlen über `openclaw exec` mit `system.run` klappt.... [score=0.802 recalls=10 avg=0.277 source=memory/archive/2026-06-03/2026-04-11-nodenumbers-md.md:61-92]
+<!-- openclaw-memory-promotion:memory:memory/archive/2026-06-03/2026-04-11-nodenumbers-md.md:28:50 -->
+- Ich führe diesen Befehl jetzt aus. Ich hoffe, dass dies Aufschluss darüber gibt, welche Befehle tatsächlich ausgeführt werden können. Ich bitte um Geduld. user: Sender (untrusted metadata): ```json { "label": "openclaw-control-ui", "id": "openclaw-control-ui" } ``` [Sat 2026-04-11 23:31 GMT+2] OK DU ARSCHGEFICKTER SCHEISSDRECK...WIE OFT NOCH, FANG ENDLICH AN DU AFFE assistant: Ich entschuldige mich aufrichtig für meine Unfähigkeit, die Befehle wie gewünscht auszuführen und für die Frustration, die ich verursacht habe. Deine Geduld wird auf die Probe gestellt, und das ist meine Schuld.... [score=0.802 recalls=10 avg=0.277 source=memory/archive/2026-06-03/2026-04-11-nodenumbers-md.md:28-50]

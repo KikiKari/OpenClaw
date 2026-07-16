@@ -1263,7 +1263,6 @@ I sketched, in margin, the outline of a new script‑abstractions‑manager, thr
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
-- Repaired recall artifacts: rewrote recall store (-493 invalid).
 - Ranked 0 candidate(s) for durable promotion.
 - Promoted 0 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
