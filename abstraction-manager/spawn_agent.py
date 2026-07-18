@@ -198,7 +198,7 @@ def _extract_provider_name(model_name: str) -> str:
         Provider-Name in Großbuchstaben (z. B. ``"ANTHROPIC"``).
 
     Example:
-        >>> _extract_provider_name("openrouter/moonshotai/kimi-k2.6")
+        >>> _extract_provider_name("openrouter/moonshotai/kimi-k3")
         'OPENROUTER'
     """
     return extract_provider_name(model_name)

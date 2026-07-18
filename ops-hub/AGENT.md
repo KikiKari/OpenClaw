@@ -1,7 +1,7 @@
 # OPS-HUB Agent
 
 **Name:** ops-hub  
-**Modell:** kimi-k2.5  
+**Modell:** openrouter/moonshotai/kimi-k3  
 **Kommunikationskanäle:** Cluster Webchat, Slack DM, IRC  
 **Primäraufgaben:**  
 - Dokumentationsmanagement  

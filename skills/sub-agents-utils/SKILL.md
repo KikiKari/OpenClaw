@@ -13,7 +13,7 @@
 result = sessions_spawn(
     task="Analyze logs for errors",
     label="log-analyzer",
-    model="openrouter/moonshotai/kimi-k2.6"
+    model="openrouter/moonshotai/kimi-k3"
 )
 ```
 
@@ -47,7 +47,7 @@ result = sessions_spawn(
   "task": "Aufgabenbeschreibung",
   "label": "mein-agent",
   "agentId": "optional-agent-id",
-  "model": "openrouter/moonshotai/kimi-k2.6",
+  "model": "openrouter/moonshotai/kimi-k3",
   "thinking": "high",
   "runTimeoutSeconds": 900,
   "thread": false,

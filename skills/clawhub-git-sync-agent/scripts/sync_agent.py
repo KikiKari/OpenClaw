@@ -38,9 +38,15 @@ def save_state(state):
         json.dump(state, f, indent=2)
 
 def get_all_skills():
-    """Findet alle Skills in beiden Verzeichnissen"""
-    clawhub_skills = {d.name for d in CLAWHUB_DIR.iterdir() if d.is_dir() and not d.name.startswith('.')}
-    git_skills = {d.name for d in GIT_DIR.iterdir() if d.is_dir() and not d.name.startswith('.')}
+    """Findet nur valide Skill-Verzeichnisse in beiden Verzeichnissen."""
+    clawhub_skills = {
+        d.name for d in CLAWHUB_DIR.iterdir()
+        if d.is_dir() and not d.name.startswith(('.', '_')) and (d / "SKILL.md").is_file()
+    }
+    git_skills = {
+        d.name for d in GIT_DIR.iterdir()
+        if d.is_dir() and not d.name.startswith(('.', '_')) and (d / "SKILL.md").is_file()
+    }
     return clawhub_skills.union(git_skills)
 
 def init_git_repo(skill_path: Path, skill_name: str):
@@ -70,22 +76,22 @@ def sync_skill_bidirectional(skill_name: str, dry_run: bool = False):
     clawhub_path = CLAWHUB_DIR / skill_name
     git_path = GIT_DIR / skill_name
 
-    # Backup before any potential changes (skip for dry-run)
-    if not dry_run:
-        backup_skill_dir(clawhub_path, f"{skill_name}_clawhub")
-        backup_skill_dir(git_path, f"{skill_name}_git")
-
     # Fall 1: Nur in ClawHub → zu Git
     if clawhub_path.exists() and not git_path.exists():
         log(f"NEW in ClawHub: {skill_name} → syncing to Git")
-        if sync_to_git(skill_name, dry_run=False):
-            init_git_repo(git_path, skill_name)
+        if not dry_run:
+            backup_skill_dir(clawhub_path, f"{skill_name}_clawhub")
+        if sync_to_git(skill_name, dry_run=dry_run):
+            if not dry_run:
+                init_git_repo(git_path, skill_name)
             return "synced_to_git"
 
     # Fall 2: Nur in Git → zu ClawHub
     elif git_path.exists() and not clawhub_path.exists():
         log(f"NEW in Git: {skill_name} → syncing to ClawHub")
-        if sync_to_clawhub(skill_name, dry_run=False):
+        if not dry_run:
+            backup_skill_dir(git_path, f"{skill_name}_git")
+        if sync_to_clawhub(skill_name, dry_run=dry_run):
             return "synced_to_clawhub"
 
     # Fall 3: In beiden vorhanden → Vergleiche Timestamps
@@ -113,13 +119,18 @@ def sync_skill_bidirectional(skill_name: str, dry_run: bool = False):
             # Für jetzt: Wenn sie sich unterscheiden, priorisieren wir ClawHub > Git
             # und aktualisieren Git.
 
-            log(f"UPDATE: {skill_name} ClawHub content is newer or different → syncing to Git")
-            if sync_to_git(skill_name, dry_run=False):
-                # Git commit (optional, sync_to_git macht das bereits, aber zur Sicherheit)
-                os.chdir(git_path)
-                subprocess.run(["git", "add", "."], capture_output=True)
-                subprocess.run(["git", "commit", "-m", f"Sync from ClawHub content diff: {datetime.now().strftime('%Y-%m-%d %H:%M')}"], capture_output=True)
-                return "updated_git"
+            direction = "to-git" if clawhub_path.stat().st_mtime >= git_path.stat().st_mtime else "to-clawhub"
+            log(f"UPDATE: {skill_name} → syncing {direction}")
+            if not dry_run:
+                backup_skill_dir(clawhub_path, f"{skill_name}_clawhub")
+                backup_skill_dir(git_path, f"{skill_name}_git")
+            sync = sync_to_git if direction == "to-git" else sync_to_clawhub
+            if sync(skill_name, dry_run=dry_run):
+                if not dry_run and direction == "to-git":
+                    os.chdir(git_path)
+                    subprocess.run(["git", "add", "."], capture_output=True)
+                    subprocess.run(["git", "commit", "-m", f"Sync from ClawHub content diff: {datetime.now().strftime('%Y-%m-%d %H:%M')}"], capture_output=True)
+                return "updated_git" if direction == "to-git" else "updated_clawhub"
             else:
                 log(f"Failed to sync {skill_name} to Git after content diff", "ERROR")
                 return "error"
@@ -180,16 +191,17 @@ def main():
     log(f"Keine Änderung: {len(results['no_change'])}")
     log(f"Fehler: {len(results['errors'])} - {results['errors']}")
 
-    # State speichern
-    if "sync_history" not in state:
-        state["sync_history"] = []
-    state["sync_history"].append({
-        "timestamp": datetime.now().isoformat(),
-        "results": results
-    })
-    # Nur letzte 100 Einträge behalten
-    state["sync_history"] = state["sync_history"][-100:]
-    save_state(state)
+    # Ein Dry-Run bleibt vollständig nicht-mutierend (abgesehen vom Audit-Log).
+    if not DRY_RUN:
+        if "sync_history" not in state:
+            state["sync_history"] = []
+        state["sync_history"].append({
+            "timestamp": datetime.now().isoformat(),
+            "results": results
+        })
+        # Nur letzte 100 Einträge behalten
+        state["sync_history"] = state["sync_history"][-100:]
+        save_state(state)
 
     log("=== Sync Agent beendet ===\n")
 

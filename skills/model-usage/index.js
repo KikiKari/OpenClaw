@@ -11,7 +11,7 @@ const path = require('path');
 const TASK_RECOMMENDATIONS = {
   simple: {
     primary: 'openai/gpt-5.6-luna',
-    fallback: 'openrouter/moonshotai/kimi-k2.6',
+    fallback: 'openrouter/moonshotai/kimi-k3',
     description: 'Simple tasks (weather, time, basic queries)'
   },
   long_context: {
@@ -25,7 +25,7 @@ const TASK_RECOMMENDATIONS = {
     description: 'Complex logic (code, reasoning)'
   },
   web_agents: {
-    primary: 'openrouter/moonshotai/kimi-k2.6',
+    primary: 'openrouter/moonshotai/kimi-k3',
     fallback: 'openrouter/meta-llama/llama-4-maverick',
     description: 'Web agents and tool use'
   }

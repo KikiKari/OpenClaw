@@ -166,7 +166,7 @@ Fünf Nodes, konfiguriert in `NODES`:
 **Verfügbare Modelle** (für zukünftige KI-gestützte Portierung via OpenRouter):
 
 ```
-openrouter/moonshotai/kimi-k2.6
+openrouter/moonshotai/kimi-k3
 openai/gpt-5.6-terra
 openai/gpt-5.6-sol
 openai/gpt-5.6-luna

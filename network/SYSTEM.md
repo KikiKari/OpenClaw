@@ -60,7 +60,7 @@ Drei separate OpenClaw Gateways (kein Cluster-Mode möglich wegen Bug in 2026.4.
 - **Primary:** `openrouter/auto`
 - **Fallbacks:** werden zentral aus `openclaw.json` geladen
 - **Registrierte Modelle:**
-  - openrouter/moonshotai/kimi-k2.6
+  - openrouter/moonshotai/kimi-k3
   - openrouter/auto (Alias: OpenRouter)
   - openai/gpt-5.6-terra (Alias: Terra)
   - openai/gpt-5.6-luna (Alias: Luna)

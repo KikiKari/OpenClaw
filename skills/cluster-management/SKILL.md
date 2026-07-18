@@ -127,7 +127,7 @@ Primary Model
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openrouter/moonshotai/kimi-k2.6",
+        "primary": "openrouter/moonshotai/kimi-k3",
         "fallbacks": [
           "openrouter/anthropic/claude-3.5-sonnet",
           "openrouter/deepseek/deepseek-v3",

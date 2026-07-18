@@ -115,7 +115,7 @@ Alle kritischen Dokumentationen existieren redundant:
   - Enthält: `AGENT.md`, `INSTRUCTIONS.md`, `KNOWLEDGE.md`, `SKILLS.md`
 
 ### Modell
-- **Modell**: kimi-k2.5 
+- **Modell**: openrouter/moonshotai/kimi-k3 
 
 ### Dokumentation
 - Verzeichnis: `/home/openclaw/.openclaw/workspace/docs/ops-hub/` (darf nicht überschrieben oder gelöscht werden, muss weitergeführt werden!)

@@ -104,7 +104,7 @@ python3 check_nodes.py --format table
 ## KI-Modelle für Interpolation
 
 Standardmäßig rotiert der Manager durch diese Modelle:
-- `openrouter/moonshotai/kimi-k2.6`
+- `openrouter/moonshotai/kimi-k3`
 - `openai/gpt-5.6-terra`
 - `openai/gpt-5.6-sol`
 - `openai/gpt-5.6-luna`
