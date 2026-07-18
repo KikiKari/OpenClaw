@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-06-03 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-07-18 (07:01 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-07-18 - Daily Memory-Maintenance & Erkenntnisse vom 17./18.07.
+- ✅ Memory-Maintenance Cron ausgeführt (07:01 CEST)
+- ❌ Keine Datei memory/2026-07-17*.md gefunden – keine neuen Einträge zu Entscheidungen, Projekten, ToDos.
+- ❌ Keine Datei memory/2026-07-18*.md gefunden – keine neuen Einträge zu Entscheidungen, Projekten, ToDos.
+- ℹ️ Letztes vorhandenes Protokoll: 2026-07-16-0620.md (nur Session-Status, keine neuen Erkenntnisse). Juli-Dateien (10.–13.07.) überwiegend TikTok-Live-Checks (@elmalekanirvana, @chickafame, @uelmen u.a.) – keine produktrelevanten Entscheidungen.
+- ✅ Archiv-Check: 42 Dateien >30 Tage (bis 2026-06-16) nach `memory/archive/2026-07-18/` verschoben.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-07-15 - Daily Memory-Maintenance & Erkenntnisse vom 14./15.07.
 - ✅ Memory-Maintenance Cron ausgeführt (07:00 CET)
