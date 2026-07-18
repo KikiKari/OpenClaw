@@ -1,6 +1,6 @@
 ---
 name: db-maintainer
-description: Permanent database maintenance sub-agent. 12h checks for documentation changes, updates docs.db, runs tree -L 8, writes to important/openclaw-tree.txt. 12h backups with 3-day retention. Multi-node capable. Model: kimi-k2.5.
+description: Permanent database maintenance sub-agent. 12h checks for documentation changes, updates docs.db, runs tree -L 8, writes to important/openclaw-tree.txt. 12h backups with 3-day retention. Multi-node capable. Model: openrouter/moonshotai/kimi-k3.
 ---
 
 # Database Maintainer Sub-Agent

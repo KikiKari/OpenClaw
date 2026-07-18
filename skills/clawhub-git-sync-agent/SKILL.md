@@ -27,7 +27,7 @@ python3 /workspace/scripts/sync_clawhub_git.py --skill db-maintainer --direction
 ```
 
 ### Automatischer Agent (alle 12 Stunden)
-Via Cron-Job (`0 */12 * * *`) mit Dry-Run und Benachrichtigung bei Änderungen. Modell: kimi-k2.5.
+Via Cron-Job (`0 */12 * * *`) mit Dry-Run und Benachrichtigung bei Änderungen. Modell: openrouter/moonshotai/kimi-k3.
 
 ## Logs
 
