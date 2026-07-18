@@ -1,8 +1,8 @@
 # Script Abstractions - Status Report
 
-**Letzte Aktualisierung:** 2026-07-17 18:02
+**Letzte Aktualisierung:** 2026-07-18 00:02
 
-- Aktuelle Priorität: high
+- Aktuelle Priorität: medium
 - Verarbeitete Scripts: 0
 - Abstraktionen gesamt: 127
 
@@ -17,7 +17,7 @@
 
 ## Verfügbare Modelle
 
-- `openrouter/auto`
+- `openrouter/moonshotai/kimi-k3`
 - `openai/sol`
 - `openai/terra`
 - ... und 8 weitere
