@@ -5,6 +5,7 @@ Automated database maintenance with 30min checks, hourly backups (3 days retenti
 band tree command execution for important/openclaw-tree.txt
 """
 
+import os
 import sqlite3
 import hashlib
 import json
@@ -14,7 +15,7 @@ from datetime import datetime, timedelta
 from shutil import copy2
 import sys
 
-WORKSPACE = Path("/workspace")
+WORKSPACE = Path(os.environ.get("OPENCLAW_WORKSPACE", Path(__file__).resolve().parents[1]))
 DB_DIR = WORKSPACE
 BACKUP_DIR = WORKSPACE / "db" / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
