@@ -1,5 +1,7 @@
 # MEMORY.md
 
+[2026-07-21] ARCHIVE_MEMORY reminder handled: archived two daily memory files older than 30 days (2026-06-19-1930 and 2026-06-20-1354) to `memory/archived/`.
+
 [2026-07-20] Daily memory maintenance: reviewed available logs for 2026-07-19 and 2026-07-20; no durable decisions, projects, or actionable ToDos found. Archived the one daily memory file older than 30 days.
 
 [2026-07-19] Daily memory maintenance: reviewed 2026-07-18 and 2026-07-19 logs. No durable decisions, projects, or actionable ToDos found. No memory files were older than 30 days, so nothing was archived.
