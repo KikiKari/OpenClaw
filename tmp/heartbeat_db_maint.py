@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import sqlite3
 import subprocess
 import shutil
@@ -25,47 +26,73 @@ def table_exists(conn: sqlite3.Connection, name: str) -> bool:
     return row is not None
 
 
-def refresh_docs_db(now_iso: str) -> dict[str, int]:
+def file_hash(path: Path) -> str:
+    digest = hashlib.md5()
+    with path.open("rb") as fh:
+        for chunk in iter(lambda: fh.read(8192), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def word_count(path: Path) -> int:
+    try:
+        return len(path.read_text(encoding="utf-8", errors="ignore").split())
+    except Exception:
+        return 0
+
+
+def refresh_docs_db(now_ts: float) -> dict[str, int]:
     conn = sqlite3.connect(DOCS_DB)
     try:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS documents (
+                path TEXT PRIMARY KEY,
+                content_hash TEXT,
+                last_indexed REAL,
+                word_count INTEGER
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                path TEXT UNIQUE,
-                mtime REAL,
-                size INTEGER,
-                type TEXT,
-                last_checked TEXT
+                doc_path TEXT,
+                tag TEXT,
+                FOREIGN KEY(doc_path) REFERENCES documents(path)
             )
             """
         )
 
-        old_rows: dict[str, tuple[float | None, int | None, str | None]] = {}
+        old_rows: dict[str, tuple[str | None, int | None]] = {}
         if table_exists(conn, "documents"):
-            for path, mtime, size, typ in conn.execute(
-                "SELECT path, mtime, size, type FROM documents"
+            for path, content_hash, count in conn.execute(
+                "SELECT path, content_hash, word_count FROM documents"
             ):
-                old_rows[path] = (mtime, size, typ)
+                old_rows[path] = (content_hash, count)
 
-        rows: list[tuple[str, float, int, str, str]] = []
+        rows: list[tuple[str, str, float, int]] = []
         for md_file in WORKSPACE.rglob("*.md"):
             if not md_file.is_file() or md_file.is_symlink():
                 continue
             rel = md_file.relative_to(WORKSPACE)
             if any(part in {"node_modules", ".git", "backups"} for part in rel.parts):
                 continue
-            stat = md_file.stat()
-            rows.append((str(rel), stat.st_mtime, stat.st_size, "doc", now_iso))
+            rows.append((str(rel), file_hash(md_file), now_ts, word_count(md_file)))
 
-        new_rows = {path: (mtime, size, typ) for path, mtime, size, typ, _ in rows}
+        new_rows = {path: (content_hash, count) for path, content_hash, _, count in rows}
         added = sum(1 for path in new_rows if path not in old_rows)
-        changed = sum(1 for path in new_rows if path in old_rows and old_rows[path] != new_rows[path])
+        changed = sum(
+            1
+            for path in new_rows
+            if path in old_rows and old_rows[path] != new_rows[path]
+        )
         deleted = sum(1 for path in old_rows if path not in new_rows)
 
         conn.execute("DELETE FROM documents")
         conn.executemany(
-            "INSERT INTO documents (path, mtime, size, type, last_checked) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO documents (path, content_hash, last_indexed, word_count) VALUES (?, ?, ?, ?)",
             rows,
         )
         conn.commit()
@@ -79,43 +106,83 @@ def refresh_docs_db(now_iso: str) -> dict[str, int]:
         conn.close()
 
 
-def refresh_tree_db() -> dict[str, int]:
+def refresh_tree_db(now_ts: float) -> dict[str, int]:
     conn = sqlite3.connect(TREE_DB)
     try:
         conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS tree_entries (
+            CREATE TABLE IF NOT EXISTS tree_entries_v2 (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                file_id TEXT UNIQUE,
                 root_path TEXT NOT NULL,
                 relative_path TEXT NOT NULL,
                 name TEXT NOT NULL,
-                type TEXT CHECK(type IN ("file", "directory", "symlink")),
+                type TEXT CHECK(type IN ('file', 'directory', 'symlink')),
                 depth INTEGER,
                 parent_path TEXT,
-                size INTEGER,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                size_bytes INTEGER,
+                previous_size_bytes INTEGER,
+                size_change_bytes INTEGER,
+                mtime_timestamp REAL,
+                mtime_iso TEXT,
+                first_seen_timestamp REAL,
+                last_seen_timestamp REAL,
+                change_type TEXT,
+                original_name TEXT,
+                original_path TEXT,
+                previous_path TEXT,
+                content_hash TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
         conn.execute(
             """
-            CREATE TABLE IF NOT EXISTS tree_scans (
+            CREATE TABLE IF NOT EXISTS file_history (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                root_path TEXT NOT NULL,
-                max_depth INTEGER,
+                file_id TEXT NOT NULL,
+                timestamp REAL NOT NULL,
+                change_type TEXT NOT NULL,
+                old_path TEXT,
+                new_path TEXT,
+                old_size INTEGER,
+                new_size INTEGER,
+                FOREIGN KEY (file_id) REFERENCES tree_entries_v2(file_id)
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS scan_log (
+                timestamp REAL,
                 total_files INTEGER,
                 total_dirs INTEGER,
-                total_symlinks INTEGER,
-                scanned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                duration REAL
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tree (
+                path TEXT PRIMARY KEY,
+                type TEXT,
+                size INTEGER,
+                mtime REAL,
+                hash TEXT
             )
             """
         )
 
-        old_count = 0
-        if table_exists(conn, "tree_entries"):
-            old_count = conn.execute("SELECT COUNT(*) FROM tree_entries").fetchone()[0]
+        old_rows: dict[str, tuple[int | None, float | None, str | None]] = {}
+        if table_exists(conn, "tree_entries_v2"):
+            for path, size_bytes, mtime_ts, typ in conn.execute(
+                "SELECT relative_path, size_bytes, mtime_timestamp, type FROM tree_entries_v2"
+            ):
+                old_rows[path] = (size_bytes, mtime_ts, typ)
 
-        entries: list[tuple[str, str, str, str, int, str, int]] = []
+        entries_v2: list[tuple[object, ...]] = []
+        legacy_tree_rows: list[tuple[str, str, int, float, str]] = []
         total_files = 0
         total_dirs = 0
         total_symlinks = 0
@@ -129,46 +196,99 @@ def refresh_tree_db() -> dict[str, int]:
             if item.is_symlink():
                 typ = "symlink"
                 total_symlinks += 1
-                size = item.lstat().st_size
+                stat = item.lstat()
+                size = stat.st_size
+                mtime_ts = stat.st_mtime
             elif item.is_dir():
                 typ = "directory"
                 total_dirs += 1
                 size = 0
+                mtime_ts = item.stat().st_mtime
             else:
                 typ = "file"
                 total_files += 1
-                size = item.stat().st_size
+                stat = item.stat()
+                size = stat.st_size
+                mtime_ts = stat.st_mtime
 
+            rel_str = str(rel)
+            file_id = hashlib.md5(rel_str.encode()).hexdigest()[:16]
             parent_path = str(rel.parent) if rel.parent != Path(".") else ""
-            entries.append(
+            mtime_iso = datetime.fromtimestamp(mtime_ts).isoformat()
+            entries_v2.append(
                 (
+                    file_id,
                     str(WORKSPACE),
-                    str(rel),
+                    rel_str,
                     item.name,
                     typ,
                     depth,
                     parent_path,
                     size,
+                    size,
+                    0,
+                    mtime_ts,
+                    mtime_iso,
+                    now_ts,
+                    now_ts,
+                    "NEW",
+                    None,
+                    None,
+                    None,
+                    None,
+                    now_ts,
+                    now_ts,
                 )
             )
+            legacy_tree_rows.append(
+                (rel_str, typ, size, mtime_ts, file_hash(item) if item.is_file() else "")
+            )
 
-        conn.execute("DELETE FROM tree_entries")
-        conn.execute("DELETE FROM tree_scans")
-        conn.execute(
-            "INSERT INTO tree_scans (root_path, max_depth, total_files, total_dirs, total_symlinks) VALUES (?, ?, ?, ?, ?)",
-            (str(WORKSPACE), 6, total_files, total_dirs, total_symlinks),
+        new_rows = {
+            entry[2]: (entry[7], entry[10], entry[4]) for entry in entries_v2
+        }
+        added = sum(1 for path in new_rows if path not in old_rows)
+        changed = sum(
+            1
+            for path in new_rows
+            if path in old_rows and old_rows[path] != new_rows[path]
+        )
+        deleted = sum(1 for path in old_rows if path not in new_rows)
+
+        conn.execute("DELETE FROM tree_entries_v2")
+        conn.execute("DELETE FROM file_history")
+        conn.execute("DELETE FROM scan_log")
+        conn.execute("DELETE FROM tree")
+        conn.executemany(
+            """
+            INSERT INTO tree_entries_v2 (
+                file_id, root_path, relative_path, name, type, depth, parent_path,
+                size_bytes, previous_size_bytes, size_change_bytes,
+                mtime_timestamp, mtime_iso, first_seen_timestamp, last_seen_timestamp,
+                change_type, original_name, original_path, previous_path, content_hash,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            entries_v2,
         )
         conn.executemany(
-            "INSERT INTO tree_entries (root_path, relative_path, name, type, depth, parent_path, size) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            entries,
+            "INSERT INTO tree (path, type, size, mtime, hash) VALUES (?, ?, ?, ?, ?)",
+            legacy_tree_rows,
+        )
+        conn.execute(
+            "INSERT INTO scan_log (timestamp, total_files, total_dirs, duration) VALUES (?, ?, ?, ?)",
+            (now_ts, total_files, total_dirs, 0.0),
         )
         conn.commit()
         return {
-            "count": len(entries),
-            "old_count": old_count,
+            "count": len(entries_v2),
+            "old_count": len(old_rows),
             "files": total_files,
             "dirs": total_dirs,
             "symlinks": total_symlinks,
+            "added": added,
+            "changed": changed,
+            "deleted": deleted,
         }
     finally:
         conn.close()
@@ -212,6 +332,7 @@ def main() -> None:
 
     now = datetime.now()
     now_iso = now.isoformat(timespec="seconds")
+    now_ts = now.timestamp()
     timestamp = now.strftime("%Y-%m-%d_%H-%M")
 
     tree_run = subprocess.run(
@@ -224,8 +345,8 @@ def main() -> None:
         raise SystemExit(tree_run.stderr.strip() or "tree command failed")
 
     write_tree_file(tree_run.stdout, now_iso)
-    docs_stats = refresh_docs_db(now_iso)
-    tree_stats = refresh_tree_db()
+    docs_stats = refresh_docs_db(now_ts)
+    tree_stats = refresh_tree_db(now_ts)
     backups = create_backups(timestamp)
     deleted = cleanup_backups()
 
@@ -239,7 +360,8 @@ def main() -> None:
         "tree_db_count="
         f"{tree_stats['count']} files={tree_stats['files']} "
         f"dirs={tree_stats['dirs']} symlinks={tree_stats['symlinks']} "
-        f"previous={tree_stats['old_count']}"
+        f"previous={tree_stats['old_count']} added={tree_stats['added']} "
+        f"changed={tree_stats['changed']} deleted={tree_stats['deleted']}"
     )
     print(f"backups_created={len(backups)} backups_deleted={len(deleted)}")
 
