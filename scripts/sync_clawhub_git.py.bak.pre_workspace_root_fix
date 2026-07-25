@@ -12,13 +12,10 @@ from pathlib import Path
 from datetime import datetime
 
 # Konfiguration
-# Resolve paths relative to this repository so the helper works both in the
-# hosted workspace and in environments without a /workspace mount.
-WORKSPACE_ROOT = Path(__file__).resolve().parents[1]
-CLAWHUB_DIR = WORKSPACE_ROOT / "skills"
-GIT_DIR = WORKSPACE_ROOT / "git" / "skills"
-BACKUP_DIR = WORKSPACE_ROOT / "backups" / "sync"
-LOG_FILE = WORKSPACE_ROOT / "logs" / "sync-agent.log"
+CLAWHUB_DIR = Path("/workspace/skills")
+GIT_DIR = Path("/workspace/git/skills")
+BACKUP_DIR = Path("/workspace/backups/sync")
+LOG_FILE = Path("/workspace/logs/sync-agent.log")
 IGNORED_NAMES = {".git", ".clawhub", "node_modules", "__pycache__", ".pytest_cache"}
 RESERVED_SKILL_NAMES = {"github-clones", "skills", "backups", ".restore", "git", "Abstraktionen"}
 PRESERVED_TARGET_NAMES = IGNORED_NAMES
