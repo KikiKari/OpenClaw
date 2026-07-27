@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-07-26 (07:15 CEST)
+**Letzte Aktualisierung:** 2026-07-27 (07:33 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-07-27 - Daily Memory-Maintenance & Erkenntnisse vom 26./27.07.
+- ✅ Memory-Maintenance Cron ausgeführt (07:33 CEST)
+- ❌ Keine Datei `memory/2026-07-26*.md` im Workspace gefunden - keine neuen Einträge zu Entscheidungen, Projekten oder ToDos.
+- ❌ Keine Datei `memory/2026-07-27*.md` im Workspace gefunden - heute noch keine Memory-Datei.
+- ℹ️ Im Workspace ist weiterhin kein aktives `memory/`-Tagesprotokoll für gestern/heute vorhanden.
+- ✅ Archiv-Check: `memory/2026-06-26-0011.md` und `memory/2026-06-26-0032.md` wurden nach `memory/archive/2026-07-27/` verschoben.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-07-26 - Daily Memory-Maintenance & Erkenntnisse vom 25./26.07.
 - ✅ Memory-Maintenance Cron ausgeführt (07:15 CEST)
