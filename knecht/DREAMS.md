@@ -546,10 +546,31 @@ By 20:57 the numbers had shifted like clouds—1.16, 1.23, 1.19—but nothing fe
 
 A memory trace surfaced, but details were unavailable in this run.
 
+
+---
+
+*July 27, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*July 27, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*July 27, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
-- Ranked 4 candidate(s) for durable promotion.
-- Promoted 4 candidate(s) into MEMORY.md.
+- Ranked 2 candidate(s) for durable promotion.
+- Promoted 2 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
