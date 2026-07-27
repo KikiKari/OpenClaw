@@ -99,16 +99,16 @@ openclaw skills update --all
 
 | Skill | Version | Downloads | Security | Install |
 | --- | --- | --- | --- | --- |
-| Cluster Gateway | v1.0.0 | 496 | ✅ Pass | `openclaw skills install cluster-gateway` |
-| MCP Tool Utils | v1.0.0 | 571 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
-| Reports Creator | v1.0.0 | 505 | ✅ Pass | `openclaw skills install reports-creator` |
-| Relay Node | v1.0.0 | 518 | ✅ Pass | `openclaw skills install relay-node` |
+| Cluster Gateway | v1.0.0 | 497 | ✅ Pass | `openclaw skills install cluster-gateway` |
+| MCP Tool Utils | v1.0.0 | 573 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
+| Reports Creator | v1.0.0 | 506 | ✅ Pass | `openclaw skills install reports-creator` |
+| Relay Node | v1.0.0 | 519 | ✅ Pass | `openclaw skills install relay-node` |
 | JSON Utils | v1.0.0 | 554 | ✅ Pass | `openclaw skills install json-utils` |
-| Log Collector | v1.0.0 | 502 | 🔍 Review | `openclaw skills install log-collector` |
+| Log Collector | v1.0.0 | 504 | 🔍 Review | `openclaw skills install log-collector` |
 | TikTok Live Monitor | v1.0.0 | 288 | 🔍 Review | `openclaw skills install tiktok-live-monitor` |
 | Doc Scraper | v1.0.0 | 492 | 🔍 Review | `openclaw skills install doc-scraper` |
 | Workspace Database Manager | v1.0.0 | 312 | 🔍 Review | `openclaw skills install workspace-database-manager` |
-| Scripting Utils | v1.0.0 | 448 | 🔍 Review | `openclaw skills install scripting-utils` |
+| Scripting Utils | v1.0.0 | 449 | 🔍 Review | `openclaw skills install scripting-utils` |
 
 > Downloads und Security-Status werden vom Abstraction Manager bei jedem
 > Sync aktualisiert. / Downloads and security status are updated by the
