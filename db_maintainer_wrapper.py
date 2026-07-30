@@ -14,7 +14,7 @@ from shutil import copy2
 import sys
 
 # Updated workspace path for sandbox environment
-WORKSPACE = Path("/workspace")
+WORKSPACE = Path(__file__).resolve().parent
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"

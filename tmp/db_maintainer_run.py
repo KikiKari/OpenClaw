@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 # Paths
-WORKSPACE = Path("/workspace")
+WORKSPACE = Path(__file__).resolve().parent.parent
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
