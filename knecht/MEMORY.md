@@ -36,3 +36,8 @@
 - 16:27 CEST — heartbeat recovery check: Open point: an agent/session with Gateway and `ops-hub` visibility must correct the model routing/access configuration and run the listed Gateway checks. [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-24.md:9-9]
 <!-- openclaw-memory-promotion:memory:memory/2026-07-24.md:13:16 -->
 - 23:12 CEST — heartbeat recovery check: Host diagnostics remain healthy: root disk 35% used, 9.6 GiB RAM available, load average 1.31 / 1.19 / 1.16, and CPU 86% idle.; The recurring model-routing failures persist: `openrouter/auto` returns HTTP 404 due to guardrail/data-policy restrictions, while fallback `openai/gpt-5.6-sol` is inaccessible to the project. This again failed the `knecht` heartbeat lane.; Attempting the required OpenClaw diagnostics from this sandbox exposed an additional restriction: `openclaw doctor --yes` cannot write its health state because the platform state database is read-only.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-24.md:13-16]
+
+## Promoted From Short-Term Memory (2026-07-31)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-25.md:5:8 -->
+- Heartbeat — 04:27 CEST: Host diagnostics normal: root filesystem 35% used; 10 GiB RAM available; load average 1.49 / 1.12 / 1.16; no swap or I/O pressure.; `journalctl -n 2000` shows repeated OpenClaw model-routing failures: `openrouter/auto` returns HTTP 404 due to privacy guardrails; fallback `openai/gpt-5.6-sol` is unavailable to the configured project.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-25.md:5-8]
