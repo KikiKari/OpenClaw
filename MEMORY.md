@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-07-30 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-07-31 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-07-31 - Daily Memory-Maintenance & Erkenntnisse vom 30./31.07.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST)
+- ❌ Keine Datei `memory/2026-07-30*.md` im Workspace-Root gefunden - keine neuen Einträge zu Entscheidungen, Projekten oder ToDos.
+- ❌ Keine Datei `memory/2026-07-31*.md` im Workspace-Root gefunden - heute noch keine Memory-Datei.
+- ℹ️ Die zugehörigen `memory/dreaming/*/2026-07-30.md` und `memory/dreaming/*/2026-07-31.md` enthalten jeweils nur `No notable updates.`
+- ✅ Archiv-Check: `memory/2026-06-30-0155.md` wurde nach `memory/archive/2026-07-31/` verschoben.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-07-30 - Daily Memory-Maintenance & Erkenntnisse vom 29./30.07.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST)

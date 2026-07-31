@@ -1791,159 +1791,63 @@ A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 20, 2026*
+*July 21, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-20 source=memory/2026-06-20-1354.md -->
-
-What Happened
-1. Conversation Summary: assistant: HE; user: [OpenClaw heartbeat poll]; and assistant: HEARTBEATOK [memory/2026-06-20-1354.md:9, memory/2026-06-20-1354.md:10, memory/2026-06-20-1354.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 21, 2026*
+*July 22, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-21 source=memory/2026-06-21-1337.md -->
-
-What Happened
-1. Conversation Summary: assistant: HEARTBEATOK; user: [OpenClaw heartbeat poll]; and assistant: HE [memory/2026-06-21-1337.md:9, memory/2026-06-21-1337.md:10, memory/2026-06-21-1337.md:17]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 22, 2026*
+*July 23, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-22 source=memory/2026-06-22-0737.md -->
-
-What Happened
-1. Conversation Summary: assistant: HEARTBEATOK; user: [OpenClaw heartbeat poll]; and The assistant has a broken response again. It responded "HE" instead of "HEARTBEATOK". Must correct that. So respond "HEARTBEATOK".HEARTBEATOK [memory/2026-06-22-0737.md:9, memory/2026-06-22-0737.md:10, memory/2026-06-22-0737.md:15]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 24, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-1946.md -->
-
-What Happened
-1. No grounded facts were extracted.
-
-Reflections
-1. This day reads mostly as monitoring and operational state, not as durable memory. It should be treated as current-state exhaust unless a clearer rule or preference appears. [memory/2026-06-25-1946.md:7-57]
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 25, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-2136.md -->
-
-What Happened
-1. Conversation Summary: assistant: Ich konnte für @luiisamour keinen aktiven Live‑Stream finden – die Prüfung ergab „offline“. Wenn du einen anderen TikTok‑Namen testen möchtest, weitere Details zu diesem Ergebnis brauchst oder etwas anderes im Sinn hast, sag einfach Bescheid!; assistant: [[replyto:696a7e6c-ea0b-4ebd-a19b-e109002a2116]]Audio reply; and user: die session history immer zu versauen verursacht immer einen vollständigen export aller protokolle und der debug protokolle damit du drecksfotze dir nur selbst damit schadest [memory/2026-06-25-2136.md:10, memory/2026-06-25-2136.md:11, memory/2026-06-25-2136.md:12]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 26, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-2216.md -->
-
-What Happened
-1. Conversation Summary: assistant: Verstanden. Sag einfach Bescheid, falls du noch etwas prüfen oder einrichten möchtest.; assistant: [[replyto:2f62e718-0cd1-4858-854c-d07a877fbaae]]Audio reply; and assistant: Die TikTok‑Prüfung mit dem tiktok-live‑mon‑Skill ergab, dass @luiisamour derzeit offline ist (kein Live‑Stream gefunden). [memory/2026-06-25-2216.md:10, memory/2026-06-25-2216.md:11, memory/2026-06-25-2216.md:12]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 27, 2026 at 3:04 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-2249.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @iman.hayatiii is currently live.; and Stream URL: [memory/2026-06-25-2249.md:9, memory/2026-06-25-2249.md:10, memory/2026-06-25-2249.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 28, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-2313.md -->
-
-What Happened
-1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-06-25-2313.md:21]
-
-Reflections
-1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-06-25-2313.md:21]
-
-Candidates
-- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-06-25-2313.md:21]
-
-Possible Lasting Updates
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-06-25-2313.md:21]
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 29, 2026 at 3:04 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-2340.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: [[replyto:200b8949-2490-460d-8a09-4b62db492b9a]]Audio reply; and "note": "The account is currently LIVE, but a streaming URL could not be retrieved – Playwright failed (page closed) and the fallback tools streamlink and yt‑dlp are not installed." [memory/2026-06-25-2340.md:9, memory/2026-06-25-2340.md:10, memory/2026-06-25-2340.md:22]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 25, 2026*
+*July 30, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-25 source=memory/2026-06-25-2357.md -->
-
-What Happened
-1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-06-25-2357.md:21]
-
-Reflections
-1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-06-25-2357.md:21]
-
-Candidates
-- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-06-25-2357.md:21]
-
-Possible Lasting Updates
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-06-25-2357.md:21]
-
----
-
-*June 26, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-06-26 source=memory/2026-06-26-0011.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: [[replyto:b8b9465c-a99d-47b9-b3aa-48d5b285aad2]]Audio reply; and assistant: ✅ @laafatooo is currently LIVE. No stream URL could be resolved (missing required helper scripts/CLI tools). [memory/2026-06-26-0011.md:9, memory/2026-06-26-0011.md:10, memory/2026-06-26-0011.md:16]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*June 26, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-06-26 source=memory/2026-06-26-0032.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: laafatooo is currently LIVE.; and assistant: [[replyto:63fbafed-8df4-4d69-8f9a-24f8eebec4ab]]Audio reply [memory/2026-06-26-0032.md:9, memory/2026-06-26-0032.md:10, memory/2026-06-26-0032.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
@@ -2415,83 +2319,6 @@ Candidates
 
 Possible Lasting Updates
 - 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-18-2027.md:47]
-
----
-
-*July 21, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 22, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 23, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 24, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 24, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 25, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 26, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 27, 2026 at 3:04 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 28, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 29, 2026 at 3:04 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*July 30, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
