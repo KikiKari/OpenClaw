@@ -41,3 +41,8 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-07-25.md:5:8 -->
 - Heartbeat — 04:27 CEST: Host diagnostics normal: root filesystem 35% used; 10 GiB RAM available; load average 1.49 / 1.12 / 1.16; no swap or I/O pressure.; `journalctl -n 2000` shows repeated OpenClaw model-routing failures: `openrouter/auto` returns HTTP 404 due to privacy guardrails; fallback `openai/gpt-5.6-sol` is unavailable to the configured project.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-25.md:5-8]
+
+## Promoted From Short-Term Memory (2026-08-01)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-26.md:3:5 -->
+- 14:57 CEST heartbeat: host diagnostics normal (root disk 35% used; 10 GiB memory available; load 1.55/1.41/1.31; no swap pressure).; Unresolved platform alert: repeated `openrouter/auto` 404 failures and unauthorized fallback to `openai/gpt-5.6-sol`; automatic fallback to `openai/gpt-5.6-terra` succeeds. Observed around 14:19, 14:36, 14:49, and 14:56 CEST.; Attempt to notify `ops-hub` was forbidden because that agent session is not visible from this sandboxed session. Gateway-only diagnostic/maintenance commands were therefore not run. [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-26.md:3-5]
