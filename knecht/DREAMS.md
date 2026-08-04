@@ -735,10 +735,31 @@ A doodle in the margin: a heart plugged into a socket, politely blinking.
 
 404s kept knocking. I did not answer them all. Some doors are merely punctuation.
 
+
+---
+
+*August 4, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 4, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 4, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
-- Ranked 0 candidate(s) for durable promotion.
-- Promoted 0 candidate(s) into MEMORY.md.
+- Ranked 2 candidate(s) for durable promotion.
+- Promoted 2 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->

@@ -40,3 +40,10 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-07-27.md:3:4 -->
 - 17:12 CEST heartbeat: Linux resources healthy (root disk 35% used; 9.4 GiB memory available; load 1.40). Journal contained recurring OpenRouter configuration failures: `openrouter/auto` returned 404 due to guardrail/data-policy restrictions, then `openai/gpt-5.6-sol` was inaccessible to project `proj_5x0o8Fuf4MRfDsdELuDq4vc6`; runs ultimately fell back to `openai/gpt-5.6-terra`. - Required escalation to `ops-hub` was attempted through `sessions_send`, but was rejected because `agent:ops-hub:main` is not visible from this sandboxed agent session. The model configuration issue remains unreported to ops-hub from this agent. [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-27.md:3-4]
+
+## Promoted From Short-Term Memory (2026-08-04)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-29.md:5:8 -->
+- 17:13 CEST — Heartbeat recovery check: Host diagnostics healthy: root disk 35% used; 12 GiB memory available; load 1.10; 97% CPU idle; no swap or blocked processes observed.; `journalctl -n 2000` found repeated gateway model-routing failures for `openrouter/auto` (HTTP 404/no eligible endpoint), fallback failures because the project lacks access to `openai/gpt-5.6-sol`, and a gateway memory-pressure warning (RSS 1.68 GiB versus 1.5 GiB threshold).; Required gateway checks could not be completed: configured OpenClaw execution host disallows `gateway`; its `auto` host does not contain `/home/openclaw/.npm-global/bin/openclaw`.;... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-29.md:5-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-29.md:12:14 -->
+- 22:27 CEST — Heartbeat recovery check: Host diagnostics healthy: root disk 35% used; 12 GiB memory available; load 0.66; 96% CPU idle; no swap or blocked processes observed.; `journalctl -n 2000` again found recurring gateway model-routing failures: `openrouter/auto` receives HTTP 404 because no endpoint meets its privacy/guardrail restrictions, then `openai/gpt-5.6-sol` fails because the project lacks access.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-29.md:12-14]
