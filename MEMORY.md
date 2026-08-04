@@ -1,10 +1,20 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-02 (07:32 CEST)
+**Letzte Aktualisierung:** 2026-08-04 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-04 - Daily Memory-Maintenance & Erkenntnisse vom 03./04.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST)
+- ❌ Keine Datei `memory/2026-08-03*.md` im Workspace-Root gefunden - keine neuen Einträge zu Entscheidungen, Projekten oder ToDos.
+- ❌ Keine Datei `memory/2026-08-04*.md` im Workspace-Root gefunden - heute noch keine Memory-Datei.
+- ℹ️ Analysiert: `memory/2026-08-01-1015.md` und `memory/2026-07-02.md`.
+- ℹ️ Der 01.08.-Eintrag enthält nur TikTok-Live-Statusdaten für `@nelliavtor` mit Stream-URLs; keine neuen produktiven Entscheidungen, Projekte oder ToDos.
+- ℹ️ Der 02.07.-Eintrag enthält einen abgeschlossenen Heartbeat-Systemcheck ohne kritische Erkenntnisse.
+- ⚠️ Archiv-Check: `memory/2026-07-02.md`, `memory/storage-table.csv` und `memory/emails-2025-04-06.md~~` liegen weiterhin unarchiviert im Root und sind älter als 30 Tage. Keine automatische Verschiebung im Heartbeat ausgeführt.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-03 - Daily Memory-Maintenance & Erkenntnisse vom 02./03.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST)
