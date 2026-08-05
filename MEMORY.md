@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-04 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-08-05 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-05 - Daily Memory-Maintenance & Erkenntnisse vom 04./05.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST)
+- ❌ Keine Datei `memory/2026-08-04*.md` im Workspace-Root gefunden - keine neuen Einträge zu Entscheidungen, Projekten oder ToDos.
+- ❌ Keine Datei `memory/2026-08-05*.md` im Workspace-Root gefunden - heute noch keine Memory-Datei.
+- ℹ️ Im Workspace-Root ist weiterhin kein aktives `memory/`-Tagesprotokoll für gestern/heute vorhanden.
+- ⚠️ Archiv-Check: Keine direkt archivfähigen `memory/`-Root-Dateien gefunden; die vorhandenen Referenzen unter `docs/memory/...` wurden nicht angefasst.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-04 - Daily Memory-Maintenance & Erkenntnisse vom 03./04.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST)
