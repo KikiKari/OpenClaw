@@ -1,13 +1,6 @@
 # Long-Term Memory
 
 
-## Promoted From Short-Term Memory (2026-07-27)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-07-21-0641.md:3:5 -->
-- Heartbeat — 2026-07-21 06:41 CEST: Host health normal: root disk 35% used; 13 GiB available memory; load average 0.85/0.29/0.18; no swap or CPU/I/O pressure.; Gateway logs still show recurring model-routing failures: `openrouter/auto` returns HTTP 404 because no endpoint matches the configured guardrail/data-policy restrictions; the first fallback (`openai/gpt-5.6-sol`) is not authorized for the project. Runs ultimately fall back to `openai/gpt-5.6-terra`.; Attempt to notify `ops-hub` via its session was forbidden because that session is not visible from this sandboxed agent.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-21-0641.md:3-5]
-<!-- openclaw-memory-promotion:memory:memory/2026-07-21.md:5:8 -->
-- Heartbeat recovery check — 20:57 CEST: Host healthy: root filesystem 35% used, approximately 13 GiB memory available, load average 0.09; `vmstat` showed no swapping or blocked processes.; Gateway journal contains recurring heartbeat failures: `openrouter/openrouter/auto` receives HTTP 404 due to provider guardrail/data-policy restrictions; first fallback `openai/gpt-5.6-sol` is unavailable to the configured project; second fallback `openai/gpt-5.6-terra` succeeds.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-21.md:5-8]
-
 ## Promoted From Short-Term Memory (2026-07-28)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-07-22-0557.md:3:5 -->
@@ -47,3 +40,10 @@
 - 17:13 CEST — Heartbeat recovery check: Host diagnostics healthy: root disk 35% used; 12 GiB memory available; load 1.10; 97% CPU idle; no swap or blocked processes observed.; `journalctl -n 2000` found repeated gateway model-routing failures for `openrouter/auto` (HTTP 404/no eligible endpoint), fallback failures because the project lacks access to `openai/gpt-5.6-sol`, and a gateway memory-pressure warning (RSS 1.68 GiB versus 1.5 GiB threshold).; Required gateway checks could not be completed: configured OpenClaw execution host disallows `gateway`; its `auto` host does not contain `/home/openclaw/.npm-global/bin/openclaw`.;... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-29.md:5-8]
 <!-- openclaw-memory-promotion:memory:memory/2026-07-29.md:12:14 -->
 - 22:27 CEST — Heartbeat recovery check: Host diagnostics healthy: root disk 35% used; 12 GiB memory available; load 0.66; 96% CPU idle; no swap or blocked processes observed.; `journalctl -n 2000` again found recurring gateway model-routing failures: `openrouter/auto` receives HTTP 404 because no endpoint meets its privacy/guardrail restrictions, then `openai/gpt-5.6-sol` fails because the project lacks access.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-29.md:12-14]
+
+## Promoted From Short-Term Memory (2026-08-05)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-07-30.md:3:6 -->
+- 01:27 CEST heartbeat recovery check: host diagnostics healthy (root disk 35% used, 12 GiB memory available, load 0.74).; Recurring OpenClaw model-routing failures observed in journal: `openrouter/openrouter/auto` receives HTTP 404 due to guardrail/data-policy restrictions; fallback `openai/gpt-5.6-sol` is unavailable to project `proj_5x0o8Fuf4MRfDsdELuDq4vc6`; final fallback `openai/gpt-5.6-terra` succeeds.; Attempted to notify `ops-hub` through its agent session; delivery was forbidden because that session is not visible from this sandboxed agent session.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-30.md:3-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-07-30.md:7:8 -->
+- 20:57 CEST heartbeat recovery check: host diagnostics healthy (root disk 35% used, 13 GiB available, load 0.29). The model-routing failures remain active: `openrouter/auto` returns HTTP 404 because no endpoint matches the configured guardrail/data-policy restriction; fallback `openai/gpt-5.6-sol` is unauthorized for project `proj_5x0o8Fuf4MRfDsdELuDq4vc6`; `gpt-5.6-terra` later succeeds. A fresh `ops-hub` notification attempt was again forbidden because its session is not visible from this sandboxed agent session. Gateway-side repair remains pending.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-30.md:7-8]
