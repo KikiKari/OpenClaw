@@ -2319,10 +2319,31 @@ Candidates
 
 Possible Lasting Updates
 - 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-18-2027.md:47]
+
+---
+
+*August 6, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 6, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 6, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
-- Ranked 0 candidate(s) for durable promotion.
-- Promoted 0 candidate(s) into MEMORY.md.
+- Ranked 1 candidate(s) for durable promotion.
+- Promoted 1 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->

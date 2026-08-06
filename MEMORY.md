@@ -733,7 +733,7 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-07-18)
+## Promoted From Short-Term Memory (2026-08-06)
 
-<!-- openclaw-memory-promotion:memory:memory/2026-05-22.md:23:34 -->
-- Option C (manual run): Keep unit in workspace and run `python3 app.py` / `node server.js` manually when needed. - Persistent user preference: prefer systemd-native control (timer or short-run wrapper) so the daemon is not running continuously and is only started when checks are required. - Next-step notes (actionable but not executed): - If user confirms, assistant may install the unit system-wide and optionally create a `systemd.timer` + service pair or the wrapper+cron approach. - If the app uses Node (server.js) rather than Python (`app.py`), the prepared ExecStart must be adjusted accordingly before installation.... [score=0.827 recalls=7 avg=0.276 source=memory/2026-05-22.md:23-34]
+<!-- openclaw-memory-promotion:memory:memory/archive/2026-06-03/2026-04-15.md:1:29 -->
+- # 2026-04-15 - Tagesprotokoll ## Memory-Maintenance (07:00 CET) ### Durchgeführte Aufgaben - ✅ Memory-Datei für heute erstellt - ✅ Tagesprotokoll vom 2026-04-14 analysiert - ✅ Archiv-Check durchgeführt — keine Dateien >30 Tage ### Status aus 2026-04-14 #### Infrastruktur-Updates - OpenClaw v2026.4.11 läuft stabil - Memory-Maintenance Cron funktioniert zuverlässig ### Offene Punkte (aus MEMORY.md) - [ ] Gateway-Neustart für reserveTokensFloor-Aktivierung - [ ] Node 2 NPM → Binary Sync - [ ] Node 5 manuelles Update in Termux - [ ] Node 6 Windows Scheduled Task debuggen - [ ] SSH-Key Deployment Node 2 & Node 3 ### Neue Einträge heute... [score=0.831 recalls=3 avg=0.686 source=memory/archive/2026-06-03/2026-04-15.md:1-29]
