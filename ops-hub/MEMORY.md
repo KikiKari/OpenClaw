@@ -22,3 +22,8 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-04-24.md:10:10 -->
 - > *Note: This is the first day log. Update with significant events and observations.* [score=0.870 recalls=0 avg=0.620 source=memory/2026-04-24.md:10-10]
+
+## Promoted From Short-Term Memory (2026-08-06)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-02-heartbeat.md:3:5 -->
+- Heartbeat recovery check — 2026-08-02 07:28 CEST: Host diagnostics were nominal: CPU idle 96%, swap 0, memory available, and no filesystem threshold breach observed.; Critical platform issue found in the gateway journal: repeated heartbeat requests using `openrouter/openrouter/auto` failed with HTTP 404 (`All providers have been ignored`). The configured fallback `openai/gpt-5.6-sol` also failed because project `proj_5x0o8Fuf4MRfDsdELuDq4vc6` has no access to that model.... [score=0.806 recalls=0 avg=0.620 source=memory/2026-08-02-heartbeat.md:3-5]
