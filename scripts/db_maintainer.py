@@ -24,6 +24,7 @@ IMPORTANT_DIR = WORKSPACE / "important"
 # Verzeichnisse erstellen
 BACKUP_DIR.mkdir(parents=True, exist_ok=True)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
+IMPORTANT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class Logger:
@@ -71,6 +72,28 @@ class DatabaseMaintainer:
         except:
             return None
     
+    def _python_tree_fallback(self, max_depth=8):
+        """Reiner Python-Fallback, falls das 'tree'-Binary fehlt (z.B. Sandbox)."""
+        root = WORKSPACE
+        lines = [str(root)]
+
+        def walk(dirpath, prefix, depth):
+            if depth > max_depth:
+                return
+            try:
+                entries = sorted(dirpath.iterdir(), key=lambda p: (not p.is_dir(), p.name))
+            except (PermissionError, OSError):
+                return
+            for i, entry in enumerate(entries):
+                connector = '└── ' if i == len(entries) - 1 else '├── '
+                lines.append(prefix + connector + entry.name)
+                if entry.is_dir() and not entry.is_symlink():
+                    extension = '    ' if i == len(entries) - 1 else '│   '
+                    walk(entry, prefix + extension, depth + 1)
+
+        walk(root, '', 1)
+        return '\n'.join(lines) + '\n'
+
     def run_tree_command(self):
         """Führt tree -a -L 8 auf workspace aus und gibt Ergebnis zurück"""
         try:
@@ -82,8 +105,11 @@ class DatabaseMaintainer:
                 self.logger.info("tree -a -L 8 erfolgreich ausgeführt")
                 return result.stdout
             else:
-                self.logger.error(f"tree command fehlgeschlagen: {result.stderr}")
-                return None
+                self.logger.warn(f"tree command fehlgeschlagen: {result.stderr.strip()} – nutze Python-Fallback")
+                return self._python_tree_fallback()
+        except FileNotFoundError:
+            self.logger.warn("tree-Binary nicht installiert – nutze Python-Fallback")
+            return self._python_tree_fallback()
         except Exception as e:
             self.logger.error(f"tree command Exception: {e}")
             return None

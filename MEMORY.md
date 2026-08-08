@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-07 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-08-08 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-08 - Daily Memory-Maintenance & Erkenntnisse vom 07./08.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST)
+- ❌ Keine Datei `memory/2026-08-07*.md` gefunden - gestern keine neuen Einträge zu Entscheidungen, Projekten oder ToDos.
+- ✅ Analysiert: `memory/2026-08-08-0038.md` (db-maintainer Heartbeat-Lauf).
+- ℹ️ Wichtige Erkenntnisse aus dem db-maintainer-Lauf: Live-DBs (`docs.db`, `tree.db`) liegen im Workspace-**Root**, `db/*.db` sind nur Sync-/Backup-Quellen; Backup-Namensschema `YYYY-MM-DD_HH-MM_{docs,tree}.db.bak` beibehalten; `tree`-Binary in Sandbox nicht verfügbar → Python-Fallback; Sandbox-Exec-Policy erlaubt nur Einzelbefehle (keine `&&`, `|`, Umleitungen). Zyklus erfolgreich: tree.db v2 + docs.db neu aufgebaut (1505 Doku-Änderungen), Backup erstellt, 4 alte Backups gelöscht.
+- ✅ Archiv-Check: `2026-07-02.md`, `2026-07-04-1139.md`, `2026-07-05-0023.md`, `2026-07-06-0515.md`, `storage-table.csv` und `emails-2025-04-06.md~~` nach `memory/archive/2026-08-08/` verschoben (vorher auf kritische Inhalte geprüft - keine gefunden).
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-07 - Daily Memory-Maintenance & Erkenntnisse vom 06./07.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST)
