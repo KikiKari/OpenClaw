@@ -1,1 +1,1 @@
-- [ ] 2026-05-29 00:01: Run /home/openclaw/.openclaw/scripts/abstractions-publish-gateway.sh (requires manual approval)
+- [x] 2026-05-29 00:01: Alter Publisher am 2026-08-08 stillgelegt; der neue Manager veroeffentlicht selbst.

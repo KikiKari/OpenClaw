@@ -188,6 +188,8 @@ env.*
 # =====================================================
 skills/github-clones/
 **/github-clones/
+git/OpenClaw-gateway1-abstractions/
+git/quellen/
 
 # =====================================================
 # Claude-Artefakte / Müll-Verzeichnisse

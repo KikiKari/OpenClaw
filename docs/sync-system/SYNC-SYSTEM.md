@@ -44,7 +44,7 @@ Automatische bidirektionale Synchronisation zwischen:
 | **openclaw-maintenance** | System-Wartung (root) | 20min + täglich | `/crons/openclaw-maintenance.cron` | ✅ |
 | **db-maintainer** | DB-Wartung, Tree-Updates | 30min | `db_maintainer.py` | ✅ |
 | **log-collector** | Log-Sammlung via SSH | 3h | `log_collector.py` | ✅ |
-| **abstractions-manager** | Script-Portierungen | 6h | `abstractions_manager.py` | ✅ |
+| **abstractions-manager** | Modellgestuetzte Script-Portierungen | 6h | `abstractions-manager-cron.sh` | ✅ Command-Job |
 | **clawhub-git-sync** | ClawHub↔Git Sync | 1h | `sync_agent.py` | ✅ |
 | **node-health-monitor** | Node-Überwachung | 45min | `node_health.py` | ✅ NEU |
 | **channel-status-agent** | Status-Updates | 12h (9,21) | `channel_status.py` | ✅ NEU |
@@ -141,8 +141,9 @@ tail -20 /workspace/logs/sync-agent.log
 ## Integration mit anderen Systemen
 
 ### Abstractions-Manager
-- Erstellt Portierungen in `/workspace/git/Abstraktionen/`
-- Sync-Agent ignoriert Abstraktionen (andere Struktur)
+- Erstellt gepruefte Portierungen in `/workspace/git/OpenClaw-gateway1-abstractions/`
+- Veroeffentlicht selbst nach `OpenClaw@gateway1-abstractions`; der alte Publisher ist stillgelegt
+- Ausgabecheckout und Quellspiegel sind vom Skill-Sync und vom Betriebs-Branch ausgeschlossen
 
 ### Skill-Publishing
 - ClawHub-Skills können via `git-publish-agent` veröffentlicht werden
