@@ -47,3 +47,10 @@
 - Heartbeat — 2026-08-01 19:27 CEST: Host diagnostics remain normal: root filesystem 35% used; 11 GiB memory available; load average 0.87/0.45/0.37; no swap activity.; Gateway is reachable, active, and its paired node is connected. The model-routing fault persists: configured `openrouter/openrouter/auto` returns HTTP 404, then unauthorized fallback `openai/gpt-5.6-sol` fails before `openai/gpt-5.6-terra` succeeds.; Ran the prescribed platform maintenance: `openclaw doctor --yes`, `doctor --force`, and a full memory-index rebuild.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:18-21]
 <!-- openclaw-memory-promotion:memory:memory/2026-08-01.md:22:22 -->
 - Heartbeat — 2026-08-01 19:27 CEST: Attempted to notify `ops-hub` through `sessions_send`; delivery was denied because the target session is not visible from this sandboxed agent session. The configured primary/fallback model chain still needs an ops-hub administrator correction. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:22-22]
+
+## Promoted From Short-Term Memory (2026-08-08)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:5:8 -->
+- Heartbeat recovery check (02:12–02:14 CEST): Host healthy: root filesystem 36% used; 11 GiB available RAM; load 0.57; no swap or I/O pressure.; Gateway is active and reachable at `ws://127.0.0.1:18789`; one paired node is connected.; Repeated model failures observed in the journal: configured `openrouter/openrouter/auto` returns HTTP 404 ("All providers have been ignored"), and fallback `openai/gpt-5.6-sol` is inaccessible to the configured project.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-03.md:5-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:9:9 -->
+- Heartbeat recovery check (02:12–02:14 CEST): Required notification to `ops-hub` could not be delivered: the message API lacked scope and direct session send was forbidden because `agent:ops-hub:main` is not visible from this sandboxed session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-03.md:9-9]
