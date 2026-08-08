@@ -32,6 +32,8 @@ Ergebnisse werden verworfen. Der alte Stub-Erzeuger, manuelle
 `abstractions-utils`, Multi-Node- und Sub-Agent-Behauptungen sowie der separate
 Publisher sind stillgelegt.
 
-Ausgabe: `/home/openclaw/.openclaw/workspace/git/Abstraktionen`  
-Branch: `KikiKari/OpenClaw@gateway2-abstractions`  
+Ausgabe: `/home/openclaw/.openclaw/workspace/git/Abstraktionen`
+
+Branch: `KikiKari/OpenClaw@gateway2-abstractions`
+
 Dokumentation: `/home/openclaw/.openclaw/workspace/ABSTRACTIONS.md`

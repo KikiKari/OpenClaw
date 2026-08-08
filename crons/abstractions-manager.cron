@@ -1,4 +1,10 @@
-# Script Abstractions Manager - alle 6 Stunden
+# NICHT in die Linux-Crontab installieren.
+#
+# Der Script Abstractions Manager wird durch den OpenClaw-Scheduler verwaltet:
+# Job-ID: 39368c42-8279-45d8-8fd8-14c8690593a9
+# Takt: 0 */6 * * * mit 5 Minuten Streuung
+# Agent: main, isolierter Command-Job
+# Befehl: /home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh
+#
 # OPENROUTER_API_KEY wird nur durch den nicht versionierten Laufzeit-Wrapper
 # aus der bestehenden Serverablage in die Prozessumgebung übernommen.
-0 */6 * * * /home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh

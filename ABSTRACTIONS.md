@@ -101,3 +101,14 @@ Der alte Stub-Manager, seine Skills und Helfer, alte Zustände und Logs, der
 separate Publisher sowie der vollständige bisherige Ausgabe-Branch liegen im
 oben genannten Backupbereich. Sie sind keine Laufzeitabhängigkeiten mehr.
 Details stehen in `ABSTRACTIONS-RETIRED.md` und im Sicherungsmanifest.
+
+## Erster Produktionslauf
+
+Der erste echte Lauf des neuen Managers am 2026-08-08 bearbeitete eine
+mittelpriore JavaScript-Quelle und erzeugte fünf vollständige Übersetzungen.
+Alle fünf Ziele bestanden die lokale Syntaxprüfung. PowerShell wurde nach der
+benutzerlokalen Installation von PowerShell 7.6.4 mit derselben
+`ScriptBlock`-Kompilierung geprüft, die der Manager verwendet. Es wurden keine
+Ergebnisse verworfen und keine TODO-/Platzhalter-Muster abgelegt.
+
+Ausgabe-Commit: `0b4e65f` auf `gateway2-abstractions`.
