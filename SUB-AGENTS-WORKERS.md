@@ -18,7 +18,7 @@ Im OpenClaw-Cluster können Aufgaben an Sub-Agents oder Worker-Nodes delegiert w
 | **openclaw-maintenance** | System-Updates, Checks | 20min, täglich | server-maintenance.log | ✅ Root |
 | **db-maintainer** | Datenbank-Wartung, Tree | 30min | db-maintainer.log | ✅ Root |
 | **log-collector** | Multi-Node Log-Sammlung | 3h | log-collector.log | ✅ Root |
-| **abstractions-manager** | Script-Portierungen | 6h | abstractions-manager.log | ✅ Root |
+| **abstractions-manager** | vollständige Modellübersetzungen | 6h | manager.log | ✅ OpenClaw-Scheduler (`main`, isoliert) |
 | **clawhub-git-sync** | ClawHub↔Git Sync | 1h | sync-agent.log | ✅ Root |
 | **node-health-monitor** | Node-Überwachung | 45min | node-health.log | ✅ Root |
 | **channel-status-agent** | Status-Updates | 12h (9,21 Uhr) | channel-status.log | ✅ Root |
@@ -35,7 +35,9 @@ Im OpenClaw-Cluster können Aufgaben an Sub-Agents oder Worker-Nodes delegiert w
 
 #### Zusammenfassung
 
-**Gesamt:** 8 aktive Cron-Agents (alle als root)
+**Historischer Gesamtstand:** 8 Cron-Agents. Der Abstractions Manager läuft
+seit 2026-08-08 als isolierter Command-Job des OpenClaw-Agents `main`, nicht
+als Root-Cron oder eigener Sub-Agent.
 - **System-Wartung:** openclaw-maintenance
 - **Datenbanken:** db-maintainer, log-collector
 - **Code/Skills:** abstractions-manager, clawhub-git-sync

@@ -1,2 +1,4 @@
-# Script Abstractions Manager - Alle 6 Stunden
-0 */6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/abstraction-manager/ABSTRACTIONS_MANAGER.py >> /home/openclaw/.openclaw/workspace/logs/abstractions-manager/cron.log 2>&1
+# Script Abstractions Manager - alle 6 Stunden
+# OPENROUTER_API_KEY wird nur durch den nicht versionierten Laufzeit-Wrapper
+# aus der bestehenden Serverablage in die Prozessumgebung übernommen.
+0 */6 * * * /home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh

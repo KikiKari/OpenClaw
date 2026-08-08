@@ -18,7 +18,7 @@ Für Cron-Jobs ist das korrekt - diese müssen manuell als richtiger User einger
 | openclaw-maintenance | @reboot, */20 | openclaw-maintenance.cron | Gateway-Redundanz | ✅ Aktiv |
 | db-maintainer | */30 | db-maintainer.cron | DB-Wartung | ✅ Aktiv |
 | log-collector | 0 */3 | log-collector.cron | Log-Sammlung | ✅ Aktiv |
-| abstractions-manager | 0 */6 | abstractions-manager.cron | Script-Portierungen | ✅ Aktiv |
+| abstractions-manager | 0 */6 | OpenClaw-Job `39368c42…` | vollständige Modellübersetzungen | ✅ OpenClaw-Scheduler |
 | clawhub-git-sync | 0 * | clawhub-git-sync.cron | Git-Sync | ✅ Aktiv |
 | reports-creator | 0 6, 0 8 So | reports-creator.cron | Tägliche/Wöchentliche Reports | ✅ Aktiv |
 | channel-status | 0 9,21, Mo 9 | channel-status.cron | Status-Updates 2x täglich | ✅ Aktiv |

@@ -23,7 +23,7 @@ OpenClaw betreibt derzeit **8 aktive Sub-Agents** mit Cron-Jobs (alle als root) 
 | 1 | **openclaw-maintenance** | */20 + täglich | System-Wartung, APT, NPM, Gateway | ✅ Aktiv |
 | 2 | **db-maintainer** | */30 | Datenbank-Updates, Tree-Generation | ✅ Aktiv |
 | 3 | **log-collector** | 0 */3 | Multi-Node Log-Sammlung | ✅ Aktiv |
-| 4 | **abstractions-manager** | 0 */6 | Code-Portierungen | ✅ Aktiv |
+| 4 | **abstractions-manager** | 0 */6 | vollständige Modellübersetzungen | ✅ OpenClaw-Scheduler (`main`, isoliert) |
 | 5 | **clawhub-git-sync** | 0 * | ClawHub↔Git Sync | ✅ Aktiv |
 | 6 | **node-health-monitor** | */45 | Node-Status Überwachung | ✅ NEU |
 | 7 | **channel-status-agent** | 0 9,21 + Mo 9 | Status-Updates 2x täglich | ✅ NEU |

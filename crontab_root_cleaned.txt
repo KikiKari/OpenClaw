@@ -1,7 +1,8 @@
 # Bereinigte Root-Crontab
 
-# Script Abstractions Manager - Alle 6 Stunden
-0 */6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py >> /home/openclaw/.openclaw/workspace/logs/abstractions-manager/cron.log 2>&1
+# STILLGELEGT: Kein Linux-Cron fuer den Abstractions Manager installieren.
+# Aktiver OpenClaw-Scheduler-Job: 39368c42-8279-45d8-8fd8-14c8690593a9
+# Laufweg: /home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh
 
 # ClawHub ↔ Git Sync Sub-Agent - Stündlich
 0 * * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/clawhub-git-sync-agent/scripts/sync_agent.py >> /home/openclaw/.openclaw/workspace/logs/sync-agent.log 2>&1

@@ -1,150 +1,103 @@
-# ABSTRACTIONS - Script-Portierungen
+# Abstraktionslauf
 
-**Dokumentation zentral:** `/home/openclaw/.openclaw/workspace/ABSTRACTIONS.md`  
-**Repository:** `/home/openclaw/.openclaw/workspace/git/Abstraktionen/`  
-**Erstellt:** 2026-04-18  
-**Zuletzt aktualisiert:** 2026-04-18  
+## Gültiger Laufweg
 
----
+Der kanonische Manager liegt unter:
 
-## Übersicht
+`/home/openclaw/.openclaw/workspace/abstractions/ABSTRACTIONS_MANAGER.py`
 
-Dieses Projekt portiert OpenClaw-Scripts und -Skills in alternative Programmiersprachen, um:
-- **Flexibilität** zu erhöhen (nicht nur Python/JS)
-- **Lernressourcen** zu schaffen (Vergleich Implementierungen)
-- **Wiederverwendbarkeit** zu ermöglichen (Sprach-spezifische Integration)
-- **Redundanz** zu schaffen (Fallback-Implementierungen)
+Er ist aus `KikiKari/Projects@abstractions` übernommen. Im Manager selbst ist
+nur `veroeffentlichen()` auf `KikiKari/OpenClaw@gateway2-abstractions`
+angepasst. `ABSTRACTIONS_REPO` bleibt der neutrale lokale Pfad
+`workspace/git/Abstraktionen/`; dessen Checkout steht auf dem Ausgabe-Branch.
+`GITHUB_BENUTZER`, `QUELLEN`, Modellkette, Prüfung und Übersetzungslogik sind
+unverändert.
 
----
+Der Betriebsstand wird ausschließlich auf `OpenClaw@gateway2` gepflegt. Die
+Erzeugnisse werden ausschließlich auf `OpenClaw@gateway2-abstractions`
+veröffentlicht.
 
-## Struktur
+## Verhalten
 
-```
-git/Abstraktionen/
-├── perl5/           # Perl 5 Portierungen (.pl)
-├── perl6/           # Raku Portierungen (.raku)
-├── javascript/      # Node.js Portierungen (.js)
-├── python/          # Python Portierungen (.py)
-├── shell/           # Bash Portierungen (.sh)
-├── powershell/      # PowerShell Portierungen (.ps1)
-├── tcl/             # Tcl Portierungen (.tcl)
-├── ruby/            # Ruby Portierungen (.rb)
-├── lua/             # Lua Portierungen (.lua)
-├── go/              # Go Portierungen (.go)
-├── STATUS.md        # Automatisch generierter Status-Report
-└── README.md        # Repository-Übersicht
-```
+Jede Quelldatei wird vollständig an OpenRouter gesendet und in die jeweils
+anderen der sechs Zielsprachen übersetzt:
 
----
+- JavaScript;
+- Perl 5;
+- PowerShell 7;
+- Python 3.12;
+- Bash 5;
+- Tcl 8.6.
 
-## Automatisierung
+Die unveränderte Quellenliste umfasst `KikiKari/OpenClaw`,
+`KikiKari/Projects` und `KikiKari/Onboarding` mit den im Manager festgelegten
+Branches. Inhaltsgleiche Quellen werden per SHA-256 zusammengeführt.
 
-### Haupt-Script
-`/home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py`
+Erzeugnisse mit TODO-/Platzhalter-Merkmalen, auffällig geringer Länge oder
+ungültiger Syntax werden verworfen. Es gibt keinen Stub-Fallback.
 
-- Läuft alle 6 Stunden via Cron
-- Verteilt Jobs auf Multi-Node-Infrastruktur
-- Nutzt verschiedene KI-Modelle für Code-Interpolation
+## Modellkette
 
-### Cron-Job
-```
-0 */6 * * * /usr/bin/python3 /home/openclaw/.openclaw/workspace/skills/script-abstractions-manager/scripts/abstractions_manager.py >> /home/openclaw/.openclaw/workspace/logs/abstractions-manager/cron.log 2>&1
-```
+Die Modellkette der Ausarbeitung bleibt in dieser Reihenfolge erhalten:
 
-### Manuelle Tools
+1. `qwen/qwen3-coder`
+2. `deepseek/deepseek-chat-v3.1`
+3. `z-ai/glm-4.6`
+4. `mistralai/codestral-2508`
+5. `qwen/qwen-2.5-coder-32b-instruct`
 
-| Tool | Pfad | Funktion |
-|------|------|----------|
-| create_abstraction.py | `skills/abstractions-utils/scripts/` | Einzelne Portierung |
-| spawn_agent.py | `skills/sub-agents-utils/scripts/` | Sub-Agent spawnen |
-| check_nodes.py | `skills/multi-nodes-utils/scripts/` | Node-Status prüfen |
-| dispatch_job.py | `skills/multi-nodes-utils/scripts/` | Job verteilen |
+## Laufzeit und Secrets
 
----
+Der nicht versionierte Laufzeit-Wrapper
+`/home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh` liest
+`OPENROUTER_API_KEY` aus der vorhandenen Serverablage
+`/home/openclaw/.openclaw/.env` und exportiert ihn nur in den Prozess des
+Managers. Für die Veröffentlichung wird ein vorhandener GitHub-Token unter
+dem vom Manager erwarteten Namen in die Prozessumgebung abgebildet. Kein
+Schlüsselwert liegt in einer versionierten Datei.
 
-## Multi-Node Infrastruktur
+Manueller Lauf:
 
-| Node | Rolle | Status |
-|------|-------|--------|
-| Node 1 | Gateway-Master, Medium Capacity | ✅ Aktiv |
-| Node 2 | Stable Worker, Medium Capacity | ✅ Aktiv |
-| Node 3 | Worker (bald verfügbar) | 🔄 Reorganisation |
-| Node 5 | Mobile (Redmi Note 11S) | 📱 Intermittent |
-| Node 7 | Docker High-Capacity | 🆕 Bald verfügbar |
-
----
-
-## Zielsprachen
-
-| Sprache | Extension | Besonderheit |
-|---------|-----------|--------------|
-| Perl 5 | `.pl` | Klassisch, stabil |
-| Perl 6 (Raku) | `.raku` | Modern, expressiv |
-| JavaScript | `.js` | Node.js Ecosystem |
-| Python | `.py` | OpenClaw-Standard |
-| Bash/Shell | `.sh` | Unix-native |
-| PowerShell | `.ps1` | Windows/Cross-platform |
-| Tcl | `.tcl` | Eingebettbar, simpel |
-| Ruby | `.rb` | Expressiv, lesbar |
-| Lua | `.lua` | Lightweight, eingebettbar |
-| Go | `.go` | Kompiliert, schnell |
-
----
-
-## Verwendung
-
-### Repository klonen
 ```bash
-cd /home/openclaw/.openclaw/workspace/git/Abstraktionen
-git log --oneline -10
+/home/openclaw/.openclaw/workspace/scripts/abstractions-manager.sh --prioritaet high
 ```
 
-### Eigene Portierung erstellen
+Inventar-Probelauf ohne Modellaufruf:
+
 ```bash
-cd /home/openclaw/.openclaw/workspace/skills/abstractions-utils/scripts
-python3 create_abstraction.py \
-  --source /path/to/original.py \
-  --target-lang perl5
+/home/openclaw/.openclaw/workspace/scripts/abstractions-manager.sh \
+  --prioritaet high --anzahl 1 --probelauf
 ```
 
-### Sub-Agent für komplexe Portierung
-```bash
-cd /home/openclaw/.openclaw/workspace/skills/sub-agents-utils/scripts
-python3 spawn_agent.py \
-  --task "Port json_processor.py to Go with full error handling" \
-  --model openrouter/anthropic/claude-haiku-4.5 \
-  --timeout 1800
+## Ablagen
+
+| Zweck | Pfad |
+|---|---|
+| Ausgabe-Checkout | `workspace/git/Abstraktionen/` |
+| Quellspiegel und Arbeitsbäume | `workspace/git/quellen/` |
+| Zustand | `workspace/db/abstractions_state.json` |
+| Manager-Log | `workspace/logs/abstractions-manager/manager.log` |
+| Vorher-Befund | `reports/ABSTRACTIONS-BEFORE-2026-08-08.md` |
+| Sicherung | `workspace/backups/abstractions-replacement-20260808T204155+0200/` |
+
+## Zeitplan
+
+Der Manager läuft alle sechs Stunden über den Laufzeit-Wrapper. Der frühere
+separate Publisher ist stillgelegt, weil der neue Manager Commit und Push nach
+erfolgreichen Übersetzungen selbst ausführt.
+
+Aktiver OpenClaw-Scheduler-Job:
+`39368c42-8279-45d8-8fd8-14c8690593a9` (`main`, isolierter Command-Job,
+fünf Minuten Streuung). Der Manager wird nicht zusätzlich über die
+Linux-Benutzer-Crontab gestartet.
+
+```cron
+0 */6 * * * /home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh
 ```
 
----
+## Stillgelegter Altbestand
 
-## Status
-
-Siehe aktuellen Status-Report:
-```bash
-cat /home/openclaw/.openclaw/workspace/git/Abstraktionen/STATUS.md
-```
-
----
-
-## Referenzen
-
-- **Skill-Doku:** `skills/script-abstractions-manager/SKILL.md`
-- **Cron-Config:** `crons/abstractions-manager.cron`
-- **State:** `db/abstractions_state.json`
-- **Logs:** `logs/abstractions-manager/`
-
----
-
-## Backup
-
-Tägliche Backups in:
-```
-/workspace/backups/YYYYMMDD/
-├── SKILL.md
-└── abstractions_manager.py
-```
-
----
-
-**Hinweis:** Dies ist ein automatisiertes Langzeitprojekt. Portierungen werden iterativ verbessert und erweitert.
+Der alte Stub-Manager, seine Skills und Helfer, alte Zustände und Logs, der
+separate Publisher sowie der vollständige bisherige Ausgabe-Branch liegen im
+oben genannten Backupbereich. Sie sind keine Laufzeitabhängigkeiten mehr.
+Details stehen in `ABSTRACTIONS-RETIRED.md` und im Sicherungsmanifest.
