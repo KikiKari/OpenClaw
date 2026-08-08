@@ -58,6 +58,19 @@ Sie liegen unter:
 `MANIFEST.sha256` und die Git-Bundles dienen der Integritaetspruefung und
 Wiederherstellung.
 
+## Abnahme 2026-08-08
+
+- Vollstaendiger Probelauf: 19 Arbeitsbaeume, 764 eindeutige Quelldateien,
+  120 High-Priority-Quellen nach Aktualisierung von `gateway1`.
+- Live-Nachweis: eine Python-Quelle, fuenf angenommene Uebersetzungen, null
+  verworfene Ergebnisse.
+- Syntax lokal bestaetigt fuer JavaScript, Perl 5, Bash und Tcl; PowerShell
+  wurde wegen fehlendem `pwsh` gemaess Managerregel angenommen.
+- Ausgabe-Commits: `ba5fc2b` entfernt den gesicherten Rumpfbestand;
+  `f965cba` enthaelt die ersten modellgenerierten Uebersetzungen.
+- Betriebs-Commit: `a7b278a` ersetzt und dokumentiert den alten Workflow auf
+  `gateway1`.
+
 ## Fehlerbehandlung
 
 - Ohne `OPENROUTER_API_KEY` beendet sich ein Live-Lauf mit Exit-Code 2.
