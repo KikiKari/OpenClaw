@@ -52,9 +52,7 @@ workspace/git/
 │   │   └── scripts/
 │   ├── log-collector/
 │   └── ...
-├── abstractions/              # <-- Abstraktionen (nur via Sub-Agent)
-│   └── ...
-└── abstractions-utils/        # <-- Helper-Skills (bereits vorhanden)
+└── OpenClaw-gateway1-abstractions/  # Ausgabecheckout; vom Skill-Sync ausgeschlossen
 ```
 
 ## Konfliktlösung

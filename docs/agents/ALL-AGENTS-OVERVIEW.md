@@ -16,7 +16,7 @@ OpenClaw betreibt derzeit **8 aktive Sub-Agents** mit Cron-Jobs (alle als root) 
 
 ---
 
-## 🟢 Aktive Agents (mit Root Cron-Job)
+## 🟢 Zeitgesteuerte Agents und Command-Jobs
 
 | # | Agent | Intervall | Zweck | Status |
 |---|-------|-----------|-------|--------|

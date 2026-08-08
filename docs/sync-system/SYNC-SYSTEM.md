@@ -35,9 +35,9 @@ Automatische bidirektionale Synchronisation zwischen:
 - Konfliktbehandlung
 - State-Management
 
-### 3. Alle aktiven Sub-Agents
+### 3. Alle zeitgesteuerten Jobs
 
-#### Cron-aktivierte Agents (Stand: 2026-04-18)
+#### Cron-Agents und Command-Jobs
 
 | Agent | Zweck | Intervall | Script/Datei | Status |
 |-------|-------|-----------|-------------|--------|
