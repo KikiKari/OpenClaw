@@ -64,8 +64,9 @@ Wiederherstellung.
   120 High-Priority-Quellen nach Aktualisierung von `gateway1`.
 - Live-Nachweis: eine Python-Quelle, fuenf angenommene Uebersetzungen, null
   verworfene Ergebnisse.
-- Syntax lokal bestaetigt fuer JavaScript, Perl 5, Bash und Tcl; PowerShell
-  wurde wegen fehlendem `pwsh` gemaess Managerregel angenommen.
+- Syntax lokal bestaetigt fuer JavaScript, Perl 5, Bash, Tcl und PowerShell.
+  PowerShell 7.6.4 wurde aus dem offiziellen GitHub-Release benutzerlokal
+  installiert und das Release-Archiv per SHA-256 geprueft.
 - Ausgabe-Commits: `ba5fc2b` entfernt den gesicherten Rumpfbestand;
   `f965cba` enthaelt die ersten modellgenerierten Uebersetzungen.
 - Betriebs-Commit: `a7b278a` ersetzt und dokumentiert den alten Workflow auf
@@ -75,7 +76,8 @@ Wiederherstellung.
 
 - Ohne `OPENROUTER_API_KEY` beendet sich ein Live-Lauf mit Exit-Code 2.
 - Ohne erreichbare Quellen oder Inventar endet er mit Exit-Code 1.
-- Fehlende Zielinterpreter werden protokolliert; auf diesem Server fehlt `pwsh`.
+- Fehlende Zielinterpreter werden protokolliert. Alle sechs fuer den Lauf
+  benoetigten Interpreter sind auf diesem Server verfuegbar.
 - Fehlgeschlagene Modellantworten werden verworfen und nicht als erledigt markiert.
 - Der erste blob-gefilterte Checkout grosser Quellen kann das feste Git-Limit
   erreichen. Nach Sicherung eines verwaisten `index.lock` denselben Lauf erneut
