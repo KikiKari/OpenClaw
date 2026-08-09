@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
-# 3d_31a461.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/3d_31a461.js
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
-
 # 3d.html — portiert nach python
 # Quelle: html, Projects@TikTok-Live-Companion-iOS:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+
+"""
+Generates the 3D architecture visualization HTML file for TikTok LIVE Companion iOS.
+This script creates a complete HTML document with embedded CSS and JavaScript that
+visualizes the app's architecture using three.js.
+"""
 
 import sys
-import json
+import html
 
-def generateHTML():
-    return '''<!DOCTYPE html>
+def generate_3d_html(output_file):
+    """Generate the complete HTML document for 3D architecture visualization."""
+    
+    html_content = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -105,7 +109,7 @@ def generateHTML():
 <script>
 (function(){
   "use strict";
-  var SPEC = ''' + json.dumps(SPEC, separators=(',', ':')) + ''';
+  var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "wkwebview", "name": "WKWebView", "untertitel": "Hauptframe"}, {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"}, {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}]}, {"name": "Bruecke", "farbe": "#2481cc", "blocks": [{"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"}, {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"}, {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}]}, {"name": "App", "farbe": "#6d5bd0", "blocks": [{"id": "swift", "name": "Swift", "untertitel": "Sprache"}, {"id": "swiftui", "name": "SwiftUI", "untertitel": "Oberflaeche"}, {"id": "webkit", "name": "WebKit", "untertitel": "WebView"}]}, {"name": "Audio", "farbe": "#b45309", "blocks": [{"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"}, {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"}, {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"}, {"id": "panel", "name": "Panel", "untertitel": "Anzeige"}, {"id": "ipa", "name": "IPA", "untertitel": "iOS-Artefakt"}]}], "kanten": [{"von": "wkwebview", "nach": "mobile-bridge-v1", "art": "fluss"}, {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"}, {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"}, {"von": "mobile-bridge-v1", "nach": "swift", "art": "fluss"}, {"von": "origin-pruefung", "nach": "swiftui", "art": "fluss"}, {"von": "typ-groesse", "nach": "webkit", "art": "fluss"}, {"von": "swift", "nach": "shazamkit", "art": "fluss"}, {"von": "swiftui", "nach": "mikrofon", "art": "fluss"}, {"von": "webkit", "nach": "webview-pcm-exp", "art": "fluss"}, {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"}, {"von": "mikrofon", "nach": "panel", "art": "fluss"}, {"von": "webview-pcm-exp", "nach": "ipa", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -333,14 +337,14 @@ def generateHTML():
 </body>
 </html>'''
 
-SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "wkwebview", "name": "WKWebView", "untertitel": "Hauptframe"}, {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"}, {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}]}, {"name": "Bruecke", "farbe": "#2481cc", "blocks": [{"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"}, {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"}, {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}]}, {"name": "App", "farbe": "#6d5bd0", "blocks": [{"id": "swift", "name": "Swift", "untertitel": "Sprache"}, {"id": "swiftui", "name": "SwiftUI", "untertitel": "Oberflaeche"}, {"id": "webkit", "name": "WebKit", "untertitel": "WebView"}]}, {"name": "Audio", "farbe": "#b45309", "blocks": [{"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"}, {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"}, {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"}, {"id": "panel", "name": "Panel", "untertitel": "Anzeige"}, {"id": "ipa", "name": "IPA", "untertitel": "iOS-Artefakt"}]}], "kanten": [{"von": "wkwebview", "nach": "mobile-bridge-v1", "art": "fluss"}, {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"}, {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"}, {"von": "mobile-bridge-v1", "nach": "swift", "art": "fluss"}, {"von": "origin-pruefung", "nach": "swiftui", "art": "fluss"}, {"von": "typ-groesse", "nach": "webkit", "art": "fluss"}, {"von": "swift", "nach": "shazamkit", "art": "fluss"}, {"von": "swiftui", "nach": "mikrofon", "art": "fluss"}, {"von": "webkit", "nach": "webview-pcm-exp", "art": "fluss"}, {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"}, {"von": "mikrofon", "nach": "panel", "art": "fluss"}, {"von": "webview-pcm-exp", "nach": "ipa", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]}
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
 
-def main():
-    outputFile = sys.argv[1] if len(sys.argv) > 1 else '3d.html'
-    htmlContent = generateHTML()
-    with open(outputFile, 'w', encoding='utf-8') as f:
-        f.write(htmlContent)
-    print(f'HTML file generated: {outputFile}')
-
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 script.py <output_file>")
+        sys.exit(1)
+    
+    output_file = sys.argv[1]
+    generate_3d_html(output_file)
+    print(f"Generated 3D HTML visualization: {output_file}")

@@ -1,14 +1,14 @@
 #!/usr/bin/env pwsh
-# 3d_31a461.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/3d_31a461.js
+# 3d.html — portiert nach powershell
+# Quelle: html, Projects@TikTok-Live-Companion-iOS:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-# 3d.html — portiert nach PowerShell 7
-# Quelle: html, Projects@TikTok-Live-Companion-iOS:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$OutputFile
+)
 
-function GenerateHTML {
-  return @"
+$htmlContent = @"
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -331,19 +331,5 @@ function GenerateHTML {
 </body>
 </html>
 "@
-}
 
-function Main {
-  param(
-    [string]$OutputFile = "3d.html"
-  )
-  
-  $htmlContent = GenerateHTML
-  Set-Content -Path $OutputFile -Value $htmlContent -Encoding UTF8
-  Write-Host "HTML file generated: $OutputFile"
-}
-
-# Wenn das Skript direkt ausgeführt wird, führe die Main-Funktion aus
-if ($MyInvocation.InvocationName -eq (& { $MyInvocation.MyCommand.Name })) {
-  Main @args
-}
+$htmlContent | Out-File -FilePath $OutputFile -Encoding UTF8

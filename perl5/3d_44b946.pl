@@ -1,17 +1,27 @@
-#!/usr/bin/env perl
-# 3d_44b946.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/3d_44b946.js
+#!/usr/bin/perl
+# 3d.html — portiert nach perl5
+# Quelle: html, Projects@Vision-Check:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use File::Basename;
 
-sub generateHTML {
-    my ($outputPath) = @_;
-    
-    my $html = <<'HTML_END';
+# Parameter: Ausgabedatei
+my $ausgabe_datei = $ARGV[0] || die "Verwendung: $0 <ausgabedatei>\n";
+
+# HTML-Inhalt generieren
+my $html_inhalt = generiere_html();
+
+# In Datei schreiben
+open my $fh, '>', $ausgabe_datei or die "Kann '$ausgabe_datei' nicht öffnen: $!\n";
+print $fh $html_inhalt;
+close $fh;
+
+print "HTML-Datei erfolgreich erstellt: $ausgabe_datei\n";
+
+# Funktion zur Erstellung des HTML-Inhalts
+sub generiere_html {
+    return <<'HTML';
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -333,19 +343,5 @@ sub generateHTML {
 </script>
 </body>
 </html>
-HTML_END
-
-    open(my $fh, '>:encoding(UTF-8)', $outputPath) or die "Could not open file '$outputPath': $!";
-    print $fh $html;
-    close $fh;
-    print "HTML file generated: $outputPath\n";
+HTML
 }
-
-# Main execution
-if (!caller) {
-    my $outputPath = $ARGV[0] || '3d.html';
-    generateHTML($outputPath);
-}
-
-1; # module return value
-__END__

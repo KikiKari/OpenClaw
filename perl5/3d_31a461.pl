@@ -1,16 +1,82 @@
-#!/usr/bin/env perl
-# 3d_31a461.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/3d_31a461.js
+#!/usr/bin/perl
+# 3d.html — portiert nach perl5
+# Quelle: html, Projects@TikTok-Live-Companion-iOS:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use JSON::PP;
-use File::Spec;
+use JSON;
 
-sub generateHTML {
-  return <<'HTML_END';
+my $spec = {
+  "schichten" => [
+    {
+      "name" => "Quelle",
+      "farbe" => "#5f6773",
+      "blocks" => [
+        {"id" => "wkwebview", "name" => "WKWebView", "untertitel" => "Hauptframe"},
+        {"id" => "www-tiktok-com", "name" => "www.tiktok.com", "untertitel" => "nur diese Origin"},
+        {"id" => "hauptframe", "name" => "Hauptframe", "untertitel" => "kein iframe"}
+      ]
+    },
+    {
+      "name" => "Bruecke",
+      "farbe" => "#2481cc",
+      "blocks" => [
+        {"id" => "mobile-bridge-v1", "name" => "Mobile Bridge v1", "untertitel" => "Origin + Typ"},
+        {"id" => "origin-pruefung", "name" => "Origin-Pruefung", "untertitel" => "fail closed"},
+        {"id" => "typ-groesse", "name" => "Typ + Groesse", "untertitel" => "begrenzt"}
+      ]
+    },
+    {
+      "name" => "App",
+      "farbe" => "#6d5bd0",
+      "blocks" => [
+        {"id" => "swift", "name" => "Swift", "untertitel" => "Sprache"},
+        {"id" => "swiftui", "name" => "SwiftUI", "untertitel" => "Oberflaeche"},
+        {"id" => "webkit", "name" => "WebKit", "untertitel" => "WebView"}
+      ]
+    },
+    {
+      "name" => "Audio",
+      "farbe" => "#b45309",
+      "blocks" => [
+        {"id" => "shazamkit", "name" => "ShazamKit", "untertitel" => "nur nach Klick"},
+        {"id" => "mikrofon", "name" => "Mikrofon", "untertitel" => "stabil"},
+        {"id" => "webview-pcm-exp", "name" => "WebView-PCM (exp.)", "untertitel" => "experimentell"}
+      ]
+    },
+    {
+      "name" => "Ausgabe",
+      "farbe" => "#fe2c55",
+      "blocks" => [
+        {"id" => "fluechtiger-streamzustand", "name" => "fluechtiger Streamzustand", "untertitel" => "nicht persistiert"},
+        {"id" => "panel", "name" => "Panel", "untertitel" => "Anzeige"},
+        {"id" => "ipa", "name" => "IPA", "untertitel" => "iOS-Artefakt"}
+      ]
+    }
+  ],
+  "kanten" => [
+    {"von" => "wkwebview", "nach" => "mobile-bridge-v1", "art" => "fluss"},
+    {"von" => "www-tiktok-com", "nach" => "origin-pruefung", "art" => "fluss"},
+    {"von" => "hauptframe", "nach" => "typ-groesse", "art" => "fluss"},
+    {"von" => "mobile-bridge-v1", "nach" => "swift", "art" => "fluss"},
+    {"von" => "origin-pruefung", "nach" => "swiftui", "art" => "fluss"},
+    {"von" => "typ-groesse", "nach" => "webkit", "art" => "fluss"},
+    {"von" => "swift", "nach" => "shazamkit", "art" => "fluss"},
+    {"von" => "swiftui", "nach" => "mikrofon", "art" => "fluss"},
+    {"von" => "webkit", "nach" => "webview-pcm-exp", "art" => "fluss"},
+    {"von" => "shazamkit", "nach" => "fluechtiger-streamzustand", "art" => "fluss"},
+    {"von" => "mikrofon", "nach" => "panel", "art" => "fluss"},
+    {"von" => "webview-pcm-exp", "nach" => "ipa", "art" => "fluss"}
+  ],
+  "kantenarten" => [
+    {"art" => "fluss", "farbe" => "#fe2c55", "stil" => "voll", "text" => "Fluss von unten nach oben"}
+  ]
+};
+
+my $json_spec = JSON->new->utf8->encode($spec);
+
+my $html = <<'HTML';
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -105,7 +171,7 @@ sub generateHTML {
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "wkwebview", "name": "WKWebView", "untertitel": "Hauptframe"}, {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"}, {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}]}, {"name": "Bruecke", "farbe": "#2481cc", "blocks": [{"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"}, {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"}, {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}]}, {"name": "App", "farbe": "#6d5bd0", "blocks": [{"id": "swift", "name": "Swift", "untertitel": "Sprache"}, {"id": "swiftui", "name": "SwiftUI", "untertitel": "Oberflaeche"}, {"id": "webkit", "name": "WebKit", "untertitel": "WebView"}]}, {"name": "Audio", "farbe": "#b45309", "blocks": [{"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"}, {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"}, {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"}, {"id": "panel", "name": "Panel", "untertitel": "Anzeige"}, {"id": "ipa", "name": "IPA", "untertitel": "iOS-Artefakt"}]}], "kanten": [{"von": "wkwebview", "nach": "mobile-bridge-v1", "art": "fluss"}, {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"}, {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"}, {"von": "mobile-bridge-v1", "nach": "swift", "art": "fluss"}, {"von": "origin-pruefung", "nach": "swiftui", "art": "fluss"}, {"von": "typ-groesse", "nach": "webkit", "art": "fluss"}, {"von": "swift", "nach": "shazamkit", "art": "fluss"}, {"von": "swiftui", "nach": "mikrofon", "art": "fluss"}, {"von": "webkit", "nach": "webview-pcm-exp", "art": "fluss"}, {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"}, {"von": "mikrofon", "nach": "panel", "art": "fluss"}, {"von": "webview-pcm-exp", "nach": "ipa", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = JSON.parse('SPEC_JSON');
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -332,18 +398,15 @@ sub generateHTML {
 </script>
 </body>
 </html>
-HTML_END
-}
+HTML
 
-sub main {
-  my $outputFile = $ARGV[0] || '3d.html';
-  my $htmlContent = generateHTML();
-  
-  open my $fh, '>:encoding(UTF-8)', $outputFile or die "Cannot write to $outputFile: $!";
-  print $fh $htmlContent;
-  close $fh;
-  
-  print "HTML file generated: $outputFile\n";
-}
+$html =~ s/SPEC_JSON/$json_spec/;
 
-main();
+if (@ARGV && $ARGV[0] ne '') {
+    open my $fh, '>', $ARGV[0] or die "Cannot write to file '$ARGV[0]': $!";
+    print $fh $html;
+    close $fh;
+    print "HTML file generated: $ARGV[0]\n";
+} else {
+    print $html;
+}

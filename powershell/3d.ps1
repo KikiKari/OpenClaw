@@ -1,10 +1,14 @@
 #!/usr/bin/env pwsh
-# 3d.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach powershell
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-function Generate-HTML {
-    return @"
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$OutputPath
+)
+
+$htmlContent = @"
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -327,26 +331,6 @@ function Generate-HTML {
 </body>
 </html>
 "@
-}
 
-function Main {
-    $args = $args
-    
-    if ($args.Count -ne 1) {
-        Write-Error "Usage: pwsh script.ps1 <output-file>"
-        exit 1
-    }
-    
-    $outputFile = $args[0]
-    
-    try {
-        $htmlContent = Generate-HTML
-        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
-        Write-Output "HTML file generated successfully: $outputFile"
-    } catch {
-        Write-Error "Error writing file: $($_.Exception.Message)"
-        exit 1
-    }
-}
-
-Main @args
+$htmlContent | Out-File -FilePath $OutputPath -Encoding UTF8
+Write-Host "HTML file generated at: $OutputPath"

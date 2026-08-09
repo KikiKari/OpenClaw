@@ -1,36 +1,20 @@
-#!/usr/bin/env bash
-# 3d_111adf.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/3d_111adf.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 3d.html — portiert nach shell
+# Quelle: html, Projects@Weather-Check:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 3d.html — portiert nach bash
-# Quelle: html, Projects@Weather-Check:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 <output-file>" >&2
+# Parameter prüfen
+if [[ $# -ne 1 ]]; then
+    echo "Verwendung: $0 <ausgabedatei.html>" >&2
     exit 1
 fi
 
-output_file="$1"
+AUSGABE="$1"
 
-# Create temporary file for HTML content
-temp_html=$(mktemp)
-
-# Function to escape HTML attributes
-escape_attr() {
-    printf '%s' "$1" | sed 's/&/\&amp;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g; s/</\&lt;/g; s/>/\&gt;/g'
-}
-
-# Function to escape HTML text content
-escape_text() {
-    printf '%s' "$1" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'
-}
-
-# Generate HTML content
-cat > "$temp_html" << 'EOF'
+# HTML-Datei erzeugen
+cat > "$AUSGABE" << 'EOF'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -88,41 +72,42 @@ cat > "$temp_html" << 'EOF'
 </head>
 <body>
 <div class="wrap">
-<p class="technik">three.js · r128</p>
-<h1>Weather-Check</h1>
-<p class="lede">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>
-<div class="raster">
-<div class="buehne" id="buehne">
-<div class="knoepfe">
-<button id="btn-plus" title="Näher">+</button>
-<button id="btn-minus" title="Weiter weg">−</button>
-<button id="btn-reset">Zurücksetzen</button>
-<button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
+
+  <p class="technik">three.js · r128</p>
+  <h1>Weather-Check</h1>
+  <p class="lede">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>
+
+  <div class="raster">
+    <div class="buehne" id="buehne">
+      <div class="knoepfe">
+        <button id="btn-plus" title="Näher">+</button>
+        <button id="btn-minus" title="Weiter weg">−</button>
+        <button id="btn-reset">Zurücksetzen</button>
+        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
+      </div>
+    </div>
+
+    <aside class="karte">
+      <h2>Ausgewählter Knoten</h2>
+      <h3 id="k-name">—</h3>
+      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
+      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
+      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
+      <div class="blaettern">
+        <button id="btn-prev">←<br>Vorheriger</button>
+        <button id="btn-next">Nächster<br>→</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="legende" id="legende"></div>
+  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
+
 </div>
-</div>
-<aside class="karte">
-<h2>Ausgewählter Knoten</h2>
-<h3 id="k-name">—</h3>
-<p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
-<dl class="feld">
-<dt>Schicht</dt>
-<dd id="k-schicht">—</dd>
-</dl>
-<dl class="feld">
-<dt>ID</dt>
-<dd id="k-id">—</dd>
-</dl>
-<div class="blaettern">
-<button id="btn-prev">←<br>Vorheriger</button>
-<button id="btn-next">Nächster<br>→</button>
-</div>
-</aside>
-</div>
-<div class="legende" id="legende"></div>
-<p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
-</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>(function(){
+<script>
+(function(){
   "use strict";
   var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "dwd-radar", "name": "DWD-Radar", "untertitel": "Zugbahn"}, {"id": "messstationen", "name": "Messstationen", "untertitel": "Ist-Wert"}, {"id": "open-meteo", "name": "Open-Meteo", "untertitel": "Minutenwerte"}, {"id": "satellit", "name": "Satellit", "untertitel": "Bewoelkung"}, {"id": "webcams", "name": "Webcams", "untertitel": "Sichtpruefung"}, {"id": "handyfoto", "name": "Handyfoto", "untertitel": "Wolkenbasis"}]}, {"name": "Zusammenfuehrung", "farbe": "#2481cc", "blocks": [{"id": "zugbahn", "name": "Zugbahn", "untertitel": "extrapoliert"}, {"id": "gewichtung", "name": "Gewichtung", "untertitel": "je Quelle"}, {"id": "widerspruchspruefung", "name": "Widerspruchspruefung", "untertitel": "benennen statt mitteln"}]}, {"name": "Einschaetzung", "farbe": "#6d5bd0", "blocks": [{"id": "30-min", "name": "30 min", "untertitel": "hohe Sicherheit"}, {"id": "60-min", "name": "60 min", "untertitel": "mittel"}, {"id": "120-min", "name": "120 min", "untertitel": "grob"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}, {"id": "computer-prompt", "name": "Computer-Prompt", "untertitel": "Perplexity"}, {"id": "handlungssatz", "name": "Handlungssatz", "untertitel": "eine Entscheidung"}]}], "kanten": [{"von": "dwd-radar", "nach": "zugbahn", "art": "fluss"}, {"von": "messstationen", "nach": "gewichtung", "art": "fluss"}, {"von": "open-meteo", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "satellit", "nach": "zugbahn", "art": "fluss"}, {"von": "webcams", "nach": "gewichtung", "art": "fluss"}, {"von": "handyfoto", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "zugbahn", "nach": "30-min", "art": "fluss"}, {"von": "gewichtung", "nach": "60-min", "art": "fluss"}, {"von": "widerspruchspruefung", "nach": "120-min", "art": "fluss"}, {"von": "30-min", "nach": "pwa", "art": "fluss"}, {"von": "60-min", "nach": "computer-prompt", "art": "fluss"}, {"von": "120-min", "nach": "handlungssatz", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#2481cc", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
@@ -347,12 +332,10 @@ cat > "$temp_html" << 'EOF'
     stelle();
     renderer.render(szene, kamera);
   })();
-})();</script>
+})();
+</script>
 </body>
 </html>
 EOF
 
-# Move temporary file to output file
-mv "$temp_html" "$output_file"
-
-echo "HTML file generated successfully: $output_file"
+echo "HTML-Datei wurde erfolgreich erstellt: $AUSGABE"

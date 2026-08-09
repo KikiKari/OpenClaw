@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
-# 1781743218784.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.html — portiert nach javascript
+# 1781743218784.html — portiert nach python
 # Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-import sys
+import argparse
+import base64
+import hashlib
+import json
 import os
+import secrets
+import sys
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+import datetime
 
-def generateHTML():
-    html = '''<!DOCTYPE html>
+
+def generate_html():
+    return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -217,25 +224,22 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
-    return html
 
 def main():
-    args = sys.argv[1:]
-    
-    if len(args) != 1:
-        print('Usage: python3 script.py <output-file>', file=sys.stderr)
-        sys.exit(1)
-    
-    outputFile = args[0]
+    parser = argparse.ArgumentParser(description='Generate Secret Vault Public HTML file')
+    parser.add_argument('output_file', help='Output HTML file path')
+    args = parser.parse_args()
+
+    html_content = generate_html()
     
     try:
-        htmlContent = generateHTML()
-        with open(outputFile, 'w', encoding='utf-8') as f:
-            f.write(htmlContent)
-        print(f'HTML file generated: {outputFile}')
-    except Exception as error:
-        print(f'Error generating HTML file: {error}', file=sys.stderr)
+        with open(args.output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        print(f"Successfully generated {args.output_file}")
+    except Exception as e:
+        print(f"Error writing file: {e}", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

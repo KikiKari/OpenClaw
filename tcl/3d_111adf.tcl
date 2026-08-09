@@ -1,138 +1,23 @@
 #!/usr/bin/env tclsh
-# 3d_111adf.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/3d_111adf.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-# 3d.html — portiert nach Tcl 8.6
+# 3d.html — portiert nach tcl
 # Quelle: html, Projects@Weather-Check:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-# Tcl does not have a direct equivalent to Node.js's fs module, so we'll use built-in file commands
-# Tcl does not have a direct equivalent to Node.js's path module, so we'll handle paths manually
+# Tcl/Tk port of the 3D Weather-Check visualization
+# This script generates the HTML file that was originally 3d.html
 
-# Create HTML document structure
-proc createHTMLDocument {} {
-    set doc [dict create]
-    dict set doc html [dict create tag html attrs [dict create lang de] children {} textContent ""]
-    dict set doc head [dict create tag head attrs {} children {} textContent ""]
-    dict set doc body [dict create tag body attrs {} children {} textContent ""]
+proc generate_html {filename} {
+    set html {}
     
-    # Add head and body to html
-    set htmlNode [dict get $doc html]
-    dict lappend htmlNode children [dict get $doc head]
-    dict lappend htmlNode children [dict get $doc body]
-    dict set doc html $htmlNode
-    
-    return $doc
-}
-
-# Append child to parent
-proc appendChild {docVar parent child} {
-    upvar $docVar doc
-    set parentNode [dict get $doc $parent]
-    if {![dict exists $parentNode children]} {
-        dict set parentNode children {}
-    }
-    dict lappend parentNode children $child
-    dict set doc $parent $parentNode
-}
-
-# Set attribute on element
-proc setAttribute {element name value} {
-    if {![dict exists $element attrs]} {
-        dict set element attrs {}
-    }
-    dict set element attrs $name $value
-    return $element
-}
-
-# Insert adjacent HTML (simplified)
-proc insertAdjacentHTML {element position html} {
-    if {$position eq "beforeend"} {
-        if {![dict exists $element children]} {
-            dict set element children {}
-        }
-        dict lappend element children [dict create html $html]
-    }
-    return $element
-}
-
-# Generate HTML from node
-proc generateHTML {node} {
-    if {[dict exists $node text]} {
-        return [dict get $node text]
-    }
-    
-    if {[dict exists $node html]} {
-        return [dict get $node html]
-    }
-    
-    set tag [dict get $node tag]
-    set attrs ""
-    if {[dict exists $node attrs]} {
-        dict for {key value} [dict get $node attrs] {
-            append attrs " $key=\"$value\""
-        }
-    }
-    
-    if {[dict exists $node children] && [llength [dict get $node children]] > 0} {
-        set childrenHTML ""
-        foreach child [dict get $node children] {
-            append childrenHTML [generateHTML $child]
-        }
-        return "<$tag$attrs>$childrenHTML</$tag>"
-    } else {
-        return "<$tag$attrs></$tag>"
-    }
-}
-
-# Generate full HTML document
-proc generateFullHTML {doc} {
-    set doctype "<!DOCTYPE html>"
-    set htmlContent [generateHTML [dict get $doc html]]
-    return "$doctype\n$htmlContent"
-}
-
-# Build the complete document
-proc buildDocument {} {
-    set doc [createHTMLDocument]
-    
-    # Build head section
-    set metaCharset [dict create tag meta attrs [dict create charset utf-8] children {} textContent ""]
-    set head [dict get $doc head]
-    lappend headChildren $metaCharset
-    dict set head children $headChildren
-    dict set doc head $head
-    
-    set metaViewport [dict create tag meta attrs [dict create name viewport content "width=device-width, initial-scale=1"] children {} textContent ""]
-    set head [dict get $doc head]
-    set headChildren [dict get $head children]
-    lappend headChildren $metaViewport
-    dict set head children $headChildren
-    dict set doc head $head
-    
-    set title [dict create tag title attrs {} children {} textContent "Weather-Check — Interaktive Architektur"]
-    set head [dict get $doc head]
-    set headChildren [dict get $head children]
-    lappend headChildren $title
-    dict set head children $headChildren
-    dict set doc head $head
-    
-    set metaDescription [dict create tag meta attrs [dict create name description content "Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen."] children {} textContent ""]
-    set head [dict get $doc head]
-    set headChildren [dict get $head children]
-    lappend headChildren $metaDescription
-    dict set head children $headChildren
-    dict set doc head $head
-    
-    set metaThemeColor [dict create tag meta attrs [dict create name theme-color content "#2481cc"] children {} textContent ""]
-    set head [dict get $doc head]
-    set headChildren [dict get $head children]
-    lappend headChildren $metaThemeColor
-    dict set head children $headChildren
-    dict set doc head $head
-    
-    set style [dict create tag style attrs {} children {} textContent {
+    append html {<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Weather-Check — Interaktive Architektur</title>
+<meta name="description" content="Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#2481cc">
+<style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
@@ -177,187 +62,53 @@ proc buildDocument {} {
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
-}]
-    set head [dict get $doc head]
-    set headChildren [dict get $head children]
-    lappend headChildren $style
-    dict set head children $headChildren
-    dict set doc head $head
-    
-    # Build body section
-    set wrap [dict create tag div attrs [dict create class wrap] children {} textContent ""]
-    set body [dict get $doc body]
-    set bodyChildren [dict get $body children]
-    lappend bodyChildren $wrap
-    dict set body children $bodyChildren
-    dict set doc body $body
-    
-    set technik [dict create tag p attrs [dict create class technik] children {} textContent "three.js · r128"]
-    set wrapChildren [dict get $wrap children]
-    lappend wrapChildren $technik
-    dict set wrap children $wrapChildren
-    dict set doc wrapNode $wrap
-    
-    set h1 [dict create tag h1 attrs {} children {} textContent "Weather-Check"]
-    set wrapChildren [dict get $wrap children]
-    lappend wrapChildren $h1
-    dict set wrap children $wrapChildren
-    dict set doc wrapNode $wrap
-    
-    set lede [dict create tag p attrs [dict create class lede] children {} textContent "Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen."]
-    set wrapChildren [dict get $wrap children]
-    lappend wrapChildren $lede
-    dict set wrap children $wrapChildren
-    dict set doc wrapNode $wrap
-    
-    set raster [dict create tag div attrs [dict create class raster] children {} textContent ""]
-    set wrapChildren [dict get $wrap children]
-    lappend wrapChildren $raster
-    dict set wrap children $wrapChildren
-    dict set doc wrapNode $wrap
-    
-    set buehne [dict create tag div attrs [dict create class buehne id buehne] children {} textContent ""]
-    set rasterChildren [dict get $raster children]
-    lappend rasterChildren $buehne
-    dict set raster children $rasterChildren
-    dict set doc rasterNode $raster
-    
-    set knoepfe [dict create tag div attrs [dict create class knoepfe] children {} textContent ""]
-    set buehneChildren [dict get $buehne children]
-    lappend buehneChildren $knoepfe
-    dict set buehne children $buehneChildren
-    dict set doc buehneNode $buehne
-    
-    set btnPlus [dict create tag button attrs [dict create id btn-plus title "Näher"] children {} textContent "+"]
-    set knoepfeChildren [dict get $knoepfe children]
-    lappend knoepfeChildren $btnPlus
-    dict set knoepfe children $knoepfeChildren
-    dict set doc knoepfeNode $knoepfe
-    
-    set btnMinus [dict create tag button attrs [dict create id btn-minus title "Weiter weg"] children {} textContent "−"]
-    set knoepfeChildren [dict get $knoepfe children]
-    lappend knoepfeChildren $btnMinus
-    dict set knoepfe children $knoepfeChildren
-    dict set doc knoepfeNode $knoepfe
-    
-    set btnReset [dict create tag button attrs [dict create id btn-reset] children {} textContent "Zurücksetzen"]
-    set knoepfeChildren [dict get $knoepfe children]
-    lappend knoepfeChildren $btnReset
-    dict set knoepfe children $knoepfeChildren
-    dict set doc knoepfeNode $knoepfe
-    
-    set btnIso [dict create tag button attrs [dict create id btn-iso aria-pressed "true" title "Isometrisch oder perspektivisch"] children {} textContent "Iso"]
-    set knoepfeChildren [dict get $knoepfe children]
-    lappend knoepfeChildren $btnIso
-    dict set knoepfe children $knoepfeChildren
-    dict set doc knoepfeNode $knoepfe
-    
-    set karte [dict create tag aside attrs [dict create class karte] children {} textContent ""]
-    set rasterChildren [dict get $raster children]
-    lappend rasterChildren $karte
-    dict set raster children $rasterChildren
-    dict set doc rasterNode $raster
-    
-    set karteH2 [dict create tag h2 attrs {} children {} textContent "Ausgewählter Knoten"]
-    set karteChildren [dict get $karte children]
-    lappend karteChildren $karteH2
-    dict set karte children $karteChildren
-    dict set doc karteNode $karte
-    
-    set kName [dict create tag h3 attrs [dict create id k-name] children {} textContent "—"]
-    set karteChildren [dict get $karte children]
-    lappend karteChildren $kName
-    dict set karte children $karteChildren
-    dict set doc karteNode $karte
-    
-    set kSub [dict create tag p attrs [dict create class sub id k-sub] children {} textContent "Knoten anklicken oder durchblättern"]
-    set karteChildren [dict get $karte children]
-    lappend karteChildren $kSub
-    dict set karte children $karteChildren
-    dict set doc karteNode $karte
-    
-    set feld1 [dict create tag dl attrs [dict create class feld] children {} textContent ""]
-    set karteChildren [dict get $karte children]
-    lappend karteChildren $feld1
-    dict set karte children $karteChildren
-    dict set doc karteNode $karte
-    
-    set feld1Dt [dict create tag dt attrs {} children {} textContent "Schicht"]
-    set feld1Children [dict get $feld1 children]
-    lappend feld1Children $feld1Dt
-    dict set feld1 children $feld1Children
-    dict set doc feld1Node $feld1
-    
-    set feld1Dd [dict create tag dd attrs [dict create id k-schicht] children {} textContent "—"]
-    set feld1Children [dict get $feld1 children]
-    lappend feld1Children $feld1Dd
-    dict set feld1 children $feld1Children
-    dict set doc feld1Node $feld1
-    
-    set feld2 [dict create tag dl attrs [dict create class feld] children {} textContent ""]
-    set karteChildren [dict get $karte children]
-    lappend karteChildren $feld2
-    dict set karte children $karteChildren
-    dict set doc karteNode $karte
-    
-    set feld2Dt [dict create tag dt attrs {} children {} textContent "ID"]
-    set feld2Children [dict get $feld2 children]
-    lappend feld2Children $feld2Dt
-    dict set feld2 children $feld2Children
-    dict set doc feld2Node $feld2
-    
-    set feld2Dd [dict create tag dd attrs [dict create id k-id] children {} textContent "—"]
-    set feld2Children [dict get $feld2 children]
-    lappend feld2Children $feld2Dd
-    dict set feld2 children $feld2Children
-    dict set doc feld2Node $feld2
-    
-    set blaettern [dict create tag div attrs [dict create class blaettern] children {} textContent ""]
-    set karteChildren [dict get $karte children]
-    lappend karteChildren $blaettern
-    dict set karte children $karteChildren
-    dict set doc karteNode $karte
-    
-    set btnPrev [dict create tag button attrs [dict create id btn-prev] children {} textContent "←<br>Vorheriger"]
-    set blaetternChildren [dict get $blaettern children]
-    lappend blaetternChildren $btnPrev
-    dict set blaettern children $blaetternChildren
-    dict set doc blaetternNode $blaettern
-    
-    set btnNext [dict create tag button attrs [dict create id btn-next] children {} textContent "Nächster<br>→"]
-    set blaetternChildren [dict get $blaettern children]
-    lappend blaetternChildren $btnNext
-    dict set blaettern children $blaetternChildren
-    dict set doc blaetternNode $blaettern
-    
-    set legende [dict create tag div attrs [dict create class legende id legende] children {} textContent ""]
-    set wrapChildren [dict get $wrap children]
-    lappend wrapChildren $legende
-    dict set wrap children $wrapChildren
-    dict set doc wrapNode $wrap
-    
-    set fuss [dict create tag p attrs [dict create class fuss] children {} textContent "Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal."]
-    set wrapChildren [dict get $wrap children]
-    lappend wrapChildren $fuss
-    dict set wrap children $wrapChildren
-    dict set doc wrapNode $wrap
-    
-    # Add scripts
-    set script1 [dict create tag script attrs [dict create src "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"] children {} textContent ""]
-    set body [dict get $doc body]
-    set bodyChildren [dict get $body children]
-    lappend bodyChildren $script1
-    dict set body children $bodyChildren
-    dict set doc body $body
-    
-    set script2 [dict create tag script attrs {} children {} textContent "(function(){
-  \"use strict\";
-  var SPEC = {\"schichten\": [{\"name\": \"Quellen\", \"farbe\": \"#5f6773\", \"blocks\": [{\"id\": \"dwd-radar\", \"name\": \"DWD-Radar\", \"untertitel\": \"Zugbahn\"}, {\"id\": \"messstationen\", \"name\": \"Messstationen\", \"untertitel\": \"Ist-Wert\"}, {\"id\": \"open-meteo\", \"name\": \"Open-Meteo\", \"untertitel\": \"Minutenwerte\"}, {\"id\": \"satellit\", \"name\": \"Satellit\", \"untertitel\": \"Bewoelkung\"}, {\"id\": \"webcams\", \"name\": \"Webcams\", \"untertitel\": \"Sichtpruefung\"}, {\"id\": \"handyfoto\", \"name\": \"Handyfoto\", \"untertitel\": \"Wolkenbasis\"}]}, {\"name\": \"Zusammenfuehrung\", \"farbe\": \"#2481cc\", \"blocks\": [{\"id\": \"zugbahn\", \"name\": \"Zugbahn\", \"untertitel\": \"extrapoliert\"}, {\"id\": \"gewichtung\", \"name\": \"Gewichtung\", \"untertitel\": \"je Quelle\"}, {\"id\": \"widerspruchspruefung\", \"name\": \"Widerspruchspruefung\", \"untertitel\": \"benennen statt mitteln\"}]}, {\"name\": \"Einschaetzung\", \"farbe\": \"#6d5bd0\", \"blocks\": [{\"id\": \"30-min\", \"name\": \"30 min\", \"untertitel\": \"hohe Sicherheit\"}, {\"id\": \"60-min\", \"name\": \"60 min\", \"untertitel\": \"mittel\"}, {\"id\": \"120-min\", \"name\": \"120 min\", \"untertitel\": \"grob\"}]}, {\"name\": \"Ausgabe\", \"farbe\": \"#0f766e\", \"blocks\": [{\"id\": \"pwa\", \"name\": \"PWA\", \"untertitel\": \"Service Worker\"}, {\"id\": \"computer-prompt\", \"name\": \"Computer-Prompt\", \"untertitel\": \"Perplexity\"}, {\"id\": \"handlungssatz\", \"name\": \"Handlungssatz\", \"untertitel\": \"eine Entscheidung\"}]}], \"kanten\": [{\"von\": \"dwd-radar\", \"nach\": \"zugbahn\", \"art\": \"fluss\"}, {\"von\": \"messstationen\", \"nach\": \"gewichtung\", \"art\": \"fluss\"}, {\"von\": \"open-meteo\", \"nach\": \"widerspruchspruefung\", \"art\": \"fluss\"}, {\"von\": \"satellit\", \"nach\": \"zugbahn\", \"art\": \"fluss\"}, {\"von\": \"webcams\", \"nach\": \"gewichtung\", \"art\": \"fluss\"}, {\"von\": \"handyfoto\", \"nach\": \"widerspruchspruefung\", \"art\": \"fluss\"}, {\"von\": \"zugbahn\", \"nach\": \"30-min\", \"art\": \"fluss\"}, {\"von\": \"gewichtung\", \"nach\": \"60-min\", \"art\": \"fluss\"}, {\"von\": \"widerspruchspruefung\", \"nach\": \"120-min\", \"art\": \"fluss\"}, {\"von\": \"30-min\", \"nach\": \"pwa\", \"art\": \"fluss\"}, {\"von\": \"60-min\", \"nach\": \"computer-prompt\", \"art\": \"fluss\"}, {\"von\": \"120-min\", \"nach\": \"handlungssatz\", \"art\": \"fluss\"}], \"kantenarten\": [{\"art\": \"fluss\", \"farbe\": \"#2481cc\", \"stil\": \"voll\", \"text\": \"Fluss von unten nach oben\"}]};
+</style>
+</head>
+<body>
+<div class="wrap">
 
-  var buehne = document.getElementById(\"buehne\");
-  if (typeof THREE === \"undefined\"){
-    buehne.insertAdjacentHTML(\"beforeend\",
-      '<div class=\"fehler\">three.js konnte nicht geladen werden. ' +
+  <p class="technik">three.js · r128</p>
+  <h1>Weather-Check</h1>
+  <p class="lede">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>
+
+  <div class="raster">
+    <div class="buehne" id="buehne">
+      <div class="knoepfe">
+        <button id="btn-plus" title="Näher">+</button>
+        <button id="btn-minus" title="Weiter weg">−</button>
+        <button id="btn-reset">Zurücksetzen</button>
+        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
+      </div>
+    </div>
+
+    <aside class="karte">
+      <h2>Ausgewählter Knoten</h2>
+      <h3 id="k-name">—</h3>
+      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
+      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
+      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
+      <div class="blaettern">
+        <button id="btn-prev">←<br>Vorheriger</button>
+        <button id="btn-next">Nächster<br>→</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="legende" id="legende"></div>
+  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var SPEC = } {schichten: \[{name: "Quellen", farbe: "#5f6773", blocks: \[{id: "dwd-radar", name: "DWD-Radar", untertitel: "Zugbahn"}, {id: "messstationen", name: "Messstationen", untertitel: "Ist-Wert"}, {id: "open-meteo", name: "Open-Meteo", untertitel: "Minutenwerte"}, {id: "satellit", name: "Satellit", untertitel: "Bewoelkung"}, {id: "webcams", name: "Webcams", untertitel: "Sichtpruefung"}, {id: "handyfoto", name: "Handyfoto", untertitel: "Wolkenbasis"}]}, {name: "Zusammenfuehrung", farbe: "#2481cc", blocks: \[{id: "zugbahn", name: "Zugbahn", untertitel: "extrapoliert"}, {id: "gewichtung", name: "Gewichtung", untertitel: "je Quelle"}, {id: "widerspruchspruefung", name: "Widerspruchspruefung", untertitel: "benennen statt mitteln"}]}, {name: "Einschaetzung", farbe: "#6d5bd0", blocks: \[{id: "30-min", name: "30 min", untertitel: "hohe Sicherheit"}, {id: "60-min", name: "60 min", untertitel: "mittel"}, {id: "120-min", name: "120 min", untertitel: "grob"}]}, {name: "Ausgabe", farbe: "#0f766e", blocks: \[{id: "pwa", name: "PWA", untertitel: "Service Worker"}, {id: "computer-prompt", name: "Computer-Prompt", untertitel: "Perplexity"}, {id: "handlungssatz", name: "Handlungssatz", untertitel: "eine Entscheidung"}]}], kanten: \[{von: "dwd-radar", nach: "zugbahn", art: "fluss"}, {von: "messstationen", nach: "gewichtung", art: "fluss"}, {von: "open-meteo", nach: "widerspruchspruefung", art: "fluss"}, {von: "satellit", nach: "zugbahn", art: "fluss"}, {von: "webcams", nach: "gewichtung", art: "fluss"}, {von: "handyfoto", nach: "widerspruchspruefung", art: "fluss"}, {von: "zugbahn", nach: "30-min", art: "fluss"}, {von: "gewichtung", nach: "60-min", art: "fluss"}, {von: "widerspruchspruefung", nach: "120-min", art: "fluss"}, {von: "30-min", nach: "pwa", art: "fluss"}, {von: "60-min", nach: "computer-prompt", art: "fluss"}, {von: "120-min", nach: "handlungssatz", art: "fluss"}], kantenarten: \[{art: "fluss", farbe: "#2481cc", stil: "voll", text: "Fluss von unten nach oben"}]};
+
+  var buehne = document.getElementById("buehne");
+  if (typeof THREE === "undefined"){
+    buehne.insertAdjacentHTML("beforeend",
+      '<div class="fehler">three.js konnte nicht geladen werden. ' +
       'Die Seite braucht einmalig Netzzugang zum CDN.</div>');
     return;
   }
@@ -386,20 +137,20 @@ proc buildDocument {} {
   // ------------------------------------------------------------ Schilder ---
   // Text auf eine Textur, dann als Billboard — bleibt bei jeder Drehung lesbar.
   function schild(text, unter){
-    var c = document.createElement(\"canvas\"), x = c.getContext(\"2d\");
-    var f1 = \"700 40px -apple-system,Segoe UI,Roboto,sans-serif\";
-    var f2 = \"500 27px -apple-system,Segoe UI,Roboto,sans-serif\";
+    var c = document.createElement("canvas"), x = c.getContext("2d");
+    var f1 = "700 40px -apple-system,Segoe UI,Roboto,sans-serif";
+    var f2 = "500 27px -apple-system,Segoe UI,Roboto,sans-serif";
     x.font = f1; var w1 = x.measureText(text).width;
     x.font = f2; var w2 = unter ? x.measureText(unter).width : 0;
     var w = Math.ceil(Math.max(w1, w2)) + 40, h = unter ? 96 : 62;
     c.width = w; c.height = h;
-    x = c.getContext(\"2d\");
-    x.fillStyle = \"rgba(255,255,255,.95)\";
+    x = c.getContext("2d");
+    x.fillStyle = "rgba(255,255,255,.95)";
     if (x.roundRect){ x.beginPath(); x.roundRect(0,0,w,h,13); x.fill(); }
     else x.fillRect(0,0,w,h);
-    x.fillStyle = \"#16191d\"; x.font = f1; x.textBaseline = \"middle\";
+    x.fillStyle = "#16191d"; x.font = f1; x.textBaseline = "middle";
     x.fillText(text, 20, unter ? 32 : 31);
-    if (unter){ x.fillStyle = \"#5f6773\"; x.font = f2; x.fillText(unter, 20, 68); }
+    if (unter){ x.fillStyle = "#5f6773"; x.font = f2; x.fillText(unter, 20, 68); }
     var t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter;
     var s = new THREE.Sprite(new THREE.SpriteMaterial({map:t, transparent:true, depthTest:false}));
     s.scale.set(w/62*2.5, h/62*2.5, 1);
@@ -415,7 +166,7 @@ proc buildDocument {} {
   SPEC.schichten.forEach(function(sch, si){
     var y = START + si * ABSTAND;
     var bl = sch.blocks.map(function(b){
-      return (typeof b === \"string\") ? {id:null, name:b, untertitel:\"\"} : b;
+      return (typeof b === "string") ? {id:null, name:b, untertitel:""} : b;
     });
     var spalten = Math.max(1, Math.ceil(bl.length / 2));
     var reihen = bl.length <= 1 ? 1 : 2;
@@ -441,8 +192,8 @@ proc buildDocument {} {
       s.position.set(x, y + BH/2 + (b.untertitel ? 2.1 : 1.6), z);
       gruppe.add(s);
 
-      var id = b.id || (b.name.toLowerCase().replace(/[^a-z0-9]+/g, \"-\").replace(/^-|-$/g, \"\"));
-      var eintrag = {id:id, name:b.name, untertitel:b.untertitel||\"\", schicht:sch.name,
+      var id = b.id || (b.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
+      var eintrag = {id:id, name:b.name, untertitel:b.untertitel||"", schicht:sch.name,
                      mesh:m, mat:mat, farbe:new THREE.Color(sch.farbe), pos:m.position};
       m.userData.index = knoten.length;
       knoten.push(eintrag); nachId[id] = eintrag;
@@ -456,11 +207,11 @@ proc buildDocument {} {
   (SPEC.kanten || []).forEach(function(k){
     var a = nachId[k.von], b = nachId[k.nach];
     if (!a || !b) return;
-    var art = STIL[k.art] || {farbe:\"#8ea2ff\", stil:\"voll\"};
+    var art = STIL[k.art] || {farbe:"#8ea2ff", stil:"voll"};
     var g = new THREE.BufferGeometry().setFromPoints([
       a.pos.clone().setY(a.pos.y + 0.9), b.pos.clone().setY(b.pos.y - 0.9)]);
     var linie;
-    if (art.stil === \"gestrichelt\"){
+    if (art.stil === "gestrichelt"){
       linie = new THREE.Line(g, new THREE.LineDashedMaterial(
         {color:art.farbe, dashSize:1.4, gapSize:1.0, transparent:true, opacity:.9}));
       linie.computeLineDistances();
@@ -473,12 +224,12 @@ proc buildDocument {} {
 
   szene.add(gruppe);
 
-  var leg = document.getElementById(\"legende\");
+  var leg = document.getElementById("legende");
   (SPEC.kantenarten || []).forEach(function(a){
-    var s = document.createElement(\"span\");
-    s.innerHTML = '<i class=\"strich\" style=\"border-top-color:' + a.farbe +
-                  ';border-top-style:' + (a.stil === \"gestrichelt\" ? \"dashed\" : \"solid\") +
-                  '\"></i>' + a.text;
+    var s = document.createElement("span");
+    s.innerHTML = '<i class="strich" style="border-top-color:' + a.farbe +
+                  ';border-top-style:' + (a.stil === "gestrichelt" ? "dashed" : "solid") +
+                  '"></i>' + a.text;
     leg.appendChild(s);
   });
 
@@ -494,14 +245,14 @@ proc buildDocument {} {
     var k = knoten[aktiv];
     k.mat.emissive.setHex(0x333333);
     k.mesh.scale.set(1.1, 1.5, 1.1);
-    document.getElementById(\"k-name\").textContent = k.name;
-    document.getElementById(\"k-sub\").textContent = k.untertitel || \"—\";
-    document.getElementById(\"k-schicht\").textContent = k.schicht;
-    document.getElementById(\"k-id\").textContent = k.id;
+    document.getElementById("k-name").textContent = k.name;
+    document.getElementById("k-sub").textContent = k.untertitel || "—";
+    document.getElementById("k-schicht").textContent = k.schicht;
+    document.getElementById("k-id").textContent = k.id;
   }
 
   var strahl = new THREE.Raycaster(), zeiger = new THREE.Vector2();
-  renderer.domElement.addEventListener(\"click\", function(e){
+  renderer.domElement.addEventListener("click", function(e){
     if (gezogen) return;
     var r = renderer.domElement.getBoundingClientRect();
     zeiger.x = ((e.clientX - r.left) / r.width) * 2 - 1;
@@ -510,8 +261,8 @@ proc buildDocument {} {
     var treffer = strahl.intersectObjects(klickbar, false);
     if (treffer.length) waehle(treffer[0].object.userData.index);
   });
-  document.getElementById(\"btn-prev\").addEventListener(\"click\", function(){ waehle(aktiv - 1); });
-  document.getElementById(\"btn-next\").addEventListener(\"click\", function(){ waehle(aktiv + 1); });
+  document.getElementById("btn-prev").addEventListener("click", function(){ waehle(aktiv - 1); });
+  document.getElementById("btn-next").addEventListener("click", function(){ waehle(aktiv + 1); });
 
   // ------------------------------------------------------------- Kamera ----
   var azimut = Math.PI/4, elevation = 0.62, rotiert = true;
@@ -522,23 +273,75 @@ proc buildDocument {} {
     kamera.position.set(x, y, z); kamera.lookAt(0, 0, 0);
   }
   var zieht = false, gezogen = false, lx = 0, ly = 0;
-  renderer.domElement.addEventListener(\"pointerdown\", function(e){
+  renderer.domElement.addEventListener("pointerdown", function(e){
     zieht = true; gezogen = false; lx = e.clientX; ly = e.clientY;
   });
-  window.addEventListener(\"pointermove\", function(e){
+  window.addEventListener("pointermove", function(e){
     if (!zieht) return;
     if (Math.abs(e.clientX-lx) + Math.abs(e.clientY-ly) > 3){ gezogen = true; rotiert = false; }
     azimut -= (e.clientX - lx) * 0.006;
     elevation = Math.max(0.08, Math.min(1.45, elevation + (e.clientY - ly) * 0.005));
     lx = e.clientX; ly = e.clientY;
   });
-  window.addEventListener(\"pointerup\", function(){ zieht = false; setTimeout(function(){ gezogen = false; }, 0); });
+  window.addEventListener("pointerup", function(){ zieht = false; setTimeout(function(){ gezogen = false; }, 0); });
 
   function zoom(f){
     if (iso){ D = Math.max(11, Math.min(54, D * f)); groesse(); }
     else { radius = Math.max(32, Math.min(160, radius * f)); }
   }
-  document.getElementById(\"btn-plus\").addEventListener(\"click\", function(){ zoom(0.85); });
-  document.getElementById(\"btn-minus\").addEventListener(\"click\", function(){ zoom(1.18); });
-  renderer.domElement.addEventListener(\"wheel\", function(e){
-    e.preventDefault(); zoom(e
+  document.getElementById("btn-plus").addEventListener("click", function(){ zoom(0.85); });
+  document.getElementById("btn-minus").addEventListener("click", function(){ zoom(1.18); });
+  renderer.domElement.addEventListener("wheel", function(e){
+    e.preventDefault(); zoom(e.deltaY > 0 ? 1.08 : 0.93);
+  }, {passive:false});
+  document.getElementById("btn-reset").addEventListener("click", function(){
+    azimut = Math.PI/4; elevation = 0.62; D = 26; radius = 82; rotiert = true;
+    iso = true; kamera = kameraIso;
+    document.getElementById("btn-iso").setAttribute("aria-pressed", "true");
+    document.getElementById("btn-iso").textContent = "Iso";
+    waehle(0); groesse();
+  });
+  document.getElementById("btn-iso").addEventListener("click", function(){
+    iso = !iso; kamera = iso ? kameraIso : kameraPersp;
+    this.setAttribute("aria-pressed", String(iso));
+    this.textContent = iso ? "Iso" : "Persp";
+    groesse();
+  });
+
+  function groesse(){
+    var w = buehne.clientWidth, h = buehne.clientHeight;
+    aspekt = w / h;
+    kameraIso.left = -D*aspekt; kameraIso.right = D*aspekt;
+    kameraIso.top = D; kameraIso.bottom = -D; kameraIso.updateProjectionMatrix();
+    kameraPersp.aspect = aspekt; kameraPersp.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  }
+  window.addEventListener("resize", groesse);
+
+  groesse();
+  waehle(0);
+  (function schleife(){
+    requestAnimationFrame(schleife);
+    if (rotiert) azimut += 0.003;
+    stelle();
+    renderer.render(szene, kamera);
+  })();
+})();
+</script>
+</body>
+</html>}
+    
+    # Write to file
+    set f [open $filename w]
+    puts -nonewline $f $html
+    close $f
+}
+
+# Main execution
+if {$argc != 1} {
+    puts stderr "Usage: $argv0 <output-file>"
+    exit 1
+}
+
+set output_file [lindex $argv 0]
+generate_html $output_file

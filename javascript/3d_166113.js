@@ -1,94 +1,13 @@
 #!/usr/bin/env node
-// 3d_166113.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/3d_166113.pl
+// 3d.html — portiert nach javascript
+// Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
 // Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-// 3d.html — portiert nach JavaScript fuer Node 20
-// Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
-// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+const fs = require('fs');
+const path = require('path');
 
-import { writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-// Parameter: Ausgabedatei
-const args = process.argv.slice(2);
-if (args.length === 0) {
-    console.error(`Verwendung: ${process.argv[1]} <ausgabedatei>`);
-    process.exit(1);
-}
-const ausgabe_datei = args[0];
-
-// Spezifikation der Architektur
-const SPEC = {
-  "schichten": [
-    {
-      "name": "Quelle",
-      "farbe": "#5f6773",
-      "blocks": [
-        {"id": "tiktok-webview", "name": "TikTok-WebView", "untertitel": "Hauptframe"},
-        {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"},
-        {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}
-      ]
-    },
-    {
-      "name": "Bruecke",
-      "farbe": "#2481cc",
-      "blocks": [
-        {"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"},
-        {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"},
-        {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}
-      ]
-    },
-    {
-      "name": "App",
-      "farbe": "#6d5bd0",
-      "blocks": [
-        {"id": "kotlin", "name": "Kotlin", "untertitel": "Sprache"},
-        {"id": "jetpack-compose", "name": "Jetpack Compose", "untertitel": "Oberflaeche"},
-        {"id": "androidx-webkit", "name": "AndroidX WebKit", "untertitel": "WebView"}
-      ]
-    },
-    {
-      "name": "Audio",
-      "farbe": "#b45309",
-      "blocks": [
-        {"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"},
-        {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"},
-        {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}
-      ]
-    },
-    {
-      "name": "Ausgabe",
-      "farbe": "#fe2c55",
-      "blocks": [
-        {"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"},
-        {"id": "panel", "name": "Panel", "untertitel": "Anzeige"},
-        {"id": "apk", "name": "APK", "untertitel": "Android-Artefakt"}
-      ]
-    }
-  ],
-  "kanten": [
-    {"von": "tiktok-webview", "nach": "mobile-bridge-v1", "art": "fluss"},
-    {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"},
-    {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"},
-    {"von": "mobile-bridge-v1", "nach": "kotlin", "art": "fluss"},
-    {"von": "origin-pruefung", "nach": "jetpack-compose", "art": "fluss"},
-    {"von": "typ-groesse", "nach": "androidx-webkit", "art": "fluss"},
-    {"von": "kotlin", "nach": "shazamkit", "art": "fluss"},
-    {"von": "jetpack-compose", "nach": "mikrofon", "art": "fluss"},
-    {"von": "androidx-webkit", "nach": "webview-pcm-exp", "art": "fluss"},
-    {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"},
-    {"von": "mikrofon", "nach": "panel", "art": "fluss"},
-    {"von": "webview-pcm-exp", "nach": "apk", "art": "fluss"}
-  ],
-  "kantenarten": [
-    {"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}
-  ]
-};
-
-// HTML-Template
-const html_template = `<!DOCTYPE html>
+function generateHTML() {
+  const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -182,7 +101,7 @@ const html_template = `<!DOCTYPE html>
 <script>
 (function(){
   "use strict";
-  var SPEC = %s;
+  var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "tiktok-webview", "name": "TikTok-WebView", "untertitel": "Hauptframe"}, {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"}, {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}]}, {"name": "Bruecke", "farbe": "#2481cc", "blocks": [{"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"}, {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"}, {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}]}, {"name": "App", "farbe": "#6d5bd0", "blocks": [{"id": "kotlin", "name": "Kotlin", "untertitel": "Sprache"}, {"id": "jetpack-compose", "name": "Jetpack Compose", "untertitel": "Oberflaeche"}, {"id": "androidx-webkit", "name": "AndroidX WebKit", "untertitel": "WebView"}]}, {"name": "Audio", "farbe": "#b45309", "blocks": [{"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"}, {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"}, {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"}, {"id": "panel", "name": "Panel", "untertitel": "Anzeige"}, {"id": "apk", "name": "APK", "untertitel": "Android-Artefakt"}]}], "kanten": [{"von": "tiktok-webview", "nach": "mobile-bridge-v1", "art": "fluss"}, {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"}, {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"}, {"von": "mobile-bridge-v1", "nach": "kotlin", "art": "fluss"}, {"von": "origin-pruefung", "nach": "jetpack-compose", "art": "fluss"}, {"von": "typ-groesse", "nach": "androidx-webkit", "art": "fluss"}, {"von": "kotlin", "nach": "shazamkit", "art": "fluss"}, {"von": "jetpack-compose", "nach": "mikrofon", "art": "fluss"}, {"von": "androidx-webkit", "nach": "webview-pcm-exp", "art": "fluss"}, {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"}, {"von": "mikrofon", "nach": "panel", "art": "fluss"}, {"von": "webview-pcm-exp", "nach": "apk", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -410,56 +329,27 @@ const html_template = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// JSON-Serialisierung der Spezifikation
-function to_json(data) {
-    let json = "";
-    
-    if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
-        json += "{";
-        const pairs = [];
-        const keys = Object.keys(data).sort();
-        for (const key of keys) {
-            const value = data[key];
-            const key_json = '"' + key + '"';
-            const value_json = to_json(value);
-            pairs.push(`${key_json}:${value_json}`);
-        }
-        json += pairs.join(",");
-        json += "}";
-    } else if (Array.isArray(data)) {
-        json += "[";
-        const items = [];
-        for (const item of data) {
-            items.push(to_json(item));
-        }
-        json += items.join(",");
-        json += "]";
-    } else if (data === null) {
-        json += "null";
-    } else if (typeof data === 'number') {
-        json += String(data);
-    } else if (typeof data === 'boolean') {
-        json += data ? "true" : "false";
-    } else {
-        // String escapen
-        let escaped = String(data);
-        escaped = escaped.replace(/\\/g, "\\\\");
-        escaped = escaped.replace(/"/g, '\\"');
-        escaped = escaped.replace(/\n/g, "\\n");
-        escaped = escaped.replace(/\r/g, "\\r");
-        escaped = escaped.replace(/\t/g, "\\t");
-        json += '"' + escaped + '"';
-    }
-    
-    return json;
+  return html;
 }
 
-const json_spec = to_json(SPEC);
+function main() {
+  const args = process.argv.slice(2);
+  
+  if (args.length !== 1) {
+    console.error('Usage: node 3d.js <output-file>');
+    process.exit(1);
+  }
+  
+  const outputFile = args[0];
+  
+  try {
+    const htmlContent = generateHTML();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML file generated: ${outputFile}`);
+  } catch (error) {
+    console.error('Error generating HTML file:', error.message);
+    process.exit(1);
+  }
+}
 
-// HTML-Datei generieren
-const html_content = html_template.replace('%s', json_spec);
-
-// In Datei schreiben
-writeFileSync(ausgabe_datei, html_content);
-
-console.log(`HTML-Datei wurde erfolgreich erstellt: ${ausgabe_datei}`);
+main();

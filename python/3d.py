@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
-# 3d.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach python
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-import sys
+"""
+Generates the 3d.html file with an interactive 3D architecture visualization.
+"""
+
 import json
+import sys
 
-def generate_html():
-    return '''<!DOCTYPE html>
+def generate_html(output_file):
+    """Generate the complete HTML document for the 3D architecture visualization."""
+    
+    html_content = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -101,7 +107,7 @@ def generate_html():
 <script>
 (function(){
   "use strict";
-  var SPEC = ''' + json.dumps(SPEC, separators=(',', ':')) + ''';
+  var SPEC = ''' + json.dumps(get_spec_data(), ensure_ascii=False) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -328,27 +334,13 @@ def generate_html():
 </script>
 </body>
 </html>'''
+    
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
 
-def main():
-    args = sys.argv[1:]
-    
-    if len(args) != 1:
-        print('Usage: python3 script.py <output-file>', file=sys.stderr)
-        sys.exit(1)
-    
-    output_file = args[0]
-    
-    try:
-        html_content = generate_html()
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        print(f'HTML file generated successfully: {output_file}')
-    except Exception as e:
-        print(f'Error writing file: {e}', file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == '__main__':
-    SPEC = {
+def get_spec_data():
+    """Return the specification data for the 3D visualization."""
+    return {
         "schichten": [
             {
                 "name": "Quellen",
@@ -398,4 +390,12 @@ if __name__ == '__main__':
             {"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}
         ]
     }
-    main()
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 script.py <output_file>")
+        sys.exit(1)
+    
+    output_file = sys.argv[1]
+    generate_html(output_file)
+    print(f"Generated {output_file}")

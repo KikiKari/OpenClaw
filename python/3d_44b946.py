@@ -1,17 +1,13 @@
 #!/usr/bin/env python3
-# 3d_44b946.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/3d_44b946.js
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
-
 # 3d.html — portiert nach python
 # Quelle: html, Projects@Vision-Check:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
+import json
 
-def generateHTML(outputPath):
-    html = '''<!DOCTYPE html>
+def generate_html(output_file):
+    html_content = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -105,7 +101,7 @@ def generateHTML(outputPath):
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Erfassung", "farbe": "#5f6773", "blocks": [{"id": "getusermedia", "name": "getUserMedia", "untertitel": "MediaStream"}, {"id": "4k-auswahl", "name": "4K-Auswahl", "untertitel": "3840x2160"}, {"id": "geraete-dropdown", "name": "Geraete-Dropdown", "untertitel": "mehrere Kameras"}]}, {"name": "On-Device-KI", "farbe": "#2481cc", "blocks": [{"id": "tensorflow-js", "name": "TensorFlow.js", "untertitel": "im Browser"}, {"id": "coco-ssd-v2", "name": "COCO-SSD v2", "untertitel": "80 Klassen"}, {"id": "webgl", "name": "WebGL", "untertitel": "bald WebGPU"}]}, {"name": "Bildverbesserung", "farbe": "#6d5bd0", "blocks": [{"id": "clahe-4x", "name": "CLAHE 4x", "untertitel": "Kontrast"}, {"id": "unsharp-mask", "name": "Unsharp-Mask", "untertitel": "5 Stufen"}, {"id": "helligkeit-saettigung", "name": "Helligkeit/Saettigung", "untertitel": "Gegenlicht"}]}, {"name": "Cloud Vision", "farbe": "#b45309", "blocks": [{"id": "gpt-4o", "name": "GPT-4o", "untertitel": "detail:high"}, {"id": "gemini-2-5", "name": "Gemini 2.5", "untertitel": "Bounding-Box"}, {"id": "claude", "name": "Claude", "untertitel": "Domaenenwissen"}, {"id": "worker-proxy", "name": "Worker-Proxy", "untertitel": "CORS fuer Claude"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pixel-inspektor", "name": "Pixel-Inspektor", "untertitel": "8x-Lupe"}, {"id": "overlay", "name": "Overlay", "untertitel": "Echtzeit"}, {"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}]}], "kanten": [{"von": "getusermedia", "nach": "tensorflow-js", "art": "fluss"}, {"von": "4k-auswahl", "nach": "coco-ssd-v2", "art": "fluss"}, {"von": "geraete-dropdown", "nach": "webgl", "art": "fluss"}, {"von": "tensorflow-js", "nach": "clahe-4x", "art": "fluss"}, {"von": "coco-ssd-v2", "nach": "unsharp-mask", "art": "fluss"}, {"von": "webgl", "nach": "helligkeit-saettigung", "art": "fluss"}, {"von": "clahe-4x", "nach": "gpt-4o", "art": "fluss"}, {"von": "unsharp-mask", "nach": "gemini-2-5", "art": "fluss"}, {"von": "helligkeit-saettigung", "nach": "claude", "art": "fluss"}, {"von": "gpt-4o", "nach": "pixel-inspektor", "art": "fluss"}, {"von": "gemini-2-5", "nach": "overlay", "art": "fluss"}, {"von": "claude", "nach": "pwa", "art": "fluss"}, {"von": "worker-proxy", "nach": "pixel-inspektor", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = ''' + json.dumps(SPEC, separators=(',', ':')) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -333,11 +329,83 @@ def generateHTML(outputPath):
 </body>
 </html>'''
 
-    with open(outputPath, 'w', encoding='utf-8') as f:
-        f.write(html)
-    print(f'HTML file generated: {outputPath}')
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
 
-# Main execution
+# Specification data structure
+SPEC = {
+    "schichten": [
+        {
+            "name": "Erfassung",
+            "farbe": "#5f6773",
+            "blocks": [
+                {"id": "getusermedia", "name": "getUserMedia", "untertitel": "MediaStream"},
+                {"id": "4k-auswahl", "name": "4K-Auswahl", "untertitel": "3840x2160"},
+                {"id": "geraete-dropdown", "name": "Geraete-Dropdown", "untertitel": "mehrere Kameras"}
+            ]
+        },
+        {
+            "name": "On-Device-KI",
+            "farbe": "#2481cc",
+            "blocks": [
+                {"id": "tensorflow-js", "name": "TensorFlow.js", "untertitel": "im Browser"},
+                {"id": "coco-ssd-v2", "name": "COCO-SSD v2", "untertitel": "80 Klassen"},
+                {"id": "webgl", "name": "WebGL", "untertitel": "bald WebGPU"}
+            ]
+        },
+        {
+            "name": "Bildverbesserung",
+            "farbe": "#6d5bd0",
+            "blocks": [
+                {"id": "clahe-4x", "name": "CLAHE 4x", "untertitel": "Kontrast"},
+                {"id": "unsharp-mask", "name": "Unsharp-Mask", "untertitel": "5 Stufen"},
+                {"id": "helligkeit-saettigung", "name": "Helligkeit/Saettigung", "untertitel": "Gegenlicht"}
+            ]
+        },
+        {
+            "name": "Cloud Vision",
+            "farbe": "#b45309",
+            "blocks": [
+                {"id": "gpt-4o", "name": "GPT-4o", "untertitel": "detail:high"},
+                {"id": "gemini-2-5", "name": "Gemini 2.5", "untertitel": "Bounding-Box"},
+                {"id": "claude", "name": "Claude", "untertitel": "Domaenenwissen"},
+                {"id": "worker-proxy", "name": "Worker-Proxy", "untertitel": "CORS fuer Claude"}
+            ]
+        },
+        {
+            "name": "Ausgabe",
+            "farbe": "#0f766e",
+            "blocks": [
+                {"id": "pixel-inspektor", "name": "Pixel-Inspektor", "untertitel": "8x-Lupe"},
+                {"id": "overlay", "name": "Overlay", "untertitel": "Echtzeit"},
+                {"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}
+            ]
+        }
+    ],
+    "kanten": [
+        {"von": "getusermedia", "nach": "tensorflow-js", "art": "fluss"},
+        {"von": "4k-auswahl", "nach": "coco-ssd-v2", "art": "fluss"},
+        {"von": "geraete-dropdown", "nach": "webgl", "art": "fluss"},
+        {"von": "tensorflow-js", "nach": "clahe-4x", "art": "fluss"},
+        {"von": "coco-ssd-v2", "nach": "unsharp-mask", "art": "fluss"},
+        {"von": "webgl", "nach": "helligkeit-saettigung", "art": "fluss"},
+        {"von": "clahe-4x", "nach": "gpt-4o", "art": "fluss"},
+        {"von": "unsharp-mask", "nach": "gemini-2-5", "art": "fluss"},
+        {"von": "helligkeit-saettigung", "nach": "claude", "art": "fluss"},
+        {"von": "gpt-4o", "nach": "pixel-inspektor", "art": "fluss"},
+        {"von": "gemini-2-5", "nach": "overlay", "art": "fluss"},
+        {"von": "claude", "nach": "pwa", "art": "fluss"},
+        {"von": "worker-proxy", "nach": "pixel-inspektor", "art": "fluss"}
+    ],
+    "kantenarten": [
+        {"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}
+    ]
+}
+
 if __name__ == "__main__":
-    outputPath = sys.argv[1] if len(sys.argv) > 1 else '3d.html'
-    generateHTML(outputPath)
+    if len(sys.argv) != 2:
+        print("Usage: python3 script.py <output_file>")
+        sys.exit(1)
+    
+    output_file = sys.argv[1]
+    generate_html(output_file)

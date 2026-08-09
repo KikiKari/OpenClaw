@@ -1,17 +1,13 @@
 #!/usr/bin/env node
-// 3d_44b946.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/3d_44b946.pl
+// 3d.html — portiert nach javascript
+// Quelle: html, Projects@Vision-Check:public/3d.html
 // Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-// Parameter: Ausgabedatei
-const ausgabedatei = process.argv[2];
-if (!ausgabedatei) {
-    console.error("Bitte gib eine Ausgabedatei als Parameter an.");
-    process.exit(1);
-}
+const fs = require('fs');
+const path = require('path');
 
-// HTML-Struktur erzeugen
-const html = `<!DOCTYPE html>
+function create3DVisualization(outputFile) {
+  const htmlContent = `<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -331,11 +327,17 @@ const html = `<!DOCTYPE html>
 })();
 </script>
 </body>
-</html>
-`;
+</html>`;
 
-// In Datei schreiben
-const fs = require('fs');
-fs.writeFileSync(ausgabedatei, html);
+  fs.writeFileSync(outputFile, htmlContent, 'utf8');
+  console.log(`3D visualization HTML file created: ${outputFile}`);
+}
 
-console.log(`HTML-Datei wurde erfolgreich in '${ausgabedatei}' gespeichert.`);
+// Check if output file is provided as command line argument
+if (process.argv.length < 3) {
+  console.error('Usage: node 3d.js <output-file>');
+  process.exit(1);
+}
+
+const outputFile = path.resolve(process.argv[2]);
+create3DVisualization(outputFile);
