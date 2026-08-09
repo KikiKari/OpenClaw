@@ -5,13 +5,15 @@ im Branch `gateway1`. Der aktive Arbeitsstand wurde dafür nicht zurückgesetzt.
 
 - Letzter vollständig eingelesener Vorzustand: `0cbdc0c707d3189d5c0e603ea19f80330904a49e`
 - Darauf aufbauender Reparaturstand: `2c66f7ef7a92d9f7a9483c5c06d9363e10f2016f`
-- Archivierte Datei- und Symlinkstände: `gateway1-before/`
+- Archivierte Datei- und Symlinkstände: `.artifacts/gateway1-before/`
 - Enthalten sind alle im Vorzustand vorhandenen Pfade, die durch die Commits
   `a7b278a`, `20f7c88`, `533983b`, `ca56710` oder `8da5dfb` gelöscht oder
   verändert wurden.
 
 Die archivierten Manager, Skills und Scripte sind historische Belege und keine
-aktiven Betriebskomponenten. Der aktuelle Manager bleibt davon unberührt.
+aktiven Betriebskomponenten. Der Pfad `.artifacts/` gehört zu den unveränderten
+Ausschlussregeln des Managers; dadurch werden diese Vorarbeiten weder erneut
+eingelesen noch übersetzt. Der aktuelle Manager bleibt davon unberührt.
 
 ## Frühere Skill-Gitlinks
 
