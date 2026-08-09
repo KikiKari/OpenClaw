@@ -1,0 +1,30 @@
+# Abstractions-Branch .gitignore
+# Sehr restriktiv: hier sollen nur Abstractions-Outputs landen
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Secrets-Pattern (Belt and Suspenders)
+.env
+.env.*
+*credentials*
+*secret*
+*.key
+*.pem
+.git-credentials
+
+# Python build-artefakte (falls die abstractions-Generierung Reste produziert)
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+
+# Logs
+*.log

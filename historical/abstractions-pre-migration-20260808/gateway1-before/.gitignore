@@ -1,0 +1,280 @@
+# =====================================================
+# SECRETS & CREDENTIALS - höchste Priorität
+# =====================================================
+.env
+.env.*
+*.env
+*.bak
+*.save
+*.backup
+*.backup_*
+secrets/
+credentials/
+.credentials/
+private/
+.private/
+
+# Schlüssel & Zertifikate
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+*.csr
+*.gpg
+*.asc
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+id_ecdsa
+id_ecdsa.*
+known_hosts
+authorized_keys
+
+# Token- und Passwort-Muster im Dateinamen
+*token*
+*secret*
+*credential*
+*password*
+*apikey*
+*api_key*
+
+# =====================================================
+# JSON / YAML / TOML pauschal blockieren
+# Whitelist für unkritische Build-Dateien darunter
+# =====================================================
+*.json
+*.yaml
+*.yml
+*.toml
+
+# JSON-Ausnahmen
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.*.json
+!composer.json
+!composer.lock
+!manifest.json
+!.eslintrc.json
+!.prettierrc.json
+!renovate.json
+
+# YAML-Ausnahmen
+!.github/**/*.yml
+!.github/**/*.yaml
+!.gitlab-ci.yml
+!docker-compose.yml
+!docker-compose.*.yml
+!.goreleaser.yml
+!.goreleaser.yaml
+!.golangci.yml
+!.golangci.yaml
+!.pre-commit-config.yaml
+!mkdocs.yml
+
+# TOML-Ausnahmen
+!pyproject.toml
+!Cargo.toml
+!Cargo.lock
+
+# =====================================================
+# Fremde Repos / Tools (nicht versionieren)
+# =====================================================
+notesmd-cli/
+
+# =====================================================
+# Dependencies & Build-Artefakte
+# =====================================================
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+env/
+target/
+dist/
+build/
+out/
+bin/
+*.egg-info/
+.eggs/
+
+# =====================================================
+# Backups, Caches, Logs, temporäre Dateien
+# =====================================================
+backups/
+.restore/
+_runtime-test/
+_runtime-test-*/
+*.tmp
+*.temp
+*.log
+*.swp
+*~
+.cache/
+cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# =====================================================
+# IDE & Betriebssystem
+# =====================================================
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# =====================================================
+# Datenbanken & große Datendumps
+# =====================================================
+*.sqlite
+*.sqlite3
+*.db
+db_documents.*
+
+# =====================================================
+# Auto-generierte Recovery- & Session-Snapshots
+# =====================================================
+.openclaw-repair/
+*_runtime-test*/
+
+# UUID-Textdateien im Root (Cache/Temp)
+[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].txt
+
+# Memory-Dumps (falls du die nicht versionieren willst, sonst diese Zeile weglassen)
+agent/memory/dreaming/deep/
+agent/memory/.dreams/
+
+# Memory-Dumps aller Agenten
+*/memory/.dreams/
+*/memory/dreaming/
+
+# =====================================================
+# KRITISCH: Tipp-Unfälle mit Secrets - NIEMALS pushen
+# Greift in JEDEM Unterverzeichnis durch führendes "**/"
+# =====================================================
+**/sud
+**/pws
+**/env
+**/pwd
+**/which
+**/echo
+sud
+pws
+env
+pwd
+which
+echo
+
+# Auch deren mögliche Backup-/Variant-Formen
+sud.*
+pws.*
+env.*
+**/sud.*
+**/pws.*
+**/env.*
+
+# =====================================================
+# FREMDER CODE - github-clones nicht ins Repo
+# =====================================================
+skills/github-clones/
+**/github-clones/
+
+# =====================================================
+# Claude-Artefakte / Müll-Verzeichnisse
+# =====================================================
+backups/
+.restore/
+.openclaw-repair/
+.openclaw-*/
+_runtime-test/
+_runtime-test-*/
+**/backups/
+**/.restore/
+
+# =====================================================
+# Archive (tar/zip/etc) pauschal raus
+# =====================================================
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.7z
+*.rar
+
+# =====================================================
+# Bekannte Secret-Dateien
+# =====================================================
+root_env.txt
+free-keys.md
+**/root_env.txt
+**/free-keys.md
+
+# =====================================================
+# CSV-Exports (Cache/Dumps, keine Quelldaten)
+# =====================================================
+export_*.csv
+db_skills.csv
+db_symlinks.csv
+**/export_*.csv
+"*
+**/"*
+
+# Memory-Dumps auch im Top-Level (das */-Pattern greift nicht im Root)
+memory/dreaming/
+memory/.dreams/
+\"reports*
+"reports*
+
+# =====================================================
+# Riesige Config-Dumps (GitHub-Limit: 100 MB)
+# =====================================================
+vscode/compare/local-gateway-config.md
+vscode/compare/transfer/local-gateway-config.md
+**/local-gateway-config.md
+
+# Backup-Archive die als .md getarnt sind
+vscode/compare/transfer/openclaw-backup.tar.gz
+**/openclaw-backup.tar.gz
+
+# =====================================================
+# Status-Dumps mit Secrets - komplett raus
+# =====================================================
+vscode/ENV-STATUS_*
+vscode/IST-ZUSTAND_*
+vscode/OPENCLAW-CONFIG-SNAPSHOT_*
+vscode/ARTEFAKT-INVENTAR_*
+**/ENV-STATUS_*
+**/IST-ZUSTAND_*
+**/MEMORY-EMBEDDING-FIX-*
+
+# =====================================================
+# Status-/Config-Dumps mit Secrets - komplette Ordner raus
+# =====================================================
+vscode/
+important/
+
+# Spezifische Risiko-Dateinamen
+**/SLACK.md
+**/Tailscale-VPN-Integration.md
+**/NVIDIA-NIM-Integration.md
+**/OPENROUTER_CONFIG.md
+**/OPENAI-KEY-*
+**/PASSWORD.md
+**/WEBSEARCH_CONFIG.md
+
+# =====================================================
+# Memory: persönliche Notizen mit Konversationen,
+# Session-IDs, Infrastruktur-Details - NICHT öffentlich
+# =====================================================
+memory/
+**/memory/

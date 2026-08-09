@@ -1,0 +1,1 @@
+skills/script-abstractions-manager/SKILL.md
