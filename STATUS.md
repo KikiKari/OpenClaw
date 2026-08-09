@@ -10,13 +10,13 @@ Syntax oder mit Platzhaltern werden verworfen.
 
 | Zielsprache | Dateien |
 |---|---:|
-| javascript | 67 |
-| perl5 | 71 |
-| powershell | 59 |
-| python | 62 |
-| shell | 65 |
-| tcl | 74 |
-| **gesamt** | **398** |
+| javascript | 69 |
+| perl5 | 73 |
+| powershell | 61 |
+| python | 63 |
+| shell | 66 |
+| tcl | 75 |
+| **gesamt** | **407** |
 
 ## Quellen
 
@@ -27,7 +27,7 @@ Syntax oder mit Platzhaltern werden verworfen.
 | low | 57 | Markup und Stilvorlagen |
 | **gesamt** | **749** | nach Inhalt dedupliziert |
 
-Noch offene Sprachpaare: **3423**
+Noch offene Sprachpaare laut letztem Inventar: **3416**
 
 ## Letzter Lauf
 
@@ -49,3 +49,9 @@ Der Bestand wurde aus den am alten Veröffentlichungsziel erhaltenen echten
 Erzeugnissen übernommen. Zwei dort abgeschnittene Tcl-Dateien wurden nicht
 veröffentlicht. Für `tcl/1781743218784.tcl` wurde die bereits vorhandene,
 vollständige und syntaxgültige Fassung dieses Ausgabe-Branches beibehalten.
+
+Der vor dem Umschreiben gesicherte Verlauf bis `0b4e65f` ist wieder als echte
+Git-Abstammung eingebunden. Neun dort noch nicht committed, aber vollständig
+erzeugte und syntaxgültige Übersetzungen wurden unter den vom Manager
+vorgesehenen Quellhash-Suffixen `2a8278` und `1af353` ergänzt. Dadurch wird
+keine bereits vorhandene Übersetzung gleichen Namens überschrieben.
