@@ -86,6 +86,12 @@ Der Manager läuft alle sechs Stunden über den Laufzeit-Wrapper. Der frühere
 separate Publisher ist stillgelegt, weil der neue Manager Commit und Push nach
 erfolgreichen Übersetzungen selbst ausführt.
 
+Ein argumentloser Scheduler-Aufruf wird im nicht versionierten
+Laufzeit-Wrapper auf eine Quelldatei pro Lauf begrenzt. Dadurch werden alle
+Zielsprachen einer Quelle einschließlich Commit und Push abgeschlossen, bevor
+das Zeitfenster des isolierten Jobs endet. Explizite Argumente bei manuellen
+Aufrufen werden unverändert weitergereicht.
+
 Aktiver OpenClaw-Scheduler-Job:
 `39368c42-8279-45d8-8fd8-14c8690593a9` (`main`, isolierter Command-Job,
 fünf Minuten Streuung). Der Manager wird nicht zusätzlich über die
@@ -111,4 +117,7 @@ benutzerlokalen Installation von PowerShell 7.6.4 mit derselben
 `ScriptBlock`-Kompilierung geprüft, die der Manager verwendet. Es wurden keine
 Ergebnisse verworfen und keine TODO-/Platzhalter-Muster abgelegt.
 
-Ausgabe-Commit: `0b4e65f` auf `gateway2-abstractions`.
+Der Lauf erzeugte ursprünglich Commit `0b4e65f`. Sein bytegleicher Ausgabebaum
+ist nach der Bereinigung der irrtümlich übernommenen Althistorie im aktuellen
+Ausgabe-Commit `62abde7` enthalten. Dieser steht gegenüber dem voreingestellten
+Branch `main` bei einem Commit voraus und keinem Commit zurück.

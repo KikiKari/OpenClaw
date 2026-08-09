@@ -11,11 +11,10 @@
 | Branch | Commit | Inhalt |
 |---|---|---|
 | `gateway2` | `ba1c429` | Stub-Manager und Altbeiwerk stillgelegt; neuer Manager, Skill, Wrapper, Zeitplan und Dokumentation aktiviert |
-| `gateway2-abstractions` | `352c082` | 135 lokale, zuvor unveröffentlichte Commits und Bereinigungscommit in einer gemeinsamen Historie zusammengeführt |
-| `gateway2-abstractions` | `0b4e65f` | erster echter Lauf: fünf vollständige Übersetzungen aus einer Quelldatei |
+| `gateway2-abstractions` | `62abde7` | bereinigter, vollständiger Ausgabe-Snapshot mit bytegleichem Baum des ersten echten Laufs |
 
-Alle drei Commits sind veröffentlicht. Beide lokalen Branches standen bei der
-Abschlussprüfung jeweils 0 Commits vor und 0 Commits hinter ihrem Remote.
+Der Ausgabe-Branch steht bei der Abschlussprüfung auf seinem Remote-Kopf und
+gegenüber `main` bei einem Commit voraus und keinem Commit zurück.
 
 ## Übernommener Manager
 
@@ -46,9 +45,21 @@ Gesichert sind insbesondere:
   lokalen Commits und der uncommittierten `STATUS.md`;
 - der alte separate Publisher und seine Laufzeit-Wrapper.
 
-Die 135 lokalen Commits wurden auf ausdrückliche Anweisung in die
-veröffentlichte Ausgabehistorie aufgenommen. Ihr Dateibaum wurde beim Merge
-nicht reaktiviert; die alten Stub-Erzeugnisse bleiben stillgelegt.
+Die 135 lokalen Commits wurden zunächst irrtümlich über `352c082` in die
+veröffentlichte Ausgabehistorie aufgenommen. Dadurch zeigte GitHub den
+Ausgabe-Branch öffentlich als 156 Commits vor und 267 Commits hinter `main`.
+Diese falsche Historienverknüpfung wurde am 2026-08-09 mit ausdrücklicher
+Freigabe und `--force-with-lease` entfernt. Der damalige Branchkopf `0b4e65f`
+ist vollständig im verifizierten Git-Bundle
+`output-public-history-before-correction.bundle` gesichert. Das komplette
+Checkout einschließlich acht uncommittierter Dateien eines abgebrochenen
+Scheduler-Laufs liegt zusätzlich unter
+`output-checkout-before-public-history-correction/`.
+
+Der korrigierte Commit `62abde7` hat `main` als Elterncommit und exakt denselben
+Tree-Hash `07978a0f29f8d2471e473c4fe656827be8fb93ad` wie `0b4e65f`. Damit blieb der
+veröffentlichte Ausgabebaum bytegleich, während die stillgelegte Althistorie
+nicht länger über den aktiven Ausgabe-Branch erreichbar ist.
 
 ## Laufzeit
 
@@ -60,6 +71,13 @@ nicht reaktiviert; die alten Stub-Erzeugnisse bleiben stillgelegt.
   `/home/openclaw/.openclaw/scripts/abstractions-manager-cron.sh`;
 - der frühere separate Publisher-Cron ist entfernt;
 - die Linux-Benutzer-Crontab startet keinen zusätzlichen Manager.
+
+Nach einem abgebrochenen Mehrdateienlauf am 2026-08-09 wurde der
+nicht versionierte Laufzeit-Wrapper so begrenzt, dass ein argumentloser
+Scheduler-Aufruf genau eine Quelldatei verarbeitet. Damit kann der Manager die
+vollständige Sprachgruppe committen und veröffentlichen, bevor das Zeitfenster
+des isolierten Jobs endet. Manuelle Aufrufe mit expliziten Argumenten bleiben
+unverändert.
 
 Der Wrapper liest `OPENROUTER_API_KEY` aus der vorhandenen, nicht
 versionierten Serverablage und exportiert ihn nur in den Managerprozess. Der
