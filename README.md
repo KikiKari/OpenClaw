@@ -1,42 +1,41 @@
 # Gateway 1 — Script Abstractions
 
-Automatisch generierte und synchronisierte Abstraktionen der Scripts
-von Gateway 1. Erstellt und verwaltet durch den Abstraction Manager.
-Veröffentlicht auf GitHub und ClawHub (Skills).
+Modellgenerierte und syntaktisch geprüfte Portierungen aus den konfigurierten
+OpenClaw-, Projects- und Onboarding-Quellen. Der Abstraction Manager führt den
+Bestand alle sechs Stunden fort und veröffentlicht direkt in diesem Branch.
 
-## Aktueller Status
+## Aktueller Arbeitsstand
 
-| Kennzahl | Wert |
-| --- | --- |
-| Abstraktionen gesamt | 122 |
-| Letzte Synchronisation | 2026-06-04 |
-| Aktuelle Priorität | high |
+Letzter dokumentierter Lauf: **2026-08-09 01:59 UTC**. Detaillierte Lauf- und
+Quellenzahlen stehen in [STATUS.md](STATUS.md).
 
-## Verteilung nach Sprache
+| Sprache | Aktive Dateien | Verzeichnis |
+| --- | ---: | --- |
+| JavaScript | 33 | `javascript/` |
+| Perl 5 | 34 | `perl5/` |
+| PowerShell | 29 | `powershell/` |
+| Python | 33 | `python/` |
+| Shell | 25 | `shell/` |
+| Tcl | 35 | `tcl/` |
+| **Gesamt** | **189** | |
 
-| Sprache | Anzahl | Verzeichnis |
-| --- | --- | --- |
-| JavaScript | 27 | `javascript/` |
-| Perl 5 | 27 | `perl5/` |
-| Python | 27 | `python/` |
-| PowerShell | 13 | `powershell/` |
-| Shell | 14 | `shell/` |
-| Tcl | 14 | `tcl/` |
+Der Lauf in `723dac3` ergänzte 184 Übersetzungen aus 40 Quelldateien. Die fünf
+zuvor erzeugten Übersetzungen aus `f965cba` bleiben ebenfalls enthalten.
 
-## Job-Verteilung auf Nodes
+## Fortschreibung statt Verdrängung
 
-| Node | Kapazität | Aufgaben |
-| --- | --- | --- |
-| node7 | High | Heavy Jobs (>50 KB × Sprache), Docker |
-| node1 | Medium | Primary |
-| node2 | Medium | Stable Fallback |
-| node3–6 | Medium | Bedingt verfügbar |
-| node5 | Low | Light Jobs (Redmi Note 11S) |
+Der vollständige Stand unmittelbar vor der Migration bleibt versioniert unter
+[`historical/abstractions-pre-migration-20260808/`](historical/abstractions-pre-migration-20260808/)
+erhalten. Er umfasst 125 damalige Branchpfade, darunter die ursprüngliche
+README, den damaligen Statusbericht und 122 frühere Sprachdateien.
 
-Verfügbarkeit und Priorität werden zur Laufzeit durch den Abstraction Manager
-über das Tailscale VPN (Fallback: WireGuard) geprüft.
+Die historische README ist unverändert abrufbar unter
+[`gateway1-abstractions-before/README.md`](historical/abstractions-pre-migration-20260808/gateway1-abstractions-before/README.md).
+Historische Sprachdateien bleiben getrennt, damit sie nicht als aktive,
+modellgeprüfte Übersetzungen ausgegeben oder vom Manager weiterverwendet werden.
 
-## Synchronisation
+## Veröffentlichung
 
-Automatischer Sync durch den Abstraction Manager, typisch 2× täglich
-(`auto: abstractions-sync`). Detaillierter Status: [STATUS.md](STATUS.md)
+Der aktive Manager schreibt in die sechs Sprachverzeichnisse, aktualisiert
+`STATUS.md`, commitet angenommene Ergebnisse und veröffentlicht non-force nach
+`gateway1-abstractions`. Ein separater Publisher ist nicht erforderlich.
