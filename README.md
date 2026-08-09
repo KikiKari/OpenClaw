@@ -100,10 +100,10 @@ openclaw skills update --all
 | Skill | Version | Downloads | Security | Install |
 | --- | --- | --- | --- | --- |
 | Cluster Gateway | v1.0.0 | 549 | ✅ Pass | `openclaw skills install cluster-gateway` |
-| MCP Tool Utils | v1.0.0 | 626 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
-| Reports Creator | v1.0.0 | 552 | ✅ Pass | `openclaw skills install reports-creator` |
+| MCP Tool Utils | v1.0.0 | 627 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
+| Reports Creator | v1.0.0 | 553 | ✅ Pass | `openclaw skills install reports-creator` |
 | Relay Node | v1.0.0 | 572 | ✅ Pass | `openclaw skills install relay-node` |
-| JSON Utils | v1.0.0 | 616 | ✅ Pass | `openclaw skills install json-utils` |
+| JSON Utils | v1.0.0 | 617 | ✅ Pass | `openclaw skills install json-utils` |
 | Log Collector | v1.0.0 | 558 | 🔍 Review | `openclaw skills install log-collector` |
 | TikTok Live Monitor | v1.0.0 | 288 | 🔍 Review | `openclaw skills install tiktok-live-monitor` |
 | Doc Scraper | v1.0.0 | 540 | 🔍 Review | `openclaw skills install doc-scraper` |
