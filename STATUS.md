@@ -1,6 +1,6 @@
 # Script Abstractions — Status
 
-**Letzter Lauf:** 2026-08-08 23:16 UTC
+**Letzter Lauf:** 2026-08-09 10:10 UTC
 
 Jede Quelldatei der drei Repositories wird in sechs Zielsprachen portiert.
 Es werden vollstaendige Uebersetzungen abgelegt; Erzeugnisse ohne gueltige
@@ -22,18 +22,18 @@ Syntax oder mit Platzhaltern werden verworfen.
 
 | Prioritaet | Quelldateien | Bedeutung |
 |---|---:|---|
-| high | 117 | Betriebsscripte aus scripts-Verzeichnissen |
-| medium | 575 | uebriger ausfuehrbarer Code |
-| low | 57 | Markup und Stilvorlagen |
-| **gesamt** | **749** | nach Inhalt dedupliziert |
+| high | 119 | Betriebsscripte aus scripts-Verzeichnissen |
+| medium | 931 | uebriger ausfuehrbarer Code |
+| low | 58 | Markup und Stilvorlagen |
+| **gesamt** | **1108** | nach Inhalt dedupliziert |
 
-Noch offene Sprachpaare laut letztem Inventar: **3416**
+Noch offene Sprachpaare: **5593**
 
 ## Letzter Lauf
 
-- bearbeitete Quelldateien: 40
-- erzeugte Uebersetzungen: 189
-- verworfen: 11
+- bearbeitete Quelldateien: 1
+- erzeugte Uebersetzungen: 5
+- verworfen: 1
 
 ## Herkunft
 
@@ -42,16 +42,3 @@ Noch offene Sprachpaare laut letztem Inventar: **3416**
 - `KikiKari/Onboarding` — main
 
 Erzeugt von `abstractions/ABSTRACTIONS_MANAGER.py`.
-
-## Konsolidierung
-
-Der Bestand wurde aus den am alten Veröffentlichungsziel erhaltenen echten
-Erzeugnissen übernommen. Zwei dort abgeschnittene Tcl-Dateien wurden nicht
-veröffentlicht. Für `tcl/1781743218784.tcl` wurde die bereits vorhandene,
-vollständige und syntaxgültige Fassung dieses Ausgabe-Branches beibehalten.
-
-Der vor dem Umschreiben gesicherte Verlauf bis `0b4e65f` ist wieder als echte
-Git-Abstammung eingebunden. Neun dort noch nicht committed, aber vollständig
-erzeugte und syntaxgültige Übersetzungen wurden unter den vom Manager
-vorgesehenen Quellhash-Suffixen `2a8278` und `1af353` ergänzt. Dadurch wird
-keine bereits vorhandene Übersetzung gleichen Namens überschrieben.

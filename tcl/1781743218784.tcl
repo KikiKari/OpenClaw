@@ -1,14 +1,23 @@
-#!/usr/bin/env tclsh8.6
-# 1781743218784.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
+#!/usr/bin/env tclsh
 # 1781743218784.html — portiert nach tcl
 # Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-proc generateHTML {} {
-    set html {<!DOCTYPE html>
+# Tcl 8.6 script to generate the HTML document
+# Usage: tclsh script.tcl output.html
+
+if {$argc != 1} {
+    puts stderr "Usage: tclsh [info script] output.html"
+    exit 1
+}
+
+set outfile [lindex $argv 0]
+
+# Open output file
+set fd [open $outfile w]
+
+# Write DOCTYPE and initial JSON script
+puts $fd {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -17,7 +26,10 @@ proc generateHTML {} {
   "mcpTools": [],
   "mcpServerNames": []
 }
-</script>
+</script>}
+
+# Write HTML start and head section
+puts $fd {
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -97,8 +109,10 @@ a{color:var(--accent);}
   </div>
 
   <div class="foot" id="foot"></div>
-</div>
+</div>}
 
+# Write JavaScript section
+puts $fd {
 <script>
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
@@ -213,30 +227,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>}
-    
-    return $html
-}
 
-proc main {} {
-    global argv
-    
-    if {[llength $argv] != 1} {
-        puts stderr "Usage: tclsh script.tcl <output-file>"
-        exit 1
-    }
-    
-    set outputFile [lindex $argv 0]
-    
-    if {[catch {
-        set htmlContent [generateHTML]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
-        close $fh
-        puts "HTML file generated: $outputFile"
-    } error]} {
-        puts stderr "Error generating HTML file: $error"
-        exit 1
-    }
-}
+# Close file
+close $fd
 
-main
+puts "HTML document generated: $outfile"
