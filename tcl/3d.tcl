@@ -1,21 +1,28 @@
 #!/usr/bin/env tclsh
-# 3d.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach tcl
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-package require Tcl 8.6
+# Tcl 8.6 script to generate 3d.html
+# This script creates the complete HTML document programmatically
 
-proc generateHTML {} {
-    return {
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCP-Server-Monitor — Interaktive Architektur</title>
-<meta name="description" content="Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#6d5bd0">
-<style>
+proc generate_html {output_file} {
+    set html {}
+    
+    # Add DOCTYPE and html tag
+    append html "<!DOCTYPE html>\n"
+    append html "<html lang=\"de\">\n"
+    
+    # Add head section
+    append html "<head>\n"
+    append html "<meta charset=\"utf-8\">\n"
+    append html "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+    append html "<title>MCP-Server-Monitor — Interaktive Architektur</title>\n"
+    append html "<meta name=\"description\" content=\"Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.\">\n"
+    append html "<meta name=\"theme-color\" content=\"#6d5bd0\">\n"
+    
+    # Add CSS styles
+    append html {<style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#6d5bd0; --buehne:#0e1420; --buehne-line:#1d2739;
@@ -61,45 +68,50 @@ proc generateHTML {} {
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
 </style>
-</head>
-<body>
-<div class="wrap">
-
-  <p class="technik">three.js · r128</p>
-  <h1>MCP-Server-Monitor</h1>
-  <p class="lede">Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.</p>
-
-  <div class="raster">
-    <div class="buehne" id="buehne">
-      <div class="knoepfe">
-        <button id="btn-plus" title="Näher">+</button>
-        <button id="btn-minus" title="Weiter weg">−</button>
-        <button id="btn-reset">Zurücksetzen</button>
-        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
-      </div>
-    </div>
-
-    <aside class="karte">
-      <h2>Ausgewählter Knoten</h2>
-      <h3 id="k-name">—</h3>
-      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
-      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
-      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
-      <div class="blaettern">
-        <button id="btn-prev">←<br>Vorheriger</button>
-        <button id="btn-next">Nächster<br>→</button>
-      </div>
-    </aside>
-  </div>
-
-  <div class="legende" id="legende"></div>
-  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(function(){
+}
+    append html "</head>\n"
+    
+    # Add body section
+    append html "<body>\n"
+    append html "<div class=\"wrap\">\n"
+    append html "\n"
+    append html "  <p class=\"technik\">three.js · r128</p>\n"
+    append html "  <h1>MCP-Server-Monitor</h1>\n"
+    append html "  <p class=\"lede\">Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.</p>\n"
+    append html "\n"
+    append html "  <div class=\"raster\">\n"
+    append html "    <div class=\"buehne\" id=\"buehne\">\n"
+    append html "      <div class=\"knoepfe\">\n"
+    append html "        <button id=\"btn-plus\" title=\"Näher\">+</button>\n"
+    append html "        <button id=\"btn-minus\" title=\"Weiter weg\">−</button>\n"
+    append html "        <button id=\"btn-reset\">Zurücksetzen</button>\n"
+    append html "        <button id=\"btn-iso\" aria-pressed=\"true\" title=\"Isometrisch oder perspektivisch\">Iso</button>\n"
+    append html "      </div>\n"
+    append html "    </div>\n"
+    append html "\n"
+    append html "    <aside class=\"karte\">\n"
+    append html "      <h2>Ausgewählter Knoten</h2>\n"
+    append html "      <h3 id=\"k-name\">—</h3>\n"
+    append html "      <p class=\"sub\" id=\"k-sub\">Knoten anklicken oder durchblättern</p>\n"
+    append html "      <dl class=\"feld\"><dt>Schicht</dt><dd id=\"k-schicht\">—</dd></dl>\n"
+    append html "      <dl class=\"feld\"><dt>ID</dt><dd id=\"k-id\">—</dd></dl>\n"
+    append html "      <div class=\"blaettern\">\n"
+    append html "        <button id=\"btn-prev\">←<br>Vorheriger</button>\n"
+    append html "        <button id=\"btn-next\">Nächster<br>→</button>\n"
+    append html "      </div>\n"
+    append html "    </aside>\n"
+    append html "  </div>\n"
+    append html "\n"
+    append html "  <div class=\"legende\" id=\"legende\"></div>\n"
+    append html "  <p class=\"fuss\">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>\n"
+    append html "\n"
+    append html "</div>\n"
+    
+    # Add script tags
+    append html "\n"
+    append html "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js\"></script>\n"
+    append html "<script>\n"
+    append html {(function(){
   "use strict";
   var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"}, {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"}, {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"}, {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}]}, {"name": "Sonde", "farbe": "#2481cc", "blocks": [{"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"}, {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}]}, {"name": "Klassifikation", "farbe": "#6d5bd0", "blocks": [{"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}]}, {"name": "Ausgabe", "farbe": "#15803d", "blocks": [{"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}]}], "kanten": [{"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"}, {"von": "docs-mcp", "nach": "config-py", "art": "fluss"}, {"von": "well-known", "nach": "discovery-py", "art": "fluss"}, {"von": "config-json", "nach": "config-py", "art": "fluss"}, {"von": "discovery-py", "nach": "state-py", "art": "fluss"}, {"von": "config-py", "nach": "state-py", "art": "fluss"}, {"von": "state-py", "nach": "report-py", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
@@ -325,30 +337,22 @@ proc generateHTML {} {
     renderer.render(szene, kamera);
   })();
 })();
-</script>
-</body>
-</html>
-    }
+}
+    append html "</script>\n"
+    append html "</body>\n"
+    append html "</html>\n"
+    
+    # Write to file
+    set fh [open $output_file w]
+    puts -nonewline $fh $html
+    close $fh
 }
 
-proc main {} {
-    if {$::argc != 1} {
-        puts stderr "Usage: tclsh script.tcl <output-file>"
-        exit 1
-    }
-    
-    set outputFile [lindex $::argv 0]
-    
-    try {
-        set htmlContent [generateHTML]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
-        close $fh
-        puts "HTML file generated successfully: $outputFile"
-    } on error {error} {
-        puts stderr "Error writing file: $error"
-        exit 1
-    }
+# Main execution
+if {$argc != 1} {
+    puts "Usage: $argv0 <output_file>"
+    exit 1
 }
 
-main
+set output_file [lindex $argv 0]
+generate_html $output_file

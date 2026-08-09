@@ -1,22 +1,20 @@
-#!/usr/bin/env bash
-# 3d_44b946.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/3d_44b946.ps1
+#!/bin/bash
+# 3d.html — portiert nach shell
+# Quelle: html, Projects@Vision-Check:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 3d.html — portiert nach bash
-# Quelle: html, Projects@Vision-Check:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
+# Parameter: Ausgabedatei
 if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <output_path>"
+    echo "Aufruf: $0 <ausgabedatei.html>"
     exit 1
 fi
 
-output_path="$1"
+ausgabedatei="$1"
 
-cat > "$output_path" << 'EOF'
+# HTML-Dokument generieren
+cat > "$ausgabedatei" << 'HTML_HEAD'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -338,4 +336,6 @@ cat > "$output_path" << 'EOF'
 </script>
 </body>
 </html>
-EOF
+HTML_HEAD
+
+echo "HTML-Dokument wurde in '$ausgabedatei' erzeugt."

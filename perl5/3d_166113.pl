@@ -1,15 +1,16 @@
-#!/usr/bin/env perl
-# 3d_166113.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/3d_166113.js
+#!/usr/bin/perl
+# 3d.html — portiert nach perl5
+# Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use File::Spec;
-use File::Basename;
 
-sub generateHTML {
-  return <<'HTML_END';
+# Parameter: Ausgabedatei
+my $ausgabe_datei = $ARGV[0] // die "Verwendung: $0 <ausgabedatei>\n";
+
+# HTML-Dokument erzeugen
+my $html = <<'HTML_VORLAGE';
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -331,30 +332,11 @@ sub generateHTML {
 </script>
 </body>
 </html>
-HTML_END
-}
+HTML_VORLAGE
 
-sub main {
-  my @args = @ARGV;
-  
-  if (@args != 1) {
-    print STDERR "Usage: perl 3d.pl <output-file>\n";
-    exit 1;
-  }
-  
-  my $outputFile = $args[0];
-  
-  eval {
-    my $htmlContent = generateHTML();
-    open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
-    print $fh $htmlContent;
-    close $fh;
-    print "HTML file generated successfully: $outputFile\n";
-  };
-  if ($@) {
-    print STDERR "Error generating HTML file: $@\n";
-    exit 1;
-  }
-}
+# Inhalt in Datei schreiben
+open my $fh, '>', $ausgabe_datei or die "Kann Datei '$ausgabe_datei' nicht öffnen: $!";
+print $fh $html;
+close $fh;
 
-main();
+print "HTML-Dokument erfolgreich in '$ausgabe_datei' gespeichert.\n";

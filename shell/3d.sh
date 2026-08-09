@@ -1,16 +1,19 @@
 #!/bin/bash
-# 3d.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach shell
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 3d.html — portiert nach bash
-# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Parameter: Ausgabedatei
+if [[ $# -ne 1 ]]; then
+    echo "Aufruf: $0 <ausgabedatei.html>"
+    exit 1
+fi
+AUSGABE="$1"
 
-generate_html() {
-  cat << 'EOF'
+# HTML-Grundgerüst erzeugen
+cat > "$AUSGABE" << 'HTML_HEAD'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -100,7 +103,10 @@ generate_html() {
   <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
 
 </div>
+HTML_HEAD
 
+# JavaScript-Code einbetten
+cat >> "$AUSGABE" << 'HTML_SCRIPT'
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
@@ -332,21 +338,6 @@ generate_html() {
 </script>
 </body>
 </html>
-EOF
-}
+HTML_SCRIPT
 
-main() {
-  local args=("$@")
-  
-  if [ "${#args[@]}" -ne 1 ]; then
-    echo "Usage: $0 <output-file>" >&2
-    exit 1
-  fi
-  
-  local output_file="${args[0]}"
-  
-  generate_html > "$output_file"
-  echo "HTML file generated successfully: $output_file"
-}
-
-main "$@"
+echo "HTML-Dokument wurde in '$AUSGABE' erzeugt."

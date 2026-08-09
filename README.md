@@ -6,21 +6,23 @@ Bestand alle sechs Stunden fort und veröffentlicht direkt in diesem Branch.
 
 ## Aktueller Arbeitsstand
 
-Letzter dokumentierter Lauf: **2026-08-09 01:59 UTC**. Detaillierte Lauf- und
+Letzter dokumentierter Lauf: **2026-08-09 08:16 UTC**. Detaillierte Lauf- und
 Quellenzahlen stehen in [STATUS.md](STATUS.md).
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 33 | `javascript/` |
-| Perl 5 | 34 | `perl5/` |
-| PowerShell | 29 | `powershell/` |
-| Python | 33 | `python/` |
-| Shell | 25 | `shell/` |
-| Tcl | 35 | `tcl/` |
-| **Gesamt** | **189** | |
+| JavaScript | 64 | `javascript/` |
+| Perl 5 | 61 | `perl5/` |
+| PowerShell | 54 | `powershell/` |
+| Python | 58 | `python/` |
+| Shell | 55 | `shell/` |
+| Tcl | 68 | `tcl/` |
+| **Gesamt** | **360** | |
 
-Der Lauf in `723dac3` ergänzte 184 Übersetzungen aus 40 Quelldateien. Die fünf
-zuvor erzeugten Übersetzungen aus `f965cba` bleiben ebenfalls enthalten.
+Die ursprünglichen Job-Commits bleiben Teil der Historie: `f965cba` erzeugte
+fünf High-Priority-Übersetzungen, `723dac3` erzeugte 184 Medium-Priority-
+Übersetzungen und `14b5336` erzeugte 213 Low-Priority-Übersetzungen. Der letzte
+Lauf verwarf zusätzlich 27 nicht bestandene Ergebnisse.
 
 ## Fortschreibung statt Verdrängung
 
@@ -34,11 +36,11 @@ Die historische README ist unverändert abrufbar unter
 Historische Sprachdateien bleiben getrennt, damit sie nicht als aktive,
 modellgeprüfte Übersetzungen ausgegeben oder vom Manager weiterverwendet werden.
 
-Ein zusätzlich vorgefundenes lokales, noch nicht veröffentlichtes Arbeitspaket
-mit 182 Dateien wurde ebenfalls verlustfrei unter
+Ein während des letzten Laufs vorgefundener Zwischenstand mit 182 Dateien wurde
+zusätzlich verlustfrei unter
 [`recovered-uncommitted-20260809/`](historical/abstractions-pre-migration-20260808/.artifacts/recovered-uncommitted-20260809/)
-gesichert. Es bleibt vom aktiven Bestand getrennt, bis es eigenständig geprüft
-und gegebenenfalls übernommen wird.
+gesichert. Der später regulär abgeschlossene Originalcommit `14b5336` ist in
+den aktiven Bestand integriert; der Zwischenstand bleibt als Prüfbeleg getrennt.
 
 ## Veröffentlichung
 

@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
-# 3d_166113.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/3d_166113.js
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
-
 # 3d.html — portiert nach python
 # Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
+"""
+Generates the 3D architecture visualization HTML file for TikTok LIVE Companion Android.
+"""
+
+import json
 import sys
-import os
+from pathlib import Path
 
-def generateHTML():
-    return '''<!DOCTYPE html>
+def generate_html(output_path):
+    """Generate the complete HTML file with 3D visualization."""
+    
+    html_content = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -105,7 +108,7 @@ def generateHTML():
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "tiktok-webview", "name": "TikTok-WebView", "untertitel": "Hauptframe"}, {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"}, {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}]}, {"name": "Bruecke", "farbe": "#2481cc", "blocks": [{"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"}, {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"}, {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}]}, {"name": "App", "farbe": "#6d5bd0", "blocks": [{"id": "kotlin", "name": "Kotlin", "untertitel": "Sprache"}, {"id": "jetpack-compose", "name": "Jetpack Compose", "untertitel": "Oberflaeche"}, {"id": "androidx-webkit", "name": "AndroidX WebKit", "untertitel": "WebView"}]}, {"name": "Audio", "farbe": "#b45309", "blocks": [{"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"}, {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"}, {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"}, {"id": "panel", "name": "Panel", "untertitel": "Anzeige"}, {"id": "apk", "name": "APK", "untertitel": "Android-Artefakt"}]}], "kanten": [{"von": "tiktok-webview", "nach": "mobile-bridge-v1", "art": "fluss"}, {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"}, {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"}, {"von": "mobile-bridge-v1", "nach": "kotlin", "art": "fluss"}, {"von": "origin-pruefung", "nach": "jetpack-compose", "art": "fluss"}, {"von": "typ-groesse", "nach": "androidx-webkit", "art": "fluss"}, {"von": "kotlin", "nach": "shazamkit", "art": "fluss"}, {"von": "jetpack-compose", "nach": "mikrofon", "art": "fluss"}, {"von": "androidx-webkit", "nach": "webview-pcm-exp", "art": "fluss"}, {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"}, {"von": "mikrofon", "nach": "panel", "art": "fluss"}, {"von": "webview-pcm-exp", "nach": "apk", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = ''' + json.dumps(get_spec_data(), ensure_ascii=False, indent=2) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -332,24 +335,84 @@ def generateHTML():
 </script>
 </body>
 </html>'''
-
-def main():
-    args = sys.argv[1:]
     
-    if len(args) != 1:
-        print('Usage: python 3d.py <output-file>', file=sys.stderr)
+    # Write to file
+    Path(output_path).write_text(html_content, encoding='utf-8')
+    print(f"Generated 3D visualization HTML at: {output_path}")
+
+def get_spec_data():
+    """Return the specification data structure."""
+    return {
+        "schichten": [
+            {
+                "name": "Quelle",
+                "farbe": "#5f6773",
+                "blocks": [
+                    {"id": "tiktok-webview", "name": "TikTok-WebView", "untertitel": "Hauptframe"},
+                    {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"},
+                    {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}
+                ]
+            },
+            {
+                "name": "Bruecke",
+                "farbe": "#2481cc",
+                "blocks": [
+                    {"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"},
+                    {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"},
+                    {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}
+                ]
+            },
+            {
+                "name": "App",
+                "farbe": "#6d5bd0",
+                "blocks": [
+                    {"id": "kotlin", "name": "Kotlin", "untertitel": "Sprache"},
+                    {"id": "jetpack-compose", "name": "Jetpack Compose", "untertitel": "Oberflaeche"},
+                    {"id": "androidx-webkit", "name": "AndroidX WebKit", "untertitel": "WebView"}
+                ]
+            },
+            {
+                "name": "Audio",
+                "farbe": "#b45309",
+                "blocks": [
+                    {"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"},
+                    {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"},
+                    {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}
+                ]
+            },
+            {
+                "name": "Ausgabe",
+                "farbe": "#fe2c55",
+                "blocks": [
+                    {"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"},
+                    {"id": "panel", "name": "Panel", "untertitel": "Anzeige"},
+                    {"id": "apk", "name": "APK", "untertitel": "Android-Artefakt"}
+                ]
+            }
+        ],
+        "kanten": [
+            {"von": "tiktok-webview", "nach": "mobile-bridge-v1", "art": "fluss"},
+            {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"},
+            {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"},
+            {"von": "mobile-bridge-v1", "nach": "kotlin", "art": "fluss"},
+            {"von": "origin-pruefung", "nach": "jetpack-compose", "art": "fluss"},
+            {"von": "typ-groesse", "nach": "androidx-webkit", "art": "fluss"},
+            {"von": "kotlin", "nach": "shazamkit", "art": "fluss"},
+            {"von": "jetpack-compose", "nach": "mikrofon", "art": "fluss"},
+            {"von": "androidx-webkit", "nach": "webview-pcm-exp", "art": "fluss"},
+            {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"},
+            {"von": "mikrofon", "nach": "panel", "art": "fluss"},
+            {"von": "webview-pcm-exp", "nach": "apk", "art": "fluss"}
+        ],
+        "kantenarten": [
+            {"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}
+        ]
+    }
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 3d.py <output_file.html>")
         sys.exit(1)
     
-    output_file = args[0]
-    
-    try:
-        html_content = generateHTML()
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        print(f'HTML file generated successfully: {output_file}')
-    except Exception as error:
-        print(f'Error generating HTML file: {error}', file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == '__main__':
-    main()
+    output_file = sys.argv[1]
+    generate_html(output_file)

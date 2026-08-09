@@ -1,18 +1,13 @@
 #!/usr/bin/env node
-// 3d_111adf.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/3d_111adf.pl
-// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+// 3d.html — portiert nach javascript
+// Quelle: html, Projects@Weather-Check:public/3d.html
+// Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
+const path = require('path');
 
-// Parameter: Ausgabedatei
-const ausgabe_datei = process.argv[2] || (() => {
-    console.error(`Verwendung: ${process.argv[0]} ${process.argv[1]} <ausgabedatei>`);
-    process.exit(1);
-})();
-
-// HTML-Struktur erzeugen
-const html = `<!DOCTYPE html>
+function generateHTML() {
+  const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -334,12 +329,27 @@ const html = `<!DOCTYPE html>
 </body>
 </html>`;
 
-// In Datei schreiben
-fs.writeFileSync(ausgabe_datei, html, (err) => {
-    if (err) {
-        console.error(`Kann Datei '${ausgabe_datei}' nicht öffnen: ${err.message}`);
-        process.exit(1);
-    }
-});
+  return html;
+}
 
-console.log(`HTML-Datei erfolgreich erstellt: ${ausgabe_datei}`);
+function main() {
+  const args = process.argv.slice(2);
+  
+  if (args.length !== 1) {
+    console.error('Usage: node script.js <output-file>');
+    process.exit(1);
+  }
+  
+  const outputFile = args[0];
+  
+  try {
+    const htmlContent = generateHTML();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML file generated successfully: ${outputFile}`);
+  } catch (error) {
+    console.error('Error generating HTML file:', error.message);
+    process.exit(1);
+  }
+}
+
+main();

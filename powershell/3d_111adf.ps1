@@ -1,17 +1,26 @@
 #!/usr/bin/env pwsh
-# 3d_111adf.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/3d_111adf.pl
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach powershell
+# Quelle: html, Projects@Weather-Check:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-# Parameter: Ausgabedatei
-if ($args.Count -eq 0) {
-    Write-Error "Verwendung: $($MyInvocation.MyCommand.Name) <ausgabedatei>"
-    exit 1
-}
-$ausgabe_datei = $args[0]
+<#
+.SYNOPSIS
+Generates the 3D HTML visualization page for Weather-Check architecture.
+.DESCRIPTION
+This script creates an interactive 3D visualization of the Weather-Check architecture using Three.js.
+It outputs the complete HTML document to a specified file.
+.PARAMETER OutputPath
+The path where the HTML file should be saved.
+.EXAMPLE
+./3d.ps1 -OutputPath "weather-check.html"
+#>
 
-# HTML-Struktur erzeugen
-$html = @'
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$OutputPath
+)
+
+$htmlContent = @"
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -333,13 +342,7 @@ $html = @'
 </script>
 </body>
 </html>
-'@
+"@
 
-# In Datei schreiben
-try {
-    $html | Out-File -FilePath $ausgabe_datei -Encoding UTF8
-    Write-Output "HTML-Datei erfolgreich erstellt: $ausgabe_datei"
-} catch {
-    Write-Error "Kann Datei '$ausgabe_datei' nicht öffnen: $($_.Exception.Message)"
-    exit 1
-}
+$htmlContent | Out-File -FilePath $OutputPath -Encoding utf8
+Write-Host "Weather-Check 3D visualization saved to: $OutputPath"

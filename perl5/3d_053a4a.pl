@@ -1,15 +1,16 @@
-#!/usr/bin/env perl
-# 3d_053a4a.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 3d.html — portiert nach perl5
+# Quelle: html, Projects@python-hardener:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use JSON::PP;
 
-sub generate_html {
-    my $html = <<'EOF';
+# Parameter: Ausgabedatei
+my $ausgabe = $ARGV[0] || die "Verwendung: $0 <ausgabedatei>\n";
+
+# HTML-Inhalt generieren
+my $html = <<'HTML';
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -331,32 +332,11 @@ sub generate_html {
 </script>
 </body>
 </html>
-EOF
+HTML
 
-    return $html;
-}
+# In Datei schreiben
+open(my $fh, '>', $ausgabe) or die "Kann $ausgabe nicht öffnen: $!";
+print $fh $html;
+close $fh;
 
-sub main {
-    my @args = @ARGV;
-    
-    if (@args != 1) {
-        print STDERR "Usage: perl 3d.pl <output-file>\n";
-        exit 1;
-    }
-    
-    my $output_file = $args[0];
-    
-    eval {
-        my $html_content = generate_html();
-        open my $fh, '>:encoding(UTF-8)', $output_file or die "Cannot open file '$output_file': $!";
-        print $fh $html_content;
-        close $fh;
-        print "HTML file generated successfully: $output_file\n";
-    };
-    if ($@) {
-        print STDERR "Error generating HTML file: $@\n";
-        exit 1;
-    }
-}
-
-main();
+print "Datei $ausgabe erfolgreich erstellt.\n";

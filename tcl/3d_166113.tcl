@@ -1,12 +1,15 @@
-#!/usr/bin/env tclsh8.6
-# 3d_166113.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/3d_166113.js
+#!/usr/bin/env tclsh
+# 3d.html — portiert nach tcl
+# Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-package require Tcl 8.6
+# Tcl/Tk port of 3d.html - TikTok LIVE Companion Android interactive architecture visualization
+# This script generates the HTML file with embedded JavaScript for 3D visualization
 
-proc generateHTML {} {
-    return {<!DOCTYPE html>
+proc generate_3d_html {filename} {
+    set html [open $filename w]
+    
+    puts $html {<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -327,29 +330,16 @@ proc generateHTML {} {
 </script>
 </body>
 </html>}
+    
+    close $html
 }
 
-proc main {} {
-    set argc [llength $::argv]
-    set argv $::argv
-    
-    if {$argc != 1} {
-        puts stderr "Usage: tclsh 3d.tcl <output-file>"
-        exit 1
-    }
-    
-    set outputFile [lindex $argv 0]
-    
-    if [catch {
-        set htmlContent [generateHTML]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
-        close $fh
-        puts "HTML file generated successfully: $outputFile"
-    } error] {
-        puts stderr "Error generating HTML file: $error"
-        exit 1
-    }
+# Main execution
+if {$argc != 1} {
+    puts "Usage: $argv0 <output_filename>"
+    exit 1
 }
 
-main
+set output_file [lindex $argv 0]
+generate_3d_html $output_file
+puts "Generated $output_file"

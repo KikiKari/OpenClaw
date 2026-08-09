@@ -1,22 +1,31 @@
 #!/usr/bin/env node
-// 3d_31a461.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/3d_31a461.pl
+// 3d.html — portiert nach javascript
+// Quelle: html, Projects@TikTok-Live-Companion-iOS:public/3d.html
 // Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
+const path = require('path');
 
-const outputFile = process.argv[2] || '3d.html';
-
-const htmlContent = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TikTok LIVE Companion iOS — Interaktive Architektur</title>
-<meta name="description" content="Die Schichtsicht der iOS-App: WKWebView, Brücke, SwiftUI, ShazamKit.">
-<meta name="theme-color" content="#fe2c55">
-<style>
-  :root{
+function createHTMLDocument() {
+  const doc = {
+    doctype: '<!DOCTYPE html>',
+    html: {
+      attributes: { lang: 'de' },
+      head: {
+        meta: [
+          { charset: 'utf-8' },
+          { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+        ],
+        title: 'TikTok LIVE Companion iOS — Interaktive Architektur',
+        metaDescription: {
+          name: 'description',
+          content: 'Die Schichtsicht der iOS-App: WKWebView, Brücke, SwiftUI, ShazamKit.'
+        },
+        metaTheme: {
+          name: 'theme-color',
+          content: '#fe2c55'
+        },
+        style: `:root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#fe2c55; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
@@ -59,47 +68,86 @@ const htmlContent = `<!DOCTYPE html>
   .strich{width:30px;height:0;border-top-width:3px;border-top-style:solid;display:inline-block}
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
-  a{color:var(--ac)}
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <p class="technik">three.js · r128</p>
-  <h1>TikTok LIVE Companion iOS</h1>
-  <p class="lede">Die Schichtsicht der iOS-App: WKWebView, Brücke, SwiftUI, ShazamKit.</p>
-
-  <div class="raster">
-    <div class="buehne" id="buehne">
-      <div class="knoepfe">
-        <button id="btn-plus" title="Näher">+</button>
-        <button id="btn-minus" title="Weiter weg">−</button>
-        <button id="btn-reset">Zurücksetzen</button>
-        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
-      </div>
-    </div>
-
-    <aside class="karte">
-      <h2>Ausgewählter Knoten</h2>
-      <h3 id="k-name">—</h3>
-      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
-      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
-      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
-      <div class="blaettern">
-        <button id="btn-prev">←<br>Vorheriger</button>
-        <button id="btn-next">Nächster<br>→</button>
-      </div>
-    </aside>
-  </div>
-
-  <div class="legende" id="legende"></div>
-  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(function(){
+  a{color:var(--ac)}`,
+        scripts: [
+          { src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' }
+        ]
+      },
+      body: {
+        div: {
+          class: 'wrap',
+          children: [
+            { p: { class: 'technik', text: 'three.js · r128' } },
+            { h1: { text: 'TikTok LIVE Companion iOS' } },
+            { p: { class: 'lede', text: 'Die Schichtsicht der iOS-App: WKWebView, Brücke, SwiftUI, ShazamKit.' } },
+            {
+              div: {
+                class: 'raster',
+                children: [
+                  {
+                    div: {
+                      class: 'buehne',
+                      id: 'buehne',
+                      children: [
+                        {
+                          div: {
+                            class: 'knoepfe',
+                            children: [
+                              { button: { id: 'btn-plus', title: 'Näher', text: '+' } },
+                              { button: { id: 'btn-minus', title: 'Weiter weg', text: '−' } },
+                              { button: { id: 'btn-reset', text: 'Zurücksetzen' } },
+                              { button: { id: 'btn-iso', 'aria-pressed': 'true', title: 'Isometrisch oder perspektivisch', text: 'Iso' } }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    aside: {
+                      class: 'karte',
+                      children: [
+                        { h2: { text: 'Ausgewählter Knoten' } },
+                        { h3: { id: 'k-name', text: '—' } },
+                        { p: { class: 'sub', id: 'k-sub', text: 'Knoten anklicken oder durchblättern' } },
+                        {
+                          dl: {
+                            class: 'feld',
+                            children: [
+                              { dt: { text: 'Schicht' } },
+                              { dd: { id: 'k-schicht', text: '—' } }
+                            ]
+                          }
+                        },
+                        {
+                          dl: {
+                            class: 'feld',
+                            children: [
+                              { dt: { text: 'ID' } },
+                              { dd: { id: 'k-id', text: '—' } }
+                            ]
+                          }
+                        },
+                        {
+                          div: {
+                            class: 'blaettern',
+                            children: [
+                              { button: { id: 'btn-prev', text: '←<br>Vorheriger' } },
+                              { button: { id: 'btn-next', text: 'Nächster<br>→' } }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            { div: { class: 'legende', id: 'legende' } },
+            { p: { class: 'fuss', text: 'Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.' } }
+          ]
+        },
+        script: `(function(){
   "use strict";
   var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "wkwebview", "name": "WKWebView", "untertitel": "Hauptframe"}, {"id": "www-tiktok-com", "name": "www.tiktok.com", "untertitel": "nur diese Origin"}, {"id": "hauptframe", "name": "Hauptframe", "untertitel": "kein iframe"}]}, {"name": "Bruecke", "farbe": "#2481cc", "blocks": [{"id": "mobile-bridge-v1", "name": "Mobile Bridge v1", "untertitel": "Origin + Typ"}, {"id": "origin-pruefung", "name": "Origin-Pruefung", "untertitel": "fail closed"}, {"id": "typ-groesse", "name": "Typ + Groesse", "untertitel": "begrenzt"}]}, {"name": "App", "farbe": "#6d5bd0", "blocks": [{"id": "swift", "name": "Swift", "untertitel": "Sprache"}, {"id": "swiftui", "name": "SwiftUI", "untertitel": "Oberflaeche"}, {"id": "webkit", "name": "WebKit", "untertitel": "WebView"}]}, {"name": "Audio", "farbe": "#b45309", "blocks": [{"id": "shazamkit", "name": "ShazamKit", "untertitel": "nur nach Klick"}, {"id": "mikrofon", "name": "Mikrofon", "untertitel": "stabil"}, {"id": "webview-pcm-exp", "name": "WebView-PCM (exp.)", "untertitel": "experimentell"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "fluechtiger-streamzustand", "name": "fluechtiger Streamzustand", "untertitel": "nicht persistiert"}, {"id": "panel", "name": "Panel", "untertitel": "Anzeige"}, {"id": "ipa", "name": "IPA", "untertitel": "iOS-Artefakt"}]}], "kanten": [{"von": "wkwebview", "nach": "mobile-bridge-v1", "art": "fluss"}, {"von": "www-tiktok-com", "nach": "origin-pruefung", "art": "fluss"}, {"von": "hauptframe", "nach": "typ-groesse", "art": "fluss"}, {"von": "mobile-bridge-v1", "nach": "swift", "art": "fluss"}, {"von": "origin-pruefung", "nach": "swiftui", "art": "fluss"}, {"von": "typ-groesse", "nach": "webkit", "art": "fluss"}, {"von": "swift", "nach": "shazamkit", "art": "fluss"}, {"von": "swiftui", "nach": "mikrofon", "art": "fluss"}, {"von": "webkit", "nach": "webview-pcm-exp", "art": "fluss"}, {"von": "shazamkit", "nach": "fluechtiger-streamzustand", "art": "fluss"}, {"von": "mikrofon", "nach": "panel", "art": "fluss"}, {"von": "webview-pcm-exp", "nach": "ipa", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
@@ -324,11 +372,108 @@ const htmlContent = `<!DOCTYPE html>
     stelle();
     renderer.render(szene, kamera);
   })();
-})();
-</script>
-</body>
-</html>`;
+})();`
+      }
+    }
+  };
 
-fs.writeFileSync(outputFile, htmlContent);
+  return doc;
+}
 
-console.log(`HTML file generated: ${outputFile}`);
+function renderElement(tag, element, indent = 0) {
+  const spaces = '  '.repeat(indent);
+  let html = '';
+
+  if (typeof element === 'string') {
+    return spaces + element;
+  }
+
+  if (Array.isArray(element)) {
+    return element.map(el => renderElement(tag, el, indent)).join('\n');
+  }
+
+  if (element.text) {
+    html += spaces + `<${tag}`;
+    Object.keys(element).forEach(attr => {
+      if (attr !== 'text' && attr !== 'children') {
+        html += ` ${attr}="${element[attr]}"`;
+      }
+    });
+    html += `>${element.text}</${tag}>`;
+    return html;
+  }
+
+  html += spaces + `<${tag}`;
+  Object.keys(element).forEach(attr => {
+    if (attr !== 'children' && attr !== 'text') {
+      if (typeof element[attr] === 'object' && element[attr] !== null) {
+        if (attr === 'attributes') {
+          Object.keys(element[attr]).forEach(subAttr => {
+            html += ` ${subAttr}="${element[attr][subAttr]}"`;
+          });
+        }
+      } else {
+        html += ` ${attr}="${element[attr]}"`;
+      }
+    }
+  });
+  html += '>';
+
+  if (element.children) {
+    html += '\n';
+    html += element.children.map(child => {
+      const childTag = Object.keys(child)[0];
+      return renderElement(childTag, child[childTag], indent + 1);
+    }).join('\n');
+    html += '\n' + spaces + `</${tag}>`;
+  } else {
+    html += `</${tag}>`;
+  }
+
+  return html;
+}
+
+function generateHTML(doc) {
+  let html = doc.doctype + '\n';
+  html += '<html lang="de">\n<head>\n';
+  html += '  <meta charset="utf-8">\n';
+  html += '  <meta name="viewport" content="width=device-width, initial-scale=1">\n';
+  html += `  <title>${doc.html.head.title}</title>\n`;
+  html += `  <meta name="description" content="${doc.html.head.metaDescription.content}">\n`;
+  html += `  <meta name="theme-color" content="${doc.html.head.metaTheme.content}">\n`;
+  html += '  <style>\n';
+  html += doc.html.head.style.split('\n').map(line => '    ' + line).join('\n') + '\n';
+  html += '  </style>\n';
+  html += '</head>\n';
+  html += '<body>\n';
+
+  // Render body content
+  const bodyContent = doc.html.body;
+  html += renderElement('div', bodyContent.div, 0) + '\n';
+  
+  // Add script tags
+  html += '  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>\n';
+  html += '  <script>\n';
+  html += doc.html.body.script.split('\n').map(line => '  ' + line).join('\n') + '\n';
+  html += '  </script>\n';
+  html += '</body>\n';
+  html += '</html>';
+
+  return html;
+}
+
+function main() {
+  const outputFile = process.argv[2];
+  if (!outputFile) {
+    console.error('Usage: node script.js <output-file>');
+    process.exit(1);
+  }
+
+  const doc = createHTMLDocument();
+  const htmlContent = generateHTML(doc);
+
+  fs.writeFileSync(outputFile, htmlContent, 'utf8');
+  console.log(`HTML file generated: ${outputFile}`);
+}
+
+main();

@@ -1,15 +1,19 @@
 #!/usr/bin/perl
-# 3d.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach perl5
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
 
-sub generateHTML {
-  return <<'HTML_END';
+# Get output filename from command line argument
+my $output_file = shift @ARGV or die "Usage: $0 <output_file>\n";
+
+# Open file for writing
+open my $fh, '>', $output_file or die "Cannot open $output_file: $!\n";
+
+# Write the complete HTML document
+print $fh <<'EOF';
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -331,30 +335,9 @@ sub generateHTML {
 </script>
 </body>
 </html>
-HTML_END
-}
+EOF
 
-sub main {
-  my @args = @ARGV;
-  
-  if (@args != 1) {
-    print STDERR "Usage: perl script.pl <output-file>\n";
-    exit 1;
-  }
-  
-  my $outputFile = $args[0];
-  
-  eval {
-    my $htmlContent = generateHTML();
-    open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
-    print $fh $htmlContent;
-    close $fh;
-    print "HTML file generated successfully: $outputFile\n";
-  };
-  if ($@) {
-    print STDERR "Error writing file: $@\n";
-    exit 1;
-  }
-}
+# Close the file
+close $fh;
 
-main();
+print "HTML file generated successfully: $output_file\n";

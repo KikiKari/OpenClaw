@@ -1,10 +1,30 @@
 #!/usr/bin/env pwsh
-# 3d_053a4a.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach powershell
+# Quelle: html, Projects@python-hardener:public/3d.html
+# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-function GenerateHTML {
-  $html = @"
+<#
+.SYNOPSIS
+Generates an HTML file with interactive 3D architecture visualization.
+
+.DESCRIPTION
+This script generates an HTML file containing an interactive 3D visualization
+of a Python architecture using Three.js. The visualization includes layers,
+blocks, and connections between them.
+
+.PARAMETER OutputFile
+The path to the output HTML file.
+
+.EXAMPLE
+.\3d.ps1 -OutputFile "architecture.html"
+#>
+
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$OutputFile
+)
+
+$htmlContent = @"
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -328,27 +348,5 @@ function GenerateHTML {
 </html>
 "@
 
-  return $html
-}
-
-function Main {
-  $args = $args
-  
-  if ($args.Count -ne 1) {
-    Write-Error "Usage: pwsh 3d.ps1 <output-file>"
-    exit 1
-  }
-  
-  $outputFile = $args[0]
-  
-  try {
-    $htmlContent = GenerateHTML
-    Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
-    Write-Output "HTML file generated successfully: $outputFile"
-  } catch {
-    Write-Error "Error generating HTML file: $($_.Exception.Message)"
-    exit 1
-  }
-}
-
-Main @args
+$htmlContent | Out-File -FilePath $OutputFile -Encoding UTF8
+Write-Output "HTML file generated: $OutputFile"

@@ -1,15 +1,22 @@
-#!/usr/bin/env bash
-# 3d_31a461.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/3d_31a461.js
+#!/bin/bash
+# 3d.html — portiert nach shell
+# Quelle: html, Projects@TikTok-Live-Companion-iOS:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Standard-Output-Datei festlegen
-output_file="${1:-3d.html}"
+# Erzeugt eine HTML-Datei mit 3D-Darstellung der TikTok LIVE Companion Architektur
+# Aufruf: ./3d.html.sh <ausgabedatei>
 
-# HTML-Inhalt generieren und in Datei schreiben
-cat > "$output_file" << 'HTML_END'
+if [ $# -ne 1 ]; then
+  echo "Fehler: Keine Ausgabedatei angegeben" >&2
+  echo "Aufruf: $0 <ausgabedatei>" >&2
+  exit 1
+fi
+
+ausgabedatei="$1"
+
+cat > "$ausgabedatei" << 'HTML_Ende'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -331,6 +338,6 @@ cat > "$output_file" << 'HTML_END'
 </script>
 </body>
 </html>
-HTML_END
+HTML_Ende
 
-echo "HTML file generated: $output_file"
+echo "HTML-Datei wurde erfolgreich erstellt: $ausgabedatei"

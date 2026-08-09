@@ -1,25 +1,20 @@
-#!/usr/bin/env bash
-# 3d_166113.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/3d_166113.js
+#!/bin/bash
+# 3d.html — portiert nach shell
+# Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 3d.html — portiert nach bash
-# Quelle: html, Projects@TikTok-Live-Companion-Android:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-# Prüfe Anzahl der Argumente
+# Parameter prüfen
 if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <output-file>" >&2
+    echo "Verwendung: $0 <ausgabedatei>" >&2
     exit 1
 fi
 
-output_file="$1"
+AUSGABE_DATEI="$1"
 
-# HTML-Inhalt generieren
-generate_html() {
-    cat <<'EOF'
+# HTML-Dokument generieren
+cat > "$AUSGABE_DATEI" << 'EOF'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -342,18 +337,5 @@ generate_html() {
 </body>
 </html>
 EOF
-}
 
-# Hauptfunktion
-main() {
-    local html_content
-    html_content=$(generate_html)
-    
-    # Schreibe den HTML-Inhalt in die Ausgabedatei
-    echo "$html_content" > "$output_file"
-    
-    echo "HTML file generated successfully: $output_file"
-}
-
-# Führe die Hauptfunktion aus
-main
+echo "HTML-Dokument wurde erfolgreich in '$AUSGABE_DATEI' erstellt."
