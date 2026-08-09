@@ -1,6 +1,6 @@
 # Script Abstractions — Status
 
-**Letzter Lauf:** 2026-08-08 19:16 UTC
+**Letzter Lauf:** 2026-08-08 23:16 UTC
 
 Jede Quelldatei der drei Repositories wird in sechs Zielsprachen portiert.
 Es werden vollstaendige Uebersetzungen abgelegt; Erzeugnisse ohne gueltige
@@ -10,30 +10,30 @@ Syntax oder mit Platzhaltern werden verworfen.
 
 | Zielsprache | Dateien |
 |---|---:|
-| javascript | 0 |
-| perl5 | 1 |
-| powershell | 1 |
-| python | 1 |
-| shell | 1 |
-| tcl | 1 |
-| **gesamt** | **5** |
+| javascript | 67 |
+| perl5 | 71 |
+| powershell | 59 |
+| python | 62 |
+| shell | 65 |
+| tcl | 74 |
+| **gesamt** | **398** |
 
 ## Quellen
 
 | Prioritaet | Quelldateien | Bedeutung |
 |---|---:|---|
-| high | 118 | Betriebsscripte aus scripts-Verzeichnissen |
-| medium | 577 | uebriger ausfuehrbarer Code |
+| high | 117 | Betriebsscripte aus scripts-Verzeichnissen |
+| medium | 575 | uebriger ausfuehrbarer Code |
 | low | 57 | Markup und Stilvorlagen |
-| **gesamt** | **752** | nach Inhalt dedupliziert |
+| **gesamt** | **749** | nach Inhalt dedupliziert |
 
-Noch offene Sprachpaare: **3812**
+Noch offene Sprachpaare: **3423**
 
 ## Letzter Lauf
 
-- bearbeitete Quelldateien: 1
-- erzeugte Uebersetzungen: 5
-- verworfen: 0
+- bearbeitete Quelldateien: 40
+- erzeugte Uebersetzungen: 189
+- verworfen: 11
 
 ## Herkunft
 
@@ -42,3 +42,10 @@ Noch offene Sprachpaare: **3812**
 - `KikiKari/Onboarding` — main
 
 Erzeugt von `abstractions/ABSTRACTIONS_MANAGER.py`.
+
+## Konsolidierung
+
+Der Bestand wurde aus den am alten Veröffentlichungsziel erhaltenen echten
+Erzeugnissen übernommen. Zwei dort abgeschnittene Tcl-Dateien wurden nicht
+veröffentlicht. Für `tcl/1781743218784.tcl` wurde die bereits vorhandene,
+vollständige und syntaxgültige Fassung dieses Ausgabe-Branches beibehalten.
