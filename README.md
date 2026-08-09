@@ -34,6 +34,12 @@ Die historische README ist unverändert abrufbar unter
 Historische Sprachdateien bleiben getrennt, damit sie nicht als aktive,
 modellgeprüfte Übersetzungen ausgegeben oder vom Manager weiterverwendet werden.
 
+Ein zusätzlich vorgefundenes lokales, noch nicht veröffentlichtes Arbeitspaket
+mit 182 Dateien wurde ebenfalls verlustfrei unter
+[`recovered-uncommitted-20260809/`](historical/abstractions-pre-migration-20260808/.artifacts/recovered-uncommitted-20260809/)
+gesichert. Es bleibt vom aktiven Bestand getrennt, bis es eigenständig geprüft
+und gegebenenfalls übernommen wird.
+
 ## Veröffentlichung
 
 Der aktive Manager schreibt in die sechs Sprachverzeichnisse, aktualisiert
