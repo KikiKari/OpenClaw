@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-145.5 -128.6 554.0 434.0" width="554" height="434" role="img" aria-label="Isometrischer 3D-Request-Flow des MCP-OAuth-Proxy">
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d1d9"/></marker><marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d29922"/></marker></defs>
+  <rect x="-145.5" y="-128.6" width="554.0" height="434.0" fill="#0d1117" rx="8"/>
+  <text x="-135.5" y="-112.6" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#c9d1d9">MCP-OAuth-Proxy — Request-Flow</text><text x="-135.5" y="-94.6" font-family="Segoe UI, Arial, sans-serif" font-size="10" fill="#8b949e">OAuth 2.1 + PKCE · <tspan fill="#d29922">— — Response</tspan></text>
+  <polygon points="-111.5,27.6 -47.8,64.4 -47.8,39.1 -111.5,2.3" fill="#1b5fc0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="15.9,27.6 -47.8,64.4 -47.8,39.1 15.9,2.3" fill="#2f80ed" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="-47.8,-34.5 15.9,2.3 -47.8,39.1 -111.5,2.3" fill="#4c9aff" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="8.0,96.6 71.7,133.4 71.7,101.2 8.0,64.4" fill="#1f7a34" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="135.4,96.6 71.7,133.4 71.7,101.2 135.4,64.4" fill="#2ea043" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="71.7,27.6 135.4,64.4 71.7,101.2 8.0,64.4" fill="#57d38c" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="127.5,165.6 191.2,202.4 191.2,173.9 127.5,137.1" fill="#6a3fc0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="255.0,165.6 191.2,202.4 191.2,173.9 255.0,137.1" fill="#8957e5" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="191.2,100.3 255.0,137.1 191.2,173.9 127.5,137.1" fill="#b88cf0" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="247.0,234.6 310.7,271.4 310.7,246.1 247.0,209.3" fill="#a8761a" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="374.5,234.6 310.7,271.4 310.7,246.1 374.5,209.3" fill="#d29922" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <polygon points="310.7,172.5 374.5,209.3 310.7,246.1 247.0,209.3" fill="#f0b352" stroke="#0d1117" stroke-width="1" stroke-linejoin="round"/>
+  <line x1="-47.8" y1="2.3" x2="38.2" y2="47.0" stroke="#c9d1d9" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="71.7" y1="64.4" x2="157.8" y2="116.7" stroke="#c9d1d9" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="191.2" y1="137.1" x2="277.3" y2="189.1" stroke="#c9d1d9" stroke-width="2" marker-end="url(#arrow)"/>
+  <polyline points="310.7,209.3 310.7,156.4 -47.8,-50.6 -47.8,2.3" fill="none" stroke="#d29922" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arrowg)"/><text x="131.5" y="46.9" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" font-weight="600" fill="#d29922">Response</text>
+  <text x="-47.8" y="-0.7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">MCP Client</text>
+  <text x="-47.8" y="12.3" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#eaeef2">ChatGPT · Claude · VSC</text>
+  <text x="71.7" y="61.4" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Auth-Middleware</text>
+  <text x="71.7" y="74.4" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#eaeef2">JWT RS256</text>
+  <text x="191.2" y="134.1" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Tool-Router</text>
+  <text x="191.2" y="147.1" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#eaeef2">tools/call</text>
+  <text x="310.7" y="206.3" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#ffffff">Perplexity API</text>
+  <text x="310.7" y="219.3" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="9" fill="#eaeef2">ask·search·research</text>
+</svg>

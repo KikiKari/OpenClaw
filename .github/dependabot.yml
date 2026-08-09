@@ -1,0 +1,62 @@
+version: 2
+updates:
+
+  # npm — special-engine (React/Vite frontend)
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "special-engine"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      react:
+        patterns: ["react*", "@testing-library/*"]
+      vite:
+        patterns: ["vite*", "@vitejs/*"]
+      dev-deps:
+        dependency-type: "development"
+    labels: ["dependencies", "npm"]
+    open-pull-requests-limit: 5
+
+  # npm — verbose-waddle
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "verbose-waddle"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "npm", "verbose-waddle"]
+    open-pull-requests-limit: 3
+
+  # Python — main (openclaw-py)
+  - package-ecosystem: "pip"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "python"]
+    open-pull-requests-limit: 3
+
+  # Docker — main
+  - package-ecosystem: "docker"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "docker"]
+    open-pull-requests-limit: 2
+
+  # GitHub Actions — main (auto-update workflow action versions)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      all-actions:
+        patterns: ["*"]
+    labels: ["dependencies", "github-actions"]
+    open-pull-requests-limit: 3
