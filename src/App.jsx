@@ -3,7 +3,7 @@ import './App.css';
 const links = [
   { href: 'https://kikikari.github.io/OpenClaw/', label: 'GitHub Pages Dokumentation' },
   { href: 'https://github.com/KikiKari/OpenClaw', label: 'Repository' },
-  { href: 'https://github.com/KikiKari/OpenClaw/tree/special-engine', label: 'Frontend-Branch' },
+  { href: 'https://github.com/KikiKari/OpenClaw/tree/main', label: 'main-Branch' },
 ];
 
 function App() {
