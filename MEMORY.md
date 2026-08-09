@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-08 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-08-09 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-09 - Daily Memory-Maintenance & Erkenntnisse vom 08./09.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST)
+- ❌ Keine Datei `memory/2026-08-09*.md` gefunden - heute noch keine neue Memory-Datei.
+- ✅ Analysiert: `memory/2026-08-08-0038.md` (db-maintainer Heartbeat-Lauf).
+- ℹ️ Keine zusätzlichen neuen Entscheidungen, Projekte oder ToDos gegenüber dem bereits dokumentierten db-maintainer-Lauf; dessen Punkte bleiben relevant (Live-DBs im Workspace-Root, `db/*.db` als Sync-/Backup-Quellen, Backup-Namensschema `YYYY-MM-DD_HH-MM_{docs,tree}.db.bak`, Python-Fallback statt `tree`, Sandbox-Exec nur Einzelbefehle).
+- ✅ Archiv-Check: `memory/2026-07-09-1512.md`, `memory/2026-07-09-2039.md`, `memory/2026-07-09-2100.md`, `memory/2026-07-09-2148.md`, `memory/2026-07-09-2202.md`, `memory/2026-07-09-2211.md`, `memory/2026-07-09-2215.md`, `memory/2026-07-09-2223.md` und `memory/2026-07-10-0550.md` nach `memory/archive/2026-08-09/` verschoben (vorher geprüft: TikTok-/Session-Logs, abgelaufene/technisch fehlerhafte Stream-Links, `technical_error` wegen benötigtem elevated host exec, keine akut kritischen Systemerkenntnisse).
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-08 - Daily Memory-Maintenance & Erkenntnisse vom 07./08.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST)
