@@ -1,28 +1,31 @@
 import './App.css';
 
+const links = [
+  { href: 'https://kikikari.github.io/OpenClaw/', label: 'GitHub Pages Dokumentation' },
+  { href: 'https://github.com/KikiKari/OpenClaw', label: 'Repository' },
+  { href: 'https://github.com/KikiKari/OpenClaw/tree/special-engine', label: 'Frontend-Branch' },
+];
+
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src="Octocat.png" className="App-logo" alt="logo" />
-        <p>
-          GitHub Codespaces <span className="heart">♥️</span> React
+    <main className="page-shell">
+      <section className="hero-card" aria-labelledby="openclaw-title">
+        <p className="eyebrow">OpenClaw</p>
+        <h1 id="openclaw-title">Gateway, Dokumentation und Projektoberflächen an einem Ort.</h1>
+        <p className="lead">
+          Diese Vercel-Produktion zeigt nicht mehr das Codespaces-Template, sondern die
+          verbundene OpenClaw-Startseite für Repository, Dokumentation und Frontend-Branch.
         </p>
-        <p className="small">
-          Edit <code>src/App.jsx</code> and save to reload.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </p>
-      </header>
-    </div>
+        <div className="link-grid" aria-label="OpenClaw Ziele">
+          {links.map((link) => (
+            <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+              {link.label}
+              <span aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
 
