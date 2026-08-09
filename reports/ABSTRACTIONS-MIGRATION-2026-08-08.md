@@ -10,11 +10,12 @@
 
 | Branch | Commit | Inhalt |
 |---|---|---|
-| `gateway2` | `ba1c429` | Stub-Manager und Altbeiwerk stillgelegt; neuer Manager, Skill, Wrapper, Zeitplan und Dokumentation aktiviert |
-| `gateway2-abstractions` | `62abde7` | bereinigter, vollständiger Ausgabe-Snapshot mit bytegleichem Baum des ersten echten Laufs |
+| `gateway2` | ab `ba1c429`, fortgeschrieben | Stub-Manager und Altbeiwerk stillgelegt; neuer Manager, Skill, Wrapper, Zeitplan und Dokumentation aktiviert |
+| `gateway2-abstractions` | `2d9cdac` | fortgeschriebener Arbeitsstand mit 407 Erzeugnissen und vollständig wieder angebundener vorheriger Historie |
 
-Der Ausgabe-Branch steht bei der Abschlussprüfung auf seinem Remote-Kopf und
-gegenüber `main` bei einem Commit voraus und keinem Commit zurück.
+Der Ausgabe-Branch steht bei der Abschlussprüfung auf seinem Remote-Kopf. Sein
+erster Elternverlauf enthält den vollständigen zugrunde liegenden `main`-Baum;
+sein zweiter Elternverlauf bindet den gesicherten Ausgabe-Stand `0b4e65f` ein.
 
 ## Übernommener Manager
 
@@ -41,25 +42,53 @@ Gesichert sind insbesondere:
 - alter Vollmanager, Wrapper, Skills, Helfer und alte Dokumentation;
 - alte Zustände, Manager-/Publisher-Logs und Schedulerdateien;
 - der Remote-Ausgabestand `f870ec2` als vollständiges Checkout;
-- das alte lokale Ausgabe-Checkout auf `d544c2f` einschließlich seiner 135
+- das alte lokale Ausgabe-Checkout auf `d544c2f` einschließlich seiner 152
   lokalen Commits und der uncommittierten `STATUS.md`;
 - der alte separate Publisher und seine Laufzeit-Wrapper.
 
-Die 135 lokalen Commits wurden zunächst irrtümlich über `352c082` in die
-veröffentlichte Ausgabehistorie aufgenommen. Dadurch zeigte GitHub den
-Ausgabe-Branch öffentlich als 156 Commits vor und 267 Commits hinter `main`.
-Diese falsche Historienverknüpfung wurde am 2026-08-09 mit ausdrücklicher
-Freigabe und `--force-with-lease` entfernt. Der damalige Branchkopf `0b4e65f`
-ist vollständig im verifizierten Git-Bundle
-`output-public-history-before-correction.bundle` gesichert. Das komplette
-Checkout einschließlich acht uncommittierter Dateien eines abgebrochenen
-Scheduler-Laufs liegt zusätzlich unter
-`output-checkout-before-public-history-correction/`.
+Commit `352c082` verband den lokalen Verlauf mit der damaligen Ausgabe durch
+die Strategie `ours`; sein Baum blieb deshalb leer und übernahm keinen Inhalt
+des zweiten Elternverlaufs. Das anschließende Umschreiben auf `62abde7` trennte
+den gesamten Stand `0b4e65f` mit 156 Commits vollständig vom aktiven Branch.
+Diese beiden Eingriffe waren keine Fortschreibung des vorgefundenen Zustands.
 
-Der korrigierte Commit `62abde7` hat `main` als Elterncommit und exakt denselben
-Tree-Hash `07978a0f29f8d2471e473c4fe656827be8fb93ad` wie `0b4e65f`. Damit blieb der
-veröffentlichte Ausgabebaum bytegleich, während die stillgelegte Althistorie
-nicht länger über den aktiven Ausgabe-Branch erreichbar ist.
+Der Verlauf blieb im verifizierten Git-Bundle
+`output-public-history-before-correction.bundle` und im Checkout
+`output-checkout-before-public-history-correction/` erhalten. Der echte
+Merge-Commit `2d9cdac` hat `3c60673` und `0b4e65f` als Eltern. Damit sind alle
+156 zuvor abgetrennten Commits wieder über `gateway2-abstractions` erreichbar;
+es gibt keinen Commit aus `0b4e65f`, der von `2d9cdac` aus unerreichbar ist.
+
+Im gesicherten Checkout lagen neun noch nicht committed Modell-Erzeugnisse,
+nicht acht: sechs Übersetzungen der Quelle
+`Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html`
+und drei Übersetzungen der Quelle
+`Projects@MCP-Server-Monitor:public/3d.html`. Alle neun bestanden die jeweilige
+Syntaxprüfung. Sie sind jetzt unter den vom Manager vorgesehenen
+Quellhash-Suffixen `2a8278` und `1af353` veröffentlicht, ohne gleichnamige
+vorhandene Erzeugnisse zu überschreiben.
+
+Der aktuelle Baum enthält den vollständigen zugrunde liegenden `main`-Stand
+und zusätzlich `STATUS.md` sowie 407 Erzeugnisse. Gegenüber dem ersten Elternteil
+von `2d9cdac` wurden neun Dateien hinzugefügt und `STATUS.md` fortgeschrieben;
+es wurde keine Datei gelöscht und die README blieb bytegleich.
+
+## Nachprüfung des Betriebs-Branches
+
+Zwischen dem unmittelbar vor der Umstellung vorgefundenen Commit `3ba11e5`
+und dem dokumentierten Betriebsstand wurden 24 Pfade aus dem aktiven Git-Baum
+entfernt. Davon sind 22 reguläre Dateien bytegenau im Workspace-Snapshot
+gesichert; die beiden weiteren Pfade waren symbolische Links und sind mit ihren
+ursprünglichen Linkzielen ebenfalls im Snapshot sowie im Bereich
+`retired-active-paths/` erhalten. Keine neue Nullbyte-Datei wurde erzeugt. Die
+fünf bereits vorher vorhandenen Nullbyte-Dateien sind in beiden Ständen
+identisch.
+
+Die stärkste Verkürzung einer weiter aktiven Datei betrifft
+`skills/script-abstractions-manager/SKILL.md` von 4.900 auf 1.185 Byte. Die
+vollständige vorherige Fassung ist bytegenau im Workspace-Snapshot erhalten.
+Die entfernten Pfade und diese Skill-Änderung bleiben damit wiederherstellbar;
+sie wurden bei dieser Historienreparatur nicht eigenmächtig zurückgespielt.
 
 ## Laufzeit
 
@@ -78,6 +107,9 @@ Scheduler-Aufruf genau eine Quelldatei verarbeitet. Damit kann der Manager die
 vollständige Sprachgruppe committen und veröffentlichen, bevor das Zeitfenster
 des isolierten Jobs endet. Manuelle Aufrufe mit expliziten Argumenten bleiben
 unverändert.
+
+Der dabei gesicherte uncommittierte Arbeitsstand ist inzwischen vollständig
+unter kollisionsfreien Namen in `2d9cdac` übernommen.
 
 Der Wrapper liest `OPENROUTER_API_KEY` aus der vorhandenen, nicht
 versionierten Serverablage und exportiert ihn nur in den Managerprozess. Der

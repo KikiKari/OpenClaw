@@ -117,7 +117,15 @@ benutzerlokalen Installation von PowerShell 7.6.4 mit derselben
 `ScriptBlock`-Kompilierung geprüft, die der Manager verwendet. Es wurden keine
 Ergebnisse verworfen und keine TODO-/Platzhalter-Muster abgelegt.
 
-Der Lauf erzeugte ursprünglich Commit `0b4e65f`. Sein bytegleicher Ausgabebaum
-ist nach der Bereinigung der irrtümlich übernommenen Althistorie im aktuellen
-Ausgabe-Commit `62abde7` enthalten. Dieser steht gegenüber dem voreingestellten
-Branch `main` bei einem Commit voraus und keinem Commit zurück.
+Der Lauf erzeugte ursprünglich Commit `0b4e65f`. Das spätere Umschreiben auf
+`62abde7` trennte diesen und die 155 weiteren vorherigen Ausgabe-Commits
+fälschlich vom aktiven Branch. Der echte Merge-Commit `2d9cdac` verbindet den
+vollständigen gesicherten Verlauf wieder mit dem fortgeschriebenen Arbeitsstand.
+Alle 156 vorherigen Commits sind damit erneut erreichbar.
+
+Neun vollständige, syntaxgültige Modell-Erzeugnisse aus dem vor dem Umschreiben
+gesicherten, noch nicht committed Arbeitsbaum wurden unter den kollisionsfreien
+Quellhash-Suffixen `2a8278` und `1af353` ergänzt. Der aktuelle Ausgabe-Branch
+enthält 407 Erzeugnisse. Gegenüber seinem aktuellen ersten Elterncommit nimmt
+`2d9cdac` neun Dateien hinzu und ändert ausschließlich `STATUS.md`; er löscht
+keine Datei und lässt die README unverändert.
