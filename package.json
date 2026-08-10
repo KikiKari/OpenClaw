@@ -7,11 +7,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.4.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.3",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "web-vitals": "^3.1.0"
   },
   "overrides": {
