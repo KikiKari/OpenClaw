@@ -773,7 +773,11 @@ openclaw nodes exec localhost -- <command>
 
 **Entscheidung:** Nicht implementieren solange nicht offiziell dokumentiert/unterstützt.
 
-## Promoted From Short-Term Memory (2026-08-06)
+## Promoted From Short-Term Memory (2026-08-11)
 
-<!-- openclaw-memory-promotion:memory:memory/archive/2026-06-03/2026-04-15.md:1:29 -->
-- # 2026-04-15 - Tagesprotokoll ## Memory-Maintenance (07:00 CET) ### Durchgeführte Aufgaben - ✅ Memory-Datei für heute erstellt - ✅ Tagesprotokoll vom 2026-04-14 analysiert - ✅ Archiv-Check durchgeführt — keine Dateien >30 Tage ### Status aus 2026-04-14 #### Infrastruktur-Updates - OpenClaw v2026.4.11 läuft stabil - Memory-Maintenance Cron funktioniert zuverlässig ### Offene Punkte (aus MEMORY.md) - [ ] Gateway-Neustart für reserveTokensFloor-Aktivierung - [ ] Node 2 NPM → Binary Sync - [ ] Node 5 manuelles Update in Termux - [ ] Node 6 Windows Scheduled Task debuggen - [ ] SSH-Key Deployment Node 2 & Node 3 ### Neue Einträge heute... [score=0.831 recalls=3 avg=0.686 source=memory/archive/2026-06-03/2026-04-15.md:1-29]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-0038.md:4:4 -->
+- Kontext: Cron-Reminder "Run db maintainer script" (Skill: `db-maintainer`). [score=0.806 recalls=0 avg=0.620 source=memory/2026-08-08-0038.md:4-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-0038.md:7:9 -->
+- Ausführung: Original-Skill-Script (`sandbox-skills/skills/db-maintainer/scripts/db_maintainer.py`) hardcoded `/home/openclaw/.openclaw/workspace` → im Sandbox-Exec ungültig (`/home` read-only).; Sandbox-adaptierte Kopie: `/workspace/.openclaw/tmp/db_maintainer_run.py` (WORKSPACE=`/workspace`, Python-Fallback für fehlendes `tree`-Binary, Sync live-DBs → `db/` vor Backup).; Zyklus erfolgreich: `important/openclaw-tree.txt` aktualisiert, `tree.db` v2 + `docs.db` neu aufgebaut (1505 Doku-Änderungen, State hatte veraltete Hashes), Backup erstellt, 4 alte Backups (>3 Tage) gelöscht. [score=0.806 recalls=0 avg=0.620 source=memory/2026-08-08-0038.md:7-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-0038.md:12:15 -->
+- Wichtig für künftige Läufe: Live-DBs liegen im Workspace-**Root** (`/workspace/docs.db`, `/workspace/tree.db`) – die Sub-Scripts `scripts/update_docs_db.py` + `scripts/tree_indexer_v2.py` schreiben dorthin. `db/*.db` sind nur Sync-/Backup-Quellen.; Backup-Namensschema beibehalten: `YYYY-MM-DD_HH-MM_{docs,tree}.db.bak` (abweichend von älterer Adaptation `db_maintainer_fixed.py`, die `root_*.db.bak` nutzte).; `tree`-Binary ist im Sandbox nicht installiert und nicht installierbar (kein root) → Python-Fallback nutzen.; Exec-Policy: keine zusammengesetzten Befehle (`&&`, `|`, Umleitungen) – nur Einzelbefehle. [score=0.806 recalls=0 avg=0.620 source=memory/2026-08-08-0038.md:12-15]
