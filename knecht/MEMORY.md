@@ -1,24 +1,6 @@
 # Long-Term Memory
 
 
-## Promoted From Short-Term Memory (2026-08-06)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-07-31.md:3:5 -->
-- 00:42 CEST heartbeat recovery check: host diagnostics healthy (root disk 35% used, 13 GiB available, load 0.24). Journal shows recurring OpenRouter routing failure: `openrouter/auto` returns HTTP 404 ("All providers have been ignored"); `openai/gpt-5.6-sol` is unavailable to the configured project; final fallback `openai/gpt-5.6-terra` succeeds. Attempt to notify `ops-hub` was forbidden because its session is not visible from this sandboxed agent session. Gateway-side model configuration repair remains pending. - 19:27 CEST heartbeat recovery check: host diagnostics remain healthy (root disk 36% used, 11 GiB available, load 0.67).... [score=0.812 recalls=0 avg=0.620 source=memory/2026-07-31.md:3-5]
-
-## Promoted From Short-Term Memory (2026-08-07)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-08-01.md:3:6 -->
-- Heartbeat — 2026-08-01 11:12 CEST: Host diagnostics normal: root filesystem 36% used; 11 GiB memory available; load average 1.39/0.53/0.40; no swap activity.; Repeated model-routing fault observed in journal from 10:34 through 11:12: `openrouter/openrouter/auto` returns HTTP 404 ("All providers have been ignored"); fallback `openai/gpt-5.6-sol` is not accessible to the project; a subsequent fallback to `openai/gpt-5.6-terra` succeeds.; Failed heartbeat lanes include docs, cron, and knecht.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:3-6]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-01.md:10:13 -->
-- Heartbeat — 2026-08-01 18:42 CEST: Host diagnostics remain normal: root filesystem 35% used; 11 GiB memory available; load average 1.17/0.48/0.39; no swap activity.; Gateway is reachable and active; the paired OpenClaw node is connected.; The same model-routing fault persists: configured `openrouter/openrouter/auto` receives HTTP 404 ("All providers have been ignored"), then the inaccessible `openai/gpt-5.6-sol` fallback fails before `openai/gpt-5.6-terra` succeeds.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:10-13]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-01.md:14:14 -->
-- Heartbeat — 2026-08-01 18:42 CEST: Notification to `ops-hub` was again attempted through `sessions_send` and denied because the target session is not visible from this sandboxed agent session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:14-14]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-01.md:18:21 -->
-- Heartbeat — 2026-08-01 19:27 CEST: Host diagnostics remain normal: root filesystem 35% used; 11 GiB memory available; load average 0.87/0.45/0.37; no swap activity.; Gateway is reachable, active, and its paired node is connected. The model-routing fault persists: configured `openrouter/openrouter/auto` returns HTTP 404, then unauthorized fallback `openai/gpt-5.6-sol` fails before `openai/gpt-5.6-terra` succeeds.; Ran the prescribed platform maintenance: `openclaw doctor --yes`, `doctor --force`, and a full memory-index rebuild.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:18-21]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-01.md:22:22 -->
-- Heartbeat — 2026-08-01 19:27 CEST: Attempted to notify `ops-hub` through `sessions_send`; delivery was denied because the target session is not visible from this sandboxed agent session. The configured primary/fallback model chain still needs an ops-hub administrator correction. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-01.md:22-22]
-
 ## Promoted From Short-Term Memory (2026-08-08)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:5:8 -->
@@ -50,3 +32,18 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-08-06.md:3:3 -->
 - 19:27 CEST heartbeat: host diagnostics normal (root disk 36% used, 12 GiB available memory, CPU 96% idle). Repeated OpenClaw model-routing failures found in journal: `openrouter/openrouter/auto` returns 404 (all providers ignored) and fallback `openai/gpt-5.6-sol` is unauthorized, causing heartbeat lane failures. Attempted to notify `ops-hub`; delivery was forbidden because its session is not visible from this sandboxed agent session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-06.md:3-3]
+
+## Promoted From Short-Term Memory (2026-08-13)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:3:6 -->
+- Heartbeat recovery — 2026-08-07 13:28 CEST: Host health normal: root disk 36% used (176G / 495G), 13 GiB available RAM, load average 0.26 / 0.19 / 0.17, no swap activity.; Gateway is active and reachable on loopback; paired node is connected.; Repeated model-selection failure observed: primary `openrouter/openrouter/auto` returns 404 for tool-use requests; fallback `openai/gpt-5.6-sol` is unauthorized for the project. Affected sessions have successfully selected `openai/gpt-5.6-terra` as fallback.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:3-6]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:7:8 -->
+- Heartbeat recovery — 2026-08-07 13:28 CEST: Ran required `openclaw sessions cleanup --enforce`: 34 current entries; 16 unreferenced artifacts pruned.; Attempted to notify `ops-hub` through its configured session; delivery was forbidden because this sandboxed agent session cannot view `agent:ops-hub:main`. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:7-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:12:14 -->
+- Heartbeat recovery — 2026-08-07 16:27 CEST: Host health remains normal: root disk 36% used, 13 GiB available RAM, load average 0.26 / 0.14 / 0.22, with no swap, CPU, or I/O pressure.; The same OpenClaw model-routing issue remains in the journal: `openrouter/openrouter/auto` returns 404 for tool-use requests; `openai/gpt-5.6-sol` is unauthorized, before fallback to `openai/gpt-5.6-terra` succeeds.; Required gateway diagnostics could not be run: the gateway execution target is not permitted for this session. A retry to notify `ops-hub` was also forbidden because `agent:ops-hub:main` is not visible from this sandboxed agent session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:12-14]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:18:21 -->
+- Heartbeat recovery — 2026-08-07 20:12 CEST: Host health normal: root disk 36% used, 13 GiB available RAM, load average 0.46 / 0.30 / 0.32, no swap, and no CPU or I/O pressure.; The persistent model-routing failure is still occurring: `openrouter/openrouter/auto` returns HTTP 404 for tool-use requests, then `openai/gpt-5.6-sol` is unauthorized for the project; `openai/gpt-5.6-terra` ultimately succeeds.; `openclaw doctor --yes` additionally reported an Anthropic CLI auth token for agent `claude` expiring in about 4 hours, one missing recent-session transcript, 645 orphan transcripts, stale disabled `memory-lancedb` configuration,... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:18-21]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:25:28 -->
+- Heartbeat recovery — 2026-08-07 23:12 CEST: Host health normal: root disk 36% used, 12 GiB available RAM, load average 1.21 / 0.82 / 0.65, no swap, and no CPU or I/O pressure.; Gateway is active and reachable; the paired node is connected. The persistent model-routing failure remains: primary `openrouter/openrouter/auto` returns HTTP 404 for tool-use requests, and `openai/gpt-5.6-sol` is unauthorized; `openai/gpt-5.6-terra` succeeds as a fallback.; Ran prescribed recovery checks and maintenance: `openclaw doctor --yes` removed redundant bundled plugin aliases and refreshed the stale Codex plugin; `openclaw doctor --force`, forced... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:25-28]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:29:29 -->
+- Heartbeat recovery — 2026-08-07 23:12 CEST: Attempt to notify `ops-hub` was forbidden because `agent:ops-hub:main` is not visible from this sandboxed session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:29-29]
