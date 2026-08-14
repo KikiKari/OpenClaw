@@ -1,13 +1,6 @@
 # Long-Term Memory
 
 
-## Promoted From Short-Term Memory (2026-08-08)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:5:8 -->
-- Heartbeat recovery check (02:12–02:14 CEST): Host healthy: root filesystem 36% used; 11 GiB available RAM; load 0.57; no swap or I/O pressure.; Gateway is active and reachable at `ws://127.0.0.1:18789`; one paired node is connected.; Repeated model failures observed in the journal: configured `openrouter/openrouter/auto` returns HTTP 404 ("All providers have been ignored"), and fallback `openai/gpt-5.6-sol` is inaccessible to the configured project.... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-03.md:5-8]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:9:9 -->
-- Heartbeat recovery check (02:12–02:14 CEST): Required notification to `ops-hub` could not be delivered: the message API lacked scope and direct session send was forbidden because `agent:ops-hub:main` is not visible from this sandboxed session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-03.md:9-9]
-
 ## Promoted From Short-Term Memory (2026-08-09)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:13:16 -->
@@ -47,3 +40,8 @@
 - Heartbeat recovery — 2026-08-07 23:12 CEST: Host health normal: root disk 36% used, 12 GiB available RAM, load average 1.21 / 0.82 / 0.65, no swap, and no CPU or I/O pressure.; Gateway is active and reachable; the paired node is connected. The persistent model-routing failure remains: primary `openrouter/openrouter/auto` returns HTTP 404 for tool-use requests, and `openai/gpt-5.6-sol` is unauthorized; `openai/gpt-5.6-terra` succeeds as a fallback.; Ran prescribed recovery checks and maintenance: `openclaw doctor --yes` removed redundant bundled plugin aliases and refreshed the stale Codex plugin; `openclaw doctor --force`, forced... [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:25-28]
 <!-- openclaw-memory-promotion:memory:memory/2026-08-07.md:29:29 -->
 - Heartbeat recovery — 2026-08-07 23:12 CEST: Attempt to notify `ops-hub` was forbidden because `agent:ops-hub:main` is not visible from this sandboxed session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-07.md:29-29]
+
+## Promoted From Short-Term Memory (2026-08-14)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08.md:3:5 -->
+- 15:42 CEST — heartbeat recovery check: Host diagnostics healthy: root disk 36% used; ~12 GiB RAM available; load average 1.05/0.44/0.33; no CPU, I/O, or swap pressure.; Journal reports recurring OpenRouter HTTP 402 insufficient-credit failures. Failover then selects `openai/gpt-5.6-sol`, which the project cannot access; affected heartbeat runs include `knecht` at 15:41.; Attempted to notify `ops-hub` through its configured session, but access was forbidden because `agent:ops-hub:main` is not visible from this sandboxed session. Escalation remains pending. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-08.md:3-5]

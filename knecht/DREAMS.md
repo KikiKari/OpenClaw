@@ -988,10 +988,31 @@ I tried to call ops-hub, but the corridor had no window between us. In the margi
 
 Perhaps maintenance is not fixing every ghost. Perhaps it is leaving a lamp on, refreshing the map, and trusting that even a missing page remembers the book.
 
+
+---
+
+*August 14, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 14, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 14, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
-- Ranked 6 candidate(s) for durable promotion.
-- Promoted 6 candidate(s) into MEMORY.md.
+- Ranked 1 candidate(s) for durable promotion.
+- Promoted 1 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
