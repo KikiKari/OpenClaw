@@ -46,3 +46,26 @@
 - System-Checks (Sandbox): ps/vmstat/journalctl/free/uptime: im Sandbox-Container nicht verfügbar (Ersatz: /proc/meminfo, /proc/loadavg, /proc/uptime) [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-08-0817-heartbeat.md:8-8]
 <!-- openclaw-memory-promotion:memory:memory/2026-08-08-1017-heartbeat.md:4:7 -->
 - System-Checks (Sandbox): Disk: 37% belegt (176G/503G) — OK (<80%); Memory: 16 GB total, ~12 GB available — OK; Load: 1.41 / 0.73 / 0.54 — OK; Uptime: ~99,5h (358153s) [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-08-1017-heartbeat.md:4-7]
+
+## Promoted From Short-Term Memory (2026-08-15)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-1017-heartbeat.md:11:12 -->
+- Ergebnis: Keine kritischen Meldungen, keine Probleme, keine offenen Punkte.; Keine Meldung an ops-hub erforderlich. [score=0.857 recalls=0 avg=0.620 source=memory/2026-08-08-1017-heartbeat.md:11-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09-0847-heartbeat.md:4:4 -->
+- Ergebnis: Keine kritischen Systembefunde festgestellt. [score=0.844 recalls=0 avg=0.620 source=memory/2026-08-09-0847-heartbeat.md:4-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09-1317-heartbeat.md:4:4 -->
+- Ergebnis: Keine kritischen Systembefunde festgestellt. [score=0.844 recalls=0 avg=0.620 source=memory/2026-08-09-1317-heartbeat.md:4-4]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-1017-heartbeat.md:8:8 -->
+- System-Checks (Sandbox): ps/vmstat/journalctl/free/uptime: im Sandbox-Container nicht verfügbar (Ersatz: /proc/meminfo, /proc/loadavg, /proc/uptime) [score=0.825 recalls=0 avg=0.620 source=memory/2026-08-08-1017-heartbeat.md:8-8]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-2217-heartbeat.md:4:7 -->
+- System: Disk: / 37% (503G, 305G frei) — OK (< 80%); Memory: 16G total, 11.7G verfügbar — OK; Load: 1.68 / 0.90 / 0.69 auf 10 Cores — OK; Uptime: ~4.6 Tage (Container) [score=0.825 recalls=0 avg=0.620 source=memory/2026-08-08-2217-heartbeat.md:4-7]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-08-2217-heartbeat.md:8:9 -->
+- System: Prozesse: nur 2 sichtbar im Sandbox-Namespace (ps/journalctl nicht verfügbar); Logs: journalctl im Sandbox nicht verfügbar, Host-Zugriff blockiert — keine kritischen Meldungen prüfbar, keine Auffälligkeiten [score=0.825 recalls=0 avg=0.620 source=memory/2026-08-08-2217-heartbeat.md:8-9]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09-0847-heartbeat.md:7:10 -->
+- System-Checks: Disk: OK — `/` und `/workspace` bei 37% (178G/503G belegt, 305G frei); Memory: OK — MemTotal 16.325.864 kB, MemAvailable 11.831.840 kB, Swap 0 kB; Load: OK — loadavg 1.81 1.01 0.73, laufende Prozesse 18, blockiert 0; Uptime: 439245.60 s [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-09-0847-heartbeat.md:7-10]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09-0847-heartbeat.md:11:12 -->
+- System-Checks: CPU/VM: `/proc/stat` und `/proc/vmstat` gelesen; keine OOM-Kills (`oom_kill 0`), kein Swap-I/O; Prozesse/Logs: eingeschränkt prüfbar; `ps`, `top`, `journalctl`, `dmesg`, `free`, `uptime`, `vmstat`, `/var/log/syslog`, `/var/log/kern.log` in dieser Sandbox nicht verfügbar/erlaubt [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-09-0847-heartbeat.md:11-12]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09-0847-heartbeat.md:15:18 -->
+- Nicht erfolgreiche Prüfschritte: `free -h`: command not found; `uptime`: command not found; `vmstat`: command not found; `ps aux | head -n 20`: Pipe durch Policy blockiert; `ps` nicht vorhanden [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-09-0847-heartbeat.md:15-18]
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09-0847-heartbeat.md:19:22 -->
+- Nicht erfolgreiche Prüfschritte: `journalctl -n 2000 --no-pager`: command not found; `dmesg -T`: Operation not permitted; `busybox ps aux`: command not found; `top -b -n 1`: command not found [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-09-0847-heartbeat.md:19-22]
