@@ -1,19 +1,6 @@
 # Long-Term Memory
 
 
-## Promoted From Short-Term Memory (2026-08-09)
-
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:13:16 -->
-- Heartbeat recovery check (05:12–05:14 CEST): Host healthy: root filesystem 36% used; 11 GiB available RAM; load 0.58; no swap or I/O pressure.; Gateway remains active, reachable, and connected to one paired node.; The model-routing failure remains active: `openrouter/openrouter/auto` returns HTTP 404 ("All providers have been ignored"); `openai/gpt-5.6-sol` is unavailable to the configured project; automatic fallback to `openai/gpt-5.6-terra` succeeds. It affects heartbeat sessions for main, docs, cron, and knecht.; `openclaw doctor --yes` refreshed the stale `codex` plugin and indexed 75/88 plugins.... [score=0.811 recalls=0 avg=0.620 source=memory/2026-08-03.md:13-16]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:17:17 -->
-- Heartbeat recovery check (05:12–05:14 CEST): Required notification to `ops-hub` was attempted but blocked: `sessions_send` returned `forbidden` because `agent:ops-hub:main` is not visible from this sandboxed session. No destructive maintenance was run. [score=0.811 recalls=0 avg=0.620 source=memory/2026-08-03.md:17-17]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:21:23 -->
-- Heartbeat recovery check (09:41–09:42 CEST): Host healthy: root filesystem 36% used; 11 GiB available RAM; load 1.05; no swap or I/O pressure.; The model-routing failure remains active: `openrouter/openrouter/auto` returns HTTP 404 ("All providers have been ignored"); fallback `openai/gpt-5.6-sol` is inaccessible to the configured project, which causes embedded heartbeat lane failures.; Required notification to `ops-hub` was attempted and blocked: `sessions_send` returned `forbidden` because `agent:ops-hub:main` is not visible from this sandboxed session. No maintenance commands were run. [score=0.811 recalls=0 avg=0.620 source=memory/2026-08-03.md:21-23]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:27:30 -->
-- Heartbeat recovery check (12:41–12:43 CEST): Host healthy: root filesystem 36% used; 11 GiB available RAM; load 1.26; no swap or I/O pressure.; Gateway is active and reachable; one paired node is connected.; The model-routing failure remains active: primary `openrouter/openrouter/auto` returns HTTP 404 ("All providers have been ignored") and the first fallback `openai/gpt-5.6-sol` is not accessible to the configured project.... [score=0.811 recalls=0 avg=0.620 source=memory/2026-08-03.md:27-30]
-<!-- openclaw-memory-promotion:memory:memory/2026-08-03.md:31:31 -->
-- Heartbeat recovery check (12:41–12:43 CEST): Required notification to `ops-hub` was attempted and blocked: `sessions_send` returned `forbidden` because `agent:ops-hub:main` is not visible from this sandboxed session. [score=0.811 recalls=0 avg=0.620 source=memory/2026-08-03.md:31-31]
-
 ## Promoted From Short-Term Memory (2026-08-10)
 
 <!-- openclaw-memory-promotion:memory:memory/2026-08-04.md:5:8 -->
@@ -45,3 +32,8 @@
 
 <!-- openclaw-memory-promotion:memory:memory/2026-08-08.md:3:5 -->
 - 15:42 CEST — heartbeat recovery check: Host diagnostics healthy: root disk 36% used; ~12 GiB RAM available; load average 1.05/0.44/0.33; no CPU, I/O, or swap pressure.; Journal reports recurring OpenRouter HTTP 402 insufficient-credit failures. Failover then selects `openai/gpt-5.6-sol`, which the project cannot access; affected heartbeat runs include `knecht` at 15:41.; Attempted to notify `ops-hub` through its configured session, but access was forbidden because `agent:ops-hub:main` is not visible from this sandboxed session. Escalation remains pending. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-08.md:3-5]
+
+## Promoted From Short-Term Memory (2026-08-15)
+
+<!-- openclaw-memory-promotion:memory:memory/2026-08-09.md:5:8 -->
+- 21:42 CEST — heartbeat recovery check: Host diagnostics healthy: root disk 36% used; 11 GiB RAM available; CPU 97% idle.; Gateway journal recorded repeated OpenRouter billing 402 failures for heartbeat runs (requested token allowance exceeds available credits), followed by an unavailable `openai/gpt-5.6-sol` fallback. Earlier runs ultimately fell back successfully to `openai/gpt-5.6-terra`.; Required Gateway diagnostics could not be run because Gateway execution is disallowed in this session (`exec host not allowed`).; Attempt to inform `ops-hub` was blocked because its session is not visible from this sandboxed agent session. [score=0.812 recalls=0 avg=0.620 source=memory/2026-08-09.md:5-8]
