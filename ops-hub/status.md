@@ -2,7 +2,7 @@
 
 > **Persistent-ID:** `subagent:b5c59527-2f60-4b...`
 > **Kanal:** `webchat`
-> **Letzter Heartbeat:** 2026-04-17 03:54 CET
+> **Letzter Heartbeat:** 2026-08-15
 
 ## Systemstatus
 
@@ -13,6 +13,9 @@
 | Dokumentation | ✅ Eingerichtet | `docs/ops-hub/` | |
 | Kommunikation | ✅ Webchat, SSH, Intern | Volle Kontrolle | |
 | Agenten-Befehle | ✅ Aktiviert | `allowCommands` = true | |
+| Model routing | ⚠️ Degraded | OpenRouter credit exhausted; `gpt-5.6-sol` unavailable; `gpt-5.6-terra` works | |
+| Gateway / node | ✅ Healthy | Gateway reachable; node connected | |
+| Session maintenance | ✅ Completed | Unreferenced artifacts pruned | |
 
 ## Verbundene Systeme
 
@@ -20,4 +23,4 @@
 - ✅ Skripte: Cron, Reports, Maintenance
 - ✅ Dokumentation: Versioniert & gesichert
 
-*Letzte Aktualisierung: 2026-04-17 03:54 CET*
+*Letzte Aktualisierung: 2026-08-15*
