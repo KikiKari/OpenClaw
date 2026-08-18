@@ -1,16 +1,19 @@
 #!/usr/bin/perl
-# 1781743218784.html — portiert nach perl5
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
-# Parameter: Dateiname, in den das HTML geschrieben werden soll
-my $output_file = $ARGV[0] || die "Bitte geben Sie einen Dateinamen an.\n";
+# Parameter verarbeiten
+if (@ARGV != 1) {
+    print STDERR "Usage: perl script.pl <OutputPath>\n";
+    exit 1;
+}
+my $outputPath = $ARGV[0];
 
-# HTML-Struktur generieren
-my $html_content = <<'HTML_END';
+my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -218,9 +221,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# In Datei schreiben
-open my $fh, '>', $output_file or die "Kann Datei '$output_file' nicht öffnen: $!";
-print $fh $html_content;
+# Schreibe den Inhalt in die Ausgabedatei
+open(my $fh, '>:encoding(UTF-8)', $outputPath) or die "Konnte Datei '$outputPath' nicht öffnen: $!";
+print $fh $htmlContent;
 close $fh;
-
-print "HTML erfolgreich in '$output_file' geschrieben.\n";

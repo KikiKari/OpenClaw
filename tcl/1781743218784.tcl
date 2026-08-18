@@ -1,23 +1,16 @@
 #!/usr/bin/env tclsh
-# 1781743218784.html — portiert nach tcl
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
-# Tcl 8.6 script to generate the HTML document
-# Usage: tclsh script.tcl output.html
-
+# Parameter verarbeiten
 if {$argc != 1} {
-    puts stderr "Usage: tclsh [info script] output.html"
+    puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
 }
+set outputPath [lindex $argv 0]
 
-set outfile [lindex $argv 0]
-
-# Open output file
-set fd [open $outfile w]
-
-# Write DOCTYPE and initial JSON script
-puts $fd {<!DOCTYPE html>
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -26,10 +19,7 @@ puts $fd {<!DOCTYPE html>
   "mcpTools": [],
   "mcpServerNames": []
 }
-</script>}
-
-# Write HTML start and head section
-puts $fd {
+</script>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -109,10 +99,8 @@ a{color:var(--accent);}
   </div>
 
   <div class="foot" id="foot"></div>
-</div>}
+</div>
 
-# Write JavaScript section
-puts $fd {
 <script>
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
@@ -228,7 +216,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Close file
+# Schreibe den Inhalt in die Ausgabedatei
+set fd [open $outputPath w]
+puts -nonewline $fd $htmlContent
 close $fd
-
-puts "HTML document generated: $outfile"
