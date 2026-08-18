@@ -1,10 +1,17 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-17 (07:28 CEST)
+**Letzte Aktualisierung:** 2026-08-18 (07:03 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-18 - Daily Memory-Maintenance & Erkenntnisse vom 17./18.08.
+- ✅ Memory-Maintenance heute geprüft (07:03 CEST)
+- ✅ Analysiert: `docs/memory/dreaming/deep/2026-08-17.md`, `docs/memory/dreaming/deep/2026-08-18.md`, `docs/memory/dreaming/rem/2026-08-17.md`, `docs/memory/dreaming/rem/2026-08-18.md`, `docs/memory/dreaming/light/2026-08-17.md` und `docs/memory/dreaming/light/2026-08-18.md`.
+- ℹ️ Alle gestrigen/heutigen Tagesdateien enthalten keine neuen dauerhaften Erkenntnisse, Entscheidungen, Projekte oder offenen ToDos.
+- ⚠️ Kein `archive/`-Verzeichnis im Workspace gefunden; daher keine Archivierung ausgeführt.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-17 - Daily Memory-Maintenance & Erkenntnisse vom 16./17.08.
 - ✅ Memory-Maintenance heute geprüft (07:28 CEST)
