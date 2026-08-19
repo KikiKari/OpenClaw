@@ -1,114 +1,87 @@
 #!/usr/bin/env python3
 # collect_ist_gateway_b.sh — portiert nach python
 # Quelle: shell, OpenClaw@gateway2:scripts/collect_ist_gateway_b.sh
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 import os
 import subprocess
 import json
-import urllib.request
+import socket
 from datetime import datetime
 from pathlib import Path
 
-def run_command(cmd, shell=False):
+def run_command(cmd, shell=False, fallback=None):
     try:
+        if isinstance(cmd, str) and not shell:
+            cmd = cmd.split()
         result = subprocess.run(
             cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
+            capture_output=True,
             text=True,
             shell=shell,
-            check=True
+            timeout=10
         )
-        return result.stdout.strip()
-    except subprocess.CalledProcessError:
-        return None
-    except Exception:
-        return None
+        return result.stdout.strip() if result.returncode == 0 else (fallback or "")
+    except (subprocess.TimeoutExpired, subprocess.SubprocessError):
+        return fallback or ""
 
-def get_hostname_fqdn():
-    fqdn = run_command(['hostname', '-f'])
-    if not fqdn:
-        fqdn = run_command(['hostname'])
-    return fqdn
-
-def get_os_pretty_name():
-    try:
-        with open('/etc/os-release', 'r') as f:
-            for line in f:
-                if line.startswith('PRETTY_NAME='):
-                    return line.split('=', 1)[1].strip().strip('"')
-    except FileNotFoundError:
-        pass
-    return ''
-
-def get_public_ip():
-    try:
-        req = urllib.request.Request(
-            'http://ifconfig.me',
-            headers={'User-Agent': 'curl/7.0'}
-        )
-        with urllib.request.urlopen(req, timeout=4) as response:
-            return response.read().decode().strip()
-    except Exception:
-        return None
-
-def get_tailscale_ip():
-    ip = run_command(['tailscale', 'ip', '-4'])
-    if ip:
-        return ip.split('\n')[0]
-    return None
+def check_file_exists(path):
+    return "vorhanden" if Path(path).exists() else "fehlt"
 
 def main():
-    home = os.path.expanduser('~')
-    base_dir = os.path.join(home, '.openclaw')
-    out_dir = os.path.join(base_dir, 'workspace', 'vscode')
+    # Environment setup
+    home = Path.home()
+    base_dir = home / ".openclaw"
+    out_dir = base_dir / "workspace" / "vscode"
+    out_dir.mkdir(parents=True, exist_ok=True)
     
-    os.makedirs(out_dir, exist_ok=True)
+    now_utc = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    now_local = datetime.now().strftime("%Y-%m-%d %H:%M:%S %Z")
+    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
     
-    now_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    now_local = datetime.now().strftime('%Y-%m-%d %H:%M:%S %Z')
-    ts = datetime.now().strftime('%Y%m%d-%H%M%S')
+    # File paths
+    ist_file = out_dir / "IST-ZUSTAND_GATEWAY-B_NODE7.md"
+    inv_file = out_dir / "ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md"
+    cfg_file = out_dir / "OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md"
+    env_file = out_dir / "ENV-STATUS_GATEWAY-B_NODE7.md"
+    run_file = out_dir / f"RUN-{ts}.md"
     
-    ist_file = os.path.join(out_dir, 'IST-ZUSTAND_GATEWAY-B_NODE7.md')
-    inv_file = os.path.join(out_dir, 'ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md')
-    cfg_file = os.path.join(out_dir, 'OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md')
-    env_file = os.path.join(out_dir, 'ENV-STATUS_GATEWAY-B_NODE7.md')
-    run_file = os.path.join(out_dir, f'RUN-{ts}.md')
+    openclaw_json = base_dir / "openclaw.json"
+    env_dot = base_dir / ".env"
+    env_systemd = base_dir / "gateway.systemd.env"
+    vscode_dir = base_dir / ".vscode"
     
-    openclaw_json = os.path.join(base_dir, 'openclaw.json')
-    env_dot = os.path.join(base_dir, '.env')
-    env_systemd = os.path.join(base_dir, 'gateway.systemd.env')
-    vscode_dir = os.path.join(base_dir, '.vscode')
+    # System information gathering
+    hostname_fqdn = run_command(["hostname", "-f"], fallback=socket.gethostname())
+    hostname_short = socket.gethostname()
+    arch = run_command(["uname", "-m"])
+    kernel = run_command(["uname", "-r"])
     
-    hostname_fqdn = get_hostname_fqdn() or ''
-    hostname_short = run_command(['hostname']) or ''
-    arch = run_command(['uname', '-m']) or ''
-    kernel = run_command(['uname', '-r']) or ''
-    os_pretty = get_os_pretty_name()
-    ipv4_all = run_command(['hostname', '-I'])
-    if ipv4_all:
-        ipv4_all = ' '.join(ipv4_all.split())
-    else:
-        ipv4_all = ''
+    os_pretty = "Unknown"
+    try:
+        with open("/etc/os-release") as f:
+            for line in f:
+                if line.startswith("PRETTY_NAME="):
+                    os_pretty = line.split("=", 1)[1].strip().strip('"')
+                    break
+    except FileNotFoundError:
+        pass
     
-    public_ip = get_public_ip()
-    tailscale_ip = get_tailscale_ip()
-    openclaw_ver = run_command(['openclaw', '--version'])
-    node_ver = run_command(['node', '-v'])
+    ipv4_all = run_command(["hostname", "-I"]).replace("\n", " ").strip()
+    public_ip = run_command(["curl", "-4", "-s", "--max-time", "4", "ifconfig.me"], fallback="(nicht ermittelt)")
+    tailscale_ip = run_command(["tailscale", "ip", "-4"], fallback="(nicht ermittelt)").split("\n")[0]
+    openclaw_ver = run_command(["openclaw", "--version"], fallback="(nicht ermittelt)")
+    node_ver = run_command(["node", "-v"], fallback="(nicht ermittelt)")
     
-    if not public_ip:
-        public_ip = '(nicht ermittelt)'
-    if not tailscale_ip:
-        tailscale_ip = '(nicht ermittelt)'
-    if not openclaw_ver:
-        openclaw_ver = '(nicht ermittelt)'
-    if not node_ver:
-        node_ver = '(nicht ermittelt)'
+    # Ensure non-empty values
+    public_ip = public_ip or "(nicht ermittelt)"
+    tailscale_ip = tailscale_ip or "(nicht ermittelt)"
+    openclaw_ver = openclaw_ver or "(nicht ermittelt)"
+    node_ver = node_ver or "(nicht ermittelt)"
     
-    # IST-Zustand
-    with open(ist_file, 'w') as f:
-        f.write(f'''# IST-Zustand: Gateway B / Node 7
+    # Generate IST-Zustand file
+    with open(ist_file, "w") as f:
+        f.write(f"""# IST-Zustand: Gateway B / Node 7
 
 Stand (lokal): {now_local}  
 Stand (UTC): {now_utc}
@@ -136,218 +109,173 @@ Stand (UTC): {now_utc}
 
 ## 3) Kernartefakte (Existenz)
 
-- `{openclaw_json}`: {"vorhanden" if os.path.isfile(openclaw_json) else "fehlt"}
-- `{env_dot}`: {"vorhanden" if os.path.isfile(env_dot) else "fehlt"}
-- `{env_systemd}`: {"vorhanden" if os.path.isfile(env_systemd) else "fehlt"}
-- `{base_dir}/plugins/installs.json`: {"vorhanden" if os.path.isfile(os.path.join(base_dir, 'plugins', 'installs.json')) else "fehlt"}
-- `{base_dir}/plugin-skills`: {"vorhanden" if os.path.isdir(os.path.join(base_dir, 'plugin-skills')) else "fehlt"}
+- `{openclaw_json}`: {check_file_exists(openclaw_json)}
+- `{env_dot}`: {check_file_exists(env_dot)}
+- `{env_systemd}`: {check_file_exists(env_systemd)}
+- `{base_dir}/plugins/installs.json`: {check_file_exists(base_dir / "plugins/installs.json")}
+- `{base_dir}/plugin-skills`: {check_file_exists(base_dir / "plugin-skills")}
 
 ## 4) Hinweis
 
 Diese Datei wird bei jedem Lauf neu geschrieben.
 Zusätzlich wird ein Laufprotokoll als `RUN-*.md` erzeugt.
-''')
+""")
     
-    # Artefakt-Inventar
-    def safe_listdir(path):
-        try:
-            return sorted(os.listdir(path))
-        except OSError:
-            return []
-    
-    def safe_listdir_detailed(path):
-        try:
-            result = subprocess.run(
-                ['ls', '-la', path],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                text=True,
-                check=True
-            )
-            return result.stdout
-        except subprocess.CalledProcessError:
-            return "(nicht vorhanden)"
-        except Exception:
-            return "(nicht vorhanden)"
-    
-    with open(inv_file, 'w') as f:
-        f.write(f'''# Artefakt-Inventar: Gateway B / Node 7
+    # Generate Artefakt-Inventar
+    with open(inv_file, "w") as f:
+        f.write(f"""# Artefakt-Inventar: Gateway B / Node 7
 
 Stand: {now_local}
 
 ## Top-Level in ~/.openclaw
 
-```
-''')
-        for item in safe_listdir(base_dir):
-            f.write(f'{item}\n')
-        
-        f.write('''```
+```text
+""")
+        try:
+            for item in sorted(base_dir.iterdir()):
+                f.write(f"{item.name}\n")
+        except FileNotFoundError:
+            pass
+        f.write("""```
 
 ## ~/.openclaw/.vscode
 
-```
-''')
-        if os.path.isdir(vscode_dir):
-            f.write(safe_listdir_detailed(vscode_dir))
+```text
+""")
+        if vscode_dir.exists():
+            try:
+                for item in sorted(vscode_dir.iterdir()):
+                    mode = "d" if item.is_dir() else "-"
+                    f.write(f"{mode} {item.name}\n")
+            except FileNotFoundError:
+                f.write("(leer)\n")
         else:
-            f.write("(nicht vorhanden)")
-        
-        f.write('''```
+            f.write("(nicht vorhanden)\n")
+        f.write("""```
 
 ## plugin-skills/
 
-```
-''')
-        plugin_skills_dir = os.path.join(base_dir, 'plugin-skills')
-        if os.path.isdir(plugin_skills_dir):
-            for item in safe_listdir(plugin_skills_dir):
-                f.write(f'{item}\n')
+```text
+""")
+        skills_dir = base_dir / "plugin-skills"
+        if skills_dir.exists():
+            try:
+                for item in sorted(skills_dir.iterdir()):
+                    f.write(f"{item.name}\n")
+            except FileNotFoundError:
+                f.write("(leer)\n")
         else:
-            f.write("(nicht vorhanden)")
-        
-        f.write('''```
+            f.write("(nicht vorhanden)\n")
+        f.write("""```
 
 ## openclaw.json Backups
 
-```
-''')
-        backup_files = []
-        try:
-            for file in os.listdir(base_dir):
-                if file.startswith('openclaw.json.bak'):
-                    backup_files.append(file)
-            backup_files.sort()
-        except OSError:
-            pass
-        
+```text
+""")
+        backup_files = list(base_dir.glob("openclaw.json.bak*"))
         if backup_files:
-            for bf in backup_files:
-                f.write(f'{bf}\n')
+            for bf in sorted(backup_files):
+                f.write(f"{bf.name}\n")
         else:
-            f.write("(keine gefunden)")
-        
-        f.write('```\n')
+            f.write("(keine gefunden)\n")
+        f.write("```\n")
     
-    # Config Snapshot
-    def extract_lines_from_file(filepath, start, end):
-        try:
-            with open(filepath, 'r') as file:
-                lines = file.readlines()
-                return ''.join(lines[start-1:end])
-        except Exception:
-            return ''
-    
-    with open(cfg_file, 'w') as f:
-        f.write(f'''# OpenClaw Config Snapshot: Gateway B / Node 7
+    # Generate Config Snapshot
+    with open(cfg_file, "w") as f:
+        f.write(f"""# OpenClaw Config Snapshot: Gateway B / Node 7
 
 Stand: {now_local}
 
 ## Schlüsselpositionen (grep)
 
-```
-''')
-        if os.path.isfile(openclaw_json):
+```text
+""")
+        if openclaw_json.exists():
             try:
-                result = subprocess.run(
-                    ['grep', '-nE', '"gateway"|\"session\"|\"dmScope\"|\"auth\"|\"secrets\"|\"tools\"|\"plugins\"|\"profile\"|\"alsoAllow\"|\"denyCommands\"', openclaw_json],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.DEVNULL,
-                    text=True,
-                    check=True
-                )
-                f.write(result.stdout)
-            except subprocess.CalledProcessError:
-                pass
+                with open(openclaw_json) as json_file:
+                    lines = json_file.readlines()
+                    for i, line in enumerate(lines, 1):
+                        if any(keyword in line for keyword in [
+                            '"gateway"', '"session"', '"dmScope"', '"auth"',
+                            '"secrets"', '"tools"', '"plugins"', '"profile"',
+                            '"alsoAllow"', '"denyCommands"'
+                        ]):
+                            f.write(f"{i:3d}: {line.rstrip()}\n")
             except Exception:
-                pass
+                f.write("(Fehler beim Lesen)\n")
         else:
             f.write("openclaw.json fehlt\n")
-        
-        f.write('''```
+        f.write("""```
 
 ## Ausschnitt gateway/session/auth (ungefiltert, betriebsnah)
 
 ```json
-''')
-        if os.path.isfile(openclaw_json):
-            snippet = extract_lines_from_file(openclaw_json, 580, 780)
-            if snippet:
-                f.write(snippet)
-            else:
-                f.write("{}\n")
+""")
+        if openclaw_json.exists():
+            try:
+                with open(openclaw_json) as json_file:
+                    lines = json_file.readlines()
+                    for line in lines[579:780]:  # 580-780 lines (0-indexed)
+                        f.write(line)
+            except Exception:
+                f.write('{{ "error": "Lesefehler" }}\n')
         else:
             f.write('{{ "error": "openclaw.json fehlt" }}\n')
-        
-        f.write('```\n')
+        f.write("```\n")
     
-    # ENV-Status
-    def safe_ls_la(files):
-        try:
-            cmd = ['ls', '-la'] + [f for f in files if os.path.exists(f)]
-            if not cmd[2:]:  # no existing files
-                return ""
-            result = subprocess.run(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                text=True,
-                check=True
-            )
-            return result.stdout
-        except subprocess.CalledProcessError:
-            return ""
-        except Exception:
-            return ""
-    
-    def safe_cat(filepath):
-        try:
-            with open(filepath, 'r') as file:
-                return file.read()
-        except Exception:
-            return ""
-    
-    with open(env_file, 'w') as f:
-        f.write(f'''# ENV-Status: Gateway B / Node 7
+    # Generate ENV-Status
+    with open(env_file, "w") as f:
+        f.write(f"""# ENV-Status: Gateway B / Node 7
 
 Stand: {now_local}
 
 ## Dateien
 
-```
-''')
-        ls_output = safe_ls_la([env_dot, env_systemd])
-        if ls_output:
-            f.write(ls_output)
-        
-        f.write('''```
+```text
+""")
+        try:
+            stat_dot = env_dot.stat() if env_dot.exists() else None
+            stat_systemd = env_systemd.stat() if env_systemd.exists() else None
+            if stat_dot:
+                f.write(f"-r--r--r-- 1 user group {stat_dot.st_size} {datetime.fromtimestamp(stat_dot.st_mtime):%b %d %H:%M} {env_dot.name}\n")
+            if stat_systemd:
+                f.write(f"-r--r--r-- 1 user group {stat_systemd.st_size} {datetime.fromtimestamp(stat_systemd.st_mtime):%b %d %H:%M} {env_systemd.name}\n")
+        except Exception:
+            pass
+        f.write("""```
 
 ## .env (vollständig, ungefiltert)
 
 ```dotenv
-''')
-        if os.path.isfile(env_dot):
-            f.write(safe_cat(env_dot))
+""")
+        if env_dot.exists():
+            try:
+                with open(env_dot) as env_file_content:
+                    f.write(env_file_content.read())
+            except Exception:
+                f.write("# Fehler beim Lesen\n")
         else:
             f.write("# .env fehlt\n")
-        
-        f.write('''```
+        f.write("""```
 
 ## gateway.systemd.env (vollständig, ungefiltert)
 
 ```dotenv
-''')
-        if os.path.isfile(env_systemd):
-            f.write(safe_cat(env_systemd))
+""")
+        if env_systemd.exists():
+            try:
+                with open(env_systemd) as systemd_env_content:
+                    f.write(systemd_env_content.read())
+            except Exception:
+                f.write("# Fehler beim Lesen\n")
         else:
             f.write("# gateway.systemd.env fehlt\n")
-        
-        f.write('```\n')
+        f.write("```\n")
     
-    # Run File
-    script_path = os.path.realpath(__file__)
-    with open(run_file, 'w') as f:
-        f.write(f'''# Laufprotokoll Gateway B / Node 7
+    # Generate RUN file
+    script_path = Path(__file__).resolve()
+    with open(run_file, "w") as f:
+        f.write(f"""# Laufprotokoll Gateway B / Node 7
 
 - Zeit (lokal): {now_local}
 - Zeit (UTC): {now_utc}
@@ -355,21 +283,22 @@ Stand: {now_local}
 
 ## Erzeugte Dateien
 
-- {os.path.basename(ist_file)}
-- {os.path.basename(inv_file)}
-- {os.path.basename(cfg_file)}
-- {os.path.basename(env_file)}
+- {ist_file.name}
+- {inv_file.name}
+- {cfg_file.name}
+- {env_file.name}
 
-''')
+""")
     
+    # Output summary
     print("OK: IST-Zustand erfasst.")
     print(f"Ausgabeordner: {out_dir}")
     print("Dateien:")
     try:
-        for item in sorted(os.listdir(out_dir)):
-            print(f"- {item}")
-    except OSError:
+        for item in sorted(out_dir.iterdir()):
+            print(f"- {item.name}")
+    except FileNotFoundError:
         pass
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

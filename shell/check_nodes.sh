@@ -1,15 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # check_nodes.py — portiert nach shell
 # Quelle: python, OpenClaw@gateway1:skills/multi-nodes-utils/scripts/check_nodes.py
 # auch in: OpenClaw@gateway2:skills/multi-nodes-utils/scripts/check_nodes.py
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Node-Status Checker - Prüft Verfügbarkeit aller Nodes
 
 # Node-Konfiguration (sollte aus config file geladen werden)
-declare -A NODES=(
+declare -A NODES_CONFIG=(
     [node1]="always_available:true,capacity:medium,priority:2,description:Gateway-Master"
     [node2]="always_available:true,capacity:medium,priority:3,description:Stable Worker"
     [node3]="always_available:false,capacity:medium,priority:4,description:Bald verfügbar (nach Reorganisation)"
@@ -17,247 +17,180 @@ declare -A NODES=(
     [node7]="always_available:true,capacity:high,priority:1,description:Docker Hauptarbeitspferd (bald verfügbar)"
 )
 
-# Globale Variablen
-FORMAT="table"
-SAVE_FILE=""
-
-# Funktion zum Parsen der Node-Konfiguration
-parse_config() {
-    local node_id="$1"
-    local config="${NODES[$node_id]}"
-    local key_value
-    declare -A parsed_config
-
-    IFS=',' read -ra key_values <<< "$config"
-    for kv in "${key_values[@]}"; do
-        IFS=':' read -r key value <<< "$kv"
-        parsed_config["$key"]="$value"
-    done
-
-    echo "${parsed_config[@]}"
-}
-
-# Funktion zum Abrufen eines Konfigurationswerts
-get_config_value() {
-    local node_id="$1"
-    local key="$2"
-    local default="$3"
-    local config="${NODES[$node_id]}"
-    
-    # Extrahiere den Wert für den gegebenen Schlüssel
-    local pattern="$key:"
-    if [[ "$config" == *"$pattern"* ]]; then
-        local temp="${config##*$pattern}"
-        echo "${temp%%,*}"
-    else
-        echo "$default"
-    fi
-}
-
-# Prüft Status eines einzelnen Nodes
 check_node_status() {
     local node_id="$1"
-    local stdout=""
-    local returncode=0
+    local response=""
     local is_online=false
-    local response="No response"
-    local always_available
-    always_available=$(get_config_value "$node_id" "always_available" "false")
-
-    # Führe den Befehl aus und fange Ausgabe und Returncode ein
-    if stdout=$(timeout 5 openclaw nodes status "$node_id" 2>&1); then
-        returncode=$?
+    local always_available=false
+    
+    # Parse config
+    IFS=',' read -ra CONFIG_PAIRS <<< "${NODES_CONFIG[$node_id]}"
+    for pair in "${CONFIG_PAIRS[@]}"; do
+        IFS=':' read -r key value <<< "$pair"
+        if [[ "$key" == "always_available" ]] && [[ "$value" == "true" ]]; then
+            always_available=true
+            break
+        fi
+    done
+    
+    # Check node status
+    if response=$(timeout 5 openclaw nodes status "$node_id" 2>&1); then
+        if [[ "$response" =~ [Oo][Nn][Ll][Ii][Nn][Ee] ]] || [[ "$response" =~ [Aa][Cc][Tt][Ii][Vv][Ee] ]]; then
+            is_online=true
+        fi
     else
-        returncode=$?
+        if [[ "$?" == "124" ]]; then
+            response="Timeout"
+        else
+            response="Error: $response"
+        fi
     fi
-
-    # Prüfe ob der Node online ist
-    if [[ $returncode -eq 0 ]] && (echo "$stdout" | grep -qi "online\|active"); then
-        is_online=true
+    
+    # Truncate response to 100 chars
+    if [[ ${#response} -gt 100 ]]; then
+        response="${response:0:100}"
     fi
-
-    # Kürze die Antwort auf maximal 100 Zeichen
-    if [[ ${#stdout} -gt 100 ]]; then
-        response="${stdout:0:100}"
-    elif [[ -n "$stdout" ]]; then
-        response="$stdout"
-    fi
-
-    # Gebe das Ergebnis als assoziatives Array zurück (serialisiert)
-    echo "id:$node_id,online:$is_online,available:$always_available,response:${response//,/\\,}"
+    
+    echo "$node_id|$is_online|$always_available|$response"
 }
 
-# Gibt Node-Status als Tabelle aus
 print_table() {
     local nodes_status=("$@")
-    printf "\n%s\n" "$(printf "%0.s=" $(seq 1 90))"
+    
+    echo ""
+    printf "%s\n" "$(printf '=%.0s' {1..90})"
     printf "%-8s %-12s %-12s %-10s %-10s %s\n" "Node" "Status" "Verfügbar" "Kapazität" "Priorität" "Gerät/Beschreibung"
-    printf "%s\n" "$(printf "%0.s=" $(seq 1 90))"
-
-    local status_entry
-    for status_serialized in "${nodes_status[@]}"; do
-        # Deserialisiere den Status-Eintrag
-        declare -A status
-        IFS=',' read -ra pairs <<< "$status_serialized"
-        for pair in "${pairs[@]}"; do
-            # Behandlung von escaped Kommas
-            pair="${pair//\\,/,}"
+    printf "%s\n" "$(printf '=%.0s' {1..90})"
+    
+    for line in "${nodes_status[@]}"; do
+        IFS='|' read -r node_id is_online available response <<< "$line"
+        
+        # Parse config
+        declare -A config=()
+        IFS=',' read -ra CONFIG_PAIRS <<< "${NODES_CONFIG[$node_id]}"
+        for pair in "${CONFIG_PAIRS[@]}"; do
             IFS=':' read -r key value <<< "$pair"
-            status["$key"]="$value"
+            config["$key"]="$value"
         done
         
-        local node_id="${status[id]}"
-        local config_capacity
-        local config_priority
-        local config_device
-        local config_description
-        config_capacity=$(get_config_value "$node_id" "capacity" "unknown")
-        config_priority=$(get_config_value "$node_id" "priority" "-")
-        config_device=$(get_config_value "$node_id" "device" "")
-        config_description=$(get_config_value "$node_id" "description" "")
-
         local status_icon="🔴 Offline"
-        [[ "${status[online]}" == "true" ]] && status_icon="🟢 Online"
+        [[ "$is_online" == "true" ]] && status_icon="🟢 Online"
         
         local avail_icon="📱 Bedingt"
-        [[ "${status[available]}" == "true" ]] && avail_icon="✅ Immer"
+        [[ "$available" == "true" ]] && avail_icon="✅ Immer"
         
-        local device_info="$config_device"
-        [[ -z "$device_info" ]] && device_info="$config_description"
-
-        printf "%-8s %-12s %-12s %-10s %-10s %s\n" \
-            "$node_id" "$status_icon" "$avail_icon" "$config_capacity" "$config_priority" "$device_info"
+        local capacity="${config[capacity]:-unknown}"
+        local priority="${config[priority]:--}"
+        local device="${config[device]:-${config[description]:-}}"
+        
+        printf "%-8s %-12s %-12s %-10s %-10s %s\n" "$node_id" "$status_icon" "$avail_icon" "$capacity" "$priority" "$device"
     done
-
-    printf "%s\n" "$(printf "%0.s=" $(seq 1 90))"
-    printf "\nGeprüft am: %s\n" "$(date '+%Y-%m-%d %H:%M:%S')"
+    
+    printf "%s\n" "$(printf '=%.0s' {1..90})"
+    echo ""
+    echo "Geprüft am: $(date '+%Y-%m-%d %H:%M:%S')"
 }
 
-# Gibt Node-Status als JSON aus
 print_json() {
     local nodes_status=("$@")
-    local timestamp
-    timestamp=$(date --iso-8601=seconds)
+    local timestamp=$(date -Iseconds)
     
     echo "{"
     echo "  \"timestamp\": \"$timestamp\","
     echo "  \"nodes\": {"
     
     local first_node=true
-    local status_serialized
-    for status_serialized in "${nodes_status[@]}"; do
-        # Deserialisiere den Status-Eintrag
-        declare -A status
-        IFS=',' read -ra pairs <<< "$status_serialized"
-        for pair in "${pairs[@]}"; do
-            # Behandlung von escaped Kommas
-            pair="${pair//\\,/,}"
-            IFS=':' read -r key value <<< "$pair"
-            status["$key"]="$value"
-        done
-        
-        local node_id="${status[id]}"
-        local config="${NODES[$node_id]}"
-        
-        if [[ "$first_node" != true ]]; then
-            echo "    ,"
+    for line in "${nodes_status[@]}"; do
+        if [[ "$first_node" != "true" ]]; then
+            echo ","
         fi
         first_node=false
         
+        IFS='|' read -r node_id is_online available response <<< "$line"
+        
         echo "    \"$node_id\": {"
         echo "      \"status\": {"
-        echo "        \"id\": \"${status[id]}\","
-        echo "        \"online\": ${status[online]},"
-        echo "        \"available\": ${status[available]},"
-        echo "        \"response\": \"${status[response]}\""
+        echo "        \"id\": \"$node_id\","
+        echo "        \"online\": $is_online,"
+        echo "        \"available\": $available,"
+        echo "        \"response\": \"$(echo "$response" | sed 's/"/\\"/g')\""
         echo "      },"
         echo "      \"config\": {"
         
-        # Parse config und gib sie als JSON aus
+        # Parse config
+        declare -A config=()
+        IFS=',' read -ra CONFIG_PAIRS <<< "${NODES_CONFIG[$node_id]}"
         local first_item=true
-        IFS=',' read -ra items <<< "$config"
-        local item
-        for item in "${items[@]}"; do
-            # Behandlung von escaped Kommas
-            item="${item//\\,/,}"
-            IFS=':' read -r key value <<< "$item"
-            
-            if [[ "$first_item" != true ]]; then
-                echo "        ,"
+        for pair in "${CONFIG_PAIRS[@]}"; do
+            if [[ "$first_item" != "true" ]]; then
+                echo ","
             fi
             first_item=false
             
-            # Bestimme ob der Wert ein String oder Boolean/Number ist
-            if [[ "$value" == "true" || "$value" == "false" || "$value" =~ ^[0-9]+$ ]]; then
-                echo "        \"$key\": $value"
+            IFS=':' read -r key value <<< "$pair"
+            echo -n "        \"$key\": "
+            if [[ "$value" =~ ^[0-9]+$ ]]; then
+                echo -n "$value"
             else
-                echo "        \"$key\": \"$value\""
+                echo -n "\"$value\""
             fi
         done
+        echo ""
         echo "      }"
         echo "    }"
     done
+    
+    echo ""
     echo "  }"
     echo "}"
 }
 
-# Speichert die Ausgabe in eine Datei
 save_to_file() {
-    local save_path="$1"
-    local nodes_status=("${@:2}")
-    local timestamp
-    timestamp=$(date --iso-8601=seconds)
+    local nodes_status=("$@")
+    local filename="$1"
+    shift
+    local timestamp=$(date -Iseconds)
     
     {
         echo "{"
         echo "  \"timestamp\": \"$timestamp\","
         echo "  \"nodes\": {"
         
-        local first=true
-        local status_serialized
-        for status_serialized in "${nodes_status[@]}"; do
-            # Deserialisiere den Status-Eintrag
-            declare -A status
-            IFS=',' read -ra pairs <<< "$status_serialized"
-            for pair in "${pairs[@]}"; do
-                # Behandlung von escaped Kommas
-                pair="${pair//\\,/,}"
-                IFS=':' read -r key value <<< "$pair"
-                status["$key"]="$value"
-            done
-            
-            local node_id="${status[id]}"
-            
-            if [[ "$first" != true ]]; then
-                echo "    ,"
+        local first_node=true
+        for line in "${nodes_status[@]}"; do
+            if [[ "$first_node" != "true" ]]; then
+                echo ","
             fi
-            first=false
+            first_node=false
             
+            IFS='|' read -r node_id is_online available response <<< "$line"
             echo "    \"$node_id\": {"
-            echo "      \"id\": \"${status[id]}\","
-            echo "      \"online\": ${status[online]},"
-            echo "      \"available\": ${status[available]},"
-            echo "      \"response\": \"${status[response]}\""
+            echo "      \"id\": \"$node_id\","
+            echo "      \"online\": $is_online,"
+            echo "      \"available\": $available,"
+            echo "      \"response\": \"$(echo "$response" | sed 's/"/\\"/g')\""
             echo "    }"
         done
+        
+        echo ""
         echo "  }"
         echo "}"
-    } > "$save_path"
-    
-    printf "\n💾 Gespeichert: %s\n" "$save_path"
+    } > "$filename"
 }
 
-# Hauptfunktion
 main() {
-    # Argumente parsen
+    local format="table"
+    local save_file=""
+    
+    # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
-            -f|--format)
-                FORMAT="$2"
+            --format|-f)
+                format="$2"
                 shift 2
                 ;;
-            -s|--save)
-                SAVE_FILE="$2"
+            --save|-s)
+                save_file="$2"
                 shift 2
                 ;;
             *)
@@ -266,49 +199,50 @@ main() {
                 ;;
         esac
     done
-
+    
     echo "🔍 Prüfe Node-Status..."
-
+    
     # Prüfe alle Nodes
     local nodes_status=()
-    local sorted_keys=($(printf '%s\n' "${!NODES[@]}" | sort))
-    local node_id
-    for node_id in "${sorted_keys[@]}"; do
-        printf "  → %s... " "$node_id"
-        local status_result
-        status_result=$(check_node_status "$node_id")
-        nodes_status+=("$status_result")
-        
-        # Prüfe ob der Node online ist
-        if [[ "$status_result" == *"online:true"* ]]; then
+    local sorted_nodes=($(printf '%s\n' "${!NODES_CONFIG[@]}" | sort))
+    
+    for node_id in "${sorted_nodes[@]}"; do
+        echo -n "  → $node_id... "
+        local status_line=$(check_node_status "$node_id")
+        nodes_status+=("$status_line")
+        IFS='|' read -r _ is_online _ _ <<< "$status_line"
+        if [[ "$is_online" == "true" ]]; then
             echo "✓"
         else
             echo "✗"
         fi
     done
-
+    
     # Ausgabe
-    if [[ "$FORMAT" == "table" ]]; then
+    if [[ "$format" == "table" ]]; then
         print_table "${nodes_status[@]}"
     else
         print_json "${nodes_status[@]}"
     fi
-
+    
     # Speichern
-    if [[ -n "$SAVE_FILE" ]]; then
-        save_to_file "$SAVE_FILE" "${nodes_status[@]}"
+    if [[ -n "$save_file" ]]; then
+        save_to_file "${nodes_status[@]}" "$save_file"
+        echo ""
+        echo "💾 Gespeichert: $save_file"
     fi
-
+    
     # Zusammenfassung
     local online_count=0
-    local status_serialized
-    for status_serialized in "${nodes_status[@]}"; do
-        if [[ "$status_serialized" == *"online:true"* ]]; then
+    for line in "${nodes_status[@]}"; do
+        IFS='|' read -r _ is_online _ _ <<< "$line"
+        if [[ "$is_online" == "true" ]]; then
             ((online_count++))
         fi
     done
-    printf "\n📊 Zusammenfassung: %d/%d Nodes online\n" "$online_count" "${#nodes_status[@]}"
+    
+    echo ""
+    echo "📊 Zusammenfassung: $online_count/${#nodes_status[@]} Nodes online"
 }
 
-# Skript ausführen
 main "$@"

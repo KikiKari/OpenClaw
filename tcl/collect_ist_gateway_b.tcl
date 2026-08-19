@@ -1,298 +1,314 @@
-#!/usr/bin/env tclsh8.6
+#!/usr/bin/env tclsh
 # collect_ist_gateway_b.sh — portiert nach tcl
 # Quelle: shell, OpenClaw@gateway2:scripts/collect_ist_gateway_b.sh
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
-package require http
-package require json
+package require Tcl 8.6
 
-# Hilfsfunktion für Kommandoausführung mit Fehlerbehandlung
-proc exec_safe {cmd} {
-    if {[catch {exec {*}$cmd} result]} {
-        return ""
-    }
-    return [string trim $result]
+# Setzen der Umgebungsvariablen und Zeitstempel
+set BASE_DIR [file normalize "~/.openclaw"]
+set OUT_DIR [file join $BASE_DIR workspace vscode]
+set NOW_UTC [clock format [clock seconds] -gmt 1 -format "%Y-%m-%dT%H:%M:%SZ"]
+set NOW_LOCAL [clock format [clock seconds] -format "%Y-%m-%d %H:%M:%S %Z"]
+set TS [clock format [clock seconds] -format "%Y%m%d-%H%M%S"]
+
+# Erstellen des Ausgabeverzeichnisses
+file mkdir $OUT_DIR
+
+# Dateipfade definieren
+set IST_FILE [file join $OUT_DIR "IST-ZUSTAND_GATEWAY-B_NODE7.md"]
+set INV_FILE [file join $OUT_DIR "ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md"]
+set CFG_FILE [file join $OUT_DIR "OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md"]
+set ENV_FILE [file join $OUT_DIR "ENV-STATUS_GATEWAY-B_NODE7.md"]
+set RUN_FILE [file join $OUT_DIR "RUN-$TS.md"]
+
+# Weitere Dateipfade
+set OPENCLAW_JSON [file join $BASE_DIR "openclaw.json"]
+set ENV_DOT [file join $BASE_DIR ".env"]
+set ENV_SYSTEMD [file join $BASE_DIR "gateway.systemd.env"]
+set VSCODE_DIR [file join $BASE_DIR ".vscode"]
+
+# Hostinformationen sammeln
+set HOSTNAME_FQDN [exec hostname -f]
+if {[catch {exec hostname -f} result]} {
+    set HOSTNAME_FQDN [exec hostname]
 }
-
-# Hilfsfunktion für Dateiinhalt mit Fehlerbehandlung
-proc read_file_safe {filename} {
-    if {[file exists $filename]} {
-        set fp [open $filename r]
-        set content [read $fp]
-        close $fp
-        return [string trim $content]
-    }
-    return ""
-}
-
-# Hilfsfunktion für Dateiprüfung
-proc file_status {filepath} {
-    if {[file exists $filepath]} {
-        if {[file isdirectory $filepath]} {
-            return "vorhanden"
-        } elseif {[file isfile $filepath]} {
-            return "vorhanden"
-        }
-    }
-    return "fehlt"
-}
-
-# Datum und Zeit bestimmen
-set now_utc [clock format [clock seconds] -gmt true -format "%Y-%m-%dT%H:%M:%SZ"]
-set now_local [clock format [clock seconds] -gmt false -format "%Y-%m-%d %H:%M:%S %Z"]
-set ts [clock format [clock seconds] -gmt false -format "%Y%m%d-%H%M%S"]
-
-# Pfade definieren
-set base_dir [file normalize "$env(HOME)/.openclaw"]
-set out_dir [file normalize "$base_dir/workspace/vscode"]
-file mkdir $out_dir
-
-set ist_file [file join $out_dir "IST-ZUSTAND_GATEWAY-B_NODE7.md"]
-set inv_file [file join $out_dir "ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md"]
-set cfg_file [file join $out_dir "OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md"]
-set env_file [file join $out_dir "ENV-STATUS_GATEWAY-B_NODE7.md"]
-set run_file [file join $out_dir "RUN-$ts.md"]
-
-set openclaw_json [file join $base_dir "openclaw.json"]
-set env_dot [file join $base_dir ".env"]
-set env_systemd [file join $base_dir "gateway.systemd.env"]
-set vscode_dir [file join $base_dir ".vscode"]
-
-# Systeminformationen sammeln
-set hostname_fqdn [exec_safe [list hostname -f]]
-if {$hostname_fqdn eq ""} {
-    set hostname_fqdn [exec_safe [list hostname]]
-}
-set hostname_short [exec_safe [list hostname]]
-set arch [exec_safe [list uname -m]]
-set kernel [exec_safe [list uname -r]]
-
-set os_pretty ""
+set HOSTNAME_SHORT [exec hostname]
+set ARCH [exec uname -m]
+set KERNEL [exec uname -r]
+set OS_PRETTY ""
 if {[file exists "/etc/os-release"]} {
-    set os_content [read_file_safe "/etc/os-release"]
-    foreach line [split $os_content "\n"] {
+    set os_release [exec cat "/etc/os-release"]
+    foreach line [split $os_release "\n"] {
         if {[string match "PRETTY_NAME=*" $line]} {
-            set os_pretty [string range $line 12 end]
-            set os_pretty [string trim $os_pretty "\""]
+            set OS_PRETTY [string range $line 12 end]
+            set OS_PRETTY [string trim $OS_PRETTY "\""]
             break
         }
     }
 }
 
-set ipv4_all [exec_safe [list hostname -I]]
-set public_ip [exec_safe [list curl -4 -s --max-time 4 ifconfig.me]]
-set tailscale_ip [exec_safe [list tailscale ip -4]]
+set IPV4_ALL ""
+if {[catch {exec hostname -I} result]} {
+    set IPV4_ALL $result
+} else {
+    set IPV4_ALL "(nicht ermittelt)"
+}
 
-set openclaw_ver [exec_safe [list openclaw --version]]
-set node_ver [exec_safe [list node -v]]
+set PUBLIC_IP ""
+if {[catch {exec curl -4 -s --max-time 4 ifconfig.me} result]} {
+    set PUBLIC_IP $result
+} else {
+    set PUBLIC_IP "(nicht ermittelt)"
+}
 
-# Fallback-Werte setzen
-if {$public_ip eq ""} {set public_ip "(nicht ermittelt)"}
-if {$tailscale_ip eq ""} {set tailscale_ip "(nicht ermittelt)"}
-if {$openclaw_ver eq ""} {set openclaw_ver "(nicht ermittelt)"}
-if {$node_ver eq ""} {set node_ver "(nicht ermittelt)"}
+set TAILSCALE_IP ""
+if {[catch {exec tailscale ip -4} result]} {
+    set TAILSCALE_IP [lindex [split $result "\n"] 0]
+} else {
+    set TAILSCALE_IP "(nicht ermittelt)"
+}
 
-# IST-Zustand schreiben
-set fp [open $ist_file w]
-puts $fp "# IST-Zustand: Gateway B / Node 7"
-puts $fp ""
-puts $fp "Stand (lokal): $now_local  "
-puts $fp "Stand (UTC): $now_utc"
-puts $fp ""
-puts $fp "## 1) Identität & System"
-puts $fp ""
-puts $fp "- Gateway: **B**"
-puts $fp "- Node: **7**"
-puts $fp "- Hostname (short): \`$hostname_short\`"
-puts $fp "- Hostname (FQDN): \`$hostname_fqdn\`"
-puts $fp "- Architektur: \`$arch\`"
-puts $fp "- Kernel: \`$kernel\`"
-puts $fp "- OS: \`$os_pretty\`"
-puts $fp "- IPv4 (lokal): \`$ipv4_all\`"
-puts $fp "- Public IPv4: \`$public_ip\`"
-puts $fp "- Tailscale IPv4: \`$tailscale_ip\`"
-puts $fp "- OpenClaw Version: \`$openclaw_ver\`"
-puts $fp "- Node.js Version: \`$node_ver\`"
-puts $fp ""
-puts $fp "## 2) Arbeitsverzeichnisse"
-puts $fp ""
-puts $fp "- Basis: \`$base_dir\`"
-puts $fp "- Funktionell VSCode: \`$vscode_dir\`"
-puts $fp "- Workspace Doku: \`$out_dir\`"
-puts $fp ""
-puts $fp "## 3) Kernartefakte (Existenz)"
-puts $fp ""
-puts $fp "- \`$openclaw_json\`: [file_status $openclaw_json]"
-puts $fp "- \`$env_dot\`: [file_status $env_dot]"
-puts $fp "- \`$env_systemd\`: [file_status $env_systemd]"
-puts $fp "- \`${base_dir}/plugins/installs.json\`: [file_status ${base_dir}/plugins/installs.json]"
-puts $fp "- \`${base_dir}/plugin-skills\`: [file_status ${base_dir}/plugin-skills]"
-puts $fp ""
-puts $fp "## 4) Hinweis"
-puts $fp ""
-puts $fp "Diese Datei wird bei jedem Lauf neu geschrieben."
-puts $fp "Zusätzlich wird ein Laufprotokoll als \`RUN-*.md\` erzeugt."
-close $fp
+set OPENCLAW_VER ""
+if {[catch {exec openclaw --version} result]} {
+    set OPENCLAW_VER $result
+} else {
+    set OPENCLAW_VER "(nicht ermittelt)"
+}
 
-# Artefakt-Inventar schreiben
-set fp [open $inv_file w]
-puts $fp "# Artefakt-Inventar: Gateway B / Node 7"
-puts $fp ""
-puts $fp "Stand: $now_local"
-puts $fp ""
-puts $fp "## Top-Level in ~/.openclaw"
-puts $fp ""
-puts $fp "\`\`\`text"
-if {[file exists $base_dir] && [file isdirectory $base_dir]} {
-    set files [lsort [glob -nocomplain -dir $base_dir *]]
+set NODE_VER ""
+if {[catch {exec node -v} result]} {
+    set NODE_VER $result
+} else {
+    set NODE_VER "(nicht ermittelt)"
+}
+
+# IST-Datei erstellen
+set ist_fh [open $IST_FILE w]
+puts $ist_fh "# IST-Zustand: Gateway B / Node 7"
+puts $ist_fh ""
+puts $ist_fh "Stand (lokal): $NOW_LOCAL  "
+puts $ist_fh "Stand (UTC): $NOW_UTC"
+puts $ist_fh ""
+puts $ist_fh "## 1) Identität & System"
+puts $ist_fh ""
+puts $ist_fh "- Gateway: **B**"
+puts $ist_fh "- Node: **7**"
+puts $ist_fh "- Hostname (short): \\`$HOSTNAME_SHORT\\`"
+puts $ist_fh "- Hostname (FQDN): \\`$HOSTNAME_FQDN\\`"
+puts $ist_fh "- Architektur: \\`$ARCH\\`"
+puts $ist_fh "- Kernel: \\`$KERNEL\\`"
+puts $ist_fh "- OS: \\`$OS_PRETTY\\`"
+puts $ist_fh "- IPv4 (lokal): \\`$IPV4_ALL\\`"
+puts $ist_fh "- Public IPv4: \\`$PUBLIC_IP\\`"
+puts $ist_fh "- Tailscale IPv4: \\`$TAILSCALE_IP\\`"
+puts $ist_fh "- OpenClaw Version: \\`$OPENCLAW_VER\\`"
+puts $ist_fh "- Node.js Version: \\`$NODE_VER\\`"
+puts $ist_fh ""
+puts $ist_fh "## 2) Arbeitsverzeichnisse"
+puts $ist_fh ""
+puts $ist_fh "- Basis: \\`$BASE_DIR\\`"
+puts $ist_fh "- Funktionell VSCode: \\`$VSCODE_DIR\\`"
+puts $ist_fh "- Workspace Doku: \\`$OUT_DIR\\`"
+puts $ist_fh ""
+puts $ist_fh "## 3) Kernartefakte (Existenz)"
+puts $ist_fh ""
+
+set openclaw_json_status "fehlt"
+if {[file exists $OPENCLAW_JSON]} {
+    set openclaw_json_status "vorhanden"
+}
+puts $ist_fh "- \\`$OPENCLAW_JSON\\`: $openclaw_json_status"
+
+set env_dot_status "fehlt"
+if {[file exists $ENV_DOT]} {
+    set env_dot_status "vorhanden"
+}
+puts $ist_fh "- \\`$ENV_DOT\\`: $env_dot_status"
+
+set env_systemd_status "fehlt"
+if {[file exists $ENV_SYSTEMD]} {
+    set env_systemd_status "vorhanden"
+}
+puts $ist_fh "- \\`$ENV_SYSTEMD\\`: $env_systemd_status"
+
+set installs_json_status "fehlt"
+if {[file exists [file join $BASE_DIR plugins installs.json]]} {
+    set installs_json_status "vorhanden"
+}
+puts $ist_fh "- \\`$BASE_DIR/plugins/installs.json\\`: $installs_json_status"
+
+set plugin_skills_status "fehlt"
+if {[file isdirectory [file join $BASE_DIR plugin-skills]]} {
+    set plugin_skills_status "vorhanden"
+}
+puts $ist_fh "- \\`$BASE_DIR/plugin-skills\\`: $plugin_skills_status"
+
+puts $ist_fh ""
+puts $ist_fh "## 4) Hinweis"
+puts $ist_fh ""
+puts $ist_fh "Diese Datei wird bei jedem Lauf neu geschrieben."
+puts $ist_fh "Zusätzlich wird ein Laufprotokoll als \\`RUN-*.md\\` erzeugt."
+close $ist_fh
+
+# Inventar-Datei erstellen
+set inv_fh [open $INV_FILE w]
+puts $inv_fh "# Artefakt-Inventar: Gateway B / Node 7"
+puts $inv_fh ""
+puts $inv_fh "Stand: $NOW_LOCAL"
+puts $inv_fh ""
+puts $inv_fh "## Top-Level in ~/.openclaw"
+puts $inv_fh ""
+puts $inv_fh "\\`\\`\\`text"
+if {[file exists $BASE_DIR]} {
+    set files [glob -nocomplain -dir $BASE_DIR *]
     foreach f $files {
-        puts $fp [file tail $f]
+        puts $inv_fh [file tail $f]
     }
 }
-puts $fp "\`\`\`"
-puts $fp ""
-puts $fp "## ~/.openclaw/.vscode"
-puts $fp ""
-puts $fp "\`\`\`text"
-if {[file exists $vscode_dir] && [file isdirectory $vscode_dir]} {
-    catch {
-        set dir_content [exec ls -la $vscode_dir]
-        puts $fp $dir_content
+puts $inv_fh "\\`\\`\\`"
+puts $inv_fh ""
+puts $inv_fh "## ~/.openclaw/.vscode"
+puts $inv_fh ""
+puts $inv_fh "\\`\\`\\`text"
+if {[file isdirectory $VSCODE_DIR]} {
+    set dir_content [exec ls -la $VSCODE_DIR]
+    puts $inv_fh $dir_content
+} else {
+    puts $inv_fh "(nicht vorhanden)"
+}
+puts $inv_fh "\\`\\`\\`"
+puts $inv_fh ""
+puts $inv_fh "## plugin-skills/"
+puts $inv_fh ""
+puts $inv_fh "\\`\\`\\`text"
+if {[file isdirectory [file join $BASE_DIR plugin-skills]]} {
+    set skill_files [glob -nocomplain -dir [file join $BASE_DIR plugin-skills] *]
+    foreach sf $skill_files {
+        puts $inv_fh [file tail $sf]
     }
 } else {
-    puts $fp "(nicht vorhanden)"
+    puts $inv_fh "(nicht vorhanden)"
 }
-puts $fp "\`\`\`"
-puts $fp ""
-puts $fp "## plugin-skills/"
-puts $fp ""
-puts $fp "\`\`\`text"
-if {[file exists ${base_dir}/plugin-skills] && [file isdirectory ${base_dir}/plugin-skills]} {
-    set skill_files [lsort [glob -nocomplain -dir ${base_dir}/plugin-skills *]]
-    foreach f $skill_files {
-        puts $fp [file tail $f]
-    }
-} else {
-    puts $fp "(nicht vorhanden)"
-}
-puts $fp "\`\`\`"
-puts $fp ""
-puts $fp "## openclaw.json Backups"
-puts $fp ""
-puts $fp "\`\`\`text"
-set backup_files [lsort [glob -nocomplain ${base_dir}/openclaw.json.bak*]]
+puts $inv_fh "\\`\\`\\`"
+puts $inv_fh ""
+puts $inv_fh "## openclaw.json Backups"
+puts $inv_fh ""
+puts $inv_fh "\\`\\`\\`text"
+set backup_files [glob -nocomplain $BASE_DIR/openclaw.json.bak*]
 if {[llength $backup_files] > 0} {
-    foreach f $backup_files {
-        puts $fp [file tail $f]
+    foreach bf $backup_files {
+        puts $inv_fh [file tail $bf]
     }
 } else {
-    puts $fp "(keine gefunden)"
+    puts $inv_fh "(keine gefunden)"
 }
-puts $fp "\`\`\`"
-close $fp
+puts $inv_fh "\\`\\`\\`"
+close $inv_fh
 
-# Config Snapshot schreiben
-set fp [open $cfg_file w]
-puts $fp "# OpenClaw Config Snapshot: Gateway B / Node 7"
-puts $fp ""
-puts $fp "Stand: $now_local"
-puts $fp ""
-puts $fp "## Schlüsselpositionen (grep)"
-puts $fp ""
-puts $fp "\`\`\`text"
-if {[file exists $openclaw_json]} {
-    set content [read_file_safe $openclaw_json]
-    set lines [split $content "\n"]
-    set line_num 1
-    foreach line $lines {
-        if {[regexp {"gateway"|"session"|"dmScope"|"auth"|"secrets"|"tools"|"plugins"|"profile"|"alsoAllow"|"denyCommands"} $line]} {
-            puts $fp "$line_num:$line"
+# Konfigurations-Snapshot erstellen
+set cfg_fh [open $CFG_FILE w]
+puts $cfg_fh "# OpenClaw Config Snapshot: Gateway B / Node 7"
+puts $cfg_fh ""
+puts $cfg_fh "Stand: $NOW_LOCAL"
+puts $cfg_fh ""
+puts $cfg_fh "## Schlüsselpositionen (grep)"
+puts $cfg_fh ""
+puts $cfg_fh "\\`\\`\\`text"
+if {[file exists $OPENCLAW_JSON]} {
+    set grep_result ""
+    if {[catch {exec grep -nE {"gateway"|\"session\"|\"dmScope\"|\"auth\"|\"secrets\"|\"tools\"|\"plugins\"|\"profile\"|\"alsoAllow\"|\"denyCommands\"} $OPENCLAW_JSON} result]} {
+        # Keine Treffer, leer lassen
+    } else {
+        puts $cfg_fh $result
+    }
+} else {
+    puts $cfg_fh "openclaw.json fehlt"
+}
+puts $cfg_fh "\\`\\`\\`"
+puts $cfg_fh ""
+puts $cfg_fh "## Ausschnitt gateway/session/auth (ungefiltert, betriebsnah)"
+puts $cfg_fh ""
+puts $cfg_fh "\\`\\`\\`json"
+if {[file exists $OPENCLAW_JSON]} {
+    set lines [split [exec cat $OPENCLAW_JSON] "\n"]
+    set start_line 580
+    set end_line 780
+    set total_lines [llength $lines]
+    
+    for {set i [expr {$start_line - 1}]} {$i < $end_line && $i < $total_lines} {incr i} {
+        if {$i >= 0} {
+            puts $cfg_fh [lindex $lines $i]
         }
-        incr line_num
     }
 } else {
-    puts $fp "openclaw.json fehlt"
+    puts $cfg_fh "{ \"error\": \"openclaw.json fehlt\" }"
 }
-puts $fp "\`\`\`"
-puts $fp ""
-puts $fp "## Ausschnitt gateway/session/auth (ungefiltert, betriebsnah)"
-puts $fp ""
-puts $fp "\`\`\`json"
-if {[file exists $openclaw_json]} {
-    set fp_json [open $openclaw_json r]
-    set line_count 0
-    while {[gets $fp_json line] >= 0 && $line_count < 780} {
-        incr line_count
-        if {$line_count >= 580} {
-            puts $fp $line
-        }
+puts $cfg_fh "\\`\\`\\`"
+close $cfg_fh
+
+# ENV-Status erstellen
+set env_fh [open $ENV_FILE w]
+puts $env_fh "# ENV-Status: Gateway B / Node 7"
+puts $env_fh ""
+puts $env_fh "Stand: $NOW_LOCAL"
+puts $env_fh ""
+puts $env_fh "## Dateien"
+puts $env_fh ""
+puts $env_fh "\\`\\`\\`text"
+set file_list [list $ENV_DOT $ENV_SYSTEMD]
+foreach ef $file_list {
+    if {[file exists $ef]} {
+        set stat_info [file mtime $ef]
+        puts $env_fh [format "%-30s %s" [file tail $ef] [clock format $stat_info]]
     }
-    close $fp_json
+}
+puts $env_fh "\\`\\`\\`"
+puts $env_fh ""
+puts $env_fh "## .env (vollständig, ungefiltert)"
+puts $env_fh ""
+puts $env_fh "\\`\\`\\`dotenv"
+if {[file exists $ENV_DOT]} {
+    set env_content [exec cat $ENV_DOT]
+    puts $env_fh $env_content
 } else {
-    puts $fp "{ \"error\": \"openclaw.json fehlt\" }"
+    puts $env_fh "# .env fehlt"
 }
-puts $fp "\`\`\`"
-close $fp
-
-# ENV-Status schreiben
-set fp [open $env_file w]
-puts $fp "# ENV-Status: Gateway B / Node 7"
-puts $fp ""
-puts $fp "Stand: $now_local"
-puts $fp ""
-puts $fp "## Dateien"
-puts $fp ""
-puts $fp "\`\`\`text"
-catch {
-    set stat_result [exec ls -la $env_dot $env_systemd]
-    puts $fp $stat_result
-}
-puts $fp "\`\`\`"
-puts $fp ""
-puts $fp "## .env (vollständig, ungefiltert)"
-puts $fp ""
-puts $fp "\`\`\`dotenv"
-if {[file exists $env_dot]} {
-    set env_content [read_file_safe $env_dot]
-    puts $fp $env_content
+puts $env_fh "\\`\\`\\`"
+puts $env_fh ""
+puts $env_fh "## gateway.systemd.env (vollständig, ungefiltert)"
+puts $env_fh ""
+puts $env_fh "\\`\\`\\`dotenv"
+if {[file exists $ENV_SYSTEMD]} {
+    set systemd_content [exec cat $ENV_SYSTEMD]
+    puts $env_fh $systemd_content
 } else {
-    puts $fp "# .env fehlt"
+    puts $env_fh "# gateway.systemd.env fehlt"
 }
-puts $fp "\`\`\`"
-puts $fp ""
-puts $fp "## gateway.systemd.env (vollständig, ungefiltert)"
-puts $fp ""
-puts $fp "\`\`\`dotenv"
-if {[file exists $env_systemd]} {
-    set systemd_content [read_file_safe $env_systemd]
-    puts $fp $systemd_content
-} else {
-    puts $fp "# gateway.systemd.env fehlt"
-}
-puts $fp "\`\`\`"
-close $fp
+puts $env_fh "\\`\\`\\`"
+close $env_fh
 
-# Laufprotokoll schreiben
-set fp [open $run_file w]
-puts $fp "# Laufprotokoll Gateway B / Node 7"
-puts $fp ""
-puts $fp "- Zeit (lokal): $now_local"
-puts $fp "- Zeit (UTC): $now_utc"
-puts $fp "- Script: [info script]"
-puts $fp ""
-puts $fp "## Erzeugte Dateien"
-puts $fp ""
-puts $fp "- [file tail $ist_file]"
-puts $fp "- [file tail $inv_file]"
-puts $fp "- [file tail $cfg_file]"
-puts $fp "- [file tail $env_file]"
-close $fp
+# Run-Datei erstellen
+set run_fh [open $RUN_FILE w]
+puts $run_fh "# Laufprotokoll Gateway B / Node 7"
+puts $run_fh ""
+puts $run_fh "- Zeit (lokal): $NOW_LOCAL"
+puts $run_fh "- Zeit (UTC): $NOW_UTC"
+puts $run_fh "- Script: [info script]"
+puts $run_fh ""
+puts $run_fh "## Erzeugte Dateien"
+puts $run_fh ""
+puts $run_fh "- [file tail $IST_FILE]"
+puts $run_fh "- [file tail $INV_FILE]"
+puts $run_fh "- [file tail $CFG_FILE]"
+puts $run_fh "- [file tail $ENV_FILE]"
+close $run_fh
 
-# Erfolgsmeldung ausgeben
+# Ausgabe auf Konsole
 puts "OK: IST-Zustand erfasst."
-puts "Ausgabeordner: $out_dir"
+puts "Ausgabeordner: $OUT_DIR"
 puts "Dateien:"
-set output_files [lsort [glob -nocomplain -dir $out_dir *]]
-foreach f $output_files {
-    puts "- [file tail $f]"
+set output_files [glob -nocomplain -dir $OUT_DIR *]
+foreach of $output_files {
+    puts "- [file tail $of]"
 }

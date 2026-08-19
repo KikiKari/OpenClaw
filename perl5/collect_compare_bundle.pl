@@ -2,12 +2,12 @@
 # collect_compare_bundle.sh — portiert nach perl5
 # Quelle: shell, OpenClaw@gateway1:scripts/collect_compare_bundle.sh
 # auch in: OpenClaw@gateway2:scripts/collect_compare_bundle.sh
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use File::Path qw(make_path);
-use File::Spec;
+use File::Find;
 use POSIX qw(strftime);
 
 my $ROOT = "/home/openclaw/.openclaw";
@@ -31,7 +31,7 @@ my $AGENTS_DIR = "${ROOT}/agents";
 make_path($OUT_DIR);
 make_path($TRANSFER_DIR);
 
-unless (system("which tree >/dev/null 2>&1") == 0) {
+unless (`which tree`) {
     print "Fehler: 'tree' ist nicht installiert.\n";
     exit 1;
 }
@@ -39,13 +39,16 @@ unless (system("which tree >/dev/null 2>&1") == 0) {
 sub append_file_verbatim {
     my ($label, $path, $lang) = @_;
     $lang //= "text";
+    
     open(my $fh, ">>", $MD_FILE) or die "Kann $MD_FILE nicht öffnen: $!";
+    
     print $fh "\n";
     print $fh "## ${label}\n";
     print $fh "\n";
-    print $fh "Pfad: \`${path}\`\n";
+    print $fh "Pfad: `${path}`\n";
     print $fh "\n";
     print $fh "```$lang\n";
+    
     if (-f $path) {
         open(my $file_fh, "<", $path) or die "Kann $path nicht öffnen: $!";
         while (my $line = <$file_fh>) {
@@ -55,6 +58,7 @@ sub append_file_verbatim {
     } else {
         print $fh "[FEHLT] ${path}\n";
     }
+    
     print $fh "\n";
     print $fh "```\n";
     close($fh);
@@ -62,59 +66,61 @@ sub append_file_verbatim {
 
 sub append_env_verbatim {
     open(my $fh, ">>", $MD_FILE) or die "Kann $MD_FILE nicht öffnen: $!";
+    
     print $fh "\n";
     print $fh "## Umgebungsvariablen (env)\n";
     print $fh "\n";
-    print $fh "```text\n";
-    my @env_vars = sort keys %ENV;
-    for my $key (@env_vars) {
+    print $fh "```\n";
+    
+    foreach my $key (sort keys %ENV) {
         print $fh "$key=$ENV{$key}\n";
     }
+    
     print $fh "```\n";
     close($fh);
 }
 
 sub append_dir_files_verbatim {
     my ($section, $dir) = @_;
+    
     open(my $fh, ">>", $MD_FILE) or die "Kann $MD_FILE nicht öffnen: $!";
+    
     print $fh "\n";
     print $fh "## ${section}\n";
     print $fh "\n";
+    
     unless (-d $dir) {
         print $fh "[FEHLT] ${dir}\n";
         close($fh);
         return;
     }
-    print $fh "Basisverzeichnis: \`${dir}\`\n";
+    
+    print $fh "Basisverzeichnis: `${dir}`\n";
     close($fh);
-
-    my @files = sort { $a cmp $b } glob("$dir/*");
-    my @all_files;
-    while (my $file = shift @files) {
-        if (-f $file) {
-            push @all_files, $file;
-        } elsif (-d $file) {
-            my @sub_files = glob("$file/*");
-            push @files, @sub_files;
+    
+    my @files;
+    find(sub {
+        push @files, $File::Find::name if -f $_;
+    }, $dir);
+    
+    @files = sort @files;
+    
+    foreach my $f (@files) {
+        open(my $fh, ">>", $MD_FILE) or die "Kann $MD_FILE nicht öffnen: $!";
+        print $fh "\n";
+        print $fh "### Datei: `$f`\n";
+        print $fh "\n";
+        print $fh "```\n";
+        
+        open(my $file_fh, "<", $f) or die "Kann $f nicht öffnen: $!";
+        while (my $line = <$file_fh>) {
+            print $fh $line;
         }
-    }
-
-    for my $f (sort @all_files) {
-        open(my $fh_append, ">>", $MD_FILE) or die "Kann $MD_FILE nicht öffnen: $!";
-        print $fh_append "\n";
-        print $fh_append "### Datei: \`${f}\`\n";
-        print $fh_append "\n";
-        print $fh_append "```text\n";
-        if (-f $f) {
-            open(my $file_fh, "<", $f) or warn "Kann $f nicht öffnen: $!";
-            while (my $line = <$file_fh>) {
-                print $fh_append $line;
-            }
-            close($file_fh);
-        }
-        print $fh_append "\n";
-        print $fh_append "```\n";
-        close($fh_append);
+        close($file_fh);
+        
+        print $fh "\n";
+        print $fh "```\n";
+        close($fh);
     }
 }
 
@@ -136,9 +142,9 @@ append_env_verbatim();
 append_dir_files_verbatim(".config (alle Dateien rekursiv)", $CONFIG_DIR);
 append_dir_files_verbatim("agents (alle Dateien rekursiv)", $AGENTS_DIR);
 
-system("tree -a -L 6 \"${ROOT}\" > \"${TREE_FILE}\"");
-system("openclaw backup create --output \"${BACKUP_FILE}\" --verify");
-system("cp \"${BACKUP_FILE}\" \"${OUT_DIR}\"");
+system("tree -a -L 6 \"$ROOT\" > \"$TREE_FILE\"");
+system("openclaw backup create --output \"$BACKUP_FILE\" --verify");
+system("cp \"$BACKUP_FILE\" \"$OUT_DIR\"");
 
 print "OK\n";
 print "Erzeugt:\n";

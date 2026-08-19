@@ -1,20 +1,22 @@
 #!/usr/bin/env node
 // collect_ist_gateway_a.sh — portiert nach javascript
 // Quelle: shell, OpenClaw@gateway1:scripts/collect_ist_gateway_a.sh
-// Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const BASE_DIR = path.join(os.homedir(), '.openclaw');
 const OUT_DIR = path.join(BASE_DIR, 'workspace', 'vscode');
-
-const now = new Date();
-const NOW_UTC = now.toISOString().replace(/\.\d+Z$/, 'Z');
-const NOW_LOCAL = now.toLocaleString('de-DE') + ' ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
-const TS = now.toISOString().replace(/[-:]/g, '').replace('T', '-').substring(0, 15);
+const NOW_UTC = new Date().toISOString().replace(/\.Z$/, 'Z');
+const NOW_LOCAL = new Date().toLocaleString('de-DE') + ' ' + Intl.DateTimeFormat('de-DE', { timeZoneName: 'short' }).formatToParts(new Date()).find(part => part.type === 'timeZoneName').value;
+const TS = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -29,51 +31,49 @@ const ENV_DOT = path.join(BASE_DIR, '.env');
 const ENV_SYSTEMD = path.join(BASE_DIR, 'gateway.systemd.env');
 const VSCODE_DIR = path.join(BASE_DIR, '.vscode');
 
-let HOSTNAME_FQDN = 'nicht ermittelbar';
+let HOSTNAME_FQDN;
 try {
   HOSTNAME_FQDN = execSync('hostname -f', { encoding: 'utf8' }).trim();
 } catch {
   HOSTNAME_FQDN = os.hostname();
 }
-
 const HOSTNAME_SHORT = os.hostname();
 const ARCH = process.arch;
 const KERNEL = os.release();
-let OS_PRETTY = 'nicht ermittelbar';
+let OS_PRETTY = '';
 try {
   const osRelease = fs.readFileSync('/etc/os-release', 'utf8');
   const match = osRelease.match(/^PRETTY_NAME=(.*)$/m);
-  if (match) OS_PRETTY = match[1].replace(/"/g, '');
+  if (match) {
+    OS_PRETTY = match[1].replace(/"/g, '');
+  }
 } catch {}
 
-let IPV4_ALL = 'nicht ermittelbar';
+let IPV4_ALL = '';
 try {
-  IPV4_ALL = Object.values(os.networkInterfaces())
-    .flat()
-    .filter(iface => iface.family === 'IPv4' && !iface.internal)
-    .map(iface => iface.address)
-    .join(' ');
+  IPV4_ALL = execSync('hostname -I', { encoding: 'utf8' }).trim().split(/\s+/).join(', ');
 } catch {}
 
-let PUBLIC_IP = 'nicht ermittelt';
+let PUBLIC_IP = '';
 try {
-  PUBLIC_IP = execSync('curl -4 -s --max-time 4 ifconfig.me', { encoding: 'utf8', timeout: 4000 }).trim();
+  PUBLIC_IP = execSync('curl -4 -s --max-time 4 ifconfig.me', { encoding: 'utf8' }).trim();
 } catch {}
+if (!PUBLIC_IP) PUBLIC_IP = '(nicht ermittelt)';
 
-let TAILSCALE_IP = 'nicht ermittelt';
+let TAILSCALE_IP = '';
 try {
-  TAILSCALE_IP = execSync('tailscale ip -4', { encoding: 'utf8' }).split('\n')[0].trim();
+  TAILSCALE_IP = execSync('tailscale ip -4', { encoding: 'utf8' }).trim().split('\n')[0];
 } catch {}
+if (!TAILSCALE_IP) TAILSCALE_IP = '(nicht ermittelt)';
 
-let OPENCLAW_VER = 'nicht ermittelt';
+let OPENCLAW_VER = '';
 try {
   OPENCLAW_VER = execSync('openclaw --version', { encoding: 'utf8' }).trim();
 } catch {}
+if (!OPENCLAW_VER) OPENCLAW_VER = '(nicht ermittelt)';
 
-let NODE_VER = 'nicht ermittelt';
-try {
-  NODE_VER = process.version;
-} catch {}
+let NODE_VER = process.version;
+if (!NODE_VER) NODE_VER = '(nicht ermittelt)';
 
 const istContent = `# IST-Zustand: Gateway A / Node 1
 
@@ -106,8 +106,8 @@ Stand (UTC): ${NOW_UTC}
 - \`${OPENCLAW_JSON}\`: ${fs.existsSync(OPENCLAW_JSON) ? 'vorhanden' : 'fehlt'}
 - \`${ENV_DOT}\`: ${fs.existsSync(ENV_DOT) ? 'vorhanden' : 'fehlt'}
 - \`${ENV_SYSTEMD}\`: ${fs.existsSync(ENV_SYSTEMD) ? 'vorhanden' : 'fehlt'}
-- \`${BASE_DIR}/plugins/installs.json\`: ${fs.existsSync(path.join(BASE_DIR, 'plugins', 'installs.json')) ? 'vorhanden' : 'fehlt'}
-- \`${BASE_DIR}/plugin-skills\`: ${fs.existsSync(path.join(BASE_DIR, 'plugin-skills')) ? 'vorhanden' : 'fehlt'}`;
+- \`${path.join(BASE_DIR, 'plugins/installs.json')}\`: ${fs.existsSync(path.join(BASE_DIR, 'plugins/installs.json')) ? 'vorhanden' : 'fehlt'}
+- \`${path.join(BASE_DIR, 'plugin-skills')}\`: ${fs.existsSync(path.join(BASE_DIR, 'plugin-skills')) ? 'vorhanden' : 'fehlt'}`;
 
 fs.writeFileSync(IST_FILE, istContent);
 
@@ -120,10 +120,9 @@ Stand: ${NOW_LOCAL}
 \`\`\`text
 `;
 try {
-  invContent += fs.readdirSync(BASE_DIR).join('\n');
-} catch {
-  invContent += 'Fehler beim Lesen des Verzeichnisses';
-}
+  const baseDirItems = fs.readdirSync(BASE_DIR);
+  invContent += baseDirItems.join('\n');
+} catch {}
 invContent += `
 \`\`\`
 
@@ -133,15 +132,12 @@ invContent += `
 `;
 if (fs.existsSync(VSCODE_DIR)) {
   try {
-    const files = fs.readdirSync(VSCODE_DIR);
-    const stats = files.map(file => {
-      const stat = fs.statSync(path.join(VSCODE_DIR, file));
-      return `${stat.isDirectory() ? 'd' : '-'}${stat.mode.toString(8).slice(-3)} ${stat.size} ${file}`;
-    });
-    invContent += stats.join('\n');
-  } catch {
-    invContent += 'Fehler beim Lesen des Verzeichnisses';
-  }
+    const vscodeItems = fs.readdirSync(VSCODE_DIR);
+    invContent += vscodeItems.map(item => {
+      const stat = fs.statSync(path.join(VSCODE_DIR, item));
+      return `${stat.isDirectory() ? 'd' : '-'} ${item}`;
+    }).join('\n');
+  } catch {}
 } else {
   invContent += '(nicht vorhanden)';
 }
@@ -154,10 +150,9 @@ invContent += `
 `;
 if (fs.existsSync(path.join(BASE_DIR, 'plugin-skills'))) {
   try {
-    invContent += fs.readdirSync(path.join(BASE_DIR, 'plugin-skills')).join('\n');
-  } catch {
-    invContent += 'Fehler beim Lesen des Verzeichnisses';
-  }
+    const skillsItems = fs.readdirSync(path.join(BASE_DIR, 'plugin-skills'));
+    invContent += skillsItems.join('\n');
+  } catch {}
 } else {
   invContent += '(nicht vorhanden)';
 }
@@ -169,8 +164,12 @@ invContent += `
 \`\`\`text
 `;
 try {
-  const files = fs.readdirSync(BASE_DIR).filter(f => f.startsWith('openclaw.json.bak'));
-  invContent += files.length > 0 ? files.join('\n') : '(keine gefunden)';
+  const backupFiles = fs.readdirSync(BASE_DIR).filter(file => file.startsWith('openclaw.json.bak'));
+  if (backupFiles.length > 0) {
+    invContent += backupFiles.join('\n');
+  } else {
+    invContent += '(keine gefunden)';
+  }
 } catch {
   invContent += '(keine gefunden)';
 }
@@ -192,31 +191,36 @@ if (fs.existsSync(OPENCLAW_JSON)) {
     const content = fs.readFileSync(OPENCLAW_JSON, 'utf8');
     const lines = content.split('\n');
     lines.forEach((line, index) => {
-      if (/"gateway"|\"session\"|\"dmScope\"|\"auth\"|\"secrets\"|\"tools\"|\"plugins\"|\"profile\"|\"alsoAllow\"|\"denyCommands\"/.test(line)) {
+      if (line.match(/"gateway"|\"session\"|\"dmScope\"|\"auth\"|\"secrets\"|\"tools\"|\"plugins\"|\"profile\"|\"alsoAllow\"|\"denyCommands\"/)) {
         cfgContent += `${index + 1}: ${line}\n`;
       }
     });
-  } catch {
-    cfgContent += 'Fehler beim Lesen der Datei\n';
-  }
+  } catch {}
 } else {
   cfgContent += 'openclaw.json fehlt\n';
 }
-cfgContent += '```\n\n## Ausschnitt gateway/session/auth\n\n```json\n';
+cfgContent += `\`\`\`
+
+## Ausschnitt gateway/session/auth
+
+\`\`\`json
+`;
 if (fs.existsSync(OPENCLAW_JSON)) {
   try {
     const content = fs.readFileSync(OPENCLAW_JSON, 'utf8');
     const lines = content.split('\n');
     const start = 579;
     const end = 779;
-    cfgContent += lines.slice(start, end + 1).join('\n');
+    for (let i = start; i <= Math.min(end, lines.length - 1); i++) {
+      cfgContent += lines[i] + '\n';
+    }
   } catch {
-    cfgContent += '{ "error": "Fehler beim Lesen der Datei" }';
+    cfgContent += '{ "error": "Fehler beim Lesen von openclaw.json" }\n';
   }
 } else {
-  cfgContent += '{ "error": "openclaw.json fehlt" }';
+  cfgContent += '{ "error": "openclaw.json fehlt" }\n';
 }
-cfgContent += '\n```';
+cfgContent += '```';
 
 fs.writeFileSync(CFG_FILE, cfgContent);
 
@@ -229,26 +233,49 @@ Stand: ${NOW_LOCAL}
 \`\`\`text
 `;
 try {
-  const envStat = fs.statSync(ENV_DOT);
-  const systemdStat = fs.statSync(ENV_SYSTEMD);
-  envContent += `-rwx------ 1 ${os.userInfo().username} ${os.userInfo().username} ${envStat.size} ${envStat.mtime.toLocaleString()} ${ENV_DOT}\n`;
-  envContent += `-rwx------ 1 ${os.userInfo().username} ${os.userInfo().username} ${systemdStat.size} ${systemdStat.mtime.toLocaleString()} ${ENV_SYSTEMD}\n`;
-} catch {
-  envContent += 'Dateien nicht gefunden\n';
-}
-envContent += '```\n\n## .env (vollstaendig)\n\n```dotenv\n';
+  const stats = [];
+  if (fs.existsSync(ENV_DOT)) {
+    const stat = fs.statSync(ENV_DOT);
+    stats.push(`${stat.mode.toString(8)} ${ENV_DOT}`);
+  }
+  if (fs.existsSync(ENV_SYSTEMD)) {
+    const stat = fs.statSync(ENV_SYSTEMD);
+    stats.push(`${stat.mode.toString(8)} ${ENV_SYSTEMD}`);
+  }
+  envContent += stats.join('\n');
+} catch {}
+envContent += `
+\`\`\`
+
+## .env (vollstaendig)
+
+\`\`\`dotenv
+`;
 if (fs.existsSync(ENV_DOT)) {
-  envContent += fs.readFileSync(ENV_DOT, 'utf8');
+  try {
+    envContent += fs.readFileSync(ENV_DOT, 'utf8');
+  } catch {
+    envContent += '# Fehler beim Lesen von .env\n';
+  }
 } else {
-  envContent += '# .env fehlt';
+  envContent += '# .env fehlt\n';
 }
-envContent += '\n```\n\n## gateway.systemd.env (vollstaendig)\n\n```dotenv\n';
+envContent += `\`\`\`
+
+## gateway.systemd.env (vollstaendig)
+
+\`\`\`dotenv
+`;
 if (fs.existsSync(ENV_SYSTEMD)) {
-  envContent += fs.readFileSync(ENV_SYSTEMD, 'utf8');
+  try {
+    envContent += fs.readFileSync(ENV_SYSTEMD, 'utf8');
+  } catch {
+    envContent += '# Fehler beim Lesen von gateway.systemd.env\n';
+  }
 } else {
-  envContent += '# gateway.systemd.env fehlt';
+  envContent += '# gateway.systemd.env fehlt\n';
 }
-envContent += '\n```';
+envContent += '```';
 
 fs.writeFileSync(ENV_FILE, envContent);
 
@@ -263,14 +290,13 @@ const runContent = `# Laufprotokoll Gateway A / Node 1
 - ${path.basename(IST_FILE)}
 - ${path.basename(INV_FILE)}
 - ${path.basename(CFG_FILE)}
-- ${path.basename(ENV_FILE)}`;
+- ${path.basename(ENV_FILE)}
+`;
 
 fs.writeFileSync(RUN_FILE, runContent);
 
 console.log('OK: IST-Zustand erfasst.');
 try {
   const files = fs.readdirSync(OUT_DIR);
-  files.forEach(file => console.log('- ' + file));
-} catch {
-  console.log('- Fehler beim Auflisten der Dateien');
-}
+  files.forEach(file => console.log(`- ${file}`));
+} catch {}

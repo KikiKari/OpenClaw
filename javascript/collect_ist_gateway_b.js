@@ -1,21 +1,26 @@
 #!/usr/bin/env node
 // collect_ist_gateway_b.sh — portiert nach javascript
 // Quelle: shell, OpenClaw@gateway2:scripts/collect_ist_gateway_b.sh
-// Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import { execSync } from 'child_process';
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { execSync } = require('child_process');
 
 const BASE_DIR = path.join(os.homedir(), '.openclaw');
 const OUT_DIR = path.join(BASE_DIR, 'workspace', 'vscode');
-const NOW_UTC = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
-const NOW_LOCAL = new Date().toLocaleString('de-DE') + ' ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
-const TS = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);
 
+// Create output directory
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
+// Get current time
+const now = new Date();
+const NOW_UTC = now.toISOString().replace(/\.\d+Z$/, 'Z');
+const NOW_LOCAL = now.toLocaleString('de-DE', { timeZoneName: 'short' });
+const TS = now.toISOString().replace(/[-:]/g, '').replace('T', '-').substring(0, 15);
+
+// File paths
 const IST_FILE = path.join(OUT_DIR, 'IST-ZUSTAND_GATEWAY-B_NODE7.md');
 const INV_FILE = path.join(OUT_DIR, 'ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md');
 const CFG_FILE = path.join(OUT_DIR, 'OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md');
@@ -27,47 +32,71 @@ const ENV_DOT = path.join(BASE_DIR, '.env');
 const ENV_SYSTEMD = path.join(BASE_DIR, 'gateway.systemd.env');
 const VSCODE_DIR = path.join(BASE_DIR, '.vscode');
 
-let HOSTNAME_FQDN = '';
+// System information
+let HOSTNAME_FQDN;
 try {
   HOSTNAME_FQDN = execSync('hostname -f', { encoding: 'utf8' }).trim();
-} catch {
+} catch (error) {
   HOSTNAME_FQDN = os.hostname();
 }
+
 const HOSTNAME_SHORT = os.hostname();
-const ARCH = process.arch;
+const ARCH = os.arch();
 const KERNEL = os.release();
+
 let OS_PRETTY = '';
 try {
   const osRelease = fs.readFileSync('/etc/os-release', 'utf8');
   const match = osRelease.match(/^PRETTY_NAME=(.*)$/m);
-  OS_PRETTY = match ? match[1].replace(/"/g, '') : '';
-} catch {}
+  if (match) {
+    OS_PRETTY = match[1].replace(/"/g, '');
+  }
+} catch (error) {
+  // Ignore error
+}
+
 let IPV4_ALL = '';
 try {
   IPV4_ALL = execSync('hostname -I', { encoding: 'utf8' }).trim().split(/\s+/).join(', ');
-} catch {}
+} catch (error) {
+  // Ignore error
+}
+
 let PUBLIC_IP = '';
 try {
   PUBLIC_IP = execSync('curl -4 -s --max-time 4 ifconfig.me', { encoding: 'utf8' }).trim();
-} catch {}
+} catch (error) {
+  // Ignore error
+}
+
 let TAILSCALE_IP = '';
 try {
   TAILSCALE_IP = execSync('tailscale ip -4', { encoding: 'utf8' }).trim().split('\n')[0];
-} catch {}
+} catch (error) {
+  // Ignore error
+}
+
 let OPENCLAW_VER = '';
 try {
   OPENCLAW_VER = execSync('openclaw --version', { encoding: 'utf8' }).trim();
-} catch {}
+} catch (error) {
+  // Ignore error
+}
+
 let NODE_VER = '';
 try {
-  NODE_VER = execSync('node -v', { encoding: 'utf8' }).trim();
-} catch {}
+  NODE_VER = process.version;
+} catch (error) {
+  // Ignore error
+}
 
+// Set default values if empty
 if (!PUBLIC_IP) PUBLIC_IP = '(nicht ermittelt)';
 if (!TAILSCALE_IP) TAILSCALE_IP = '(nicht ermittelt)';
 if (!OPENCLAW_VER) OPENCLAW_VER = '(nicht ermittelt)';
 if (!NODE_VER) NODE_VER = '(nicht ermittelt)';
 
+// IST-Zustand file content
 const istContent = `# IST-Zustand: Gateway B / Node 7
 
 Stand (lokal): ${NOW_LOCAL}  
@@ -99,7 +128,7 @@ Stand (UTC): ${NOW_UTC}
 - \`${OPENCLAW_JSON}\`: ${fs.existsSync(OPENCLAW_JSON) ? 'vorhanden' : 'fehlt'}
 - \`${ENV_DOT}\`: ${fs.existsSync(ENV_DOT) ? 'vorhanden' : 'fehlt'}
 - \`${ENV_SYSTEMD}\`: ${fs.existsSync(ENV_SYSTEMD) ? 'vorhanden' : 'fehlt'}
-- \`${path.join(BASE_DIR, 'plugins', 'installs.json')}\`: ${fs.existsSync(path.join(BASE_DIR, 'plugins', 'installs.json')) ? 'vorhanden' : 'fehlt'}
+- \`${path.join(BASE_DIR, 'plugins/installs.json')}\`: ${fs.existsSync(path.join(BASE_DIR, 'plugins/installs.json')) ? 'vorhanden' : 'fehlt'}
 - \`${path.join(BASE_DIR, 'plugin-skills')}\`: ${fs.existsSync(path.join(BASE_DIR, 'plugin-skills')) ? 'vorhanden' : 'fehlt'}
 
 ## 4) Hinweis
@@ -109,6 +138,7 @@ Zusätzlich wird ein Laufprotokoll als \`RUN-*.md\` erzeugt.`;
 
 fs.writeFileSync(IST_FILE, istContent);
 
+// Artefakt-Inventar file content
 let invContent = `# Artefakt-Inventar: Gateway B / Node 7
 
 Stand: ${NOW_LOCAL}
@@ -117,10 +147,14 @@ Stand: ${NOW_LOCAL}
 
 \`\`\`text
 `;
+
 try {
-  const files = fs.readdirSync(BASE_DIR);
-  invContent += files.join('\n');
-} catch {}
+  const baseDirItems = fs.readdirSync(BASE_DIR);
+  invContent += baseDirItems.join('\n');
+} catch (error) {
+  // Ignore error
+}
+
 invContent += `
 \`\`\`
 
@@ -128,17 +162,21 @@ invContent += `
 
 \`\`\`text
 `;
+
 if (fs.existsSync(VSCODE_DIR)) {
   try {
-    const stats = fs.readdirSync(VSCODE_DIR);
-    invContent += stats.map(f => {
-      const stat = fs.statSync(path.join(VSCODE_DIR, f));
-      return `${stat.isDirectory() ? 'd' : '-'} ${f}`;
+    const vscodeItems = fs.readdirSync(VSCODE_DIR);
+    invContent += vscodeItems.map(item => {
+      const stat = fs.statSync(path.join(VSCODE_DIR, item));
+      return `${stat.isDirectory() ? 'd' : '-'}${stat.mode.toString(8).padStart(6, '0')} ${stat.size} ${item}`;
     }).join('\n');
-  } catch {}
+  } catch (error) {
+    // Ignore error
+  }
 } else {
   invContent += '(nicht vorhanden)';
 }
+
 invContent += `
 \`\`\`
 
@@ -146,14 +184,18 @@ invContent += `
 
 \`\`\`text
 `;
+
 if (fs.existsSync(path.join(BASE_DIR, 'plugin-skills'))) {
   try {
-    const files = fs.readdirSync(path.join(BASE_DIR, 'plugin-skills'));
-    invContent += files.join('\n');
-  } catch {}
+    const pluginSkillsItems = fs.readdirSync(path.join(BASE_DIR, 'plugin-skills'));
+    invContent += pluginSkillsItems.join('\n');
+  } catch (error) {
+    // Ignore error
+  }
 } else {
   invContent += '(nicht vorhanden)';
 }
+
 invContent += `
 \`\`\`
 
@@ -161,17 +203,24 @@ invContent += `
 
 \`\`\`text
 `;
+
 try {
-  const files = fs.readdirSync(BASE_DIR).filter(f => f.startsWith('openclaw.json.bak'));
-  invContent += files.length > 0 ? files.join('\n') : '(keine gefunden)';
-} catch {
+  const backupFiles = fs.readdirSync(BASE_DIR).filter(file => file.startsWith('openclaw.json.bak'));
+  if (backupFiles.length > 0) {
+    invContent += backupFiles.join('\n');
+  } else {
+    invContent += '(keine gefunden)';
+  }
+} catch (error) {
   invContent += '(keine gefunden)';
 }
+
 invContent += `
 \`\`\``;
 
 fs.writeFileSync(INV_FILE, invContent);
 
+// OpenClaw Config Snapshot file content
 let cfgContent = `# OpenClaw Config Snapshot: Gateway B / Node 7
 
 Stand: ${NOW_LOCAL}
@@ -180,44 +229,51 @@ Stand: ${NOW_LOCAL}
 
 \`\`\`text
 `;
+
 if (fs.existsSync(OPENCLAW_JSON)) {
   try {
-    const content = fs.readFileSync(OPENCLAW_JSON, 'utf8');
-    const lines = content.split('\n');
+    const openclawJsonContent = fs.readFileSync(OPENCLAW_JSON, 'utf8');
+    const lines = openclawJsonContent.split('\n');
     lines.forEach((line, index) => {
       if (line.match(/"gateway"|\"session\"|\"dmScope\"|\"auth\"|\"secrets\"|\"tools\"|\"plugins\"|\"profile\"|\"alsoAllow\"|\"denyCommands\"/)) {
         cfgContent += `${index + 1}: ${line}\n`;
       }
     });
-  } catch {}
+  } catch (error) {
+    // Ignore error
+  }
 } else {
-  cfgContent += 'openclaw.json fehlt';
+  cfgContent += 'openclaw.json fehlt\n';
 }
-cfgContent += `
-\`\`\`
+
+cfgContent += `\`\`\`
 
 ## Ausschnitt gateway/session/auth (ungefiltert, betriebsnah)
 
 \`\`\`json
 `;
+
 if (fs.existsSync(OPENCLAW_JSON)) {
   try {
-    const content = fs.readFileSync(OPENCLAW_JSON, 'utf8');
-    const lines = content.split('\n');
-    const start = 579;
-    const end = 779;
-    for (let i = start; i <= Math.min(end, lines.length - 1); i++) {
-      cfgContent += lines[i] + '\n';
-    }
-  } catch {}
+    const openclawJsonContent = fs.readFileSync(OPENCLAW_JSON, 'utf8');
+    const lines = openclawJsonContent.split('\n');
+    const startLine = 579; // 0-based index for line 580
+    const endLine = 779;   // 0-based index for line 780
+    const snippet = lines.slice(startLine, endLine + 1).join('\n');
+    cfgContent += snippet;
+  } catch (error) {
+    cfgContent += '{ "error": "Fehler beim Lesen von openclaw.json" }\n';
+  }
 } else {
-  cfgContent += '{ "error": "openclaw.json fehlt" }';
+  cfgContent += '{ "error": "openclaw.json fehlt" }\n';
 }
+
 cfgContent += `
 \`\`\``;
 
 fs.writeFileSync(CFG_FILE, cfgContent);
 
+// ENV-Status file content
 let envContent = `# ENV-Status: Gateway B / Node 7
 
 Stand: ${NOW_LOCAL}
@@ -226,46 +282,62 @@ Stand: ${NOW_LOCAL}
 
 \`\`\`text
 `;
+
 try {
-  const envStat = fs.statSync(ENV_DOT);
-  const systemdStat = fs.statSync(ENV_SYSTEMD);
-  envContent += `${envStat.mode.toString(8)} ${ENV_DOT}\n`;
-  envContent += `${systemdStat.mode.toString(8)} ${ENV_SYSTEMD}\n`;
-} catch {}
-envContent += `
-\`\`\`
+  [ENV_DOT, ENV_SYSTEMD].forEach(envFile => {
+    if (fs.existsSync(envFile)) {
+      const stat = fs.statSync(envFile);
+      envContent += `${stat.isDirectory() ? 'd' : '-'}${stat.mode.toString(8).padStart(6, '0')} ${stat.size} ${envFile}\n`;
+    }
+  });
+} catch (error) {
+  // Ignore error
+}
+
+envContent += `\`\`\`
 
 ## .env (vollständig, ungefiltert)
 
 \`\`\`dotenv
 `;
+
 if (fs.existsSync(ENV_DOT)) {
-  envContent += fs.readFileSync(ENV_DOT, 'utf8');
+  try {
+    envContent += fs.readFileSync(ENV_DOT, 'utf8');
+  } catch (error) {
+    envContent += '# Fehler beim Lesen von .env\n';
+  }
 } else {
-  envContent += '# .env fehlt';
+  envContent += '# .env fehlt\n';
 }
-envContent += `
-\`\`\`
+
+envContent += `\`\`\`
 
 ## gateway.systemd.env (vollständig, ungefiltert)
 
 \`\`\`dotenv
 `;
+
 if (fs.existsSync(ENV_SYSTEMD)) {
-  envContent += fs.readFileSync(ENV_SYSTEMD, 'utf8');
+  try {
+    envContent += fs.readFileSync(ENV_SYSTEMD, 'utf8');
+  } catch (error) {
+    envContent += '# Fehler beim Lesen von gateway.systemd.env\n';
+  }
 } else {
-  envContent += '# gateway.systemd.env fehlt';
+  envContent += '# gateway.systemd.env fehlt\n';
 }
-envContent += `
-\`\`\``;
+
+envContent += `\`\`\``;
 
 fs.writeFileSync(ENV_FILE, envContent);
 
+// Run protocol file content
 const runContent = `# Laufprotokoll Gateway B / Node 7
 
 - Zeit (lokal): ${NOW_LOCAL}
 - Zeit (UTC): ${NOW_UTC}
-- Script: ${process.argv[1]}
+- Script: ${__filename}
 
 ## Erzeugte Dateien
 
@@ -277,10 +349,13 @@ const runContent = `# Laufprotokoll Gateway B / Node 7
 
 fs.writeFileSync(RUN_FILE, runContent);
 
+// Output success message
 console.log('OK: IST-Zustand erfasst.');
 console.log(`Ausgabeordner: ${OUT_DIR}`);
 console.log('Dateien:');
 try {
   const files = fs.readdirSync(OUT_DIR);
   files.forEach(file => console.log(`- ${file}`));
-} catch {}
+} catch (error) {
+  // Ignore error
+}
