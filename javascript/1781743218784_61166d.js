@@ -1,18 +1,12 @@
 #!/usr/bin/env node
-// 1781743218784.sh — portiert nach javascript
-// Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784.html — portiert nach JavaScript
-// Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_61166d.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_61166d.pl
+// Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
 // Secret-Vault Public HTML Generator
 // Erzeugt die vollständige HTML-Datei mit allen Inhalten
 
-const fs = require('fs');
-
-function generateHtml() {
+function generate_html() {
     return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -221,29 +215,25 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 // Hauptprogramm
-function main() {
-    const args = process.argv.slice(2);
-    const outputFile = args[0];
-    
-    if (!outputFile) {
+function main(output_file) {
+    if (output_file === undefined || output_file === '') {
         console.error("Verwendung: node script.js <ausgabedatei>");
         process.exit(1);
     }
     
+    const fs = require('fs');
     try {
-        const htmlContent = generateHtml();
-        fs.writeFileSync(outputFile, htmlContent);
-        
-        if (fs.existsSync(outputFile)) {
-            console.log(`HTML-Datei erfolgreich erstellt: ${outputFile}`);
+        fs.writeFileSync(output_file, generate_html());
+        if (fs.existsSync(output_file)) {
+            console.log(`HTML-Datei erfolgreich erstellt: ${output_file}`);
         } else {
             console.error("Fehler beim Erstellen der HTML-Datei");
             process.exit(1);
         }
     } catch (error) {
-        console.error("Fehler beim Erstellen der HTML-Datei:", error.message);
+        console.error(`Kann Datei '${output_file}' nicht öffnen: ${error.message}`);
         process.exit(1);
     }
 }
 
-main();
+main(process.argv[2]);

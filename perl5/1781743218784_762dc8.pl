@@ -1,18 +1,26 @@
 #!/usr/bin/perl
-# 1781743218784.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_762dc8.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_762dc8.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use JSON;
-use MIME::Base64;
-use File::Basename;
 
-sub generate_html {
-    my ($output_file) = @_;
+# 1781743218784.py — portiert nach javascript
+# Quelle: python, Projects@abstractions:python/1781743218784.py
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+# Generiert die HTML-Datei für das Secret-Vault Public Tool.
+
+sub generateHtml {
+    # Generiert die vollständige HTML-Datei für das Secret-Vault Public Tool.
+    # 
+    # @param outputFile - Pfad zur Ausgabedatei
     
-    my $artifact_meta = {
+    my ($outputFile) = @_;
+    
+    # Metadaten des Artefakts
+    my $artifactMeta = {
         "name" => "Secret Vault Public",
         "schemaVersion" => 1,
         "description" => "Secret-Vault Public als interaktives Browser-Artefakt: verschlüsselter Secret-Container vollständig client-seitig (WebCrypto, AES-256-GCM + PBKDF2). Öffnen/Anlegen, Anbieter/Felder ergänzen und ersetzen (Rotation), verschlüsseln und als .svpb herunterladen oder Klartext-JSON exportieren. DE/EN nach Browsersprache. Eigenes Format (nicht kompatibel mit dem scrypt-Python-Tool). Keine Secrets eingebettet.",
@@ -20,15 +28,16 @@ sub generate_html {
         "mcpServerNames" => []
     };
     
-    my $json = JSON->new->utf8->pretty->encode($artifact_meta);
-    
-    my $html_content = <<'HTML_END';
+    # HTML-Template mit eingebetteten Styles und JavaScript
+    my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 HTML_END
-    
-    $html_content .= $json;
-    $html_content .= <<'HTML_END';
+
+    # Füge JSON-Metadaten hinzu
+    $htmlContent .= to_json($artifactMeta) . "\n";
+
+    $htmlContent .= <<'HTML_END';
 </script>
 <html lang="de">
 <head>
@@ -227,21 +236,69 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
     
-    open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Konnte Datei '$output_file' nicht öffnen: $!";
-    print $fh $html_content;
-    close($fh);
+    # Schreibe die HTML-Datei
+    open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Konnte Datei '$outputFile' nicht öffnen: $!";
+    print $fh $htmlContent;
+    close $fh;
     
-    print "HTML-Datei erfolgreich generiert: $output_file\n";
+    print "HTML-Datei erfolgreich generiert: $outputFile\n";
+}
+
+sub to_json {
+    my ($data) = @_;
+    my $json = "";
+    
+    if (ref($data) eq 'HASH') {
+        $json .= "{\n";
+        my @pairs;
+        for my $key (sort keys %$data) {
+            my $value = $data->{$key};
+            push @pairs, "  \"" . escape_json_string($key) . "\": " . to_json($value);
+        }
+        $json .= join(",\n", @pairs) . "\n";
+        $json .= "}";
+    } elsif (ref($data) eq 'ARRAY') {
+        $json .= "[\n";
+        my @items;
+        for my $item (@$data) {
+            push @items, "  " . to_json($item);
+        }
+        $json .= join(",\n", @items) . "\n";
+        $json .= "]";
+    } elsif (!defined $data) {
+        $json = "null";
+    } elsif ($data =~ /^[0-9]+$/ || $data =~ /^[0-9]*\.[0-9]+$/) {
+        $json = $data;
+    } else {
+        $json = "\"" . escape_json_string($data) . "\"";
+    }
+    
+    return $json;
+}
+
+sub escape_json_string {
+    my ($str) = @_;
+    $str =~ s/\\/\\\\/g;
+    $str =~ s/"/\\"/g;
+    $str =~ s/\n/\\n/g;
+    $str =~ s/\r/\\r/g;
+    $str =~ s/\t/\\t/g;
+    $str =~ s/\f/\\f/g;
+    $str =~ s/\b/\\b/g;
+    return $str;
 }
 
 sub main {
+    # Hauptfunktion
     if (@ARGV != 1) {
         print "Verwendung: perl script.pl <ausgabedatei.html>\n";
         exit 1;
     }
     
-    my $output_file = $ARGV[0];
-    generate_html($output_file);
+    my $outputFile = $ARGV[0];
+    generateHtml($outputFile);
 }
 
-main() if __FILE__ eq $0;
+main() unless caller;
+
+1;

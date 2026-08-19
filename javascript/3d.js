@@ -1,51 +1,216 @@
 #!/usr/bin/env node
-// 3d.html — portiert nach javascript
-// Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-// Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+// 3d.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/3d.pl
+// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
-const path = require('path');
 
-function createHTMLDocument() {
-  const doc = {
-    type: 'document',
-    children: []
-  };
+const spec = {
+  "schichten": [
+    {
+      "name": "Tokens",
+      "farbe": "#5f6773",
+      "blocks": [
+        {
+          "id": "abfrage-beim-oeffnen",
+          "name": "Abfrage beim Oeffnen",
+          "untertitel": "kein Vorbelegen"
+        },
+        {
+          "id": "localstorage",
+          "name": "localStorage",
+          "untertitel": "nur lokal"
+        },
+        {
+          "id": "keine-vorbelegung",
+          "name": "keine Vorbelegung",
+          "untertitel": "leer geliefert"
+        }
+      ]
+    },
+    {
+      "name": "Quellen",
+      "farbe": "#2481cc",
+      "blocks": [
+        {
+          "id": "github",
+          "name": "GitHub",
+          "untertitel": "Repos, Kontingent"
+        },
+        {
+          "id": "vercel",
+          "name": "Vercel",
+          "untertitel": "Deployments"
+        },
+        {
+          "id": "docker-hub",
+          "name": "Docker Hub",
+          "untertitel": "Abbilder"
+        },
+        {
+          "id": "openrouter",
+          "name": "OpenRouter",
+          "untertitel": "Guthaben"
+        },
+        {
+          "id": "openai",
+          "name": "OpenAI",
+          "untertitel": "Admin-Key"
+        },
+        {
+          "id": "anthropic",
+          "name": "Anthropic",
+          "untertitel": "Admin-Key"
+        },
+        {
+          "id": "tailscale",
+          "name": "Tailscale",
+          "untertitel": "Geraete"
+        },
+        {
+          "id": "clawhub",
+          "name": "ClawHub",
+          "untertitel": "Skills"
+        }
+      ]
+    },
+    {
+      "name": "Abruf",
+      "farbe": "#6d5bd0",
+      "blocks": [
+        {
+          "id": "fetch-je-quelle",
+          "name": "fetch je Quelle",
+          "untertitel": "direkt"
+        },
+        {
+          "id": "cors-pruefung",
+          "name": "CORS-Pruefung",
+          "untertitel": "entscheidet"
+        },
+        {
+          "id": "fehler-isolieren",
+          "name": "Fehler isolieren",
+          "untertitel": "je Kachel"
+        }
+      ]
+    },
+    {
+      "name": "Ausgabe",
+      "farbe": "#0f766e",
+      "blocks": [
+        {
+          "id": "kacheln",
+          "name": "Kacheln",
+          "untertitel": "ein Blick"
+        },
+        {
+          "id": "verbrauch",
+          "name": "Verbrauch",
+          "untertitel": "Zahlen"
+        },
+        {
+          "id": "keine-daten-hinweis",
+          "name": "keine Daten = Hinweis",
+          "untertitel": "mit Grund"
+        }
+      ]
+    }
+  ],
+  "kanten": [
+    {
+      "von": "abfrage-beim-oeffnen",
+      "nach": "github",
+      "art": "fluss"
+    },
+    {
+      "von": "localstorage",
+      "nach": "vercel",
+      "art": "fluss"
+    },
+    {
+      "von": "keine-vorbelegung",
+      "nach": "docker-hub",
+      "art": "fluss"
+    },
+    {
+      "von": "github",
+      "nach": "fetch-je-quelle",
+      "art": "fluss"
+    },
+    {
+      "von": "vercel",
+      "nach": "cors-pruefung",
+      "art": "fluss"
+    },
+    {
+      "von": "docker-hub",
+      "nach": "fehler-isolieren",
+      "art": "fluss"
+    },
+    {
+      "von": "openrouter",
+      "nach": "fetch-je-quelle",
+      "art": "fluss"
+    },
+    {
+      "von": "openai",
+      "nach": "cors-pruefung",
+      "art": "fluss"
+    },
+    {
+      "von": "anthropic",
+      "nach": "fehler-isolieren",
+      "art": "fluss"
+    },
+    {
+      "von": "tailscale",
+      "nach": "fetch-je-quelle",
+      "art": "fluss"
+    },
+    {
+      "von": "clawhub",
+      "nach": "cors-pruefung",
+      "art": "fluss"
+    },
+    {
+      "von": "fetch-je-quelle",
+      "nach": "kacheln",
+      "art": "fluss"
+    },
+    {
+      "von": "cors-pruefung",
+      "nach": "verbrauch",
+      "art": "fluss"
+    },
+    {
+      "von": "fehler-isolieren",
+      "nach": "keine-daten-hinweis",
+      "art": "fluss"
+    }
+  ],
+  "kantenarten": [
+    {
+      "art": "fluss",
+      "farbe": "#0f766e",
+      "stil": "voll",
+      "text": "Fluss von unten nach oben"
+    }
+  ]
+};
 
-  // Create DOCTYPE
-  doc.doctype = '!DOCTYPE html';
-
-  // Create html element
-  const html = createElement('html', { lang: 'de' });
-  doc.children.push(html);
-
-  // Create head
-  const head = createElement('head');
-  html.children.push(head);
-
-  // Add meta tags
-  head.children.push(createElement('meta', { charset: 'utf-8' }));
-  head.children.push(createElement('meta', { 
-    name: 'viewport', 
-    content: 'width=device-width, initial-scale=1' 
-  }));
-  head.children.push(createElement('title', {}, 'MCP-Server-Monitor — Interaktive Architektur'));
-  head.children.push(createElement('meta', { 
-    name: 'description', 
-    content: 'Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.' 
-  }));
-  head.children.push(createElement('meta', { 
-    name: 'theme-color', 
-    content: '#6d5bd0' 
-  }));
-
-  // Add styles
-  const style = createElement('style');
-  style.children.push({
-    type: 'text',
-    content: `  :root{
+const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tagesstatus Live Public — Interaktive Architektur</title>
+<meta name="description" content="Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#0f766e">
+<style>
+  :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#6d5bd0; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -86,82 +251,49 @@ function createHTMLDocument() {
   .strich{width:30px;height:0;border-top-width:3px;border-top-style:solid;display:inline-block}
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
-  a{color:var(--ac)}`
-  });
-  head.children.push(style);
+  a{color:var(--ac)}
+</style>
+</head>
+<body>
+<div class="wrap">
 
-  // Create body
-  const body = createElement('body');
-  html.children.push(body);
+  <p class="technik">three.js · r128</p>
+  <h1>Tagesstatus Live Public</h1>
+  <p class="lede">Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.</p>
 
-  // Create content wrapper
-  const wrap = createElement('div', { class: 'wrap' });
-  body.children.push(wrap);
+  <div class="raster">
+    <div class="buehne" id="buehne">
+      <div class="knoepfe">
+        <button id="btn-plus" title="Näher">+</button>
+        <button id="btn-minus" title="Weiter weg">−</button>
+        <button id="btn-reset">Zurücksetzen</button>
+        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
+      </div>
+    </div>
 
-  // Add content elements
-  wrap.children.push(createElement('p', { class: 'technik' }, 'three.js · r128'));
-  wrap.children.push(createElement('h1', {}, 'MCP-Server-Monitor'));
-  wrap.children.push(createElement('p', { class: 'lede' }, 'Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.'));
+    <aside class="karte">
+      <h2>Ausgewählter Knoten</h2>
+      <h3 id="k-name">—</h3>
+      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
+      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
+      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
+      <div class="blaettern">
+        <button id="btn-prev">←<br>Vorheriger</button>
+        <button id="btn-next">Nächster<br>→</button>
+      </div>
+    </aside>
+  </div>
 
-  // Create raster layout
-  const raster = createElement('div', { class: 'raster' });
-  wrap.children.push(raster);
+  <div class="legende" id="legende"></div>
+  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
 
-  // Create stage
-  const buehne = createElement('div', { class: 'buehne', id: 'buehne' });
-  raster.children.push(buehne);
+</div>
 
-  // Create buttons
-  const knoepfe = createElement('div', { class: 'knoepfe' });
-  buehne.children.push(knoepfe);
-
-  knoepfe.children.push(createElement('button', { id: 'btn-plus', title: 'Näher' }, '+'));
-  knoepfe.children.push(createElement('button', { id: 'btn-minus', title: 'Weiter weg' }, '−'));
-  knoepfe.children.push(createElement('button', { id: 'btn-reset' }, 'Zurücksetzen'));
-  knoepfe.children.push(createElement('button', { id: 'btn-iso', 'aria-pressed': 'true', title: 'Isometrisch oder perspektivisch' }, 'Iso'));
-
-  // Create aside card
-  const aside = createElement('aside', { class: 'karte' });
-  raster.children.push(aside);
-
-  aside.children.push(createElement('h2', {}, 'Ausgewählter Knoten'));
-  aside.children.push(createElement('h3', { id: 'k-name' }, '—'));
-  aside.children.push(createElement('p', { class: 'sub', id: 'k-sub' }, 'Knoten anklicken oder durchblättern'));
-
-  const field1 = createElement('dl', { class: 'feld' });
-  field1.children.push(createElement('dt', {}, 'Schicht'));
-  field1.children.push(createElement('dd', { id: 'k-schicht' }, '—'));
-  aside.children.push(field1);
-
-  const field2 = createElement('dl', { class: 'feld' });
-  field2.children.push(createElement('dt', {}, 'ID'));
-  field2.children.push(createElement('dd', { id: 'k-id' }, '—'));
-  aside.children.push(field2);
-
-  const blaettern = createElement('div', { class: 'blaettern' });
-  blaettern.children.push(createElement('button', { id: 'btn-prev' }, '←\nVorheriger'));
-  blaettern.children.push(createElement('button', { id: 'btn-next' }, 'Nächster\n→'));
-  aside.children.push(blaettern);
-
-  // Create legend
-  const legende = createElement('div', { class: 'legende', id: 'legende' });
-  wrap.children.push(legende);
-
-  // Create footer
-  const fuss = createElement('p', { class: 'fuss' }, 'Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.');
-  wrap.children.push(fuss);
-
-  // Add scripts
-  body.children.push(createElement('script', { 
-    src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' 
-  }));
-
-  const script = createElement('script');
-  script.children.push({
-    type: 'text',
-    content: `(function(){
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"}, {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"}, {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"}, {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}]}, {"name": "Sonde", "farbe": "#2481cc", "blocks": [{"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"}, {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}]}, {"name": "Klassifikation", "farbe": "#6d5bd0", "blocks": [{"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}]}, {"name": "Ausgabe", "farbe": "#15803d", "blocks": [{"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}]}], "kanten": [{"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"}, {"von": "docs-mcp", "nach": "config-py", "art": "fluss"}, {"von": "well-known", "nach": "discovery-py", "art": "fluss"}, {"von": "config-json", "nach": "config-py", "art": "fluss"}, {"von": "discovery-py", "nach": "state-py", "art": "fluss"}, {"von": "config-py", "nach": "state-py", "art": "fluss"}, {"von": "state-py", "nach": "report-py", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = ${JSON.stringify(spec)};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -384,85 +516,11 @@ function createHTMLDocument() {
     stelle();
     renderer.render(szene, kamera);
   })();
-})();`
-  });
-  body.children.push(script);
+})();
+</script>
+</body>
+</html>`;
 
-  return doc;
-}
-
-function createElement(tag, attributes = {}, content = null) {
-  const element = {
-    type: 'element',
-    tag: tag,
-    attributes: attributes,
-    children: []
-  };
-
-  if (content !== null) {
-    element.children.push({
-      type: 'text',
-      content: content
-    });
-  }
-
-  return element;
-}
-
-function renderHTML(node, indent = '') {
-  if (node.type === 'document') {
-    let result = '<!DOCTYPE html>\n';
-    for (const child of node.children) {
-      result += renderHTML(child, indent);
-    }
-    return result;
-  }
-
-  if (node.type === 'text') {
-    return node.content;
-  }
-
-  if (node.type === 'element') {
-    let attrs = '';
-    for (const [key, value] of Object.entries(node.attributes)) {
-      attrs += ` ${key}="${value}"`;
-    }
-
-    if (node.children.length === 0) {
-      return `${indent}<${node.tag}${attrs}>\n`;
-    }
-
-    const hasOnlyText = node.children.every(child => child.type === 'text');
-    
-    if (hasOnlyText) {
-      const content = node.children.map(child => renderHTML(child)).join('');
-      return `${indent}<${node.tag}${attrs}>${content}</${node.tag}>\n`;
-    }
-
-    let result = `${indent}<${node.tag}${attrs}>\n`;
-    for (const child of node.children) {
-      if (child.type === 'text') {
-        result += `${indent}  ${renderHTML(child)}`;
-      } else {
-        result += renderHTML(child, `${indent}  `);
-      }
-    }
-    result += `${indent}</${node.tag}>\n`;
-    return result;
-  }
-
-  return '';
-}
-
-// Main execution
-if (process.argv.length < 3) {
-  console.error('Usage: node 3d.js <output-file>');
-  process.exit(1);
-}
-
-const outputFile = process.argv[2];
-const htmlDoc = createHTMLDocument();
-const htmlString = renderHTML(htmlDoc);
-
-fs.writeFileSync(outputFile, htmlString, 'utf8');
-console.log(`HTML file generated: ${outputFile}`);
+const filename = process.argv[2] || '3d.html';
+fs.writeFileSync(filename, html);
+console.log(`HTML file generated: ${filename}`);

@@ -1,26 +1,219 @@
 #!/usr/bin/env pwsh
-# 3d.html — portiert nach powershell
-# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# 3d.pl — portiert nach powershell
+# Quelle: perl5, Projects@abstractions:perl5/3d.pl
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+
+# 3d.ps1 — portiert nach PowerShell 7
+# Quelle: html, Projects@tagesstatus-live-public:public/3d.html
 # Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputPath
-)
+$spec = @{
+  "schichten" = @(
+    @{
+      "name" = "Tokens";
+      "farbe" = "#5f6773";
+      "blocks" = @(
+        @{
+          "id" = "abfrage-beim-oeffnen";
+          "name" = "Abfrage beim Oeffnen";
+          "untertitel" = "kein Vorbelegen";
+        },
+        @{
+          "id" = "localstorage";
+          "name" = "localStorage";
+          "untertitel" = "nur lokal";
+        },
+        @{
+          "id" = "keine-vorbelegung";
+          "name" = "keine Vorbelegung";
+          "untertitel" = "leer geliefert";
+        }
+      );
+    },
+    @{
+      "name" = "Quellen";
+      "farbe" = "#2481cc";
+      "blocks" = @(
+        @{
+          "id" = "github";
+          "name" = "GitHub";
+          "untertitel" = "Repos, Kontingent";
+        },
+        @{
+          "id" = "vercel";
+          "name" = "Vercel";
+          "untertitel" = "Deployments";
+        },
+        @{
+          "id" = "docker-hub";
+          "name" = "Docker Hub";
+          "untertitel" = "Abbilder";
+        },
+        @{
+          "id" = "openrouter";
+          "name" = "OpenRouter";
+          "untertitel" = "Guthaben";
+        },
+        @{
+          "id" = "openai";
+          "name" = "OpenAI";
+          "untertitel" = "Admin-Key";
+        },
+        @{
+          "id" = "anthropic";
+          "name" = "Anthropic";
+          "untertitel" = "Admin-Key";
+        },
+        @{
+          "id" = "tailscale";
+          "name" = "Tailscale";
+          "untertitel" = "Geraete";
+        },
+        @{
+          "id" = "clawhub";
+          "name" = "ClawHub";
+          "untertitel" = "Skills";
+        }
+      );
+    },
+    @{
+      "name" = "Abruf";
+      "farbe" = "#6d5bd0";
+      "blocks" = @(
+        @{
+          "id" = "fetch-je-quelle";
+          "name" = "fetch je Quelle";
+          "untertitel" = "direkt";
+        },
+        @{
+          "id" = "cors-pruefung";
+          "name" = "CORS-Pruefung";
+          "untertitel" = "entscheidet";
+        },
+        @{
+          "id" = "fehler-isolieren";
+          "name" = "Fehler isolieren";
+          "untertitel" = "je Kachel";
+        }
+      );
+    },
+    @{
+      "name" = "Ausgabe";
+      "farbe" = "#0f766e";
+      "blocks" = @(
+        @{
+          "id" = "kacheln";
+          "name" = "Kacheln";
+          "untertitel" = "ein Blick";
+        },
+        @{
+          "id" = "verbrauch";
+          "name" = "Verbrauch";
+          "untertitel" = "Zahlen";
+        },
+        @{
+          "id" = "keine-daten-hinweis";
+          "name" = "keine Daten = Hinweis";
+          "untertitel" = "mit Grund";
+        }
+      );
+    }
+  );
+  "kanten" = @(
+    @{
+      "von" = "abfrage-beim-oeffnen";
+      "nach" = "github";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "localstorage";
+      "nach" = "vercel";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "keine-vorbelegung";
+      "nach" = "docker-hub";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "github";
+      "nach" = "fetch-je-quelle";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "vercel";
+      "nach" = "cors-pruefung";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "docker-hub";
+      "nach" = "fehler-isolieren";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "openrouter";
+      "nach" = "fetch-je-quelle";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "openai";
+      "nach" = "cors-pruefung";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "anthropic";
+      "nach" = "fehler-isolieren";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "tailscale";
+      "nach" = "fetch-je-quelle";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "clawhub";
+      "nach" = "cors-pruefung";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "fetch-je-quelle";
+      "nach" = "kacheln";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "cors-pruefung";
+      "nach" = "verbrauch";
+      "art" = "fluss";
+    },
+    @{
+      "von" = "fehler-isolieren";
+      "nach" = "keine-daten-hinweis";
+      "art" = "fluss";
+    }
+  );
+  "kantenarten" = @(
+    @{
+      "art" = "fluss";
+      "farbe" = "#0f766e";
+      "stil" = "voll";
+      "text" = "Fluss von unten nach oben";
+    }
+  );
+};
 
-$htmlContent = @"
+$html = @'
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCP-Server-Monitor — Interaktive Architektur</title>
-<meta name="description" content="Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#6d5bd0">
+<title>Tagesstatus Live Public — Interaktive Architektur</title>
+<meta name="description" content="Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#0f766e">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#6d5bd0; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -68,8 +261,8 @@ $htmlContent = @"
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>MCP-Server-Monitor</h1>
-  <p class="lede">Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Tagesstatus Live Public</h1>
+  <p class="lede">Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -103,7 +296,7 @@ $htmlContent = @"
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"}, {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"}, {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"}, {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}]}, {"name": "Sonde", "farbe": "#2481cc", "blocks": [{"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"}, {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}]}, {"name": "Klassifikation", "farbe": "#6d5bd0", "blocks": [{"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}]}, {"name": "Ausgabe", "farbe": "#15803d", "blocks": [{"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}]}], "kanten": [{"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"}, {"von": "docs-mcp", "nach": "config-py", "art": "fluss"}, {"von": "well-known", "nach": "discovery-py", "art": "fluss"}, {"von": "config-json", "nach": "config-py", "art": "fluss"}, {"von": "discovery-py", "nach": "state-py", "art": "fluss"}, {"von": "config-py", "nach": "state-py", "art": "fluss"}, {"von": "state-py", "nach": "report-py", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = %s;
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -178,7 +371,7 @@ $htmlContent = @"
     platte.position.set(0, y-1.7, 0); gruppe.add(platte);
 
     bl.forEach(function(b, i){
-      var sp = i % spalten, re = Math.floor(i / spalten);
+      var sp = i %% spalten, re = Math.floor(i / spalten);
       var x = -gx/2 + BW/2 + sp*(BW+LUFT), z = -gz/2 + BD/2 + re*(BD+LUFT);
       var mat = new THREE.MeshLambertMaterial({color:sch.farbe});
       var m = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD), mat);
@@ -241,7 +434,7 @@ $htmlContent = @"
       knoten[aktiv].mat.emissive.setHex(0x000000);
       knoten[aktiv].mesh.scale.set(1,1,1);
     }
-    aktiv = ((i % knoten.length) + knoten.length) % knoten.length;
+    aktiv = ((i %% knoten.length) + knoten.length) %% knoten.length;
     var k = knoten[aktiv];
     k.mat.emissive.setHex(0x333333);
     k.mesh.scale.set(1.1, 1.5, 1.1);
@@ -330,7 +523,41 @@ $htmlContent = @"
 </script>
 </body>
 </html>
-"@
+'@
 
-$htmlContent | Out-File -FilePath $OutputPath -Encoding UTF8
-Write-Host "HTML file generated at: $OutputPath"
+function ConvertTo-JsonLite {
+  param([Parameter(ValueFromPipeline)]$InputObject)
+
+  if ($null -eq $InputObject) {
+    return "null"
+  }
+  elseif ($InputObject -is [Collections.IDictionary]) {
+    $pairs = foreach ($key in $InputObject.Keys | Sort-Object) {
+      $value = $InputObject[$key]
+      "`"{0}`":{1}" -f $key, (ConvertTo-JsonLite $value)
+    }
+    return "{`n$($pairs -join ",`n")`n}"
+  }
+  elseif ($InputObject -is [Collections.IEnumerable] -and $InputObject -isnot [string]) {
+    $items = $InputObject | ForEach-Object { ConvertTo-JsonLite $_ }
+    return "[`n$($items -join ",`n")`n]"
+  }
+  elseif ($InputObject -is [bool]) {
+    return if ($InputObject) { "true" } else { "false" }
+  }
+  elseif ($InputObject -is [int] -or $InputObject -is [long] -or $InputObject -is [double]) {
+    return "$InputObject"
+  }
+  else {
+    $escaped = "$InputObject".Replace('\', '\\').Replace('"', '\"').Replace("`n", '\n').Replace("`r", '\r').Replace("`t", '\t')
+    return "`"$escaped`""
+  }
+}
+
+$json_spec = ConvertTo-JsonLite $spec
+$html = $html -replace '%s', $json_spec
+
+$filename = if ($args.Count -gt 0) { $args[0] } else { '3d.html' }
+$html | Out-File -FilePath $filename -Encoding utf8
+
+Write-Host "HTML file generated: $filename"

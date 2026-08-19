@@ -1,14 +1,15 @@
 #!/usr/bin/env pwsh
-# 1781743218784.html — portiert nach powershell
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
+# Parameter verarbeiten
 param(
     [Parameter(Mandatory=$true)]
     [string]$OutputPath
 )
 
-$htmlContent = @"
+$htmlContent = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -214,7 +215,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-"@
+'@
 
+# Schreibe den HTML-Inhalt in die angegebene Datei
 $htmlContent | Out-File -FilePath $OutputPath -Encoding utf8
-Write-Host "HTML file generated at: $OutputPath"

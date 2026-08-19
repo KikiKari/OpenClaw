@@ -1,13 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784.html — portiert nach javascript
-// Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-// Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+// Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784.js — portiert nach JavaScript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
-const path = require('path');
 
 function generateHTML() {
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -215,15 +218,23 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 function main() {
-    const outputFile = process.argv[2];
-    if (!outputFile) {
-        console.error('Usage: node script.js <output-file>');
-        process.exit(1);
-    }
-
+  const args = process.argv.slice(2);
+  
+  if (args.length !== 1) {
+    console.error("Usage: node script.js <output-file>");
+    process.exit(1);
+  }
+  
+  const outputFile = args[0];
+  
+  try {
     const htmlContent = generateHTML();
     fs.writeFileSync(outputFile, htmlContent, 'utf8');
     console.log(`HTML file generated: ${outputFile}`);
+  } catch (error) {
+    console.error(`Error generating HTML file: ${error.message}`);
+    process.exit(1);
+  }
 }
 
 main();

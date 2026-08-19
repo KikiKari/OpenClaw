@@ -1,19 +1,20 @@
 #!/bin/bash
-# 3d.html — portiert nach shell
-# Quelle: html, Projects@python-hardener:public/3d.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# 3d_053a4a.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a.js
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Parameter: Ausgabedatei
-if [ $# -ne 1 ]; then
-    echo "Aufruf: $0 <ausgabedatei.html>"
+# Prüfe ob eine Ausgabedatei angegeben wurde
+if [[ $# -eq 0 ]]; then
+    echo "Verwendung: $0 <ausgabedatei>" >&2
     exit 1
 fi
-AUSGABE="$1"
 
-# HTML-Grundgerüst erzeugen
-cat > "$AUSGABE" << 'HTML_ANFANG'
+ausgabe_datei="$1"
+
+# HTML-Inhalt generieren
+cat > "$ausgabe_datei" << 'EOF'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -103,10 +104,7 @@ cat > "$AUSGABE" << 'HTML_ANFANG'
   <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
 
 </div>
-HTML_ANFANG
 
-# JavaScript hinzufügen
-cat >> "$AUSGABE" << 'HTML_JS_ANFANG'
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
@@ -338,6 +336,6 @@ cat >> "$AUSGABE" << 'HTML_JS_ANFANG'
 </script>
 </body>
 </html>
-HTML_JS_ANFANG
+EOF
 
-echo "HTML-Dokument wurde in '$AUSGABE' erzeugt."
+echo "HTML-Datei wurde erfolgreich erstellt: $ausgabe_datei"

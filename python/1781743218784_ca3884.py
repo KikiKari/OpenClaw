@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
-# 1781743218784.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.html — portiert nach python3.12
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_ca3884.ps1 — portiert nach python
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_ca3884.ps1
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 
 # Get output file from command line argument
-if len(sys.argv) < 2:
-    print("Usage: {} <output_file>".format(sys.argv[0]))
+if len(sys.argv) == 0:
+    print("Usage: 1781743218784_ca3884.py <output_file>", file=sys.stderr)
     sys.exit(1)
-
 output_file = sys.argv[1]
 
 # HTML content with embedded JSON and JavaScript
@@ -227,8 +222,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 try:
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
-except IOError as e:
-    print("Could not open file '{}' for writing: {}".format(output_file, e))
+    print(f"HTML file generated: {output_file}")
+except Exception as e:
+    print(f"Could not write to file '{output_file}': {e}", file=sys.stderr)
     sys.exit(1)
-
-print("HTML file generated: {}".format(output_file))

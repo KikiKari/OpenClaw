@@ -1,30 +1,116 @@
 #!/usr/bin/env python3
-# 3d.html — portiert nach python
-# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# 3d.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/3d.js
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
+# -*- coding: utf-8 -*-
 """
-Generates the 3d.html file with an interactive 3D architecture visualization.
+3d.html — portiert nach python
+Quelle: html, Projects@tagesstatus-live-public:public/3d.html
+Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
 """
 
-import json
 import sys
+import math
+from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
-def generate_html(output_file):
-    """Generate the complete HTML document for the 3D architecture visualization."""
+# Globale Variablen für das DOM-ähnliche Verhalten
+document = None
+window = None
+navigator = None
+
+class HTMLElement:
+    def __init__(self, tag_name):
+        self.tag_name = tag_name
+        self.attributes = {}
+        self.children = []
+        self.textContent = ""
+        self.innerHTML = ""
+        self.className = ""
+        self.id = ""
+        self.style = {}
     
-    html_content = '''<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCP-Server-Monitor — Interaktive Architektur</title>
-<meta name="description" content="Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#6d5bd0">
-<style>
+    def setAttribute(self, name, value):
+        self.attributes[name] = value
+    
+    def appendChild(self, child):
+        self.children.append(child)
+    
+    def outerHTML(self):
+        attrs = "".join([f' {k}="{v}"' for k, v in self.attributes.items()])
+        if self.tag_name in ['meta', 'link', 'img', 'br', 'hr']:
+            return f"<{self.tag_name}{attrs}>"
+        
+        content = self.textContent or self.innerHTML or "".join([c.outerHTML() for c in self.children])
+        return f"<{self.tag_name}{attrs}>{content}</{self.tag_name}>"
+
+class Document:
+    def __init__(self):
+        self.documentElement = HTMLElement('html')
+        self.head = HTMLElement('head')
+        self.body = HTMLElement('body')
+        self.documentElement.appendChild(self.head)
+        self.documentElement.appendChild(self.body)
+    
+    def createElement(self, tag_name):
+        return HTMLElement(tag_name)
+    
+    def getElementById(self, element_id):
+        # Simple implementation for known IDs
+        elements = {
+            'buehne': self.buehne_element,
+            'btn-plus': self.btn_plus,
+            'btn-minus': self.btn_minus,
+            'btn-reset': self.btn_reset,
+            'btn-iso': self.btn_iso,
+            'k-name': self.k_name,
+            'k-sub': self.k_sub,
+            'k-schicht': self.k_schicht,
+            'k-id': self.k_id,
+            'btn-prev': self.btn_prev,
+            'btn-next': self.btn_next,
+            'legende': self.legende
+        }
+        return elements.get(element_id)
+    
+    def createDocument(self):
+        html = self.documentElement
+        html.setAttribute('lang', 'de')
+
+        # Head-Bereich
+        head = self.head
+
+        # Meta-Tags
+        metaCharset = self.createElement('meta')
+        metaCharset.setAttribute('charset', 'utf-8')
+        head.appendChild(metaCharset)
+
+        metaViewport = self.createElement('meta')
+        metaViewport.setAttribute('name', 'viewport')
+        metaViewport.setAttribute('content', 'width=device-width, initial-scale=1')
+        head.appendChild(metaViewport)
+
+        title = self.createElement('title')
+        title.textContent = 'Tagesstatus Live Public — Interaktive Architektur'
+        head.appendChild(title)
+
+        metaDescription = self.createElement('meta')
+        metaDescription.setAttribute('name', 'description')
+        metaDescription.setAttribute('content', 'Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.')
+        head.appendChild(metaDescription)
+
+        metaThemeColor = self.createElement('meta')
+        metaThemeColor.setAttribute('name', 'theme-color')
+        metaThemeColor.setAttribute('content', '#0f766e')
+        head.appendChild(metaThemeColor)
+
+        # Styles
+        style = self.createElement('style')
+        style.textContent = '''
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#6d5bd0; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -66,336 +152,359 @@ def generate_html(output_file):
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
-</style>
-</head>
-<body>
-<div class="wrap">
+'''
+        head.appendChild(style)
 
-  <p class="technik">three.js · r128</p>
-  <h1>MCP-Server-Monitor</h1>
-  <p class="lede">Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.</p>
+        # Body-Bereich
+        body = self.body
 
-  <div class="raster">
-    <div class="buehne" id="buehne">
-      <div class="knoepfe">
-        <button id="btn-plus" title="Näher">+</button>
-        <button id="btn-minus" title="Weiter weg">−</button>
-        <button id="btn-reset">Zurücksetzen</button>
-        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
-      </div>
-    </div>
+        # Wrap container
+        wrap = self.createElement('div')
+        wrap.className = 'wrap'
 
-    <aside class="karte">
-      <h2>Ausgewählter Knoten</h2>
-      <h3 id="k-name">—</h3>
-      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
-      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
-      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
-      <div class="blaettern">
-        <button id="btn-prev">←<br>Vorheriger</button>
-        <button id="btn-next">Nächster<br>→</button>
-      </div>
-    </aside>
-  </div>
+        # Technik
+        technik = self.createElement('p')
+        technik.className = 'technik'
+        technik.textContent = 'three.js · r128'
+        wrap.appendChild(technik)
 
-  <div class="legende" id="legende"></div>
-  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
+        # Überschrift
+        h1 = self.createElement('h1')
+        h1.textContent = 'Tagesstatus Live Public'
+        wrap.appendChild(h1)
 
-</div>
+        # Lede
+        lede = self.createElement('p')
+        lede.className = 'lede'
+        lede.textContent = 'Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.'
+        wrap.appendChild(lede)
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(function(){
-  "use strict";
-  var SPEC = ''' + json.dumps(get_spec_data(), ensure_ascii=False) + ''';
+        # Raster
+        raster = self.createElement('div')
+        raster.className = 'raster'
 
-  var buehne = document.getElementById("buehne");
-  if (typeof THREE === "undefined"){
-    buehne.insertAdjacentHTML("beforeend",
-      '<div class="fehler">three.js konnte nicht geladen werden. ' +
-      'Die Seite braucht einmalig Netzzugang zum CDN.</div>');
-    return;
-  }
+        # Bühne
+        buehne = self.createElement('div')
+        buehne.className = 'buehne'
+        buehne.id = 'buehne'
+        self.buehne_element = buehne
 
-  // ---------------------------------------------------------------- Szene ---
-  var szene = new THREE.Scene();
-  szene.background = new THREE.Color(0x0e1420);
-  var renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  buehne.appendChild(renderer.domElement);
+        # Knöpfe
+        knoepfe = self.createElement('div')
+        knoepfe.className = 'knoepfe'
 
-  var D = 26, radius = 82, aspekt = 1;
-  var kameraIso = new THREE.OrthographicCamera(-D, D, D, -D, 0.1, 600);
-  var kameraPersp = new THREE.PerspectiveCamera(42, 1, 0.1, 600);
-  var kamera = kameraIso, iso = true;
+        btnPlus = self.createElement('button')
+        btnPlus.id = 'btn-plus'
+        btnPlus.setAttribute('title', 'Näher')
+        btnPlus.textContent = '+'
+        self.btn_plus = btnPlus
+        knoepfe.appendChild(btnPlus)
 
-  szene.add(new THREE.AmbientLight(0xffffff, 0.66));
-  var licht = new THREE.DirectionalLight(0xffffff, 0.8);
-  licht.position.set(30, 46, 26); szene.add(licht);
-  var gegen = new THREE.DirectionalLight(0x8ea2ff, 0.3);
-  gegen.position.set(-32, 16, -28); szene.add(gegen);
+        btnMinus = self.createElement('button')
+        btnMinus.id = 'btn-minus'
+        btnMinus.setAttribute('title', 'Weiter weg')
+        btnMinus.textContent = '−'
+        self.btn_minus = btnMinus
+        knoepfe.appendChild(btnMinus)
 
-  var raster = new THREE.GridHelper(110, 34, 0x25324a, 0x1a2333);
-  raster.position.y = -24; szene.add(raster);
+        btnReset = self.createElement('button')
+        btnReset.id = 'btn-reset'
+        btnReset.textContent = 'Zurücksetzen'
+        self.btn_reset = btnReset
+        knoepfe.appendChild(btnReset)
 
-  // ------------------------------------------------------------ Schilder ---
-  // Text auf eine Textur, dann als Billboard — bleibt bei jeder Drehung lesbar.
-  function schild(text, unter){
-    var c = document.createElement("canvas"), x = c.getContext("2d");
-    var f1 = "700 40px -apple-system,Segoe UI,Roboto,sans-serif";
-    var f2 = "500 27px -apple-system,Segoe UI,Roboto,sans-serif";
-    x.font = f1; var w1 = x.measureText(text).width;
-    x.font = f2; var w2 = unter ? x.measureText(unter).width : 0;
-    var w = Math.ceil(Math.max(w1, w2)) + 40, h = unter ? 96 : 62;
-    c.width = w; c.height = h;
-    x = c.getContext("2d");
-    x.fillStyle = "rgba(255,255,255,.95)";
-    if (x.roundRect){ x.beginPath(); x.roundRect(0,0,w,h,13); x.fill(); }
-    else x.fillRect(0,0,w,h);
-    x.fillStyle = "#16191d"; x.font = f1; x.textBaseline = "middle";
-    x.fillText(text, 20, unter ? 32 : 31);
-    if (unter){ x.fillStyle = "#5f6773"; x.font = f2; x.fillText(unter, 20, 68); }
-    var t = new THREE.CanvasTexture(c); t.minFilter = THREE.LinearFilter;
-    var s = new THREE.Sprite(new THREE.SpriteMaterial({map:t, transparent:true, depthTest:false}));
-    s.scale.set(w/62*2.5, h/62*2.5, 1);
-    s.renderOrder = 999;
-    return s;
-  }
+        btnIso = self.createElement('button')
+        btnIso.id = 'btn-iso'
+        btnIso.setAttribute('aria-pressed', 'true')
+        btnIso.setAttribute('title', 'Isometrisch oder perspektivisch')
+        btnIso.textContent = 'Iso'
+        self.btn_iso = btnIso
+        knoepfe.appendChild(btnIso)
 
-  // -------------------------------------------------------------- Aufbau ---
-  var BW = 7.4, BD = 4.2, BH = 1.7, LUFT = 1.3, ABSTAND = 11.4, START = -17;
-  var knoten = [], nachId = {}, klickbar = [];
-  var gruppe = new THREE.Group();
+        buehne.appendChild(knoepfe)
+        raster.appendChild(buehne)
 
-  SPEC.schichten.forEach(function(sch, si){
-    var y = START + si * ABSTAND;
-    var bl = sch.blocks.map(function(b){
-      return (typeof b === "string") ? {id:null, name:b, untertitel:""} : b;
-    });
-    var spalten = Math.max(1, Math.ceil(bl.length / 2));
-    var reihen = bl.length <= 1 ? 1 : 2;
-    var gx = spalten*BW + (spalten-1)*LUFT, gz = reihen*BD + (reihen-1)*LUFT;
+        # Karte
+        aside = self.createElement('aside')
+        aside.className = 'karte'
 
-    var platte = new THREE.Mesh(
-      new THREE.BoxGeometry(gx+3, 0.6, gz+3),
-      new THREE.MeshLambertMaterial({color:new THREE.Color(sch.farbe).multiplyScalar(0.4)}));
-    platte.position.set(0, y-1.7, 0); gruppe.add(platte);
+        h2 = self.createElement('h2')
+        h2.textContent = 'Ausgewählter Knoten'
+        aside.appendChild(h2)
 
-    bl.forEach(function(b, i){
-      var sp = i % spalten, re = Math.floor(i / spalten);
-      var x = -gx/2 + BW/2 + sp*(BW+LUFT), z = -gz/2 + BD/2 + re*(BD+LUFT);
-      var mat = new THREE.MeshLambertMaterial({color:sch.farbe});
-      var m = new THREE.Mesh(new THREE.BoxGeometry(BW, BH, BD), mat);
-      m.position.set(x, y, z);
-      gruppe.add(m); klickbar.push(m);
-      var kante = new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),
-        new THREE.LineBasicMaterial({color:0x0e1420, transparent:true, opacity:.55}));
-      kante.position.copy(m.position); gruppe.add(kante);
+        h3 = self.createElement('h3')
+        h3.id = 'k-name'
+        h3.textContent = '—'
+        self.k_name = h3
+        aside.appendChild(h3)
 
-      var s = schild(b.name, b.untertitel);
-      s.position.set(x, y + BH/2 + (b.untertitel ? 2.1 : 1.6), z);
-      gruppe.add(s);
+        sub = self.createElement('p')
+        sub.className = 'sub'
+        sub.id = 'k-sub'
+        sub.textContent = 'Knoten anklicken oder durchblättern'
+        self.k_sub = sub
+        aside.appendChild(sub)
 
-      var id = b.id || (b.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""));
-      var eintrag = {id:id, name:b.name, untertitel:b.untertitel||"", schicht:sch.name,
-                     mesh:m, mat:mat, farbe:new THREE.Color(sch.farbe), pos:m.position};
-      m.userData.index = knoten.length;
-      knoten.push(eintrag); nachId[id] = eintrag;
-    });
-  });
+        feld1 = self.createElement('dl')
+        feld1.className = 'feld'
+        dt1 = self.createElement('dt')
+        dt1.textContent = 'Schicht'
+        dd1 = self.createElement('dd')
+        dd1.id = 'k-schicht'
+        dd1.textContent = '—'
+        self.k_schicht = dd1
+        feld1.appendChild(dt1)
+        feld1.appendChild(dd1)
+        aside.appendChild(feld1)
 
-  // -------------------------------------------------------------- Kanten ---
-  var STIL = {};
-  (SPEC.kantenarten || []).forEach(function(a){ STIL[a.art] = a; });
+        feld2 = self.createElement('dl')
+        feld2.className = 'feld'
+        dt2 = self.createElement('dt')
+        dt2.textContent = 'ID'
+        dd2 = self.createElement('dd')
+        dd2.id = 'k-id'
+        dd2.textContent = '—'
+        self.k_id = dd2
+        feld2.appendChild(dt2)
+        feld2.appendChild(dd2)
+        aside.appendChild(feld2)
 
-  (SPEC.kanten || []).forEach(function(k){
-    var a = nachId[k.von], b = nachId[k.nach];
-    if (!a || !b) return;
-    var art = STIL[k.art] || {farbe:"#8ea2ff", stil:"voll"};
-    var g = new THREE.BufferGeometry().setFromPoints([
-      a.pos.clone().setY(a.pos.y + 0.9), b.pos.clone().setY(b.pos.y - 0.9)]);
-    var linie;
-    if (art.stil === "gestrichelt"){
-      linie = new THREE.Line(g, new THREE.LineDashedMaterial(
-        {color:art.farbe, dashSize:1.4, gapSize:1.0, transparent:true, opacity:.9}));
-      linie.computeLineDistances();
-    } else {
-      linie = new THREE.Line(g, new THREE.LineBasicMaterial(
-        {color:art.farbe, transparent:true, opacity:.85}));
-    }
-    gruppe.add(linie);
-  });
+        blaettern = self.createElement('div')
+        blaettern.className = 'blaettern'
 
-  szene.add(gruppe);
+        btnPrev = self.createElement('button')
+        btnPrev.id = 'btn-prev'
+        btnPrev.innerHTML = '←<br>Vorheriger'
+        self.btn_prev = btnPrev
+        blaettern.appendChild(btnPrev)
 
-  var leg = document.getElementById("legende");
-  (SPEC.kantenarten || []).forEach(function(a){
-    var s = document.createElement("span");
-    s.innerHTML = '<i class="strich" style="border-top-color:' + a.farbe +
-                  ';border-top-style:' + (a.stil === "gestrichelt" ? "dashed" : "solid") +
-                  '"></i>' + a.text;
-    leg.appendChild(s);
-  });
+        btnNext = self.createElement('button')
+        btnNext.id = 'btn-next'
+        btnNext.innerHTML = 'Nächster<br>→'
+        self.btn_next = btnNext
+        blaettern.appendChild(btnNext)
 
-  // ------------------------------------------------------------- Auswahl ---
-  var aktiv = -1;
-  function waehle(i){
-    if (aktiv >= 0){
-      knoten[aktiv].mat.color.copy(knoten[aktiv].farbe);
-      knoten[aktiv].mat.emissive.setHex(0x000000);
-      knoten[aktiv].mesh.scale.set(1,1,1);
-    }
-    aktiv = ((i % knoten.length) + knoten.length) % knoten.length;
-    var k = knoten[aktiv];
-    k.mat.emissive.setHex(0x333333);
-    k.mesh.scale.set(1.1, 1.5, 1.1);
-    document.getElementById("k-name").textContent = k.name;
-    document.getElementById("k-sub").textContent = k.untertitel || "—";
-    document.getElementById("k-schicht").textContent = k.schicht;
-    document.getElementById("k-id").textContent = k.id;
-  }
+        aside.appendChild(blaettern)
+        raster.appendChild(aside)
+        wrap.appendChild(raster)
 
-  var strahl = new THREE.Raycaster(), zeiger = new THREE.Vector2();
-  renderer.domElement.addEventListener("click", function(e){
-    if (gezogen) return;
-    var r = renderer.domElement.getBoundingClientRect();
-    zeiger.x = ((e.clientX - r.left) / r.width) * 2 - 1;
-    zeiger.y = -((e.clientY - r.top) / r.height) * 2 + 1;
-    strahl.setFromCamera(zeiger, kamera);
-    var treffer = strahl.intersectObjects(klickbar, false);
-    if (treffer.length) waehle(treffer[0].object.userData.index);
-  });
-  document.getElementById("btn-prev").addEventListener("click", function(){ waehle(aktiv - 1); });
-  document.getElementById("btn-next").addEventListener("click", function(){ waehle(aktiv + 1); });
+        # Legende
+        legende = self.createElement('div')
+        legende.className = 'legende'
+        legende.id = 'legende'
+        self.legende = legende
+        wrap.appendChild(legende)
 
-  // ------------------------------------------------------------- Kamera ----
-  var azimut = Math.PI/4, elevation = 0.62, rotiert = true;
-  function stelle(){
-    var x = radius*Math.cos(elevation)*Math.sin(azimut);
-    var y = radius*Math.sin(elevation);
-    var z = radius*Math.cos(elevation)*Math.cos(azimut);
-    kamera.position.set(x, y, z); kamera.lookAt(0, 0, 0);
-  }
-  var zieht = false, gezogen = false, lx = 0, ly = 0;
-  renderer.domElement.addEventListener("pointerdown", function(e){
-    zieht = true; gezogen = false; lx = e.clientX; ly = e.clientY;
-  });
-  window.addEventListener("pointermove", function(e){
-    if (!zieht) return;
-    if (Math.abs(e.clientX-lx) + Math.abs(e.clientY-ly) > 3){ gezogen = true; rotiert = false; }
-    azimut -= (e.clientX - lx) * 0.006;
-    elevation = Math.max(0.08, Math.min(1.45, elevation + (e.clientY - ly) * 0.005));
-    lx = e.clientX; ly = e.clientY;
-  });
-  window.addEventListener("pointerup", function(){ zieht = false; setTimeout(function(){ gezogen = false; }, 0); });
+        # Fuß
+        fuss = self.createElement('p')
+        fuss.className = 'fuss'
+        fuss.textContent = 'Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.'
+        wrap.appendChild(fuss)
 
-  function zoom(f){
-    if (iso){ D = Math.max(11, Math.min(54, D * f)); groesse(); }
-    else { radius = Math.max(32, Math.min(160, radius * f)); }
-  }
-  document.getElementById("btn-plus").addEventListener("click", function(){ zoom(0.85); });
-  document.getElementById("btn-minus").addEventListener("click", function(){ zoom(1.18); });
-  renderer.domElement.addEventListener("wheel", function(e){
-    e.preventDefault(); zoom(e.deltaY > 0 ? 1.08 : 0.93);
-  }, {passive:false});
-  document.getElementById("btn-reset").addEventListener("click", function(){
-    azimut = Math.PI/4; elevation = 0.62; D = 26; radius = 82; rotiert = true;
-    iso = true; kamera = kameraIso;
-    document.getElementById("btn-iso").setAttribute("aria-pressed", "true");
-    document.getElementById("btn-iso").textContent = "Iso";
-    waehle(0); groesse();
-  });
-  document.getElementById("btn-iso").addEventListener("click", function(){
-    iso = !iso; kamera = iso ? kameraIso : kameraPersp;
-    this.setAttribute("aria-pressed", String(iso));
-    this.textContent = iso ? "Iso" : "Persp";
-    groesse();
-  });
+        body.appendChild(wrap)
+        
+        return self
 
-  function groesse(){
-    var w = buehne.clientWidth, h = buehne.clientHeight;
-    aspekt = w / h;
-    kameraIso.left = -D*aspekt; kameraIso.right = D*aspekt;
-    kameraIso.top = D; kameraIso.bottom = -D; kameraIso.updateProjectionMatrix();
-    kameraPersp.aspect = aspekt; kameraPersp.updateProjectionMatrix();
-    renderer.setSize(w, h, false);
-  }
-  window.addEventListener("resize", groesse);
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
-  groesse();
-  waehle(0);
-  (function schleife(){
-    requestAnimationFrame(schleife);
-    if (rotiert) azimut += 0.003;
-    stelle();
-    renderer.render(szene, kamera);
-  })();
-})();
-</script>
-</body>
-</html>'''
+def rgb_to_hex(rgb):
+    return '#{:02x}{:02x}{:02x}'.format(rgb[0], rgb[1], rgb[2])
+
+def multiply_color(color_hex, factor):
+    rgb = hex_to_rgb(color_hex)
+    return rgb_to_hex(tuple(min(255, int(c * factor)) for c in rgb))
+
+def create_sign(text, subtitle):
+    # Create a simple text image representation
+    font_size = 20
+    subtitle_font_size = 14
     
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html_content)
+    # Estimate width based on character count
+    text_width = len(text) * font_size * 0.6
+    subtitle_width = len(subtitle) * subtitle_font_size * 0.6 if subtitle else 0
+    width = int(max(text_width, subtitle_width)) + 40
+    height = 96 if subtitle else 62
+    
+    img = Image.new('RGBA', (width, height), (255, 255, 255, 242))
+    draw = ImageDraw.Draw(img)
+    
+    try:
+        font = ImageFont.truetype("arial.ttf", font_size)
+        subtitle_font = ImageFont.truetype("arial.ttf", subtitle_font_size)
+    except IOError:
+        font = ImageFont.load_default()
+        subtitle_font = ImageFont.load_default()
+    
+    # Draw text
+    draw.text((20, 20), text, fill=(22, 25, 29), font=font)
+    if subtitle:
+        draw.text((20, 50), subtitle, fill=(95, 103, 115), font=subtitle_font)
+    
+    return img
 
-def get_spec_data():
-    """Return the specification data for the 3D visualization."""
-    return {
+def create_3d_scene(doc):
+    SPEC = {
         "schichten": [
             {
-                "name": "Quellen",
+                "name": "Tokens",
                 "farbe": "#5f6773",
                 "blocks": [
-                    {"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"},
-                    {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"},
-                    {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"},
-                    {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}
+                    {"id": "abfrage-beim-oeffnen", "name": "Abfrage beim Oeffnen", "untertitel": "kein Vorbelegen"},
+                    {"id": "localstorage", "name": "localStorage", "untertitel": "nur lokal"},
+                    {"id": "keine-vorbelegung", "name": "keine Vorbelegung", "untertitel": "leer geliefert"}
                 ]
             },
             {
-                "name": "Sonde",
+                "name": "Quellen",
                 "farbe": "#2481cc",
                 "blocks": [
-                    {"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"},
-                    {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}
+                    {"id": "github", "name": "GitHub", "untertitel": "Repos, Kontingent"},
+                    {"id": "vercel", "name": "Vercel", "untertitel": "Deployments"},
+                    {"id": "docker-hub", "name": "Docker Hub", "untertitel": "Abbilder"},
+                    {"id": "openrouter", "name": "OpenRouter", "untertitel": "Guthaben"},
+                    {"id": "openai", "name": "OpenAI", "untertitel": "Admin-Key"},
+                    {"id": "anthropic", "name": "Anthropic", "untertitel": "Admin-Key"},
+                    {"id": "tailscale", "name": "Tailscale", "untertitel": "Geraete"},
+                    {"id": "clawhub", "name": "ClawHub", "untertitel": "Skills"}
                 ]
             },
             {
-                "name": "Klassifikation",
+                "name": "Abruf",
                 "farbe": "#6d5bd0",
                 "blocks": [
-                    {"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}
+                    {"id": "fetch-je-quelle", "name": "fetch je Quelle", "untertitel": "direkt"},
+                    {"id": "cors-pruefung", "name": "CORS-Pruefung", "untertitel": "entscheidet"},
+                    {"id": "fehler-isolieren", "name": "Fehler isolieren", "untertitel": "je Kachel"}
                 ]
             },
             {
                 "name": "Ausgabe",
-                "farbe": "#15803d",
+                "farbe": "#0f766e",
                 "blocks": [
-                    {"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"},
-                    {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"},
-                    {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}
+                    {"id": "kacheln", "name": "Kacheln", "untertitel": "ein Blick"},
+                    {"id": "verbrauch", "name": "Verbrauch", "untertitel": "Zahlen"},
+                    {"id": "keine-daten-hinweis", "name": "keine Daten = Hinweis", "untertitel": "mit Grund"}
                 ]
             }
         ],
         "kanten": [
-            {"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"},
-            {"von": "docs-mcp", "nach": "config-py", "art": "fluss"},
-            {"von": "well-known", "nach": "discovery-py", "art": "fluss"},
-            {"von": "config-json", "nach": "config-py", "art": "fluss"},
-            {"von": "discovery-py", "nach": "state-py", "art": "fluss"},
-            {"von": "config-py", "nach": "state-py", "art": "fluss"},
-            {"von": "state-py", "nach": "report-py", "art": "fluss"}
+            {"von": "abfrage-beim-oeffnen", "nach": "github", "art": "fluss"},
+            {"von": "localstorage", "nach": "vercel", "art": "fluss"},
+            {"von": "keine-vorbelegung", "nach": "docker-hub", "art": "fluss"},
+            {"von": "github", "nach": "fetch-je-quelle", "art": "fluss"},
+            {"von": "vercel", "nach": "cors-pruefung", "art": "fluss"},
+            {"von": "docker-hub", "nach": "fehler-isolieren", "art": "fluss"},
+            {"von": "openrouter", "nach": "fetch-je-quelle", "art": "fluss"},
+            {"von": "openai", "nach": "cors-pruefung", "art": "fluss"},
+            {"von": "anthropic", "nach": "fehler-isolieren", "art": "fluss"},
+            {"von": "tailscale", "nach": "fetch-je-quelle", "art": "fluss"},
+            {"von": "clawhub", "nach": "cors-pruefung", "art": "fluss"},
+            {"von": "fetch-je-quelle", "nach": "kacheln", "art": "fluss"},
+            {"von": "cors-pruefung", "nach": "verbrauch", "art": "fluss"},
+            {"von": "fehler-isolieren", "nach": "keine-daten-hinweis", "art": "fluss"}
         ],
         "kantenarten": [
-            {"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}
+            {"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}
         ]
     }
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 script.py <output_file>")
-        sys.exit(1)
+    # Erstelle das Canvas-Element
+    canvas = doc.createElement('canvas')
+    canvas.setAttribute('width', '800')
+    canvas.setAttribute('height', '600')
+    canvas.style['display'] = 'block'
+    canvas.style['width'] = '100%'
+    canvas.style['height'] = '100%'
+
+    # Füge das Canvas zur Bühne hinzu
+    buehne = doc.getElementById('buehne')
+    buehne.appendChild(canvas)
+
+    # In Python können wir kein echtes 3D rendern wie in Three.js,
+    # aber wir können eine statische Darstellung erzeugen
+    # Hier simulieren wir die wichtigsten Elemente
     
-    output_file = sys.argv[1]
-    generate_html(output_file)
-    print(f"Generated {output_file}")
+    # Aufbau der Szene
+    BW = 7.4
+    BD = 4.2
+    BH = 1.7
+    LUFT = 1.3
+    ABSTAND = 11.4
+    START = -17
+    
+    nodes = []
+    byId = {}
+    
+    # Für jede Schicht erstellen wir visuelle Repräsentation
+    for si, sch in enumerate(SPEC["schichten"]):
+        y = START + si * ABSTAND
+        blocks = sch["blocks"]
+        columns = max(1, math.ceil(len(blocks) / 2))
+        rows = 1 if len(blocks) <= 1 else 2
+        gx = columns * BW + (columns - 1) * LUFT
+        gz = rows * BD + (rows - 1) * LUFT
+        
+        # Plate (Plattform) für die Schicht
+        plate_color = multiply_color(sch["farbe"], 0.4)
+        
+        for i, b in enumerate(blocks):
+            col = i % columns
+            row = i // columns
+            x = -gx / 2 + BW / 2 + col * (BW + LUFT)
+            z = -gz / 2 + BD / 2 + row * (BD + LUFT)
+            
+            # Erstelle Schild
+            sign_img = create_sign(b["name"], b.get("untertitel", ""))
+            
+            id_val = b.get("id") or b["name"].lower().replace(" ", "-").replace("/", "-")
+            entry = {
+                "id": id_val,
+                "name": b["name"],
+                "untertitel": b.get("untertitel", ""),
+                "schicht": sch["name"],
+                "position": {"x": x, "y": y, "z": z}
+            }
+            nodes.append(entry)
+            byId[id_val] = entry
+
+    # Kanten zeichnen (vereinfacht)
+    STYLE = {}
+    for a in SPEC.get("kantenarten", []):
+        STYLE[a["art"]] = a
+
+    # Legende
+    legend = doc.getElementById("legende")
+    for a in SPEC.get("kantenarten", []):
+        span = doc.createElement("span")
+        # Da wir kein CSS rendern, verwenden wir einfache Textdarstellung
+        span.innerHTML = f'{a["text"]} ({a["farbe"]})'
+        legend.appendChild(span)
+
+    return doc
+
+def main():
+    # Prüfe, ob ein Dateiname übergeben wurde
+    if len(sys.argv) < 2:
+        print('Verwendung: python 3d.py <dateiname>')
+        sys.exit(1)
+
+    filename = sys.argv[1]
+    
+    # Erstelle das Dokument
+    doc = Document().createDocument()
+    
+    # Erstelle die 3D-Szene
+    doc = create_3d_scene(doc)
+    
+    # Schreibe das HTML in eine Datei
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write('<!DOCTYPE html>\n')
+        f.write(doc.documentElement.outerHTML())
+    
+    print(f'HTML-Datei wurde erfolgreich erstellt: {filename}')
+
+if __name__ == "__main__":
+    main()

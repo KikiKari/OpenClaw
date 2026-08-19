@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-# 1781743218784.sh — portiert nach python
+# 1781743218784_61166d.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_61166d.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.sh — portiert nach javascript
 # Quelle: shell, Projects@abstractions:shell/1781743218784.sh
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.html — portiert nach Python 3.12
+# 1781743218784.html — portiert nach JavaScript
 # Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
+# Secret-Vault Public HTML Generator
+# Erzeugt die vollständige HTML-Datei mit allen Inhalten
+
 import sys
+import os
 
 def generate_html():
-    """Generiere das vollständige HTML-Dokument"""
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -217,21 +224,27 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
+# Hauptprogramm
 def main():
-    """Hauptprogramm"""
-    if len(sys.argv) != 2:
-        print("Verwendung: {} <ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
+    args = sys.argv[1:]
+    output_file = args[0] if args else None
+    
+    if not output_file:
+        print("Verwendung: python3 script.py <ausgabedatei>", file=sys.stderr)
         sys.exit(1)
     
-    output_file = sys.argv[1]
-    
     try:
+        html_content = generate_html()
         with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(generate_html())
+            f.write(html_content)
         
-        print("HTML-Datei erfolgreich erstellt: {}".format(output_file))
-    except Exception as e:
-        print("Fehler beim Erstellen der HTML-Datei: {}".format(str(e)), file=sys.stderr)
+        if os.path.exists(output_file):
+            print(f"HTML-Datei erfolgreich erstellt: {output_file}")
+        else:
+            print("Fehler beim Erstellen der HTML-Datei", file=sys.stderr)
+            sys.exit(1)
+    except Exception as error:
+        print(f"Fehler beim Erstellen der HTML-Datei: {str(error)}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":

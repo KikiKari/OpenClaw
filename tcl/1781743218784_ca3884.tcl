@@ -1,16 +1,25 @@
-#!/usr/bin/tclsh
-# 1781743218784.pl — portiert nach tcl
+#!/usr/bin/env tclsh8.6
+# 1781743218784_ca3884.ps1 — portiert nach tcl
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_ca3884.ps1
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.pl — portiert nach powershell
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# Get output file from command line argument
-if {$argc != 1} {
+# 1781743218784.html — portiert nach perl5
+# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+# Prüfe ob ein Argument übergeben wurde
+if {$argc == 0} {
     puts stderr "Usage: [info script] <output_file>"
     exit 1
 }
+
 set output_file [lindex $argv 0]
 
-# HTML content with embedded JSON and JavaScript
+# HTML-Inhalt mit eingebettetem JSON und JavaScript
 set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -215,11 +224,15 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
+</html>
+}
 
-# Write HTML content to the specified file
-set fh [open $output_file w]
+# Schreibe den HTML-Inhalt in die angegebene Datei
+if {[catch {set fh [open $output_file w]} error]} {
+    puts stderr "Could not write to file '$output_file': $error"
+    exit 1
+}
+
 puts -nonewline $fh $html_content
 close $fh
-
 puts "HTML file generated: $output_file"

@@ -1,16 +1,20 @@
 #!/usr/bin/env pwsh
-# 3d_053a4a.tcl — portiert nach powershell
+# 3d_053a4a_2780c2.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a_2780c2.js
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+
+# 3d_053a4a.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/3d_053a4a.tcl
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# 3d.html — portiert nach PowerShell 7
+# 3d.html — portiert nach JavaScript
 # Quelle: html, Projects@python-hardener:public/3d.html
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# PowerShell 7 script to generate 3d.html
+# PowerShell script to generate 3d.html
 # Usage: pwsh this_script.ps1 > 3d.html
 
-function Generate-Html {
+function generate_html {
     $html = @()
     
     # DOCTYPE and html tag
@@ -27,7 +31,7 @@ function Generate-Html {
     
     # CSS styles
     $html += '<style>'
-    $html += '
+    $html += @'
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#b45309; --buehne:#0e1420; --buehne-line:#1d2739;
@@ -73,7 +77,7 @@ function Generate-Html {
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
 }
-'
+'@
     $html += '</style>'
     $html += '</head>'
     
@@ -118,15 +122,16 @@ function Generate-Html {
     
     # Inline script
     $html += '<script>'
-    $html += '(function(){
+    $html += @'
+(function(){
   "use strict";
   var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "job-runner-py", "name": "job_runner.py", "untertitel": "Cronjob"}, {"id": "report-db-py", "name": "report_db.py", "untertitel": "SQL"}]}, {"name": "Laeufe", "farbe": "#2481cc", "blocks": [{"id": "with-skill", "name": "with_skill", "untertitel": "mit Skill"}, {"id": "without-skill", "name": "without_skill", "untertitel": "Gegenprobe"}]}, {"name": "Pruefung", "farbe": "#6d5bd0", "blocks": [{"id": "ast-assertions", "name": "AST-Assertions", "untertitel": "Syntaxbaum"}, {"id": "not-contains", "name": "not_contains", "untertitel": "Textregel"}, {"id": "grading", "name": "Grading", "untertitel": "je Behauptung"}]}, {"name": "Ergebnis", "farbe": "#b45309", "blocks": [{"id": "benchmark-json", "name": "benchmark.json", "untertitel": "pass_rate"}, {"id": "timing-json", "name": "timing.json", "untertitel": "Laufzeit"}, {"id": "eval-review-html", "name": "eval-review.html", "untertitel": "Gegenueberstellung"}]}], "kanten": [{"von": "job-runner-py", "nach": "with-skill", "art": "fluss"}, {"von": "report-db-py", "nach": "without-skill", "art": "fluss"}, {"von": "with-skill", "nach": "ast-assertions", "art": "fluss"}, {"von": "without-skill", "nach": "not-contains", "art": "fluss"}, {"von": "ast-assertions", "nach": "benchmark-json", "art": "fluss"}, {"von": "not-contains", "nach": "timing-json", "art": "fluss"}, {"von": "grading", "nach": "eval-review-html", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#b45309", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
     buehne.insertAdjacentHTML("beforeend",
-      ''<div class="fehler">three.js konnte nicht geladen werden. '' +
-      ''Die Seite braucht einmalig Netzzugang zum CDN.</div>'');
+      '<div class="fehler">three.js konnte nicht geladen werden. ' +
+      'Die Seite braucht einmalig Netzzugang zum CDN.</div>');
     return;
   }
 
@@ -244,9 +249,9 @@ function Generate-Html {
   var leg = document.getElementById("legende");
   (SPEC.kantenarten || []).forEach(function(a){
     var s = document.createElement("span");
-    s.innerHTML = ''<i class="strich" style="border-top-color:'' + a.farbe +
-                  '';border-top-style:'' + (a.stil === "gestrichelt" ? "dashed" : "solid") +
-                  ''"></i>'' + a.text;
+    s.innerHTML = '<i class="strich" style="border-top-color:' + a.farbe +
+                  ';border-top-style:' + (a.stil === "gestrichelt" ? "dashed" : "solid") +
+                  '"></i>' + a.text;
     leg.appendChild(s);
   });
 
@@ -344,7 +349,7 @@ function Generate-Html {
     renderer.render(szene, kamera);
   })();
 })();
-'
+'@
     $html += '</script>'
     $html += '</body>'
     $html += '</html>'
@@ -354,4 +359,4 @@ function Generate-Html {
 }
 
 # Main execution
-Write-Output (Generate-Html)
+Write-Output (generate_html)

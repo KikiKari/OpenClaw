@@ -1,50 +1,22 @@
 #!/usr/bin/env node
-// 3d.html — portiert nach javascript
-// Quelle: html, Projects@python-hardener:public/3d.html
-// Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+// 3d_053a4a.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/3d_053a4a.pl
+// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 const path = require('path');
 
-function createHTMLDocument() {
-  const doc = {
-    createElement: function(tag) {
-      return { tag, attributes: {}, children: [], content: '' };
-    },
-    createTextNode: function(text) {
-      return { tag: 'text', content: text };
-    }
-  };
-
-  const html = doc.createElement('html');
-  html.attributes.lang = 'de';
-
-  const head = doc.createElement('head');
-  const metaCharset = doc.createElement('meta');
-  metaCharset.attributes.charset = 'utf-8';
-  head.children.push(metaCharset);
-
-  const metaViewport = doc.createElement('meta');
-  metaViewport.attributes.name = 'viewport';
-  metaViewport.attributes.content = 'width=device-width, initial-scale=1';
-  head.children.push(metaViewport);
-
-  const title = doc.createElement('title');
-  title.children.push(doc.createTextNode('Python Hardener — Interaktive Architektur'));
-  head.children.push(title);
-
-  const metaDescription = doc.createElement('meta');
-  metaDescription.attributes.name = 'description';
-  metaDescription.attributes.content = 'Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.';
-  head.children.push(metaDescription);
-
-  const metaThemeColor = doc.createElement('meta');
-  metaThemeColor.attributes.name = 'theme-color';
-  metaThemeColor.attributes.content = '#b45309';
-  head.children.push(metaThemeColor);
-
-  const style = doc.createElement('style');
-  style.content = `  :root{
+function generateHTML() {
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python Hardener — Interaktive Architektur</title>
+<meta name="description" content="Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#b45309">
+<style>
+  :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#b45309; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
@@ -88,140 +60,46 @@ function createHTMLDocument() {
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
-`;
-  head.children.push(style);
+</style>
+</head>
+<body>
+<div class="wrap">
 
-  const body = doc.createElement('body');
+  <p class="technik">three.js · r128</p>
+  <h1>Python Hardener</h1>
+  <p class="lede">Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.</p>
 
-  const wrap = doc.createElement('div');
-  wrap.attributes.class = 'wrap';
+  <div class="raster">
+    <div class="buehne" id="buehne">
+      <div class="knoepfe">
+        <button id="btn-plus" title="Näher">+</button>
+        <button id="btn-minus" title="Weiter weg">−</button>
+        <button id="btn-reset">Zurücksetzen</button>
+        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
+      </div>
+    </div>
 
-  const technik = doc.createElement('p');
-  technik.attributes.class = 'technik';
-  technik.children.push(doc.createTextNode('three.js · r128'));
-  wrap.children.push(technik);
+    <aside class="karte">
+      <h2>Ausgewählter Knoten</h2>
+      <h3 id="k-name">—</h3>
+      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
+      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
+      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
+      <div class="blaettern">
+        <button id="btn-prev">←<br>Vorheriger</button>
+        <button id="btn-next">Nächster<br>→</button>
+      </div>
+    </aside>
+  </div>
 
-  const h1 = doc.createElement('h1');
-  h1.children.push(doc.createTextNode('Python Hardener'));
-  wrap.children.push(h1);
+  <div class="legende" id="legende"></div>
+  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
 
-  const lede = doc.createElement('p');
-  lede.attributes.class = 'lede';
-  lede.children.push(doc.createTextNode('Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.'));
-  wrap.children.push(lede);
+</div>
 
-  const raster = doc.createElement('div');
-  raster.attributes.class = 'raster';
-
-  const buehne = doc.createElement('div');
-  buehne.attributes.id = 'buehne';
-  buehne.attributes.class = 'buehne';
-
-  const knoepfe = doc.createElement('div');
-  knoepfe.attributes.class = 'knoepfe';
-
-  const btnPlus = doc.createElement('button');
-  btnPlus.attributes.id = 'btn-plus';
-  btnPlus.attributes.title = 'Näher';
-  btnPlus.children.push(doc.createTextNode('+'));
-  knoepfe.children.push(btnPlus);
-
-  const btnMinus = doc.createElement('button');
-  btnMinus.attributes.id = 'btn-minus';
-  btnMinus.attributes.title = 'Weiter weg';
-  btnMinus.children.push(doc.createTextNode('−'));
-  knoepfe.children.push(btnMinus);
-
-  const btnReset = doc.createElement('button');
-  btnReset.attributes.id = 'btn-reset';
-  btnReset.children.push(doc.createTextNode('Zurücksetzen'));
-  knoepfe.children.push(btnReset);
-
-  const btnIso = doc.createElement('button');
-  btnIso.attributes.id = 'btn-iso';
-  btnIso.attributes['aria-pressed'] = 'true';
-  btnIso.attributes.title = 'Isometrisch oder perspektivisch';
-  btnIso.children.push(doc.createTextNode('Iso'));
-  knoepfe.children.push(btnIso);
-
-  buehne.children.push(knoepfe);
-  raster.children.push(buehne);
-
-  const aside = doc.createElement('aside');
-  aside.attributes.class = 'karte';
-
-  const h2 = doc.createElement('h2');
-  h2.children.push(doc.createTextNode('Ausgewählter Knoten'));
-  aside.children.push(h2);
-
-  const h3 = doc.createElement('h3');
-  h3.attributes.id = 'k-name';
-  h3.children.push(doc.createTextNode('—'));
-  aside.children.push(h3);
-
-  const sub = doc.createElement('p');
-  sub.attributes.class = 'sub';
-  sub.attributes.id = 'k-sub';
-  sub.children.push(doc.createTextNode('Knoten anklicken oder durchblättern'));
-  aside.children.push(sub);
-
-  const feld1 = doc.createElement('dl');
-  feld1.attributes.class = 'feld';
-  const dt1 = doc.createElement('dt');
-  dt1.children.push(doc.createTextNode('Schicht'));
-  const dd1 = doc.createElement('dd');
-  dd1.attributes.id = 'k-schicht';
-  dd1.children.push(doc.createTextNode('—'));
-  feld1.children.push(dt1);
-  feld1.children.push(dd1);
-  aside.children.push(feld1);
-
-  const feld2 = doc.createElement('dl');
-  feld2.attributes.class = 'feld';
-  const dt2 = doc.createElement('dt');
-  dt2.children.push(doc.createTextNode('ID'));
-  const dd2 = doc.createElement('dd');
-  dd2.attributes.id = 'k-id';
-  dd2.children.push(doc.createTextNode('—'));
-  feld2.children.push(dt2);
-  feld2.children.push(dd2);
-  aside.children.push(feld2);
-
-  const blaettern = doc.createElement('div');
-  blaettern.attributes.class = 'blaettern';
-
-  const btnPrev = doc.createElement('button');
-  btnPrev.attributes.id = 'btn-prev';
-  btnPrev.children.push(doc.createTextNode('←\nVorheriger'));
-  blaettern.children.push(btnPrev);
-
-  const btnNext = doc.createElement('button');
-  btnNext.attributes.id = 'btn-next';
-  btnNext.children.push(doc.createTextNode('Nächster\n→'));
-  blaettern.children.push(btnNext);
-
-  aside.children.push(blaettern);
-  raster.children.push(aside);
-  wrap.children.push(raster);
-
-  const legende = doc.createElement('div');
-  legende.attributes.class = 'legende';
-  legende.attributes.id = 'legende';
-  wrap.children.push(legende);
-
-  const fuss = doc.createElement('p');
-  fuss.attributes.class = 'fuss';
-  fuss.children.push(doc.createTextNode('Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.'));
-  wrap.children.push(fuss);
-
-  body.children.push(wrap);
-
-  const script1 = doc.createElement('script');
-  script1.attributes.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-  body.children.push(script1);
-
-  const script2 = doc.createElement('script');
-  script2.content = `(function(){
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
   "use strict";
   var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "job-runner-py", "name": "job_runner.py", "untertitel": "Cronjob"}, {"id": "report-db-py", "name": "report_db.py", "untertitel": "SQL"}]}, {"name": "Laeufe", "farbe": "#2481cc", "blocks": [{"id": "with-skill", "name": "with_skill", "untertitel": "mit Skill"}, {"id": "without-skill", "name": "without_skill", "untertitel": "Gegenprobe"}]}, {"name": "Pruefung", "farbe": "#6d5bd0", "blocks": [{"id": "ast-assertions", "name": "AST-Assertions", "untertitel": "Syntaxbaum"}, {"id": "not-contains", "name": "not_contains", "untertitel": "Textregel"}, {"id": "grading", "name": "Grading", "untertitel": "je Behauptung"}]}, {"name": "Ergebnis", "farbe": "#b45309", "blocks": [{"id": "benchmark-json", "name": "benchmark.json", "untertitel": "pass_rate"}, {"id": "timing-json", "name": "timing.json", "untertitel": "Laufzeit"}, {"id": "eval-review-html", "name": "eval-review.html", "untertitel": "Gegenueberstellung"}]}], "kanten": [{"von": "job-runner-py", "nach": "with-skill", "art": "fluss"}, {"von": "report-db-py", "nach": "without-skill", "art": "fluss"}, {"von": "with-skill", "nach": "ast-assertions", "art": "fluss"}, {"von": "without-skill", "nach": "not-contains", "art": "fluss"}, {"von": "ast-assertions", "nach": "benchmark-json", "art": "fluss"}, {"von": "not-contains", "nach": "timing-json", "art": "fluss"}, {"von": "grading", "nach": "eval-review-html", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#b45309", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
@@ -446,66 +324,32 @@ function createHTMLDocument() {
     stelle();
     renderer.render(szene, kamera);
   })();
-})();`;
-  body.children.push(script2);
-
-  html.children.push(head);
-  html.children.push(body);
+})();
+</script>
+</body>
+</html>`;
 
   return html;
 }
 
-function renderHTML(element, indent = 0) {
-  const spaces = '  '.repeat(indent);
-  if (element.tag === 'text') {
-    return spaces + element.content;
+function main() {
+  const args = process.argv.slice(2);
+  
+  if (args.length !== 1) {
+    console.error("Usage: node 3d.js <output-file>");
+    process.exit(1);
   }
-
-  let html = spaces + '<' + element.tag;
-  for (const [key, value] of Object.entries(element.attributes || {})) {
-    html += ` ${key}="${value}"`;
+  
+  const outputFile = args[0];
+  
+  try {
+    const htmlContent = generateHTML();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML file generated successfully: ${outputFile}`);
+  } catch (error) {
+    console.error(`Error generating HTML file: ${error.message}`);
+    process.exit(1);
   }
-  html += '>';
-
-  if (element.content) {
-    if (element.tag === 'script' || element.tag === 'style') {
-      html += '\n' + element.content + '\n' + spaces;
-    } else {
-      html += element.content;
-    }
-  }
-
-  if (element.children && element.children.length > 0) {
-    if (element.content) html += '\n';
-    for (const child of element.children) {
-      html += '\n' + renderHTML(child, indent + 1);
-    }
-    if (element.content) html += '\n' + spaces;
-  }
-
-  html += `</${element.tag}>`;
-  return html;
 }
 
-function generateHTML() {
-  const doctype = '<!DOCTYPE html>';
-  const htmlDoc = createHTMLDocument();
-  return doctype + '\n' + renderHTML(htmlDoc);
-}
-
-// Hauptprogramm
-if (process.argv.length < 3) {
-  console.error('Verwendung: node ' + path.basename(__filename) + ' <ausgabedatei>');
-  process.exit(1);
-}
-
-const outputFile = process.argv[2];
-
-try {
-  const htmlContent = generateHTML();
-  fs.writeFileSync(outputFile, htmlContent, 'utf8');
-  console.log('HTML-Datei erfolgreich erstellt: ' + outputFile);
-} catch (error) {
-  console.error('Fehler beim Erstellen der HTML-Datei:', error.message);
-  process.exit(1);
-}
+main();

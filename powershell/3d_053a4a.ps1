@@ -1,29 +1,22 @@
 #!/usr/bin/env pwsh
-# 3d.html — portiert nach powershell
+# 3d_053a4a.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a.js
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+
+# 3d_053a4a.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/3d_053a4a.pl
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+# 3d.html — portiert nach JavaScript für Node 20
 # Quelle: html, Projects@python-hardener:public/3d.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
-
-<#
-.SYNOPSIS
-Generates an HTML file with interactive 3D architecture visualization.
-
-.DESCRIPTION
-This script generates an HTML file containing an interactive 3D visualization
-of a Python architecture using Three.js. The visualization includes layers,
-blocks, and connections between them.
-
-.PARAMETER OutputFile
-The path to the output HTML file.
-
-.EXAMPLE
-.\3d.ps1 -OutputFile "architecture.html"
-#>
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 param(
     [Parameter(Mandatory=$true)]
-    [string]$OutputFile
+    [string]$ausgabe_datei
 )
 
+# HTML-Dokument erzeugen
 $htmlContent = @"
 <!DOCTYPE html>
 <html lang="de">
@@ -348,5 +341,6 @@ $htmlContent = @"
 </html>
 "@
 
-$htmlContent | Out-File -FilePath $OutputFile -Encoding UTF8
-Write-Output "HTML file generated: $OutputFile"
+$htmlContent | Out-File -FilePath $ausgabe_datei -Encoding UTF8
+
+Write-Host "HTML-Datei wurde erfolgreich erstellt: $ausgabe_datei"

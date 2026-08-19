@@ -1,26 +1,30 @@
 #!/usr/bin/env bash
-# 1781743218784.tcl — portiert nach shell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784.tcl
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_260531.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
+
+# 1781743218784.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784.tcl
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784.html — portiert nach tcl
 # Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# Bash 5 script to generate the Secret Vault Public HTML file
-# Usage: ./this_script.sh output_file.html
+# Tcl 8.6 script to generate the Secret Vault Public HTML file
+# Usage: tclsh this_script.tcl output_file.html
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 output_file.html" >&2
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 output_file.html"
     exit 1
 fi
 
-output_file="$1"
+outputFile="$1"
 
 # Write DOCTYPE and main script tag
-cat > "$output_file" << 'EOF'
+cat > "$outputFile" << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 
@@ -33,10 +37,6 @@ cat > "$output_file" << 'EOF'
 }
 
 </script>
-EOF
-
-# Write HTML start and head section
-cat >> "$output_file" << 'EOF'
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -70,177 +70,4 @@ textarea{min-height:90px;white-space:pre;overflow:auto;}
 .kv input{font-size:12px;padding:5px 7px;}
 .kv .k{color:var(--muted);font-weight:600;}
 .muted{color:var(--faint);font-size:13px;}
-.hide{display:none;}
-.foot{color:var(--faint);font-size:11.5px;text-align:center;margin-top:18px;line-height:1.5;}
-a{color:var(--accent);}
-}
-</style>
-</head>
-EOF
-
-# Write body content
-cat >> "$output_file" << 'EOF'
-<body>
-<div class="wrap">
-  <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
-  <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
-
-  <div class="card">
-    <h2 id="h-open">Öffnen oder neu</h2>
-    <label class="lab" id="l-pass">Passphrase</label>
-    <input id="pass" type="password" placeholder="Passphrase…">
-    <label class="lab" id="l-file">Vault laden (Datei oder Base64 einfügen)</label>
-    <input id="file" type="file" accept=".svpb,.txt,.vault,.b64">
-    <textarea id="blob" placeholder="…oder Base64 hier einfügen"></textarea>
-    <div class="row" style="margin-top:10px">
-      <button class="btn primary" id="openBtn">Öffnen / Entschlüsseln</button>
-      <button class="btn" id="newBtn">Neuer leerer Vault</button>
-      <span class="msg" id="openMsg"></span>
-    </div>
-  </div>
-
-  <div class="card hide" id="editor">
-    <h2 id="h-edit">Inhalt</h2>
-    <div id="provs"></div>
-    <div class="row" style="margin-top:8px">
-      <input id="newProv" placeholder="Neuer Anbieter (Name)" style="max-width:280px">
-      <button class="btn sm" id="addProvBtn">+ Anbieter</button>
-    </div>
-  </div>
-
-  <div class="card hide" id="out">
-    <h2 id="h-save">Speichern / Export</h2>
-    <div class="row">
-      <button class="btn primary" id="encBtn">Verschlüsseln</button>
-      <button class="btn" id="dlBtn">Als .svpb herunterladen</button>
-      <button class="btn" id="expBtn">Klartext-JSON exportieren</button>
-      <span class="msg" id="saveMsg"></span>
-    </div>
-    <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
-    <textarea id="result" readonly></textarea>
-  </div>
-
-  <div class="foot" id="foot"></div>
-</div>
-EOF
-
-# JavaScript section
-cat >> "$output_file" << 'EOF'
-<script>
-const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
-const T = {
- title:{de:"Secret-Vault Public",en:"Secret-Vault Public"},
- sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
- hOpen:{de:"Öffnen oder neu",en:"Open or new"},
- pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
- blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
- open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
- neu:{de:"Neuer leerer Vault",en:"New empty vault"},
- hEdit:{de:"Inhalt",en:"Content"},
- newProv:{de:"Neuer Anbieter (Name)",en:"New provider (name)"},
- addProv:{de:"+ Anbieter",en:"+ Provider"},
- hSave:{de:"Speichern / Export",en:"Save / Export"},
- enc:{de:"Verschlüsseln",en:"Encrypt"},
- dl:{de:"Als .svpb herunterladen",en:"Download as .svpb"},
- exp:{de:"Klartext-JSON exportieren",en:"Export plaintext JSON"},
- result:{de:"Ergebnis (zum Kopieren/Speichern)",en:"Result (to copy/save)"},
- foot:{de:"Eigenes Format (PBKDF2). Nicht kompatibel mit dem scrypt-Python-Tool. Sicherheit liegt in der Passphrase; Inhalt ohne sie nicht wiederherstellbar.",en:"Own format (PBKDF2). Not compatible with the scrypt Python tool. Security rests on the passphrase; content is unrecoverable without it."},
- needPass:{de:"Passphrase eingeben.",en:"Enter a passphrase."},
- noInput:{de:"Datei laden oder Base64 einfügen.",en:"Load a file or paste Base64."},
- bad:{de:"Falsche Passphrase oder ungültiger Vault.",en:"Wrong passphrase or invalid vault."},
- opened:{de:"Geöffnet.",en:"Opened."},
- created:{de:"Neuer Vault angelegt.",en:"New vault created."},
- encrypted:{de:"Verschlüsselt — unten kopieren oder herunterladen.",en:"Encrypted — copy below or download."},
- needOpen:{de:"Erst öffnen/anlegen.",en:"Open/create first."},
- field:{de:"Feld",en:"field"}, value:{de:"Wert",en:"value"},
- addField:{de:"+ Feld",en:"+ field"}, del:{de:"✕",en:"✕"},
- newField:{de:"neues Feld",en:"new field"}, newValue:{de:"Wert",en:"value"}
-};
-const tr=k=>T[k][L];
-// apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
-document.getElementById("h-open").textContent=tr("hOpen");
-document.getElementById("l-pass").textContent=tr("pass");
-document.getElementById("l-file").textContent=tr("file");
-blob.placeholder=tr("blob");
-openBtn.textContent=tr("open"); newBtn.textContent=tr("neu");
-document.getElementById("h-edit").textContent=tr("hEdit");
-newProv.placeholder=tr("newProv"); addProvBtn.textContent=tr("addProv");
-document.getElementById("h-save").textContent=tr("hSave");
-encBtn.textContent=tr("enc"); dlBtn.textContent=tr("dl"); expBtn.textContent=tr("exp");
-document.getElementById("l-result").textContent=tr("result");
-foot.textContent=tr("foot");
-
-let VAULT=null; // {meta, providers:{}}
-
-const enc=new TextEncoder(), dec=new TextDecoder();
-function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); }
-function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
-async function deriveKey(pw,salt){
-  const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
-}
-async function encryptObj(obj,pw){
-  const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
-  const key=await deriveKey(pw,salt);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
-  const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
-  out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
-}
-async function decryptB64(b64,pw){
-  const raw=b64u8(b64); if(dec.decode(raw.slice(0,5))!=="SVPB1") throw new Error("magic");
-  const key=await deriveKey(pw,raw.slice(5,21));
-  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(21,33)},key,raw.slice(33));
-  return JSON.parse(dec.decode(pt));
-}
-function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-
-function renderEditor(){
-  document.getElementById("editor").classList.remove("hide");
-  document.getElementById("out").classList.remove("hide");
-  const P=VAULT.providers||{}; const root=document.getElementById("provs"); root.innerHTML="";
-  Object.keys(P).forEach(name=>{
-    const d=document.createElement("div"); d.className="prov";
-    let rows="";
-    Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">${esc(k)}</span><input data-p="${esc(name)}" data-k="${esc(k)}" value="${esc(P[name][k])}"><button class="btn sm" data-del="${esc(name)}|${esc(k)}">${tr("del")}</button></div>`; });
-    d.innerHTML=`<h3>${esc(name)} <button class="btn sm" data-delp="${esc(name)}">${tr("del")}</button></h3>${rows}
-      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
-    root.appendChild(d);
-  });
-  root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
-  root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
-  root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
-  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
-}
-
-document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
-openBtn.onclick=async()=>{
-  const m=document.getElementById("openMsg"); m.className="msg"; m.textContent="";
-  if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
-  if(!blob.value.trim()){ m.className="msg err"; m.textContent=tr("noInput"); return; }
-  try{ VAULT=await decryptB64(blob.value,pass.value); if(!VAULT.providers)VAULT.providers={}; renderEditor(); m.className="msg ok"; m.textContent=tr("opened"); }
-  catch(err){ m.className="msg err"; m.textContent=tr("bad"); }
-};
-newBtn.onclick=()=>{
-  const m=document.getElementById("openMsg");
-  if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
-  VAULT={meta:{created:new Date().toISOString().slice(0,10),format:"SVPB1"},providers:{}}; renderEditor();
-  m.className="msg ok"; m.textContent=tr("created");
-};
-addProvBtn.onclick=()=>{ if(!VAULT){ return; } const n=newProv.value.trim(); if(n){ VAULT.providers[n]=VAULT.providers[n]||{}; newProv.value=""; renderEditor(); } };
-encBtn.onclick=async()=>{
-  const m=document.getElementById("saveMsg"); m.className="msg";
-  if(!VAULT){ m.className="msg err"; m.textContent=tr("needOpen"); return; }
-  if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
-  result.value=await encryptObj(VAULT,pass.value); m.className="msg ok"; m.textContent=tr("encrypted");
-};
-dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
-expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
-}
-</script>
-</body>
-</html>
-EOF
-
-echo "HTML file generated: $output_file"
+.hide{display

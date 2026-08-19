@@ -1,13 +1,27 @@
 #!/usr/bin/env python3
-# 3d.html — portiert nach python
+# 3d_053a4a.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a.js
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+
+# 3d_053a4a.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/3d_053a4a.pl
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+# 3d.html — portiert nach JavaScript für Node 20
 # Quelle: html, Projects@python-hardener:public/3d.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import json
 
-def generate_html(output_file):
-    html_content = '''<!DOCTYPE html>
+# Parameter: Ausgabedatei
+if len(sys.argv) < 2:
+    print(f"Verwendung: {sys.argv[0]} <ausgabedatei>", file=sys.stderr)
+    sys.exit(1)
+
+ausgabe_datei = sys.argv[1]
+
+# HTML-Dokument erzeugen
+htmlContent = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -101,7 +115,7 @@ def generate_html(output_file):
 <script>
 (function(){
   "use strict";
-  var SPEC = ''' + json.dumps(SPEC, separators=(',', ':')) + ''';
+  var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "job-runner-py", "name": "job_runner.py", "untertitel": "Cronjob"}, {"id": "report-db-py", "name": "report_db.py", "untertitel": "SQL"}]}, {"name": "Laeufe", "farbe": "#2481cc", "blocks": [{"id": "with-skill", "name": "with_skill", "untertitel": "mit Skill"}, {"id": "without-skill", "name": "without_skill", "untertitel": "Gegenprobe"}]}, {"name": "Pruefung", "farbe": "#6d5bd0", "blocks": [{"id": "ast-assertions", "name": "AST-Assertions", "untertitel": "Syntaxbaum"}, {"id": "not-contains", "name": "not_contains", "untertitel": "Textregel"}, {"id": "grading", "name": "Grading", "untertitel": "je Behauptung"}]}, {"name": "Ergebnis", "farbe": "#b45309", "blocks": [{"id": "benchmark-json", "name": "benchmark.json", "untertitel": "pass_rate"}, {"id": "timing-json", "name": "timing.json", "untertitel": "Laufzeit"}, {"id": "eval-review-html", "name": "eval-review.html", "untertitel": "Gegenueberstellung"}]}], "kanten": [{"von": "job-runner-py", "nach": "with-skill", "art": "fluss"}, {"von": "report-db-py", "nach": "without-skill", "art": "fluss"}, {"von": "with-skill", "nach": "ast-assertions", "art": "fluss"}, {"von": "without-skill", "nach": "not-contains", "art": "fluss"}, {"von": "ast-assertions", "nach": "benchmark-json", "art": "fluss"}, {"von": "not-contains", "nach": "timing-json", "art": "fluss"}, {"von": "grading", "nach": "eval-review-html", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#b45309", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -329,65 +343,7 @@ def generate_html(output_file):
 </body>
 </html>'''
 
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html_content)
+with open(ausgabe_datei, 'w', encoding='utf-8') as f:
+    f.write(htmlContent)
 
-# Specification data structure
-SPEC = {
-    "schichten": [
-        {
-            "name": "Eingaben",
-            "farbe": "#5f6773",
-            "blocks": [
-                {"id": "job-runner-py", "name": "job_runner.py", "untertitel": "Cronjob"},
-                {"id": "report-db-py", "name": "report_db.py", "untertitel": "SQL"}
-            ]
-        },
-        {
-            "name": "Laeufe",
-            "farbe": "#2481cc",
-            "blocks": [
-                {"id": "with-skill", "name": "with_skill", "untertitel": "mit Skill"},
-                {"id": "without-skill", "name": "without_skill", "untertitel": "Gegenprobe"}
-            ]
-        },
-        {
-            "name": "Pruefung",
-            "farbe": "#6d5bd0",
-            "blocks": [
-                {"id": "ast-assertions", "name": "AST-Assertions", "untertitel": "Syntaxbaum"},
-                {"id": "not-contains", "name": "not_contains", "untertitel": "Textregel"},
-                {"id": "grading", "name": "Grading", "untertitel": "je Behauptung"}
-            ]
-        },
-        {
-            "name": "Ergebnis",
-            "farbe": "#b45309",
-            "blocks": [
-                {"id": "benchmark-json", "name": "benchmark.json", "untertitel": "pass_rate"},
-                {"id": "timing-json", "name": "timing.json", "untertitel": "Laufzeit"},
-                {"id": "eval-review-html", "name": "eval-review.html", "untertitel": "Gegenueberstellung"}
-            ]
-        }
-    ],
-    "kanten": [
-        {"von": "job-runner-py", "nach": "with-skill", "art": "fluss"},
-        {"von": "report-db-py", "nach": "without-skill", "art": "fluss"},
-        {"von": "with-skill", "nach": "ast-assertions", "art": "fluss"},
-        {"von": "without-skill", "nach": "not-contains", "art": "fluss"},
-        {"von": "ast-assertions", "nach": "benchmark-json", "art": "fluss"},
-        {"von": "not-contains", "nach": "timing-json", "art": "fluss"},
-        {"von": "grading", "nach": "eval-review-html", "art": "fluss"}
-    ],
-    "kantenarten": [
-        {"art": "fluss", "farbe": "#b45309", "stil": "voll", "text": "Fluss von unten nach oben"}
-    ]
-}
-
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 3d.py <output_file>")
-        sys.exit(1)
-    
-    output_file = sys.argv[1]
-    generate_html(output_file)
+print(f"HTML-Datei wurde erfolgreich erstellt: {ausgabe_datei}")

@@ -1,44 +1,42 @@
 #!/bin/bash
-# 1781743218784.py — portiert nach shell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_762dc8.ps1 — portiert nach shell
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_762dc8.ps1
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784.html — portiert nach bash
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# SYNOPSIS
+# Generiert die HTML-Datei für das Secret-Vault Public Tool.
+# DESCRIPTION
+# Dieses Skript erzeugt eine eigenständige HTML-Datei für das Secret-Vault Public Tool,
+# das vollständig clientseitig im Browser läuft und auf WebCrypto-API basiert.
+# PARAMETER OutputFile
+# Der Pfad zur zu erstellenden HTML-Ausgabedatei.
+# EXAMPLE
+# ./script.sh ./vault.html
 
-# Prüfe Anzahl der Argumente
 if [[ $# -ne 1 ]]; then
-    echo "Verwendung: $0 <ausgabedatei.html>" >&2
+    echo "Fehler: Es wird genau ein Parameter benötigt (Ausgabedatei)"
     exit 1
 fi
 
-output_file="$1"
+OUTPUT_FILE="$1"
 
-# Metadaten des Artefakts als JSON
-read -r -d '' artifact_meta <<'EOF' || true
-{
+# Metadaten des Artefakts
+ARTIFACT_META='{
   "name": "Secret Vault Public",
   "schemaVersion": 1,
   "description": "Secret-Vault Public als interaktives Browser-Artefakt: verschlüsselter Secret-Container vollständig client-seitig (WebCrypto, AES-256-GCM + PBKDF2). Öffnen/Anlegen, Anbieter/Felder ergänzen und ersetzen (Rotation), verschlüsseln und als .svpb herunterladen oder Klartext-JSON exportieren. DE/EN nach Browsersprache. Eigenes Format (nicht kompatibel mit dem scrypt-Python-Tool). Keine Secrets eingebettet.",
   "mcpTools": [],
   "mcpServerNames": []
-}
-EOF
+}'
 
 # HTML-Template mit eingebetteten Styles und JavaScript
-read -r -d '' html_content <<'EOF' || true
+read -r -d '' HTML_CONTENT <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
-EOF
-
-# Füge das JSON hinzu
-html_content+=$(echo "$artifact_meta" | jq -c .)
-html_content+=$'\n</script>\n'
-
-read -r -d '' html_template <<'EOF' || true
+'"$ARTIFACT_META"'
+</script>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -236,10 +234,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 EOF
 
-# Kombiniere alle Teile
-html_content+="$html_template"
-
 # Schreibe die HTML-Datei
-echo "$html_content" > "$output_file"
-
-echo "HTML-Datei erfolgreich generiert: $output_file"
+echo "$HTML_CONTENT" > "$OUTPUT_FILE"
+echo "HTML-Datei erfolgreich generiert: $OUTPUT_FILE"

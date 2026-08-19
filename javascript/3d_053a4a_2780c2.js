@@ -1,14 +1,18 @@
 #!/usr/bin/env node
-// 3d_053a4a.tcl — portiert nach javascript
+// 3d_053a4a_2780c2.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/3d_053a4a_2780c2.pl
+// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+
+// 3d_053a4a.tcl — portiert nach perl5
 // Quelle: tcl, Projects@abstractions:tcl/3d_053a4a.tcl
 // Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-// 3d.html — portiert nach JavaScript
+// 3d.html — portiert nach tcl
 // Quelle: html, Projects@python-hardener:public/3d.html
 // Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-// Node.js script to generate 3d.html
-// Usage: node this_script.js > 3d.html
+// Tcl 8.6 script to generate 3d.html
+// Usage: tclsh this_script.tcl > 3d.html
 
 function generate_html() {
     let html = [];
@@ -27,8 +31,7 @@ function generate_html() {
     
     // CSS styles
     html.push('<style>');
-    html.push(`
-  :root{
+    html.push(`  :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#b45309; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
@@ -342,8 +345,7 @@ function generate_html() {
     stelle();
     renderer.render(szene, kamera);
   })();
-})();
-`);
+})()`);
     html.push('</script>');
     html.push('</body>');
     html.push('</html>');

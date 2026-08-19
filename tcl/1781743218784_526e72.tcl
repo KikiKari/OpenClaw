@@ -1,20 +1,24 @@
-#!/usr/bin/env tclsh8.6
+#!/usr/bin/env tclsh
+# 1781743218784_526e72.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_526e72.pl
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+
 # 1781743218784.ps1 — portiert nach tcl
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784.ps1
 # Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.html — portiert nach tcl
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
 if {$argc != 1} {
-    puts stderr "Usage: [info script] <OutputPath>"
+    puts "Usage: [info script] <output_path>"
     exit 1
 }
 
-set OutputPath [lindex $argv 0]
+set output_path [lindex $argv 0]
 
-set htmlContent {<!DOCTYPE html>
+# 1781743218784.html — portiert nach powershell
+# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -221,6 +225,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-set fh [open $OutputPath w]
-puts -nonewline $fh $htmlContent
+set fh [open $output_path w]
+fconfigure $fh -encoding utf-8
+puts -nonewline $fh $html_content
 close $fh

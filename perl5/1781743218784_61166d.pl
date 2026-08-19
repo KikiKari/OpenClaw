@@ -1,16 +1,27 @@
 #!/usr/bin/perl
-# 1781743218784.sh — portiert nach perl5
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_61166d.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_61166d.js
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use JSON qw(encode_json decode_json);
+
+# 1781743218784.sh — portiert nach javascript
+# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.html — portiert nach JavaScript
+# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 # Secret-Vault Public HTML Generator
 # Erzeugt die vollständige HTML-Datei mit allen Inhalten
 
 sub generate_html {
-    return <<'EOF';
+    return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -216,28 +227,36 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
 }
 
 # Hauptprogramm
 sub main {
-    my ($output_file) = @_;
+    my @args = @ARGV;
+    my $output_file = $args[0];
     
-    if (!defined $output_file || $output_file eq '') {
-        print STDERR "Verwendung: $0 <ausgabedatei>\n";
+    if (!$output_file) {
+        print STDERR "Verwendung: perl script.pl <ausgabedatei>\n";
         exit 1;
     }
     
-    open(my $fh, '>', $output_file) or die "Kann Datei '$output_file' nicht öffnen: $!";
-    print $fh generate_html();
-    close($fh);
-    
-    if (-f $output_file) {
-        print "HTML-Datei erfolgreich erstellt: $output_file\n";
-    } else {
-        print STDERR "Fehler beim Erstellen der HTML-Datei\n";
+    eval {
+        my $html_content = generate_html();
+        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Kann Datei '$output_file' nicht öffnen: $!";
+        print $fh $html_content;
+        close($fh);
+        
+        if (-e $output_file) {
+            print "HTML-Datei erfolgreich erstellt: $output_file\n";
+        } else {
+            print STDERR "Fehler beim Erstellen der HTML-Datei\n";
+            exit 1;
+        }
+    };
+    if ($@) {
+        print STDERR "Fehler beim Erstellen der HTML-Datei: $@\n";
         exit 1;
     }
 }
 
-main(@ARGV);
+main() unless caller;

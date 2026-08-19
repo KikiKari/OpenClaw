@@ -1,16 +1,29 @@
 #!/usr/bin/perl
-# 3d.html — portiert nach perl5
-# Quelle: html, Projects@python-hardener:public/3d.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# 3d_053a4a.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/3d_053a4a.js
+# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use open qw(:std :utf8);
+
+# 3d_053a4a.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/3d_053a4a.pl
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+
+# 3d.html — portiert nach JavaScript für Node 20
+# Quelle: html, Projects@python-hardener:public/3d.html
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter: Ausgabedatei
-my $ausgabe = $ARGV[0] || die "Verwendung: $0 <ausgabedatei>\n";
+my $ausgabe_datei = $ARGV[0] // do {
+    print STDERR "Verwendung: $0 <ausgabedatei>\n";
+    exit 1;
+};
 
-# HTML-Inhalt generieren
-my $html = <<'HTML';
+# HTML-Dokument erzeugen
+my $htmlContent = <<'HTML';
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -334,9 +347,8 @@ my $html = <<'HTML';
 </html>
 HTML
 
-# In Datei schreiben
-open(my $fh, '>', $ausgabe) or die "Kann $ausgabe nicht öffnen: $!";
-print $fh $html;
+open my $fh, '>:encoding(UTF-8)', $ausgabe_datei or die "Konnte Datei '$ausgabe_datei' nicht öffnen: $!";
+print $fh $htmlContent;
 close $fh;
 
-print "Datei $ausgabe erfolgreich erstellt.\n";
+print "HTML-Datei wurde erfolgreich erstellt: $ausgabe_datei\n";
