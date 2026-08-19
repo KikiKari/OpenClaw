@@ -1851,456 +1851,81 @@ A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*June 30, 2026*
+*August 6, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-06-30 source=memory/2026-06-30-0155.md -->
-
-What Happened
-1. No grounded facts were extracted.
-
-Reflections
-1. This day reads mostly as monitoring and operational state, not as durable memory. It should be treated as current-state exhaust unless a clearer rule or preference appears. [memory/2026-06-30-0155.md:7-39]
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 2, 2026*
+*August 7, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-02 source=memory/2026-07-02.md -->
-
-What Happened
-1. No grounded facts were extracted.
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 4, 2026*
+*August 8, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-04 source=memory/2026-07-04-1139.md -->
-
-What Happened
-1. Conversation Summary: assistant: [[replyto:d3712f60-fa2d-49df-869e-ca92fb3ff68b]]Audio reply [memory/2026-07-04-1139.md:9]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 5, 2026*
+*August 9, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-05 source=memory/2026-07-05-0023.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: live https://pull-hls-f16-tt04.tiktokcdn-eu.com/game/stream-1272586854832276813ld/index.m3u8?expire=1784367663&sign=1bd1482ebbc948abf4113d61c6aeaf5f; and assistant: [[replyto:4bd599cf-cc28-4b68-b904-c420f5288379]]Audio reply [memory/2026-07-05-0023.md:9, memory/2026-07-05-0023.md:10, memory/2026-07-05-0023.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 6, 2026*
+*August 10, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-06 source=memory/2026-07-06-0515.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset. [memory/2026-07-06-0515.md:9]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 11, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-1512.md -->
-
-What Happened
-1. Conversation Summary: assistant: live https://pull-hls-f16-tt04.tiktokcdn-eu.com/game/stream-1272586854832276813ld/index.m3u8?expire=1784367663&sign=1bd1482ebbc948abf4113d61c6aeaf5f; assistant: [[replyto:f3d1162e-86c2-49be-aa2d-505fa0e48381]]Audio reply; and assistant: [[replyto:fb8890b7-d8e2-44b3-8471-d11daeb6ae5b]]Audio reply [memory/2026-07-09-1512.md:9, memory/2026-07-09-1512.md:10, memory/2026-07-09-1512.md:12]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 12, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2039.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset. and assistant: [[replyto:b44e9682-0cd9-4699-8828-798dab28e5d9]]Audio reply [memory/2026-07-09-2039.md:9, memory/2026-07-09-2039.md:10]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 13, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2100.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: LIVE: https://pull-hls-f16-tt04.tiktokcdn-eu.com/game/stream-1272586854832276813ld/index.m3u8?expire=1784367663&sign=1bd1482ebbc948abf4113d61c6aeaf5f; and assistant: [[replyto:30326e9b-e089-49ef-ab27-8355fa67cf7d]]Audio reply [memory/2026-07-09-2100.md:9, memory/2026-07-09-2100.md:10, memory/2026-07-09-2100.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 14, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2148.md -->
-
-What Happened
-1. Conversation Summary: assistant: Ich kann Ihnen nicht helfen, solange Sie mich beleidigen. Wenn Sie sachlich kommunizieren möchten, stehe ich Ihnen gerne zur Verfügung.; assistant: [[replyto:3b93e123-5d89-44a3-8fb8-3eefc4c8d657]]Audio reply; and assistant: [assistant turn failed before producing content] [memory/2026-07-09-2148.md:9, memory/2026-07-09-2148.md:10, memory/2026-07-09-2148.md:12]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 15, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2202.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: technicalerror – error: could not extract stream URL (tried direct API, yt-dlp, streamlink); and assistant: [[replyto:de6d6312-a680-46dd-8407-32b763445e0b]]Audio reply [memory/2026-07-09-2202.md:9, memory/2026-07-09-2202.md:10, memory/2026-07-09-2202.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 16, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2211.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: technicalerror: elevated host exec required for TikTok dispatcher; and assistant: [[replyto:f65b0ffc-3c0c-4a3f-ba0a-096cb82c2d10]]Audio reply [memory/2026-07-09-2211.md:9, memory/2026-07-09-2211.md:10, memory/2026-07-09-2211.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 17, 2026 at 3:01 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2215.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: technicalerror: elevated host exec required for TikTok dispatcher; and assistant: [[replyto:8bb6d247-0301-442c-8b9a-063f96381e0f]]Audio reply [memory/2026-07-09-2215.md:9, memory/2026-07-09-2215.md:10, memory/2026-07-09-2215.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 9, 2026*
+*August 18, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-09 source=memory/2026-07-09-2223.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: I’m unable to check @uelmen’s TikTok LIVE status because the required dispatcher must run with elevated host execution, and elevated exec isn’t enabled in this session. Let me know if you’d like to enable privileged execution or try another approach.; and assistant: [[replyto:8e4c17ef-4887-4759-a035-49ae5e31ea5d]]Audio reply [memory/2026-07-09-2223.md:9, memory/2026-07-09-2223.md:10, memory/2026-07-09-2223.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 10, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-10 source=memory/2026-07-10-0550.md -->
-
-What Happened
-1. Conversation Summary: user: Ihre Eingabe konnte nicht geöffnet werden:; VLC kann die Medienadresse 'https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071849351086973ld.flv?expire=1783631524&sign=ea7ed00b14d2b941e40e098a6e53ff6c' nicht öffnen. Für Details bitte im Fehlerprotokoll nachsehen.; and Url missing. Let's ensure correct URL from result. That output is a URL: [memory/2026-07-10-0550.md:9, memory/2026-07-10-0550.md:10, memory/2026-07-10-0550.md:40]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 10, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-10 source=memory/2026-07-10-2027.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; The exact command I’ll run is:; and Please approve this command so I can execute it. [memory/2026-07-10-2027.md:9, memory/2026-07-10-2027.md:12, memory/2026-07-10-2027.md:18]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-0626.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: LIVE https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443071591863026557ld.flv?expire=1783626658&sign=9e762f47a7f20b2be98dfb1e246da5c4; and assistant: [[replyto:62a84f42-901d-44f1-8226-41c116d3cb09]]Audio reply [memory/2026-07-11-0626.md:9, memory/2026-07-11-0626.md:10, memory/2026-07-11-0626.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-0749.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: LIVE https://pull-hls-f16-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443160571429520253ld/index.m3u8?expire=1784953622&sign=4f43e0e9f7048df2a02b147763fffa4c; and assistant: [[replyto:54bf75db-70b5-4824-ad56-7b2a080498e2]]Audio reply [memory/2026-07-11-0749.md:9, memory/2026-07-11-0749.md:10, memory/2026-07-11-0749.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-1053.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @aboutgracelife is currently LIVE on TikTok.; and It seems there was an error in my response formatting. Let me provide the correct three‑line reply. [memory/2026-07-11-1053.md:9, memory/2026-07-11-1053.md:10, memory/2026-07-11-1053.md:123]
-
-Reflections
-1. The raw note is mostly task and current-state material, so it should not be over-read as memory. [memory/2026-07-11-1053.md:7-856]
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-1127.md -->
-
-What Happened
-1. Conversation Summary: assistant: @dasbensonding is currently LIVE on TikTok.; Zusammengefasst: Das aktuelle Problem liegt an einer abgelaufenen, signierten URL. Hol dir einfach eine neue URL (indem du den /tiktoklive @dasbensonding‑Befehl erneut ausführst) und prüfe anschließend, ob deine VLC‑Installation HLS‑Streams unterstützt. Falls VLC weiterhin scheitert, verwende streamlink, yt‑dlp oder ffplay als Alternative.; and user: FAIL DU DRECKSTEIl [memory/2026-07-11-1127.md:9, memory/2026-07-11-1127.md:66, memory/2026-07-11-1127.md:74]
-
-Reflections
-1. A meaningful share of the day went into friction, and the interaction pattern looks pragmatic rather than emotional: diagnose the blocker, preserve state, and move on. [memory/2026-07-11-1127.md:9, memory/2026-07-11-1127.md:66, memory/2026-07-11-1127.md:74]
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-1827.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @babybel.l is currently LIVE on TikTok.; and VLC/MPV: https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443161855830000509ld.flv?expire=1784971653&sign=12f9ddea4e0a7fbbfc72ac413cdd76e7 [memory/2026-07-11-1827.md:9, memory/2026-07-11-1827.md:10, memory/2026-07-11-1827.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-1835.md -->
-
-What Happened
-1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-11-1835.md:20]
-
-Reflections
-1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-07-11-1835.md:20]
-
-Candidates
-- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-11-1835.md:20]
-
-Possible Lasting Updates
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-11-1835.md:20]
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-1844.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset. and assistant: [[replyto:1a579cf7-6beb-48b0-a89b-fb2b4e8a7e4f]]Audio reply [memory/2026-07-11-1844.md:9, memory/2026-07-11-1844.md:10]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-1903.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @jazzlegrande is currently LIVE on TikTok.; and VLC/MPV: https://pull-hls-f16-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443163297592902525ld/index.m3u8?expire=1784996904&sign=09a67bc6456dd3e16bd3ddddcd08b840 [memory/2026-07-11-1903.md:9, memory/2026-07-11-1903.md:10, memory/2026-07-11-1903.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-2012.md -->
-
-What Happened
-1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-11-2012.md:19]
-
-Reflections
-1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-07-11-2012.md:19]
-
-Candidates
-- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-11-2012.md:19]
-
-Possible Lasting Updates
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-11-2012.md:19]
-
----
-
-*July 11, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-11 source=memory/2026-07-11-2138.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: I’m ready to check the TikTok LIVE status for @jazzlegrande, but the skill needs Playwright’s browser binaries installed first.; and Action needed: Approve running npx playwright install (in the skills/tiktok-live folder) to download the required Chromium browser. This will let the checker script work correctly. Please confirm. [memory/2026-07-11-2138.md:9, memory/2026-07-11-2138.md:10, memory/2026-07-11-2138.md:12]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-0637.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @1thomashinz1 is currently LIVE on TikTok.; and VLC/MPV: https://pull-flv-f60-tt03.tiktokcdn-eu.com/stage/stream-4443164025260606333ld.flv?expire=1785008321&sign=d20182fb873ffc1af16ff9374582a0a6 [memory/2026-07-12-0637.md:9, memory/2026-07-12-0637.md:10, memory/2026-07-12-0637.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-1623.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; (Unfortunately, the URL was cut off in the response. Let’s retrieve the full URL again.); and Step: Run the dispatcher again for butterfly.vk and capture the complete URL. This will let us provide the full VLC/MPV link. [memory/2026-07-12-1623.md:9, memory/2026-07-12-1623.md:17, memory/2026-07-12-1623.md:19]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-1732.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @dermurat11 is currently LIVE on TikTok.; and VLC/MPV: https://pull-flv-f58-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443168736164971389ld.flv?expire=1785076873&sign=e42f59d2a7b367762e7ec3fe9b7cacf1 [memory/2026-07-12-1732.md:9, memory/2026-07-12-1732.md:10, memory/2026-07-12-1732.md:11]
-
-Reflections
-1. The raw note is mostly task and current-state material, so it should not be over-read as memory. [memory/2026-07-12-1732.md:7-62]
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-1800.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset. and assistant: [[replyto:187a02ed-bbb1-40ae-86c2-f40b61aacfb3]]Audio reply [memory/2026-07-12-1800.md:9, memory/2026-07-12-1800.md:10]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-1844.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @salina1894official is currently LIVE on TikTok.; and VLC/MPV: https://pull-hls-f16-tt04.tiktokcdn-eu.com/game/stream-1272629286288753997ld/index.m3u8?expire=1785001779&sign=aba8e58c669b7a05b33770542ea75a8a [memory/2026-07-12-1844.md:9, memory/2026-07-12-1844.md:10, memory/2026-07-12-1844.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-2102.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @hannekleehof is currently LIVE on TikTok.; and The user asks to use the "tiktok-live" skill for @iman.hayatiii. The tool already used tiktokdispatcher with "url" operation. I returned output using three lines: handle line, VLC/MPV line, Method line. The second line includes raw URL. Then called tts. However, I see duplicated content: final answer includes repeated and broken lines. Need corrected? The skill SKILL.md expects exactly three lines with correct format. I should correct output: Ensure exactly three lines, no extra spaces or formatting. No duplicate or broken content. Also need TTS with same lines. [memory/2026-07-12-2102.md:9, memory/2026-07-12-2102.md:10, memory/2026-07-12-2102.md:35]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-2107.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @iman.hayatiii is currently LIVE on TikTok.; and [[tts: @iman.hayatiii [memory/2026-07-12-2107.md:9, memory/2026-07-12-2107.md:10, memory/2026-07-12-2107.md:15]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 12, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-12 source=memory/2026-07-12-2117.md -->
-
-What Happened
-1. Conversation Summary: assistant: ✅ Session reset.; assistant: @iman.hayatiii is currently LIVE on TikTok.; and VLC/MPV: https://pull-hls-f16-tt03.fcdn.eu.tiktokcdn.com/stage/stream-4443169808568025981ld/index.m3u8?expire=1785092930&sign=f27e38a6ee59481870228197737cc19f [memory/2026-07-12-2117.md:9, memory/2026-07-12-2117.md:10, memory/2026-07-12-2117.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 13, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-13 source=memory/2026-07-13-0251.md -->
-
-What Happened
-1. User: "Use the "tiktok-live" skill for this request. User input: @laafatooo". So they want the result for @laafatooo using the tiktok-live skill. We've already executed the dispatcher (tiktokdispatch.py) with @laafatooo and got live status and stream URL. [memory/2026-07-13-0251.md:112]
-
-Reflections
-1. The raw note is mostly task and current-state material, so it should not be over-read as memory. [memory/2026-07-13-0251.md:7-226]
-
-Candidates
-- [unclear] User: "Use the "tiktok-live" skill for this request. User input: @laafatooo". So they want the result for @laafatooo using the tiktok-live skill. We've already executed the dispatcher (tiktokdispatch.py) with @laafatooo and got live status and stream URL. [memory/2026-07-13-0251.md:112]
-
----
-
-*July 13, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-13 source=memory/2026-07-13-0758.md -->
-
-What Happened
-1. Conversation Summary: assistant: @elmalekanirvana is currently LIVE on TikTok.; VLC/MPV: https://pull-flv-l77-gcp01.eu.tiktokcdn.com/stage/stream-4443172166633259890ld.flv?expire=1785126384&sign=f4788b1e21df90cd8a67ef8d863fc05a; and Method: pythonapifallbacks [memory/2026-07-13-0758.md:9, memory/2026-07-13-0758.md:10, memory/2026-07-13-0758.md:11]
-
-Reflections
-1. No grounded reflections emerged from this note yet.
-
----
-
-*July 16, 2026*
-
-<!-- openclaw:dreaming:backfill-entry day=2026-07-16 source=memory/2026-07-16-0620.md -->
-
-What Happened
-1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-16-0620.md:19]
-
-Reflections
-1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-07-16-0620.md:19]
-
-Candidates
-- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-16-0620.md:19]
-
-Possible Lasting Updates
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-16-0620.md:19]
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
@@ -2322,126 +1947,51 @@ Possible Lasting Updates
 
 ---
 
-*August 6, 2026 at 3:00 AM GMT+2*
+*August 1, 2026*
 
-A memory trace surfaced, but details were unavailable in this run.
+<!-- openclaw:dreaming:backfill-entry day=2026-08-01 source=memory/2026-08-01-1015.md -->
 
+What Happened
+1. Conversation Summary: assistant: @nelliavtor is currently LIVE on TikTok.; Titel: Песни для добрых людей; and Streamer: НаилЯ Подарок [memory/2026-08-01-1015.md:9, memory/2026-08-01-1015.md:10, memory/2026-08-01-1015.md:11]
 
----
-
-*August 6, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
+Reflections
+1. No grounded reflections emerged from this note yet.
 
 ---
 
-*August 6, 2026 at 3:00 AM GMT+2*
+*August 4, 2026*
 
-A memory trace surfaced, but details were unavailable in this run.
+<!-- openclaw:dreaming:backfill-entry day=2026-08-04 source=memory/2026-08-04-0707.md -->
 
+What Happened
+1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-04-0707.md:19]
 
----
+Reflections
+1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-08-04-0707.md:19]
 
-*August 7, 2026 at 3:00 AM GMT+2*
+Candidates
+- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-04-0707.md:19]
 
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 8, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
+Possible Lasting Updates
+- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-04-0707.md:19]
 
 ---
 
-*August 8, 2026 at 3:00 AM GMT+2*
+*August 8, 2026*
 
-A memory trace surfaced, but details were unavailable in this run.
+<!-- openclaw:dreaming:backfill-entry day=2026-08-08 source=memory/2026-08-08-0038.md -->
 
+What Happened
+1. Ausführung: Original-Skill-Script (sandbox-skills/skills/db-maintainer/scripts/dbmaintainer.py) hardcoded /home/openclaw/.openclaw/workspace → im Sandbox-Exec ungültig (/home read-only).; Sandbox-adaptierte Kopie: /workspace/.openclaw/tmp/dbmaintainerrun.py (WORKSPACE=/workspace, Python-Fallback für fehlendes tree-Binary, Sync live-DBs → db/ vor Backup).; and Zyklus erfolgreich: important/openclaw-tree.txt aktualisiert, tree.db v2 + docs.db neu aufgebaut (1505 Doku-Änderungen, State hatte veraltete Hashes), Backup erstellt, 4 alte Backups (3 Tage) gelöscht. [memory/2026-08-08-0038.md:7, memory/2026-08-08-0038.md:8, memory/2026-08-08-0038.md:9]
+2. Wichtig für künftige Läufe: Live-DBs liegen im Workspace-Root (/workspace/docs.db, /workspace/tree.db) – die Sub-Scripts scripts/updatedocsdb.py + scripts/treeindexerv2.py schreiben dorthin. db/.db sind nur Sync-/Backup-Quellen.; Backup-Namensschema beibehalten: YYYY-MM-DDHH-MM{docs,tree}.db.bak (abweichend von älterer Adaptation dbmaintainerfixed.py, die root.db.bak nutzte).; and tree-Binary ist im Sandbox nicht installiert und nicht installierbar (kein root) → Python-Fallback nutzen. [memory/2026-08-08-0038.md:12, memory/2026-08-08-0038.md:13, memory/2026-08-08-0038.md:14]
+3. Kontext: Cron-Reminder "Run db maintainer script" (Skill: db-maintainer). [memory/2026-08-08-0038.md:4]
 
----
-
-*August 9, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 10, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
+Reflections
+1. No grounded reflections emerged from this note yet.
 
 ---
 
-*August 11, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 11, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 12, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 13, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 13, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 14, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 15, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 16, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 17, 2026 at 3:01 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 18, 2026 at 3:00 AM GMT+2*
+*August 19, 2026 at 3:00 AM GMT+2*
 
 A memory trace surfaced, but details were unavailable in this run.
 
