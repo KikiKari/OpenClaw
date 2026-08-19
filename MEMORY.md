@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-18 (07:03 CEST)
+**Letzte Aktualisierung:** 2026-08-19 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-19 - Daily Memory-Maintenance & Erkenntnisse vom 18./19.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST)
+- ❌ Keine Datei `memory/2026-08-18*.md` im Workspace-Root gefunden - gestern keine neuen Einträge zu Entscheidungen, Projekten oder ToDos.
+- ✅ Analysiert: `memory/2026-08-19-0614.md` (Session-/Status- und TikTok-Live-Check für `@luiisamour`; keine neuen produktiven Entscheidungen, Projekte oder offenen ToDos).
+- ℹ️ Wichtige bestehende Erkenntnis unverändert: db-maintainer-Lauf vom 08.08. bleibt relevant (Live-DBs im Workspace-Root, `db/*.db` als Sync-/Backup-Quellen, Backup-Namensschema `YYYY-MM-DD_HH-MM_{docs,tree}.db.bak`, Python-Fallback statt `tree`, Sandbox-Exec nur Einzelbefehle).
+- ✅ Archiv-Check: `memory/2026-07-18-2027.md` (>30 Tage) nach `memory/archive/2026-08-19/` verschoben.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-18 - Daily Memory-Maintenance & Erkenntnisse vom 17./18.08.
 - ✅ Memory-Maintenance heute geprüft (07:03 CEST)
