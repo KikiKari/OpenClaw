@@ -1,10 +1,18 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-19 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-08-20 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-20 - Daily Memory-Maintenance & Erkenntnisse vom 19./20.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST).
+- ✅ Analysiert: `memory/2026-08-19-0614.md`, `memory/2026-08-19-2125.md` sowie die Deep-/Light-/REM-Tagesdateien für den 19. und 20.08.
+- ℹ️ Die beiden Session-Protokolle enthalten ausschließlich TikTok-Live-Status, kurzlebige Stream-URLs und Laufzeit-/Nutzungswerte; keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos.
+- ℹ️ Die Dreaming-Protokolle bestätigen keine beförderungswürdigen Erkenntnisse; der bereits dokumentierte `db-maintainer`-Kontext vom 08.08. blieb unverändert.
+- ✅ Archiv-Check: Keine Datei direkt unter `memory/` ist älter als 30 Tage; keine Verschiebung erforderlich.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-19 - Daily Memory-Maintenance & Erkenntnisse vom 18./19.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST)
