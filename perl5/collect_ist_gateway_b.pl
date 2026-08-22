@@ -1,256 +1,349 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 # collect_ist_gateway_b.sh — portiert nach perl5
 # Quelle: shell, OpenClaw@gateway2:scripts/collect_ist_gateway_b.sh
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use File::Path qw(make_path);
-use File::Basename;
 use POSIX qw(strftime);
+use File::Path qw(make_path);
+use File::Basename qw(basename dirname);
+use Cwd qw(realpath);
 
-my $BASE_DIR = $ENV{'HOME'} . "/.openclaw";
-my $OUT_DIR = $BASE_DIR . "/workspace/vscode";
-my $NOW_UTC = strftime("%Y-%m-%dT%H:%M:%SZ", gmtime);
-my $NOW_LOCAL = strftime("%Y-%m-%d %H:%M:%S %Z", localtime);
-my $TS = strftime("%Y%m%d-%H%M%S", localtime);
+my $base_dir = $ENV{'HOME'} . "/.openclaw";
+my $out_dir = $base_dir . "/workspace/vscode";
 
-make_path($OUT_DIR) unless -d $OUT_DIR;
+my $now_utc = strftime("%Y-%m-%dT%H:%M:%SZ", gmtime);
+my $now_local = strftime("%Y-%m-%d %H:%M:%S %Z", localtime);
+my $ts = strftime("%Y%m%d-%H%M%S", localtime);
 
-my $IST_FILE = "$OUT_DIR/IST-ZUSTAND_GATEWAY-B_NODE7.md";
-my $INV_FILE = "$OUT_DIR/ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md";
-my $CFG_FILE = "$OUT_DIR/OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md";
-my $ENV_FILE = "$OUT_DIR/ENV-STATUS_GATEWAY-B_NODE7.md";
-my $RUN_FILE = "$OUT_DIR/RUN-$TS.md";
+make_path($out_dir) unless -d $out_dir;
 
-my $OPENCLAW_JSON = "$BASE_DIR/openclaw.json";
-my $ENV_DOT = "$BASE_DIR/.env";
-my $ENV_SYSTEMD = "$BASE_DIR/gateway.systemd.env";
-my $VSCODE_DIR = "$BASE_DIR/.vscode";
+my $ist_file = "$out_dir/IST-ZUSTAND_GATEWAY-B_NODE7.md";
+my $inv_file = "$out_dir/ARTEFAKT-INVENTAR_GATEWAY-B_NODE7.md";
+my $cfg_file = "$out_dir/OPENCLAW-CONFIG-SNAPSHOT_GATEWAY-B_NODE7.md";
+my $env_file = "$out_dir/ENV-STATUS_GATEWAY-B_NODE7.md";
+my $run_file = "$out_dir/RUN-$ts.md";
 
-sub safe_backtick {
-    my ($cmd) = @_;
-    my $result = `$cmd 2>/dev/null`;
-    chomp $result;
-    return $result // "";
+my $openclaw_json = "$base_dir/openclaw.json";
+my $env_dot = "$base_dir/.env";
+my $env_systemd = "$base_dir/gateway.systemd.env";
+my $vscode_dir = "$base_dir/.vscode";
+
+my $hostname_fqdn = `hostname -f 2>/dev/null` || `hostname`;
+chomp $hostname_fqdn;
+$hostname_fqdn =~ s/\s+$//;
+
+my $hostname_short = `hostname`;
+chomp $hostname_short;
+$hostname_short =~ s/\s+$//;
+
+my $arch = `uname -m`;
+chomp $arch;
+$arch =~ s/\s+$//;
+
+my $kernel = `uname -r`;
+chomp $kernel;
+$kernel =~ s/\s+$//;
+
+my $os_pretty = "";
+if (-f "/etc/os-release") {
+    open(my $fh, '<', '/etc/os-release') or warn "Could not open /etc/os-release: $!";
+    while (<$fh>) {
+        if (/^PRETTY_NAME=(.*)/) {
+            $os_pretty = $1;
+            $os_pretty =~ s/^["']|["']$//g;
+            last;
+        }
+    }
+    close $fh;
 }
 
-my $HOSTNAME_FQDN = safe_backtick("hostname -f") || safe_backtick("hostname");
-my $HOSTNAME_SHORT = safe_backtick("hostname");
-my $ARCH = safe_backtick("uname -m");
-my $KERNEL = safe_backtick("uname -r");
-my $OS_PRETTY = safe_backtick('grep "^PRETTY_NAME=" /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d \'"\'');
-my $IPV4_ALL = join(" ", split(/\s+/, safe_backtick("hostname -I")));
-my $PUBLIC_IP = safe_backtick("curl -4 -s --max-time 4 ifconfig.me") || "(nicht ermittelt)";
-my $TAILSCALE_IP = safe_backtick("tailscale ip -4") || "(nicht ermittelt)";
-my $OPENCLAW_VER = safe_backtick("openclaw --version") || "(nicht ermittelt)";
-my $NODE_VER = safe_backtick("node -v") || "(nicht ermittelt)";
+my $ipv4_all = `hostname -I 2>/dev/null`;
+chomp $ipv4_all;
+$ipv4_all =~ s/\s+$//;
+$ipv4_all =~ s/^\s+|\s+$//g;
 
-open(my $ist_fh, '>', $IST_FILE) or die "Could not open file '$IST_FILE': $!";
-print $ist_fh <<EOF;
+my $public_ip = `curl -4 -s --max-time 4 ifconfig.me 2>/dev/null`;
+chomp $public_ip;
+$public_ip = "(nicht ermittelt)" if !$public_ip || $public_ip eq "";
+
+my $tailscale_ip = `tailscale ip -4 2>/dev/null | head -n1`;
+chomp $tailscale_ip;
+$tailscale_ip = "(nicht ermittelt)" if !$tailscale_ip || $tailscale_ip eq "";
+
+my $openclaw_ver = `openclaw --version 2>/dev/null`;
+chomp $openclaw_ver;
+$openclaw_ver = "(nicht ermittelt)" if !$openclaw_ver || $openclaw_ver eq "";
+
+my $node_ver = `node -v 2>/dev/null`;
+chomp $node_ver;
+$node_ver = "(nicht ermittelt)" if !$node_ver || $node_ver eq "";
+
+open(my $fh, '>', $ist_file) or die "Cannot write to $ist_file: $!";
+
+print $fh <<EOF;
 # IST-Zustand: Gateway B / Node 7
 
-Stand (lokal): $NOW_LOCAL  
-Stand (UTC): $NOW_UTC
+Stand (lokal): $now_local  
+Stand (UTC): $now_utc
 
 ## 1) Identität & System
 
 - Gateway: **B**
 - Node: **7**
-- Hostname (short): \`$HOSTNAME_SHORT\`
-- Hostname (FQDN): \`$HOSTNAME_FQDN\`
-- Architektur: \`$ARCH\`
-- Kernel: \`$KERNEL\`
-- OS: \`$OS_PRETTY\`
-- IPv4 (lokal): \`$IPV4_ALL\`
-- Public IPv4: \`$PUBLIC_IP\`
-- Tailscale IPv4: \`$TAILSCALE_IP\`
-- OpenClaw Version: \`$OPENCLAW_VER\`
-- Node.js Version: \`$NODE_VER\`
+- Hostname (short): \\`$hostname_short\\`
+- Hostname (FQDN): \\`$hostname_fqdn\\`
+- Architektur: \\`$arch\\`
+- Kernel: \\`$kernel\\`
+- OS: \\`$os_pretty\\`
+- IPv4 (lokal): \\`$ipv4_all\\`
+- Public IPv4: \\`$public_ip\\`
+- Tailscale IPv4: \\`$tailscale_ip\\`
+- OpenClaw Version: \\`$openclaw_ver\\`
+- Node.js Version: \\`$node_ver\\`
 
 ## 2) Arbeitsverzeichnisse
 
-- Basis: \`$BASE_DIR\`
-- Funktionell VSCode: \`$VSCODE_DIR\`
-- Workspace Doku: \`$OUT_DIR\`
+- Basis: \\`$base_dir\\`
+- Funktionell VSCode: \\`$vscode_dir\\`
+- Workspace Doku: \\`$out_dir\\`
 
 ## 3) Kernartefakte (Existenz)
 
-- \`$OPENCLAW_JSON\`: @{[(-f $OPENCLAW_JSON) ? "vorhanden" : "fehlt"]}
-- \`$ENV_DOT\`: @{[(-f $ENV_DOT) ? "vorhanden" : "fehlt"]}
-- \`$ENV_SYSTEMD\`: @{[(-f $ENV_SYSTEMD) ? "vorhanden" : "fehlt"]}
-- \`$BASE_DIR/plugins/installs.json\`: @{[(-f "$BASE_DIR/plugins/installs.json") ? "vorhanden" : "fehlt"]}
-- \`$BASE_DIR/plugin-skills\`: @{[(-d "$BASE_DIR/plugin-skills") ? "vorhanden" : "fehlt"]}
+- \\`$openclaw_json\\`: @{[(-f $openclaw_json ? "vorhanden" : "fehlt")]}
+- \\`$env_dot\\`: @{[(-f $env_dot ? "vorhanden" : "fehlt")]}
+- \\`$env_systemd\\`: @{[(-f $env_systemd ? "vorhanden" : "fehlt")]}
+- \\`$base_dir/plugins/installs.json\\`: @{[(-f "$base_dir/plugins/installs.json" ? "vorhanden" : "fehlt")]}
+- \\`$base_dir/plugin-skills\\`: @{[(-d "$base_dir/plugin-skills" ? "vorhanden" : "fehlt")]}
 
 ## 4) Hinweis
 
 Diese Datei wird bei jedem Lauf neu geschrieben.
-Zusätzlich wird ein Laufprotokoll als \`RUN-*.md\` erzeugt.
+Zusätzlich wird ein Laufprotokoll als \\`RUN-*.md\\` erzeugt.
 EOF
-close($ist_fh);
 
-open(my $inv_fh, '>', $INV_FILE) or die "Could not open file '$INV_FILE': $!";
-print $inv_fh "# Artefakt-Inventar: Gateway B / Node 7\n\n";
-print $inv_fh "Stand: $NOW_LOCAL\n\n";
-print $inv_fh "## Top-Level in ~/.openclaw\n\n";
-print $inv_fh '```text' . "\n";
-if (opendir(my $dir, $BASE_DIR)) {
-    while (readdir($dir)) {
-        next if /^\.\.?$/;
-        print $inv_fh "$_\n";
-    }
-    closedir($dir);
-}
-print $inv_fh "```\n\n";
-print $inv_fh "## ~/.openclaw/.vscode\n\n";
-print $inv_fh '```text' . "\n";
-if (-d $VSCODE_DIR) {
-    opendir(my $dir, $VSCODE_DIR) or die "Cannot opendir $VSCODE_DIR: $!";
-    my @files = readdir($dir);
-    closedir($dir);
+close $fh;
+
+open($fh, '>', $inv_file) or die "Cannot write to $inv_file: $!";
+
+print $fh "# Artefakt-Inventar: Gateway B / Node 7\n\n";
+print $fh "Stand: $now_local\n\n";
+print $fh "## Top-Level in ~/.openclaw\n\n";
+print $fh "\\`\\`\\`text\n";
+if (opendir(my $dir_fh, $base_dir)) {
+    my @files = readdir($dir_fh);
+    closedir($dir_fh);
     for my $file (@files) {
         next if $file eq '.' || $file eq '..';
-        my $full_path = "$VSCODE_DIR/$file";
-        my @stat = stat($full_path);
-        printf $inv_fh "%-10s %-5d %-5d %-8d %s %s\n", 
-            sprintf("%04o", ($stat[2] & 07777)), 
-            $stat[5], 
-            $stat[4], 
-            $stat[7], 
-            strftime("%b %d %H:%M", localtime($stat[9])), 
-            $file;
+        print $fh "$file\n";
     }
 } else {
-    print $inv_fh "(nicht vorhanden)\n";
+    print $fh "(nicht lesbar)\n";
 }
-print $inv_fh "```\n\n";
-print $inv_fh "## plugin-skills/\n\n";
-print $inv_fh '```text' . "\n";
-if (-d "$BASE_DIR/plugin-skills") {
-    opendir(my $dir, "$BASE_DIR/plugin-skills") or die "Cannot opendir $BASE_DIR/plugin-skills: $!";
-    while (readdir($dir)) {
-        next if /^\.\.?$/;
-        print $inv_fh "$_\n";
+print $fh "\\`\\`\\`\n\n";
+
+print $fh "## ~/.openclaw/.vscode\n\n";
+print $fh "\\`\\`\\`text\n";
+if (-d $vscode_dir) {
+    opendir(my $dir_fh, $vscode_dir) or warn "Cannot read directory $vscode_dir: $!";
+    my @files = readdir($dir_fh);
+    closedir($dir_fh);
+    for my $file (@files) {
+        next if $file eq '.' || $file eq '..';
+        my $full_path = "$vscode_dir/$file";
+        my @stat_info = stat($full_path);
+        printf $fh "%s %s %s %s %s %s %s\n", 
+                  substr(sprintf("%07o", ($stat_info[2] & 0777)), -3),
+                  (getpwuid($stat_info[4]))[0],
+                  (getgrgid($stat_info[5]))[0],
+                  $stat_info[9],
+                  $stat_info[7],
+                  strftime("%b %d %H:%M", localtime($stat_info[9])),
+                  $file;
     }
-    closedir($dir);
 } else {
-    print $inv_fh "(nicht vorhanden)\n";
+    print $fh "(nicht vorhanden)\n";
 }
-print $inv_fh "```\n\n";
-print $inv_fh "## openclaw.json Backups\n\n";
-print $inv_fh '```text' . "\n";
-my @backups = glob("$BASE_DIR/openclaw.json.bak*");
+print $fh "\\`\\`\\`\n\n";
+
+print $fh "## plugin-skills/\n\n";
+print $fh "\\`\\`\\`text\n";
+if (-d "$base_dir/plugin-skills") {
+    opendir(my $dir_fh, "$base_dir/plugin-skills") or warn "Cannot read directory $base_dir/plugin-skills: $!";
+    my @files = readdir($dir_fh);
+    closedir($dir_fh);
+    for my $file (@files) {
+        next if $file eq '.' || $file eq '..';
+        print $fh "$file\n";
+    }
+} else {
+    print $fh "(nicht vorhanden)\n";
+}
+print $fh "\\`\\`\\`\n\n";
+
+print $fh "## openclaw.json Backups\n\n";
+print $fh "\\`\\`\\`text\n";
+my @backups = glob("$base_dir/openclaw.json.bak*");
 if (@backups) {
     for my $backup (@backups) {
-        print $inv_fh basename($backup) . "\n";
+        print $fh basename($backup), "\n";
     }
 } else {
-    print $inv_fh "(keine gefunden)\n";
+    print $fh "(keine gefunden)\n";
 }
-print $inv_fh "```\n";
-close($inv_fh);
+print $fh "\\`\\`\\`\n";
 
-open(my $cfg_fh, '>', $CFG_FILE) or die "Could not open file '$CFG_FILE': $!";
-print $cfg_fh "# OpenClaw Config Snapshot: Gateway B / Node 7\n\n";
-print $cfg_fh "Stand: $NOW_LOCAL\n\n";
-print $cfg_fh "## Schlüsselpositionen (grep)\n\n";
-print $cfg_fh '```text' . "\n";
-if (-f $OPENCLAW_JSON) {
-    open(my $fh, '<', $OPENCLAW_JSON) or die "Cannot read $OPENCLAW_JSON: $!";
+close $fh;
+
+open($fh, '>', $cfg_file) or die "Cannot write to $cfg_file: $!";
+
+print $fh "# OpenClaw Config Snapshot: Gateway B / Node 7\n\n";
+print $fh "Stand: $now_local\n\n";
+print $fh "## Schlüsselpositionen (grep)\n\n";
+print $fh "\\`\\`\\`text\n";
+if (-f $openclaw_json) {
+    open(my $json_fh, '<', $openclaw_json) or warn "Could not open $openclaw_json: $!";
     my $line_num = 1;
-    while (my $line = <$fh>) {
-        if ($line =~ /"(gateway|session|dmScope|auth|secrets|tools|plugins|profile|alsoAllow|denyCommands)"/) {
-            print $cfg_fh "$line_num:$line";
+    while (my $line = <$json_fh>) {
+        chomp $line;
+        if ($line =~ /"gateway"|\"session\"|\"dmScope\"|\"auth\"|\"secrets\"|\"tools\"|\"plugins\"|\"profile\"|\"alsoAllow\"|\"denyCommands\"/) {
+            print $fh "$line_num:$line\n";
         }
         $line_num++;
     }
-    close($fh);
+    close $json_fh;
 } else {
-    print $cfg_fh "openclaw.json fehlt\n";
+    print $fh "openclaw.json fehlt\n";
 }
-print $cfg_fh "```\n\n";
-print $cfg_fh "## Ausschnitt gateway/session/auth (ungefiltert, betriebsnah)\n\n";
-print $cfg_fh '```json' . "\n";
-if (-f $OPENCLAW_JSON) {
-    open(my $fh, '<', $OPENCLAW_JSON) or die "Cannot read $OPENCLAW_JSON: $!";
-    my $count = 0;
-    while (my $line = <$fh>) {
-        $count++;
-        last if $count > 780;
-        print $cfg_fh $line if $count >= 580;
-    }
-    close($fh);
-} else {
-    print $cfg_fh "{ \"error\": \"openclaw.json fehlt\" }\n";
-}
-print $cfg_fh "```\n";
-close($cfg_fh);
+print $fh "\\`\\`\\`\n\n";
 
-open(my $env_fh, '>', $ENV_FILE) or die "Could not open file '$ENV_FILE': $!";
-print $env_fh "# ENV-Status: Gateway B / Node 7\n\n";
-print $env_fh "Stand: $NOW_LOCAL\n\n";
-print $env_fh "## Dateien\n\n";
-print $env_fh '```text' . "\n";
-for my $file ($ENV_DOT, $ENV_SYSTEMD) {
-    if (-e $file) {
-        my @stat = stat($file);
-        printf $env_fh "%-10s %-5d %-5d %-8d %s %s\n", 
-            sprintf("%04o", ($stat[2] & 07777)), 
-            $stat[5], 
-            $stat[4], 
-            $stat[7], 
-            strftime("%b %d %H:%M", localtime($stat[9])), 
-            basename($file);
+print $fh "## Ausschnitt gateway/session/auth (ungefiltert, betriebsnah)\n\n";
+print $fh "\\`\\`\\`json\n";
+if (-f $openclaw_json) {
+    open(my $json_fh, '<', $openclaw_json) or warn "Could not open $openclaw_json: $!";
+    my $line_count = 0;
+    while (my $line = <$json_fh>) {
+        $line_count++;
+        last if $line_count > 780;
+        print $fh $line if $line_count >= 580;
     }
-}
-print $env_fh "```\n\n";
-print $env_fh "## .env (vollständig, ungefiltert)\n\n";
-print $env_fh '```dotenv' . "\n";
-if (-f $ENV_DOT) {
-    open(my $fh, '<', $ENV_DOT) or die "Cannot read $ENV_DOT: $!";
-    print $env_fh do { local $/; <$fh> };
-    close($fh);
+    close $json_fh;
 } else {
-    print $env_fh "# .env fehlt\n";
+    print $fh "{ \"error\": \"openclaw.json fehlt\" }\n";
 }
-print $env_fh "```\n\n";
-print $env_fh "## gateway.systemd.env (vollständig, ungefiltert)\n\n";
-print $env_fh '```dotenv' . "\n";
-if (-f $ENV_SYSTEMD) {
-    open(my $fh, '<', $ENV_SYSTEMD) or die "Cannot read $ENV_SYSTEMD: $!";
-    print $env_fh do { local $/; <$fh> };
-    close($fh);
-} else {
-    print $env_fh "# gateway.systemd.env fehlt\n";
-}
-print $env_fh "```\n";
-close($env_fh);
+print $fh "\\`\\`\\`\n";
 
-open(my $run_fh, '>', $RUN_FILE) or die "Could not open file '$RUN_FILE': $!";
-print $run_fh <<EOF;
+close $fh;
+
+open($fh, '>', $env_file) or die "Cannot write to $env_file: $!";
+
+print $fh "# ENV-Status: Gateway B / Node 7\n\n";
+print $fh "Stand: $now_local\n\n";
+print $fh "## Dateien\n\n";
+print $fh "\\`\\`\\`text\n";
+if (-f $env_dot && -f $env_systemd) {
+    my @stat_env = stat($env_dot);
+    my @stat_systemd = stat($env_systemd);
+    printf $fh "%s %s %s %s %s %s %s\n", 
+              substr(sprintf("%07o", ($stat_env[2] & 0777)), -3),
+              (getpwuid($stat_env[4]))[0],
+              (getgrgid($stat_env[5]))[0],
+              $stat_env[9],
+              $stat_env[7],
+              strftime("%b %d %H:%M", localtime($stat_env[9])),
+              basename($env_dot);
+    printf $fh "%s %s %s %s %s %s %s\n", 
+              substr(sprintf("%07o", ($stat_systemd[2] & 0777)), -3),
+              (getpwuid($stat_systemd[4]))[0],
+              (getgrgid($stat_systemd[5]))[0],
+              $stat_systemd[9],
+              $stat_systemd[7],
+              strftime("%b %d %H:%M", localtime($stat_systemd[9])),
+              basename($env_systemd);
+} elsif (-f $env_dot) {
+    my @stat_env = stat($env_dot);
+    printf $fh "%s %s %s %s %s %s %s\n", 
+              substr(sprintf("%07o", ($stat_env[2] & 0777)), -3),
+              (getpwuid($stat_env[4]))[0],
+              (getgrgid($stat_env[5]))[0],
+              $stat_env[9],
+              $stat_env[7],
+              strftime("%b %d %H:%M", localtime($stat_env[9])),
+              basename($env_dot);
+} elsif (-f $env_systemd) {
+    my @stat_systemd = stat($env_systemd);
+    printf $fh "%s %s %s %s %s %s %s\n", 
+              substr(sprintf("%07o", ($stat_systemd[2] & 0777)), -3),
+              (getpwuid($stat_systemd[4]))[0],
+              (getgrgid($stat_systemd[5]))[0],
+              $stat_systemd[9],
+              $stat_systemd[7],
+              strftime("%b %d %H:%M", localtime($stat_systemd[9])),
+              basename($env_systemd);
+} else {
+    print $fh "(keine ENV-Dateien gefunden)\n";
+}
+print $fh "\\`\\`\\`\n\n";
+
+print $fh "## .env (vollständig, ungefiltert)\n\n";
+print $fh "\\`\\`\\`dotenv\n";
+if (-f $env_dot) {
+    open(my $env_fh, '<', $env_dot) or warn "Could not open $env_dot: $!";
+    while (my $line = <$env_fh>) {
+        print $fh $line;
+    }
+    close $env_fh;
+} else {
+    print $fh "# .env fehlt\n";
+}
+print $fh "\\`\\`\\`\n\n";
+
+print $fh "## gateway.systemd.env (vollständig, ungefiltert)\n\n";
+print $fh "\\`\\`\\`dotenv\n";
+if (-f $env_systemd) {
+    open(my $systemd_fh, '<', $env_systemd) or warn "Could not open $env_systemd: $!";
+    while (my $line = <$systemd_fh>) {
+        print $fh $line;
+    }
+    close $systemd_fh;
+} else {
+    print $fh "# gateway.systemd.env fehlt\n";
+}
+print $fh "\\`\\`\\`\n";
+
+close $fh;
+
+open($fh, '>', $run_file) or die "Cannot write to $run_file: $!";
+
+my $script_path = realpath($0);
+
+print $fh <<EOF;
 # Laufprotokoll Gateway B / Node 7
 
-- Zeit (lokal): $NOW_LOCAL
-- Zeit (UTC): $NOW_UTC
-- Script: $0
+- Zeit (lokal): $now_local
+- Zeit (UTC): $now_utc
+- Script: $script_path
 
 ## Erzeugte Dateien
 
-- @{[basename($IST_FILE)]}
-- @{[basename($INV_FILE)]}
-- @{[basename($CFG_FILE)]}
-- @{[basename($ENV_FILE)]}
+- @{[basename($ist_file)]}
+- @{[basename($inv_file)]}
+- @{[basename($cfg_file)]}
+- @{[basename($env_file)]}
 
 EOF
-close($run_fh);
+
+close $fh;
 
 print "OK: IST-Zustand erfasst.\n";
-print "Ausgabeordner: $OUT_DIR\n";
+print "Ausgabeordner: $out_dir\n";
 print "Dateien:\n";
 
-opendir(my $dir, $OUT_DIR) or die "Cannot opendir $OUT_DIR: $!";
-while (readdir($dir)) {
-    next if /^\.\.?$/;
-    print "- $_\n";
+opendir(my $dir_fh, $out_dir) or die "Cannot read directory $out_dir: $!";
+my @files = readdir($dir_fh);
+closedir($dir_fh);
+for my $file (@files) {
+    next if $file eq '.' || $file eq '..';
+    print "- $file\n";
 }
-closedir($dir);

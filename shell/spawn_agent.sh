@@ -1,98 +1,160 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # spawn_agent.py — portiert nach shell
-# Quelle: python, OpenClaw@gateway2:skills/sub-agents-utils/scripts/spawn_agent.py
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+# Quelle: python, OpenClaw@gateway1:skills/sub-agents-utils/scripts/spawn_agent.py
+# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Sub-Agent spawner - Einfache CLI für sessions_spawn
 
-WORKSPACE="/home/openclaw/.openclaw/workspace"
-if [[ ":$PATH:" != *":$WORKSPACE:"* ]]; then
-    export PATH="$WORKSPACE:$PATH"
-fi
+# Lade Modellkonfiguration
+load_models() {
+    local config_path="${OPENCLAW_CONFIG:-/home/openclaw/.openclaw/openclaw.json}"
+    local config_content
+    local model_config
+    local primary_model
+    local fallback_models
+    local -a candidates=()
+    local -a unique_models=()
+    local -A seen_models=()
+    
+    if [[ ! -f "$config_path" ]]; then
+        echo "Fehler: Konfigurationsdatei nicht gefunden: $config_path" >&2
+        exit 1
+    fi
+    
+    config_content=$(cat "$config_path")
+    
+    # Extrahiere primary model
+    primary_model=$(echo "$config_content" | jq -r '.agents.defaults.model.primary // empty' 2>/dev/null) || {
+        echo "Fehler: Modellkonfiguration kann nicht geladen werden: $config_path" >&2
+        exit 1
+    }
+    
+    if [[ -n "$primary_model" ]]; then
+        candidates+=("$primary_model")
+    fi
+    
+    # Extrahiere fallback models
+    while IFS= read -r model; do
+        if [[ -n "$model" ]]; then
+            candidates+=("$model")
+        fi
+    done < <(echo "$config_content" | jq -r '.agents.defaults.model.fallbacks[]? // empty' 2>/dev/null)
+    
+    # Filtere ungültige und doppelte Models
+    for model in "${candidates[@]}"; do
+        if [[ -n "$model" && "$model" != anthropic/* ]] && [[ -z "${seen_models[$model]:-}" ]]; then
+            seen_models["$model"]=1
+            unique_models+=("$model")
+        fi
+    done
+    
+    if [[ ${#unique_models[@]} -eq 0 ]]; then
+        echo "Fehler: Keine allgemein verfügbaren Modelle in $config_path" >&2
+        exit 1
+    fi
+    
+    printf '%s\n' "${unique_models[@]}"
+}
 
-# Prüfe ob openclaw_models Modul verfügbar ist
-if ! python3 -c "import openclaw_models" 2>/dev/null; then
-    echo "Modellkonfiguration kann nicht geladen werden: openclaw_models Modul nicht gefunden" >&2
-    exit 1
-fi
+# Globale Variable für verfügbare Models
+readarray -t MODELS < <(load_models)
 
-# Lade verfügbare Modelle via Python
-readarray -t MODELS < <(python3 -c "
-try:
-    from openclaw_models import configured_models
-    models = configured_models()
-    for m in models:
-        print(m)
-except Exception as e:
-    import sys
-    print(f'Modellkonfiguration kann nicht geladen werden: {e}', file=sys.stderr)
-    sys.exit(1)
-")
-
-# Hilfsfunktion zur Überprüfung ob ein Wert in einem Array enthalten ist
-contains_element() {
-    local element="$1"
-    shift
-    local array=("$@")
-    for item in "${array[@]}"; do
-        if [[ "$item" == "$element" ]]; then
+# Hilfsfunktion zur Validierung ob ein Model gültig ist
+is_valid_model() {
+    local model="$1"
+    for m in "${MODELS[@]}"; do
+        if [[ "$m" == "$model" ]]; then
             return 0
         fi
     done
     return 1
 }
 
-# Funktion zum Erstellen der Konfiguration für sessions_spawn
+# Erstellt Konfiguration für sessions_spawn
 get_spawn_config() {
     local task="$1"
-    local label="${2:-}"
-    local model="${3:-}"
-    local thinking="${4:-}"
-    local timeout="${5:-}"
-    local thread="${6:-false}"
-    local mode="${7:-run}"
-
-    local config=""
-    config+="\"task\":\"$task\""
-
+    local label="$2"
+    local model="$3"
+    local thinking="$4"
+    local timeout="$5"
+    local thread="$6"
+    local mode="$7"
+    
+    local -A config=()
+    config[task]="$task"
+    
     if [[ -n "$label" ]]; then
-        config+=",\"label\":\"$label\""
+        config[label]="$label"
     fi
-
-    if [[ -n "$model" ]] && contains_element "$model" "${MODELS[@]}"; then
-        config+=",\"model\":\"$model\""
+    
+    if [[ -n "$model" ]] && is_valid_model "$model"; then
+        config[model]="$model"
     fi
-
+    
     if [[ -n "$thinking" ]]; then
-        config+=",\"thinking\":\"$thinking\""
+        config[thinking]="$thinking"
     fi
-
+    
     if [[ -n "$timeout" ]]; then
-        config+=",\"runTimeoutSeconds\":$timeout"
+        config[runTimeoutSeconds]="$timeout"
     fi
-
+    
     if [[ "$thread" == "true" ]]; then
-        config+=",\"thread\":true"
+        config[thread]="true"
         if [[ "$mode" == "run" ]]; then
-            mode="session"
+            config[mode]="session"  # thread requires session mode
         fi
+    else
+        config[mode]="$mode"
     fi
-
-    config+=",\"mode\":\"$mode\""
-
-    echo "{$config}"
+    
+    # Konvertiere Array zu JSON
+    local json="{"
+    local first=true
+    for key in "${!config[@]}"; do
+        if [[ "$first" == true ]]; then
+            first=false
+        else
+            json+=", "
+        fi
+        if [[ "${config[$key]}" =~ ^[0-9]+$ ]]; then
+            json+="\"$key\": ${config[$key]}"
+        else
+            json+="\"$key\": \"${config[$key]}\""
+        fi
+    done
+    json+="}"
+    
+    echo "$json"
 }
 
 # Gibt das equivalente Tool-Kommando aus
 print_spawn_command() {
     local config="$1"
-    echo ""
+    
+    echo
     echo "🛠️  Tool-Aufruf:"
     echo "=================================================="
     echo "sessions_spawn("
-    echo "$config" | jq -r 'to_entries[] | "    \(.key)=\(.value | if type == "string" then "\"\(.|tostring)\"" else . end)"'
+    
+    # Parse JSON und gib jedes Feld aus
+    local keys
+    keys=$(echo "$config" | jq -r 'keys[]' 2>/dev/null)
+    
+    while IFS= read -r key; do
+        if [[ -n "$key" ]]; then
+            local value
+            value=$(echo "$config" | jq -r ".\"$key\"" 2>/dev/null)
+            if [[ "$value" =~ ^[0-9]+$ ]] || [[ "$value" == "true" ]] || [[ "$value" == "false" ]]; then
+                echo "    $key=$value"
+            else
+                echo "    $key=\"$value\""
+            fi
+        fi
+    done <<< "$keys"
+    
     echo ")"
     echo "=================================================="
 }
@@ -100,29 +162,33 @@ print_spawn_command() {
 # Gibt das equivalente Slash-Kommando aus
 print_slash_command() {
     local config="$1"
-    local task label model thinking cmd
-
-    task=$(echo "$config" | jq -r '.task // ""')
-    label=$(echo "$config" | jq -r '.label // "agent"')
-    model=$(echo "$config" | jq -r '.model // ""')
-    thinking=$(echo "$config" | jq -r '.thinking // ""')
-
-    cmd="/subagents spawn $label \"$task\""
-    if [[ -n "$model" && "$model" != "null" ]]; then
+    
+    local task
+    local label
+    local model
+    local thinking
+    
+    task=$(echo "$config" | jq -r '.task // ""' 2>/dev/null)
+    label=$(echo "$config" | jq -r '.label // "agent"' 2>/dev/null)
+    model=$(echo "$config" | jq -r '.model // ""' 2>/dev/null)
+    thinking=$(echo "$config" | jq -r '.thinking // ""' 2>/dev/null)
+    
+    local cmd="/subagents spawn $label \"$task\""
+    if [[ -n "$model" ]]; then
         cmd+=" --model $model"
     fi
-    if [[ -n "$thinking" && "$thinking" != "null" ]]; then
+    if [[ -n "$thinking" ]]; then
         cmd+=" --thinking $thinking"
     fi
-
-    echo ""
+    
+    echo
     echo "💬 Slash Command:"
     echo "=================================================="
     echo "$cmd"
     echo "=================================================="
 }
 
-# Hauptprogramm
+# Hauptfunktion
 main() {
     local task=""
     local label=""
@@ -132,19 +198,42 @@ main() {
     local thread="false"
     local mode="run"
     local output="tool"
+    
+    # Hilfe anzeigen
+    show_help() {
+        cat << EOF
+Sub-Agent Spawn Helper
 
+Optionen:
+  -t, --task TASK           Aufgabenbeschreibung (erforderlich)
+  -l, --label LABEL         Optionaler Label
+  -m, --model MODEL         KI-Modell (${MODELS[*]})
+      --thinking LEVEL      Thinking Level (low, medium, high)
+      --timeout SECONDS     Timeout in Sekunden (Standard: 900)
+      --thread              Thread-Binding aktivieren
+      --mode MODE           Run mode (run, session) (Standard: run)
+  -o, --output FORMAT       Output format (tool, slash, json) (Standard: tool)
+  -h, --help                Diese Hilfe anzeigen
+
+Beispiele:
+  $0 -t "Analyze logs" 
+  $0 -t "Code review" -m openai/gpt-5.6-sol --timeout 1800
+  $0 -t "Batch process" -l "batch-worker" --thread
+EOF
+    }
+    
     # Argumente parsen
     while [[ $# -gt 0 ]]; do
         case $1 in
-            --task|-t)
+            -t|--task)
                 task="$2"
                 shift 2
                 ;;
-            --label|-l)
+            -l|--label)
                 label="$2"
                 shift 2
                 ;;
-            --model|-m)
+            -m|--model)
                 model="$2"
                 shift 2
                 ;;
@@ -164,58 +253,60 @@ main() {
                 mode="$2"
                 shift 2
                 ;;
-            --output|-o)
+            -o|--output)
                 output="$2"
                 shift 2
                 ;;
             -h|--help)
-                echo "Sub-Agent Spawn Helper"
-                echo ""
-                echo "Usage: $0 [OPTIONS]"
-                echo ""
-                echo "Options:"
-                echo "  --task, -t TASK         Aufgabenbeschreibung"
-                echo "  --label, -l LABEL       Optionaler Label"
-                echo "  --model, -m MODEL       KI-Modell (${MODELS[*]})"
-                echo "  --thinking LEVEL        Thinking Level (low, medium, high)"
-                echo "  --timeout SECONDS       Timeout in Sekunden (default: 900)"
-                echo "  --thread                Thread-Binding aktivieren"
-                echo "  --mode MODE             Run mode (run, session)"
-                echo "  --output, -o FORMAT     Output format (tool, slash, json)"
-                echo ""
-                echo "Examples:"
-                echo "  $0 -t \"Analyze logs\""
-                echo "  $0 -t \"Code review\" -m openrouter/anthropic/claude-haiku-4.5 --timeout 1800"
-                echo "  $0 -t \"Batch process\" -l \"batch-worker\" --thread"
+                show_help
                 exit 0
                 ;;
             *)
                 echo "Unbekannte Option: $1" >&2
+                show_help
                 exit 1
                 ;;
         esac
     done
-
+    
     # Task ist erforderlich
     if [[ -z "$task" ]]; then
-        echo "Fehler: --task/-t ist erforderlich" >&2
+        echo "Fehler: --task ist erforderlich" >&2
+        show_help
         exit 1
     fi
-
-    # Überprüfe ob das angegebene Modell gültig ist
-    if [[ -n "$model" ]] && ! contains_element "$model" "${MODELS[@]}"; then
-        echo "Ungültiges Modell: $model" >&2
-        echo "Verfügbare Modelle: ${MODELS[*]}" >&2
+    
+    # Validierung des Models
+    if [[ -n "$model" ]] && ! is_valid_model "$model"; then
+        echo "Fehler: Ungültiges Model '$model'. Gültige Models sind: ${MODELS[*]}" >&2
         exit 1
     fi
-
-    # Erstelle Konfiguration
+    
+    # Validierung von thinking
+    if [[ -n "$thinking" ]] && [[ ! "$thinking" =~ ^(low|medium|high)$ ]]; then
+        echo "Fehler: Ungültiger thinking Wert '$thinking'. Gültige Werte sind: low, medium, high" >&2
+        exit 1
+    fi
+    
+    # Validierung von mode
+    if [[ ! "$mode" =~ ^(run|session)$ ]]; then
+        echo "Fehler: Ungültiger mode Wert '$mode'. Gültige Werte sind: run, session" >&2
+        exit 1
+    fi
+    
+    # Validierung von output
+    if [[ ! "$output" =~ ^(tool|slash|json)$ ]]; then
+        echo "Fehler: Ungültiger output Wert '$output'. Gültige Werte sind: tool, slash, json" >&2
+        exit 1
+    fi
+    
+    # Konfiguration erstellen
     local config
     config=$(get_spawn_config "$task" "$label" "$model" "$thinking" "$timeout" "$thread" "$mode")
-
+    
     echo "✅ Sub-Agent Konfiguration:"
     echo "$config" | jq .
-
+    
     case "$output" in
         tool)
             print_spawn_command "$config"
@@ -224,22 +315,19 @@ main() {
             print_slash_command "$config"
             ;;
         json)
-            echo ""
+            echo
             echo "📄 JSON:"
-            echo "$config"
+            echo "$config" | jq .
             
             # Speichere als Datei
-            local label_safe="${label:-spawn}"
-            label_safe=${label_safe//[^a-zA-Z0-9_-]/_}
-            local output_file="/tmp/subagent_${label_safe}.json"
-            echo "$config" > "$output_file"
+            local safe_label
+            safe_label=$(echo "${label:-spawn}" | sed 's/[^a-zA-Z0-9_-]/_/g')
+            local output_file="/tmp/subagent_${safe_label}.json"
+            echo "$config" | jq . > "$output_file"
             echo "💾 Gespeichert: $output_file"
-            ;;
-        *)
-            echo "Unbekanntes Ausgabeformat: $output" >&2
-            exit 1
             ;;
     esac
 }
 
+# Skript ausführen
 main "$@"

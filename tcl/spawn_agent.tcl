@@ -1,250 +1,246 @@
 #!/usr/bin/env tclsh
 # spawn_agent.py — portiert nach tcl
-# Quelle: python, OpenClaw@gateway2:skills/sub-agents-utils/scripts/spawn_agent.py
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+# Quelle: python, OpenClaw@gateway1:skills/sub-agents-utils/scripts/spawn_agent.py
+# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
 # Sub-Agent spawner - Einfache CLI für sessions_spawn
 
 package require json
+package require cmdline
 
-set WORKSPACE "/home/openclaw/.openclaw/workspace"
+# Globale Variablen
+set MODELS {}
 
-# Füge WORKSPACE zum auto_path hinzu, falls noch nicht vorhanden
-if {[lsearch -exact $::auto_path $WORKSPACE] == -1} {
-    lappend ::auto_path $WORKSPACE
-}
-
-# Lade openclaw_models Modul
-if [catch {package require openclaw_models} err] {
-    puts stderr "Fehler beim Laden von openclaw_models: $err"
-    exit 1
-}
-
-# Verfügbare Modelle abrufen
-if [catch {configured_models} MODELS] {
-    puts stderr "Modellkonfiguration kann nicht geladen werden: $MODELS"
-    exit 1
-}
-
-# Hilfsfunktion zur Konfigurationserstellung
-proc get_spawn_config {args} {
-    array set opts $args
+# Lade Modellkonfiguration
+proc load_models {} {
+    global env
+    set configPath [expr {[info exists env(OPENCLAW_CONFIG)] ? $env(OPENCLAW_CONFIG) : "/home/openclaw/.openclaw/openclaw.json"}]
     
-    set config [dict create task $opts(-task)]
-    
-    if {[info exists opts(-label)] && $opts(-label) ne ""} {
-        dict set config label $opts(-label)
+    if {![file exists $configPath]} {
+        error "Modellkonfiguration kann nicht geladen werden: $configPath: File not found"
     }
     
-    if {[info exists opts(-model)] && $opts(-model) in $::MODELS} {
-        dict set config model $opts(-model)
+    set fd [open $configPath r]
+    set content [read $fd]
+    close $fd
+    
+    if {[catch {::json::json2dict $content} config]} {
+        error "Modellkonfiguration kann nicht geladen werden: $configPath: Invalid JSON"
     }
     
-    if {[info exists opts(-thinking)] && $opts(-thinking) ne ""} {
-        dict set config thinking $opts(-thinking)
+    if {![dict exists $config agents defaults model]} {
+        error "Modellkonfiguration kann nicht geladen werden: $configPath: Missing configuration keys"
     }
     
-    if {[info exists opts(-timeout)] && $opts(-timeout) != 0} {
-        dict set config runTimeoutSeconds $opts(-timeout)
-    }
+    set modelConfig [dict get $config agents defaults model]
+    set candidates [list [dict get $modelConfig primary]]
     
-    if {[info exists opts(-thread)] && $opts(-thread)} {
-        dict set config thread true
-        if {$opts(-mode) eq "run"} {
-            dict set config mode session
-        } else {
-            dict set config mode $opts(-mode)
-        }
-    } else {
-        dict set config mode $opts(-mode)
-    }
-    
-    return $config
-}
-
-# Gibt das equivalente Tool-Kommando aus
-proc print_spawn_command {config} {
-    puts "\n🛠️  Tool-Aufruf:"
-    puts "=================================================="
-    puts "sessions_spawn("
-    
-    dict for {key value} $config {
-        if {[string is wordchar -strict $value] || [string is integer $value]} {
-            puts "    $key=$value"
-        } else {
-            puts "    $key=\"$value\""
+    if {[dict exists $modelConfig fallbacks]} {
+        set fallbacks [dict get $modelConfig fallbacks]
+        if {[llength $fallbacks] > 0} {
+            foreach fallback $fallbacks {
+                lappend candidates $fallback
+            }
         }
     }
     
-    puts ")"
-    puts "=================================================="
+    set models {}
+    foreach model $candidates {
+        if {$model != "" && ![string match "anthropic/*" $model]} {
+            if {[lsearch -exact $models $model] == -1} {
+                lappend models $model
+            }
+        }
+    }
+    
+    if {[llength $models] == 0} {
+        error "Keine allgemein verfügbaren Modelle in $configPath"
+    }
+    
+    return $models
 }
 
-# Gibt das equivalente Slash-Kommando aus
-proc print_slash_command {config} {
-    set task [dict get $config task]
-    set label [dict get $config label "agent"]
-    set model [dict get $config model ""]
-    
-    set cmd "/subagents spawn $label \"$task\""
-    
-    if {$model ne ""} {
-        append cmd " --model $model"
+# Initialisiere MODELS
+set MODELS [load_models]
+
+# Hilfsklasse für Sub-Agent Spawning
+namespace eval SubAgentSpawner {
+    # Erstellt Konfiguration für sessions_spawn
+    proc get_spawn_config {args} {
+        global MODELS
+        array set options {
+            task ""
+            label ""
+            model ""
+            thinking ""
+            timeout 0
+            thread false
+            mode "run"
+        }
+        array set options $args
+        
+        set config [dict create task $options(task)]
+        
+        if {$options(label) ne ""} {
+            dict set config label $options(label)
+        }
+        if {$options(model) ne "" && [lsearch -exact $MODELS $options(model)] != -1} {
+            dict set config model $options(model)
+        }
+        if {$options(thinking) ne ""} {
+            dict set config thinking $options(thinking)
+        }
+        if {$options(timeout) > 0} {
+            dict set config runTimeoutSeconds $options(timeout)
+        }
+        if {$options(thread)} {
+            dict set config thread true
+            if {$options(mode) eq "run"} {
+                dict set config mode "session"
+            } else {
+                dict set config mode $options(mode)
+            }
+        } else {
+            dict set config mode $options(mode)
+        }
+        
+        return $config
     }
     
-    if {[dict exists $config thinking]} {
-        set thinking [dict get $config thinking]
-        append cmd " --thinking $thinking"
+    # Gibt das equivalente Tool-Kommando aus
+    proc print_spawn_command {config} {
+        puts "\n🛠️  Tool-Aufruf:"
+        puts "=================================================="
+        puts "sessions_spawn("
+        dict for {key value} $config {
+            if {[string is alpha $value] && $value ne "true" && $value ne "false"} {
+                puts "    $key=\"$value\""
+            } else {
+                puts "    $key=$value"
+            }
+        }
+        puts ")"
+        puts "=================================================="
     }
     
-    puts "\n💬 Slash Command:"
-    puts "=================================================="
-    puts $cmd
-    puts "=================================================="
+    # Gibt das equivalente Slash-Kommando aus
+    proc print_slash_command {config} {
+        set task [dict get $config task]
+        set label [expr {[dict exists $config label] ? [dict get $config label] : "agent"}]
+        set model [expr {[dict exists $config model] ? [dict get $config model] : ""}]
+        
+        set cmd "/subagents spawn $label \"$task\""
+        if {$model ne ""} {
+            append cmd " --model $model"
+        }
+        if {[dict exists $config thinking]} {
+            set thinking [dict get $config thinking]
+            if {$thinking ne ""} {
+                append cmd " --thinking $thinking"
+            }
+        }
+        
+        puts "\n💬 Slash Command:"
+        puts "=================================================="
+        puts $cmd
+        puts "=================================================="
+    }
 }
 
 # Hauptprogramm
 proc main {} {
-    global argv argc
+    global MODELS argv
     
-    # Argumente parsen
-    set task ""
-    set label ""
-    set model ""
-    set thinking ""
-    set timeout 900
-    set thread false
-    set mode "run"
-    set output "tool"
-    
-    # Manuelle Argumentverarbeitung
-    for {set i 0} {$i < $argc} {incr i} {
-        set arg [lindex $argv $i]
-        switch -exact -- $arg {
-            "--task" - "-t" {
-                incr i
-                set task [lindex $argv $i]
-            }
-            "--label" - "-l" {
-                incr i
-                set label [lindex $argv $i]
-            }
-            "--model" - "-m" {
-                incr i
-                set model [lindex $argv $i]
-            }
-            "--thinking" {
-                incr i
-                set thinking [lindex $argv $i]
-            }
-            "--timeout" {
-                incr i
-                set timeout [lindex $argv $i]
-            }
-            "--thread" {
-                set thread true
-            }
-            "--mode" {
-                incr i
-                set mode [lindex $argv $i]
-            }
-            "--output" - "-o" {
-                incr i
-                set output [lindex $argv $i]
-            }
-            "--help" - "-h" {
-                puts "Sub-Agent Spawn Helper\n"
-                puts "Usage: $argv0 \[options\]\n"
-                puts "Options:"
-                puts "  -t, --task TASK           Aufgabenbeschreibung"
-                puts "  -l, --label LABEL         Optionaler Label"
-                puts "  -m, --model MODEL         KI-Modell"
-                puts "      --thinking LEVEL      Thinking Level (low|medium|high)"
-                puts "      --timeout SECONDS     Timeout in Sekunden (default: 900)"
-                puts "      --thread              Thread-Binding aktivieren"
-                puts "      --mode MODE           Run mode (run|session)"
-                puts "  -o, --output FORMAT       Output format (tool|slash|json)"
-                puts "  -h, --help                Diese Hilfe anzeigen"
-                puts "\nBeispiele:"
-                puts "  $argv0 -t \"Analyze logs\""
-                puts "  $argv0 -t \"Code review\" -m openrouter/anthropic/claude-haiku-4.5 --timeout 1800"
-                puts "  $argv0 -t \"Batch process\" -l \"batch-worker\" --thread"
-                return
-            }
-        }
+    # Kommandozeilenoptionen definieren
+    set options {
+        {task.arg "" "Aufgabenbeschreibung"}
+        {label.arg "" "Optionaler Label"}
+        {model.arg "" "KI-Modell"}
+        {thinking.arg "" "Thinking Level"}
+        {timeout.arg 900 "Timeout in Sekunden (default: 900)"}
+        {thread "Thread-Binding aktivieren"}
+        {mode.arg "run" "Run mode"}
+        {output.arg "tool" "Output format"}
     }
     
-    # Validierung
-    if {$task eq ""} {
-        puts stderr "Fehler: Task ist erforderlich (-t oder --task)"
+    set usage "Sub-Agent Spawn Helper\n\nBeispiele:\n  [file tail [info script]] -task \"Analyze logs\"\n  [file tail [info script]] -task \"Code review\" -model openai/gpt-5.6-sol --timeout 1800\n  [file tail [info script]] -task \"Batch process\" -label \"batch-worker\" --thread"
+    
+    if {[catch {cmdline::typedGetoptions argv $options} result]} {
+        puts stderr $result
         exit 1
     }
     
-    # Modelvalidierung
-    if {$model ne "" && $model ni $::MODELS} {
-        puts stderr "Fehler: Ungültiges Modell '$model'"
-        puts stderr "Verfügbare Modelle: [join $::MODELS ", "]"
+    array set opts $result
+    
+    # Validierung der Pflichtargumente
+    if {$opts(task) eq ""} {
+        puts stderr "Fehler: --task ist ein Pflichtfeld"
         exit 1
     }
     
-    # Thinking-Level validieren
-    if {$thinking ne "" && $thinking ni {"low" "medium" "high"}} {
-        puts stderr "Fehler: Ungültiger Thinking-Level '$thinking'. Erlaubt: low, medium, high"
+    # Validierung des Modells
+    if {$opts(model) ne "" && [lsearch -exact $MODELS $opts(model)] == -1} {
+        puts stderr "Fehler: Ungültiges Modell '$opts(model)'. Gültige Optionen: [join $MODELS ", "]"
         exit 1
     }
     
-    # Mode validieren
-    if {$mode ni {"run" "session"}} {
-        puts stderr "Fehler: Ungültiger Mode '$mode'. Erlaubt: run, session"
+    # Validierung von thinking
+    if {$opts(thinking) ne "" && [lsearch -exact {low medium high} $opts(thinking)] == -1} {
+        puts stderr "Fehler: Ungültiger Thinking-Wert '$opts(thinking)'. Gültige Optionen: low, medium, high"
         exit 1
     }
     
-    # Output validieren
-    if {$output ni {"tool" "slash" "json"}} {
-        puts stderr "Fehler: Ungültiges Output-Format '$output'. Erlaubt: tool, slash, json"
+    # Validierung von mode
+    if {[lsearch -exact {run session} $opts(mode)] == -1} {
+        puts stderr "Fehler: Ungültiger Mode-Wert '$opts(mode)'. Gültige Optionen: run, session"
+        exit 1
+    }
+    
+    # Validierung von output
+    if {[lsearch -exact {tool slash json} $opts(output)] == -1} {
+        puts stderr "Fehler: Ungültiger Output-Wert '$opts(output)'. Gültige Optionen: tool, slash, json"
         exit 1
     }
     
     # Konfiguration erstellen
-    set config [get_spawn_config \
-        -task $task \
-        -label $label \
-        -model $model \
-        -thinking $thinking \
-        -timeout $timeout \
-        -thread $thread \
-        -mode $mode]
+    set config [SubAgentSpawner::get_spawn_config \
+        task $opts(task) \
+        label $opts(label) \
+        model $opts(model) \
+        thinking $opts(thinking) \
+        timeout $opts(timeout) \
+        thread $opts(thread) \
+        mode $opts(mode) \
+    ]
     
-    # Konfiguration ausgeben
+    # Ausgabe der Konfiguration
     puts "✅ Sub-Agent Konfiguration:"
-    puts [::json::encode $config 2]
+    puts [::json::dict2json $config 2]
     
-    # Je nach Output-Format verfahren
-    switch -exact -- $output {
+    # Formatierter Output
+    switch $opts(output) {
         "tool" {
-            print_spawn_command $config
+            SubAgentSpawner::print_spawn_command $config
         }
         "slash" {
-            print_slash_command $config
+            SubAgentSpawner::print_slash_command $config
         }
         "json" {
             puts "\n📄 JSON:"
-            puts [::json::encode $config]
+            puts [::json::dict2json $config]
             
             # Speichere als Datei
-            set filename [expr {[dict exists $config label] ? [dict get $config label] : "spawn"}]
-            set output_file "/tmp/subagent_${filename}.json"
-            
-            set fh [open $output_file w]
-            puts $fh [::json::encode $config 2]
-            close $fh
-            
-            puts "💾 Gespeichert: $output_file"
+            set label [expr {[dict exists $config label] ? [dict get $config label] : "spawn"}]
+            set outputFile "/tmp/subagent_${label}.json"
+            set fd [open $outputFile w]
+            puts $fd [::json::dict2json $config]
+            close $fd
+            puts "💾 Gespeichert: $outputFile"
         }
     }
 }
 
-# Starte Hauptprogramm
+# Starte das Programm
 if {[info script] eq $argv0} {
     main
 }
