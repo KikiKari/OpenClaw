@@ -1,27 +1,13 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+#!/usr/bin/perl
+# 1781743218784_0e4dc0_ca4aa5.sh — portiert nach perl5
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_ca4aa5.sh
 # Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
+use strict;
+use warnings;
 
-# 1781743218784_260531.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
-
-outputFile="$1"
-
-# Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
+sub generateHTML {
+    return <<'EOF';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -74,6 +60,7 @@ a{color:var(--accent);}
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +74,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +83,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,8 +95,10 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
+
 <script>
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
@@ -223,5 +214,21 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 EOF
+}
 
-echo "HTML file generated: $outputFile"
+sub main {
+    if (@_ != 1) {
+        print STDERR "Usage: perl script.pl <output-file>\n";
+        exit 1;
+    }
+    
+    my $outputFile = $_[0];
+    
+    # Generate HTML content and write to file
+    open(my $fh, '>', $outputFile) or die "Could not open file '$outputFile' $!";
+    print $fh generateHTML();
+    close $fh;
+    print "HTML file generated: $outputFile\n";
+}
+
+main(@ARGV);

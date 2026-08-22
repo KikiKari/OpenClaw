@@ -1,28 +1,38 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
-# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env node
+// 1781743218784_260531.ps1 — portiert nach javascript
+// Quelle: powershell, Projects@abstractions:powershell/1781743218784_260531.ps1
+// Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
+// 1781743218784_260531.js — portiert nach powershell
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+// Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_260531.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_260531.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
+// Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784.tcl — portiert nach perl5
+// Quelle: tcl, Projects@abstractions:tcl/1781743218784.tcl
+// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
+// 1781743218784.html — portiert nach tcl
+// Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
+// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-outputFile="$1"
+// Tcl 8.6 script to generate the Secret Vault Public HTML file
+// Usage: tclsh this_script.tcl output_file.html
 
-# Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
-<!DOCTYPE html>
+const fs = require('fs');
+const path = require('path');
+
+if (process.argv.length !== 3) {
+    console.log(`Usage: ${path.basename(process.argv[1])} output_file.html`);
+    process.exit(1);
+}
+
+const outputFile = process.argv[2];
+
+const content = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -45,7 +55,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 10px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -74,6 +84,7 @@ a{color:var(--accent);}
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +98,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +107,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,6 +119,7 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
 <script>
@@ -185,15 +199,15 @@ function renderEditor(){
   Object.keys(P).forEach(name=>{
     const d=document.createElement("div"); d.className="prov";
     let rows="";
-    Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">${esc(k)}</span><input data-p="${esc(name)}" data-k="${esc(k)}" value="${esc(P[name][k])}"><button class="btn sm" data-del="${esc(name)}|${esc(k)}">${tr("del")}</button></div>`; });
-    d.innerHTML=`<h3>${esc(name)} <button class="btn sm" data-delp="${esc(name)}">${tr("del")}</button></h3>${rows}
-      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
+    Object.keys(P[name]).forEach(k=>{ rows+=\`<div class="kv"><span class="k">\${esc(k)}</span><input data-p="\${esc(name)}" data-k="\${esc(k)}" value="\${esc(P[name][k])}"><button class="btn sm" data-del="\${esc(name)}|\${esc(k)}">\${tr("del")}</button></div>\`; });
+    d.innerHTML=\`<h3>\${esc(name)} <button class="btn sm" data-delp="\${esc(name)}">\${tr("del")}</button></h3>\${rows}
+      <div class="row" style="margin-top:6px"><input class="nf" data-np="\${esc(name)}" placeholder="\${tr("newField")}" style="max-width:180px"><input class="nv" data-np="\${esc(name)}" placeholder="\${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="\${esc(name)}">\${tr("addField")}</button></div>\`;
     root.appendChild(d);
   });
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
   root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
   root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
-  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
+  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(\`.nf[data-np="\${CSS.escape(p)}"]\`).value.trim(); const nv=root.querySelector(\`.nv[data-np="\${CSS.escape(p)}"]\`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
 
 document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
@@ -219,9 +233,11 @@ encBtn.onclick=async()=>{
 };
 dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
+}
 </script>
 </body>
-</html>
-EOF
+</html>`;
 
-echo "HTML file generated: $outputFile"
+fs.writeFileSync(outputFile, content, 'utf8');
+
+console.log(`HTML file generated: ${outputFile}`);

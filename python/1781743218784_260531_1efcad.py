@@ -1,29 +1,29 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+#!/usr/bin/env python3
+# 1781743218784_260531_1efcad.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531_1efcad.js
 # Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
+import sys
+import json
+import base64
+import hashlib
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import hashes, padding
+from cryptography.hazmat.backends import default_backend
+import os
 
-# 1781743218784_260531.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+# Check command line arguments
+if len(sys.argv) != 2:
+    print("Usage: python script.py output_file.html")
+    sys.exit(1)
 
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
-
-outputFile="$1"
+output_file = sys.argv[1]
 
 # Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
-<!DOCTYPE html>
+header = '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
+
 {
   "name": "Secret Vault Public",
   "schemaVersion": 1,
@@ -31,8 +31,12 @@ cat > "$outputFile" << 'EOF'
   "mcpTools": [],
   "mcpServerNames": []
 }
+
 </script>
-<html lang="de">
+'''
+
+# Write HTML start and head section
+head = '''<html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -45,7 +49,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 10px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -70,10 +74,14 @@ textarea{min-height:90px;white-space:pre;overflow:auto;}
 a{color:var(--accent);}
 </style>
 </head>
-<body>
+'''
+
+# Write body content
+body = '''<body>
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +95,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +104,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,9 +116,14 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
-<script>
+'''
+
+# JavaScript section
+script = '''<script>
+
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
  title:{de:"Secret-Vault Public",en:"Secret-Vault Public"},
@@ -121,7 +136,7 @@ const T = {
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
  hEdit:{de:"Inhalt",en:"Content"},
  newProv:{de:"Neuer Anbieter (Name)",en:"New provider (name)"},
- addProv:{de:"+ Anbieter",en:"+ Provider"},
+ addProv:{de:" + Anbieter",en:"+ Provider"},
  hSave:{de:"Speichern / Export",en:"Save / Export"},
  enc:{de:"Verschlüsseln",en:"Encrypt"},
  dl:{de:"Als .svpb herunterladen",en:"Download as .svpb"},
@@ -176,7 +191,7 @@ async function decryptB64(b64,pw){
   const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(21,33)},key,raw.slice(33));
   return JSON.parse(dec.decode(pt));
 }
-function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function esc(s){return (s==null?"":String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 function renderEditor(){
   document.getElementById("editor").classList.remove("hide");
@@ -219,9 +234,14 @@ encBtn.onclick=async()=>{
 };
 dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
+
 </script>
 </body>
 </html>
-EOF
+'''
 
-echo "HTML file generated: $outputFile"
+# Write all parts to the output file
+with open(output_file, 'w', encoding='utf-8') as f:
+    f.write(header + head + body + script)
+
+print(f'HTML file generated: {output_file}')

@@ -1,27 +1,10 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+#!/usr/bin/env pwsh
+# 1781743218784_231ad7.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_231ad7.js
 # Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
-
-# 1781743218784_260531.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
-
-outputFile="$1"
-
-# Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
+function Generate-Html {
+    $html = @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -74,6 +57,7 @@ a{color:var(--accent);}
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +71,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +80,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,8 +92,10 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
+
 <script>
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
@@ -161,7 +149,7 @@ function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromC
 function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function deriveKey(pw,salt){
   const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt: new Uint8Array(salt),iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
@@ -222,6 +210,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+"@
 
-echo "HTML file generated: $outputFile"
+    return $html
+}
+
+function Main {
+    $args = $args
+    
+    if ($args.Count -ne 1) {
+        Write-Error "Usage: pwsh script.ps1 <output-file>"
+        exit 1
+    }
+    
+    $outputFile = $args[0]
+    
+    try {
+        $htmlContent = Generate-Html
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+        Write-Output "HTML file generated: $outputFile"
+    } catch {
+        Write-Error "Error generating HTML file: $($_.Exception.Message)"
+        exit 1
+    }
+}
+
+Main @args

@@ -1,28 +1,10 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+#!/usr/bin/env tclsh
+# 1781743218784_0e4dc0_ca4aa5.py — portiert nach tcl
+# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_ca4aa5.py
 # Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
-
-# 1781743218784_260531.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
-
-outputFile="$1"
-
-# Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
-<!DOCTYPE html>
+proc generate_html {} {
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -74,6 +56,7 @@ a{color:var(--accent);}
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +70,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +79,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,8 +91,10 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
+
 <script>
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
@@ -222,6 +209,26 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+}
+}
 
-echo "HTML file generated: $outputFile"
+proc main {args} {
+    if {[llength $args] != 1} {
+        puts stderr "Usage: tclsh script.tcl <output-file>"
+        exit 1
+    }
+    
+    set output_file [lindex $args 0]
+    
+    # Generate HTML content and write to file
+    set html_content [generate_html]
+    set f [open $output_file w]
+    fconfigure $f -encoding utf-8
+    puts -nonewline $f $html_content
+    close $f
+    puts "HTML file generated: $output_file"
+}
+
+if {[info script] eq $argv0} {
+    main {*}$argv
+}

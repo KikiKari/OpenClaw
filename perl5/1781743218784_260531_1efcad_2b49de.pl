@@ -1,29 +1,27 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+#!/usr/bin/env perl
+# 1781743218784_260531_1efcad.ps1 — portiert nach perl5
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_260531_1efcad.ps1
 # Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
+use strict;
+use warnings;
+use utf8;
+use Encode qw(encode decode);
+use File::Slurper qw(write_text);
 
-# 1781743218784_260531.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+# Prüfe Anzahl der Argumente
+if (@ARGV != 1) {
+    print "Usage: $0 output_file.html\n";
+    exit 1;
+}
 
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+my $outputFile = $ARGV[0];
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
-
-outputFile="$1"
-
-# Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
+# Schreibe DOCTYPE und Hauptskript-Tag
+my $doctype_and_meta = <<'HTML_HEAD';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
+
 {
   "name": "Secret Vault Public",
   "schemaVersion": 1,
@@ -31,7 +29,14 @@ cat > "$outputFile" << 'EOF'
   "mcpTools": [],
   "mcpServerNames": []
 }
+
 </script>
+HTML_HEAD
+
+write_text($outputFile, $doctype_and_meta, 'UTF-8');
+
+# Füge HTML-Kopf hinzu
+my $html_head_section = <<'HTML_CONTENT';
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -70,10 +75,19 @@ textarea{min-height:90px;white-space:pre;overflow:auto;}
 a{color:var(--accent);}
 </style>
 </head>
+HTML_CONTENT
+
+open(my $fh, '>>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
+print $fh $html_head_section;
+close $fh;
+
+# Füge Body-Inhalt hinzu
+my $body_content = <<'BODY_CONTENT';
 <body>
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +101,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +110,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,9 +122,19 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
+BODY_CONTENT
+
+open($fh, '>>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
+print $fh $body_content;
+close $fh;
+
+# JavaScript-Bereich hinzufügen
+my $js_content = <<'JS_SCRIPT';
 <script>
+
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
  title:{de:"Secret-Vault Public",en:"Secret-Vault Public"},
@@ -121,7 +147,7 @@ const T = {
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
  hEdit:{de:"Inhalt",en:"Content"},
  newProv:{de:"Neuer Anbieter (Name)",en:"New provider (name)"},
- addProv:{de:"+ Anbieter",en:"+ Provider"},
+ addProv:{de:" + Anbieter",en:"+ Provider"},
  hSave:{de:"Speichern / Export",en:"Save / Export"},
  enc:{de:"Verschlüsseln",en:"Encrypt"},
  dl:{de:"Als .svpb herunterladen",en:"Download as .svpb"},
@@ -176,7 +202,7 @@ async function decryptB64(b64,pw){
   const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(21,33)},key,raw.slice(33));
   return JSON.parse(dec.decode(pt));
 }
-function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function esc(s){return (s==null?"":String(s)).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
 function renderEditor(){
   document.getElementById("editor").classList.remove("hide");
@@ -219,9 +245,14 @@ encBtn.onclick=async()=>{
 };
 dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
+
 </script>
 </body>
 </html>
-EOF
+JS_SCRIPT
 
-echo "HTML file generated: $outputFile"
+open($fh, '>>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
+print $fh $js_content;
+close $fh;
+
+print "HTML file generated: $outputFile\n";

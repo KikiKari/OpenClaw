@@ -1,27 +1,41 @@
-#!/bin/bash
-# 1781743218784_260531.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+#!/usr/bin/env perl
+# 1781743218784_260531.ps1 — portiert nach perl5
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_260531.ps1
 # Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-set -euo pipefail
+use strict;
+use warnings;
+use utf8;
+use Encode qw(encode decode);
+use File::Slurper qw(write_text);
+
+# 1781743218784_260531.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_260531.js
+# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_260531.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_260531.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_260531.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_260531.py
 # Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
-if [ $# -ne 1 ]; then
-    echo "Usage: $0 output_file.html"
-    exit 1
-fi
+# 1781743218784.tcl — portiert nach perl5
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784.tcl
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-outputFile="$1"
+# 1781743218784.html — portiert nach tcl
+# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
-# Write DOCTYPE and main script tag
-cat > "$outputFile" << 'EOF'
+# Tcl 8.6 script to generate the Secret Vault Public HTML file
+# Usage: tclsh this_script.tcl output_file.html
+
+if (@ARGV != 1) {
+    print "Usage: $0 output_file.html\n";
+    exit 1;
+}
+
+my $outputFile = $ARGV[0];
+
+my $content = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -74,6 +88,7 @@ a{color:var(--accent);}
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
   <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+
   <div class="card">
     <h2 id="h-open">Öffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
@@ -87,6 +102,7 @@ a{color:var(--accent);}
       <span class="msg" id="openMsg"></span>
     </div>
   </div>
+
   <div class="card hide" id="editor">
     <h2 id="h-edit">Inhalt</h2>
     <div id="provs"></div>
@@ -95,6 +111,7 @@ a{color:var(--accent);}
       <button class="btn sm" id="addProvBtn">+ Anbieter</button>
     </div>
   </div>
+
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
@@ -106,6 +123,7 @@ a{color:var(--accent);}
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
   </div>
+
   <div class="foot" id="foot"></div>
 </div>
 <script>
@@ -219,9 +237,12 @@ encBtn.onclick=async()=>{
 };
 dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
+}
 </script>
 </body>
 </html>
-EOF
+HTML_END
 
-echo "HTML file generated: $outputFile"
+write_text($outputFile, $content, 'UTF-8');
+
+print "HTML file generated: $outputFile\n";
