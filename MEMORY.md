@@ -1,10 +1,17 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-21 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-08-22 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-22 - Daily Memory-Maintenance & Erkenntnisse vom 21./22.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST).
+- ❌ Keine Dateien `memory/2026-08-21*.md` bzw. `memory/2026-08-22*.md` im Workspace vorhanden; folglich keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos zu extrahieren.
+- ✅ Dreaming-Protokolle 21./22.08. geprüft (light/rem/deep): Deep Sleep hat 0 Kandidaten befördert; REM reflektiert nur den bereits dokumentierten `db-maintainer`-Kontext vom 08.08. — keine neuen beförderungswürdigen Erkenntnisse.
+- ✅ Archiv-Check: Keine Datei direkt unter `memory/` ist älter als 30 Tage (älteste: `2026-08-01-1015.md`, 21 Tage); keine Verschiebung nach `memory/archive/` erforderlich.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-21 - Daily Memory-Maintenance & Erkenntnisse vom 20./21.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST).
