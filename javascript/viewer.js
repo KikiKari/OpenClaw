@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 // viewer.html — portiert nach javascript
-// Quelle: html, Projects@Telegram-Monitor:plugin/extension/viewer.html
-// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+// Quelle: html, Projects@Telegram-Monitor:public/viewer.html
+// Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function createHTMLDocument() {
   const doc = {
@@ -92,9 +96,20 @@ function createHTMLDocument() {
                 tag: 'div',
                 attrs: { class: 'row' },
                 children: [
-                  { tag: 'input', attrs: { id: 'user', placeholder: '@name eingeben — beliebiges öffentliches Konto', autofocus: '' } },
-                  { tag: 'button', attrs: { class: 'primary', id: 'go' }, text: 'Anzeigen' },
-                  { tag: 'button', attrs: { id: 'clear' }, text: 'Leeren' },
+                  {
+                    tag: 'input',
+                    attrs: { id: 'user', placeholder: '@name eingeben — beliebiges öffentliches Konto', autofocus: '' }
+                  },
+                  {
+                    tag: 'button',
+                    attrs: { class: 'primary', id: 'go' },
+                    text: 'Anzeigen'
+                  },
+                  {
+                    tag: 'button',
+                    attrs: { id: 'clear' },
+                    text: 'Leeren'
+                  },
                   {
                     tag: 'select',
                     attrs: { id: 'every' },
@@ -105,7 +120,10 @@ function createHTMLDocument() {
                       { tag: 'option', attrs: { value: '300' }, text: 'alle 5 min' }
                     ]
                   },
-                  { tag: 'input', attrs: { id: 'api', placeholder: 'Monitor, z. B. http://127.0.0.1:8765 (optional)', style: 'min-width:270px' } }
+                  {
+                    tag: 'input',
+                    attrs: { id: 'api', value: '', placeholder: 'Monitor-Adresse (nur lokal)', style: 'min-width:250px' }
+                  }
                 ]
               },
               {
@@ -137,13 +155,11 @@ function createHTMLDocument() {
                         tag: 'p',
                         attrs: { class: 'hint' },
                         children: [
-                          {
-                            text: 'Eingebettet wird der offizielle TikTok-Live-Player '
-                          },
+                          { text: 'Eingebettet wird der offizielle TikTok-Live-Player ' },
                           { tag: 'code', attrs: { id: 'curUrl' }, text: 'tiktok.com/embed/live/@name' },
-                          {
-                            text: ' — <b>keine Anmeldung, keine Geschenk- oder Kauf-Oberfläche</b>. Ist das Konto offline, zeigt der Rahmen eine Fehlerseite von TikTok; das ist das Offline-Zeichen.'
-                          }
+                          { text: ' — ' },
+                          { tag: 'b', text: 'keine Anmeldung, keine Geschenk- oder Kauf-Oberfläche' },
+                          { text: '. Ist das Konto offline, zeigt der Rahmen eine Fehlerseite von TikTok; das ist das Offline-Zeichen.' }
                         ]
                       }
                     ]
@@ -172,13 +188,7 @@ function createHTMLDocument() {
                           {
                             tag: 'div',
                             attrs: { class: 'hint' },
-                            children: [
-                              { text: 'Monitor starten: ' },
-                              { tag: 'code', text: 'python server.py --poll-interval 120' },
-                              { text: ' im Projektordner, dann oben ' },
-                              { tag: 'code', text: 'http://127.0.0.1:8765' },
-                              { text: ' eintragen und „Anzeigen“ drücken.' }
-                            ]
+                            text: 'Diese Seite läuft im Web und bettet nur den offiziellen Player ein — das funktioniert ohne alles. Status, Verlauf und Meldungen kommen aus dem lokalen Monitor; dafür die Datei TikTok-Live-Viewer.html aus dem Projektordner nehmen. Ein Zugriff von dieser Web-Adresse auf deinen eigenen Rechner wird vom Browser in der Regel unterbunden.'
                           }
                         ]
                       },
@@ -204,7 +214,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c =>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num = n => n == null ? '?' : Number(n).toLocaleString('de-DE');
 const clean = s => String(s || '').trim()
-  .replace(/^https?:\\/\\/(www\\.)?tiktok\\.com\\/(@)?/i, '')
+  .replace(/^https?:\\/\\/(www\\.)?tiktok\\.com\\/@@?/i, '')
   .replace(/\\/live.*$/i, '').replace(/^@/, '').trim();
 
 let timer = null;
@@ -339,74 +349,75 @@ function renderElement(element) {
   
   if (element.tag) {
     html += `<${element.tag}`;
-    
     if (element.attrs) {
       for (const [key, value] of Object.entries(element.attrs)) {
         html += ` ${key}="${value}"`;
       }
     }
-    
-    if (element.text && !element.children) {
-      html += `>${element.text}</${element.tag}>`;
-    } else if (element.children) {
-      html += '>';
-      for (const child of element.children) {
-        html += renderElement(child);
-      }
-      html += `</${element.tag}>`;
-    } else {
-      html += '>';
-    }
-  } else {
-    if (element.children) {
-      for (const child of element.children) {
-        html += renderElement(child);
-      }
+    html += '>';
+  }
+
+  if (element.text) {
+    html += element.text;
+  }
+
+  if (element.children) {
+    for (const child of element.children) {
+      html += renderElement(child);
     }
   }
-  
+
+  if (element.tag) {
+    html += `</${element.tag}>`;
+  }
+
   return html;
 }
 
 function generateHTML(doc) {
   let html = doc.doctype + '\n';
-  
   html += `<html lang="${doc.html.attrs.lang}">\n`;
-  
-  // Render head
   html += '<head>\n';
   for (const child of doc.html.head.children) {
     if (child.tag === 'meta') {
       html += `  <meta charset="${child.attrs.charset}">\n`;
+    } else if (child.tag === 'meta' && child.attrs.name) {
+      html += `  <meta name="${child.attrs.name}" content="${child.attrs.content}">\n`;
     } else if (child.tag === 'title') {
       html += `  <title>${child.text}</title>\n`;
     } else if (child.tag === 'style') {
       html += '  <style>\n';
-      html += child.text.split('\n').map(line => '    ' + line).join('\n').trimStart() + '\n';
-      html += '  </style>\n';
+      html += child.text;
+      html += '\n  </style>\n';
     }
   }
   html += '</head>\n';
-  
-  // Render body
   html += '<body>\n';
-  html += renderElement(doc.html.body);
-  html += '</body>\n';
   
-  html += '</html>';
+  // Render body content
+  for (const child of doc.html.body.children) {
+    html += renderElement(child) + '\n';
+  }
+  
+  html += '</body>\n';
+  html += '</html>\n';
   
   return html;
 }
 
-// Main execution
-if (process.argv.length < 3) {
-  console.error('Usage: node viewer.js <output-file>');
-  process.exit(1);
+function main() {
+  const outputFile = process.argv[2];
+  
+  if (!outputFile) {
+    console.error('Usage: node viewer.js <output-file>');
+    process.exit(1);
+  }
+  
+  const doc = createHTMLDocument();
+  const htmlContent = generateHTML(doc);
+  
+  fs.writeFileSync(outputFile, htmlContent, 'utf8');
+  console.log(`HTML file generated: ${outputFile}`);
 }
 
-const outputFile = process.argv[2];
-const doc = createHTMLDocument();
-const htmlContent = generateHTML(doc);
-
-fs.writeFileSync(outputFile, htmlContent, 'utf8');
-console.log(`HTML file generated: ${outputFile}`);
+main();
