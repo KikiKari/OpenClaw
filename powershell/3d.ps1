@@ -1,10 +1,15 @@
 #!/usr/bin/env pwsh
-# 3d.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach powershell
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
-function Generate-HTML {
-  return @"
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$OutputPath
+)
+
+# HTML-Inhalt generieren
+$htmlContent = @"
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -14,13 +19,13 @@ function Generate-HTML {
 <meta name="description" content="Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.">
 <meta name="theme-color" content="#6d5bd0">
 <style>
-  :root{
+  `:root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
     --ac:#6d5bd0; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#0f1115; --panel:#171a21; --line:#262b36; --text:#f2f4f8; --muted:#9aa3b2;
+    `:root{ --bg:#0f1115; --panel:#171a21; --line:#262b36; --text:#f2f4f8; --muted:#9aa3b2;
            color-scheme: dark; }
   }
   *{box-sizing:border-box}
@@ -327,26 +332,8 @@ function Generate-HTML {
 </body>
 </html>
 "@
-}
 
-function Main {
-  $args = $args
-  
-  if ($args.Count -ne 1) {
-    Write-Error "Usage: pwsh script.ps1 <output-file>"
-    exit 1
-  }
-  
-  $outputFile = $args[0]
-  
-  try {
-    $htmlContent = Generate-HTML
-    Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
-    Write-Host "HTML file generated successfully: $outputFile"
-  } catch {
-    Write-Error "Error writing file: $($_.Exception.Message)"
-    exit 1
-  }
-}
+# HTML-Inhalt in Datei schreiben
+$htmlContent | Out-File -FilePath $OutputPath -Encoding UTF8
 
-Main @args
+Write-Host "HTML-Datei wurde erfolgreich erstellt: $OutputPath"

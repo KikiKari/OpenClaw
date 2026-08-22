@@ -1,16 +1,19 @@
 #!/bin/bash
-# 3d.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 3d.html — portiert nach shell
+# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
+# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 3d.html — portiert nach bash
-# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Parameter: Ausgabedatei
+if [[ $# -ne 1 ]]; then
+  echo "Aufruf: $0 AUSGABE.html" >&2
+  exit 1
+fi
+AUSGABE="$1"
 
-generate_html() {
-  cat <<'EOF'
+# HTML-Kopf
+cat > "$AUSGABE" << 'EOF'
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -103,6 +106,10 @@ generate_html() {
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+EOF
+
+# JavaScript-Code
+cat >> "$AUSGABE" << 'EOF'
 (function(){
   "use strict";
   var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"}, {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"}, {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"}, {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}]}, {"name": "Sonde", "farbe": "#2481cc", "blocks": [{"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"}, {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}]}, {"name": "Klassifikation", "farbe": "#6d5bd0", "blocks": [{"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}]}, {"name": "Ausgabe", "farbe": "#15803d", "blocks": [{"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}]}], "kanten": [{"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"}, {"von": "docs-mcp", "nach": "config-py", "art": "fluss"}, {"von": "well-known", "nach": "discovery-py", "art": "fluss"}, {"von": "config-json", "nach": "config-py", "art": "fluss"}, {"von": "discovery-py", "nach": "state-py", "art": "fluss"}, {"von": "config-py", "nach": "state-py", "art": "fluss"}, {"von": "state-py", "nach": "report-py", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
@@ -333,20 +340,5 @@ generate_html() {
 </body>
 </html>
 EOF
-}
 
-main() {
-  local args=("$@")
-  
-  if [ ${#args[@]} -ne 1 ]; then
-    echo "Usage: $0 <output-file>" >&2
-    exit 1
-  fi
-  
-  local output_file="${args[0]}"
-  
-  generate_html > "$output_file"
-  echo "HTML file generated successfully: $output_file"
-}
-
-main "$@"
+echo "Erstellt: $AUSGABE" >&2

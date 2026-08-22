@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-# 3d.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/3d.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
 # 3d.html — portiert nach python
 # Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
+import json
+from html import escape
 
-def generateHTML():
-    return '''<!DOCTYPE html>
+def generate_html(output_file):
+    html_content = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
@@ -105,7 +102,7 @@ def generateHTML():
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"}, {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"}, {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"}, {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}]}, {"name": "Sonde", "farbe": "#2481cc", "blocks": [{"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"}, {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}]}, {"name": "Klassifikation", "farbe": "#6d5bd0", "blocks": [{"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}]}, {"name": "Ausgabe", "farbe": "#15803d", "blocks": [{"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}]}], "kanten": [{"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"}, {"von": "docs-mcp", "nach": "config-py", "art": "fluss"}, {"von": "well-known", "nach": "discovery-py", "art": "fluss"}, {"von": "config-json", "nach": "config-py", "art": "fluss"}, {"von": "discovery-py", "nach": "state-py", "art": "fluss"}, {"von": "config-py", "nach": "state-py", "art": "fluss"}, {"von": "state-py", "nach": "report-py", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = ''' + json.dumps(SPEC, ensure_ascii=False) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -333,23 +330,65 @@ def generateHTML():
 </body>
 </html>'''
 
-def main():
-    args = sys.argv[1:]
-    
-    if len(args) != 1:
-        print('Usage: python3 script.py <output-file>', file=sys.stderr)
-        sys.exit(1)
-    
-    outputFile = args[0]
-    
-    try:
-        htmlContent = generateHTML()
-        with open(outputFile, 'w', encoding='utf-8') as f:
-            f.write(htmlContent)
-        print(f'HTML file generated successfully: {outputFile}')
-    except Exception as error:
-        print(f'Error writing file: {error}', file=sys.stderr)
-        sys.exit(1)
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+# Datenstruktur wie im Original definiert
+SPEC = {
+    "schichten": [
+        {
+            "name": "Quellen",
+            "farbe": "#5f6773",
+            "blocks": [
+                {"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"},
+                {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"},
+                {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"},
+                {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}
+            ]
+        },
+        {
+            "name": "Sonde",
+            "farbe": "#2481cc",
+            "blocks": [
+                {"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"},
+                {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}
+            ]
+        },
+        {
+            "name": "Klassifikation",
+            "farbe": "#6d5bd0",
+            "blocks": [
+                {"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}
+            ]
+        },
+        {
+            "name": "Ausgabe",
+            "farbe": "#15803d",
+            "blocks": [
+                {"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"},
+                {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"},
+                {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}
+            ]
+        }
+    ],
+    "kanten": [
+        {"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"},
+        {"von": "docs-mcp", "nach": "config-py", "art": "fluss"},
+        {"von": "well-known", "nach": "discovery-py", "art": "fluss"},
+        {"von": "config-json", "nach": "config-py", "art": "fluss"},
+        {"von": "discovery-py", "nach": "state-py", "art": "fluss"},
+        {"von": "config-py", "nach": "state-py", "art": "fluss"},
+        {"von": "state-py", "nach": "report-py", "art": "fluss"}
+    ],
+    "kantenarten": [
+        {"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}
+    ]
+}
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 2:
+        print("Usage: python3 script.py <output-file>")
+        sys.exit(1)
+    
+    output_file = sys.argv[1]
+    generate_html(output_file)
