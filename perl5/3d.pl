@@ -1,33 +1,23 @@
 #!/usr/bin/perl
 # 3d.html — portiert nach perl5
-# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Program-Derivation:public/3d.html
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 # Parameter: Ausgabedatei
-my $output_file = $ARGV[0] or die "Verwendung: $0 <ausgabedatei>\n";
+my $ausgabe_datei = $ARGV[0] or die "Verwendung: $0 <ausgabedatei>\n";
 
-# HTML-Dokument generieren
-my $html_content = generate_html();
-
-# In Datei schreiben
-open my $fh, '>', $output_file or die "Kann '$output_file' nicht öffnen: $!\n";
-print $fh $html_content;
-close $fh;
-
-print "HTML wurde erfolgreich in '$output_file' geschrieben.\n";
-
-sub generate_html {
-    return <<'HTML';
+# HTML-Inhalt generieren
+my $html = <<'HTML';
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCP-Server-Monitor — Interaktive Architektur</title>
-<meta name="description" content="Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.">
+<title>Program-Derivation — Interaktive Architektur</title>
+<meta name="description" content="Erst ermitteln, dann messen, dann ableiten — drehen, zoomen, Knoten auswählen.">
 <meta name="theme-color" content="#6d5bd0">
 <style>
   :root{
@@ -80,8 +70,8 @@ sub generate_html {
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>MCP-Server-Monitor</h1>
-  <p class="lede">Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Program-Derivation</h1>
+  <p class="lede">Erst ermitteln, dann messen, dann ableiten — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -115,7 +105,7 @@ sub generate_html {
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"}, {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"}, {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"}, {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}]}, {"name": "Sonde", "farbe": "#2481cc", "blocks": [{"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"}, {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}]}, {"name": "Klassifikation", "farbe": "#6d5bd0", "blocks": [{"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}]}, {"name": "Ausgabe", "farbe": "#15803d", "blocks": [{"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}]}], "kanten": [{"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"}, {"von": "docs-mcp", "nach": "config-py", "art": "fluss"}, {"von": "well-known", "nach": "discovery-py", "art": "fluss"}, {"von": "config-json", "nach": "config-py", "art": "fluss"}, {"von": "discovery-py", "nach": "state-py", "art": "fluss"}, {"von": "config-py", "nach": "state-py", "art": "fluss"}, {"von": "state-py", "nach": "report-py", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "quellcode", "name": "Quellcode", "untertitel": "Betrachtungsgegenstand"}, {"id": "anforderungen", "name": "Anforderungen", "untertitel": "Soll"}, {"id": "randbedingungen", "name": "Randbedingungen", "untertitel": "Grenzen"}]}, {"name": "Ermittlung", "farbe": "#2481cc", "blocks": [{"id": "abstraktionsschichten", "name": "Abstraktionsschichten", "untertitel": "benennen"}, {"id": "interfaces", "name": "Interfaces", "untertitel": "Schnitte"}, {"id": "entkopplungspunkte", "name": "Entkopplungspunkte", "untertitel": "wo trennen"}]}, {"name": "Messung", "farbe": "#6d5bd0", "blocks": [{"id": "cc", "name": "CC", "untertitel": "zyklomatisch"}, {"id": "lcom", "name": "LCOM", "untertitel": "Kohaesionsmangel"}, {"id": "kopplung", "name": "Kopplung", "untertitel": "zwischen Modulen"}, {"id": "kohaesion", "name": "Kohaesion", "untertitel": "innerhalb"}, {"id": "vendor-lock-in", "name": "Vendor Lock-in", "untertitel": "Abhaengigkeit"}]}, {"name": "Ableitung", "farbe": "#b45309", "blocks": [{"id": "6-stufige-roadmap", "name": "6-stufige Roadmap", "untertitel": "Schritt fuer Schritt"}, {"id": "refactoring-katalog", "name": "Refactoring-Katalog", "untertitel": "Massnahmen"}, {"id": "checklisten", "name": "Checklisten", "untertitel": "Grenzen pruefen"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "bericht-de-en", "name": "Bericht de/en", "untertitel": "zweisprachig"}, {"id": "interface-vorlagen", "name": "Interface-Vorlagen", "untertitel": "Templates"}, {"id": "playbook", "name": "Playbook", "untertitel": "Modernisierung"}]}], "kanten": [{"von": "quellcode", "nach": "abstraktionsschichten", "art": "fluss"}, {"von": "anforderungen", "nach": "interfaces", "art": "fluss"}, {"von": "randbedingungen", "nach": "entkopplungspunkte", "art": "fluss"}, {"von": "abstraktionsschichten", "nach": "cc", "art": "fluss"}, {"von": "interfaces", "nach": "lcom", "art": "fluss"}, {"von": "entkopplungspunkte", "nach": "kopplung", "art": "fluss"}, {"von": "cc", "nach": "6-stufige-roadmap", "art": "fluss"}, {"von": "lcom", "nach": "refactoring-katalog", "art": "fluss"}, {"von": "kopplung", "nach": "checklisten", "art": "fluss"}, {"von": "kohaesion", "nach": "6-stufige-roadmap", "art": "fluss"}, {"von": "vendor-lock-in", "nach": "refactoring-katalog", "art": "fluss"}, {"von": "6-stufige-roadmap", "nach": "bericht-de-en", "art": "fluss"}, {"von": "refactoring-katalog", "nach": "interface-vorlagen", "art": "fluss"}, {"von": "checklisten", "nach": "playbook", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -343,4 +333,10 @@ sub generate_html {
 </body>
 </html>
 HTML
-}
+
+# In Datei schreiben
+open my $fh, '>', $ausgabe_datei or die "Konnte '$ausgabe_datei' nicht öffnen: $!\n";
+print $fh $html;
+close $fh;
+
+print "HTML erfolgreich in '$ausgabe_datei' geschrieben.\n";

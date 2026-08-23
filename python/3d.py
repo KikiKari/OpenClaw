@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # 3d.html — portiert nach python
-# Quelle: html, Projects@MCP-Server-Monitor:public/3d.html
-# Erzeugt: 2026-08-22 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Program-Derivation:public/3d.html
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import json
-from html import escape
+from pathlib import Path
 
 def generate_html(output_file):
     html_content = '''<!DOCTYPE html>
@@ -13,8 +13,8 @@ def generate_html(output_file):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MCP-Server-Monitor — Interaktive Architektur</title>
-<meta name="description" content="Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.">
+<title>Program-Derivation — Interaktive Architektur</title>
+<meta name="description" content="Erst ermitteln, dann messen, dann ableiten — drehen, zoomen, Knoten auswählen.">
 <meta name="theme-color" content="#6d5bd0">
 <style>
   :root{
@@ -67,8 +67,8 @@ def generate_html(output_file):
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>MCP-Server-Monitor</h1>
-  <p class="lede">Warum fehlen die Tools? Vier Schichten von der Netz-Sonde bis zur Ausgabe — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Program-Derivation</h1>
+  <p class="lede">Erst ermitteln, dann messen, dann ableiten — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -333,52 +333,72 @@ def generate_html(output_file):
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-# Datenstruktur wie im Original definiert
+# Specification data structure
 SPEC = {
     "schichten": [
         {
-            "name": "Quellen",
+            "name": "Eingaben",
             "farbe": "#5f6773",
             "blocks": [
-                {"id": "mcp-domain", "name": "mcp.DOMAIN", "untertitel": "Streamable HTTP"},
-                {"id": "docs-mcp", "name": "docs/mcp", "untertitel": "Anbieterdoku"},
-                {"id": "well-known", "name": ".well-known", "untertitel": "OAuth-Metadaten"},
-                {"id": "config-json", "name": "config.json", "untertitel": "claude_desktop_config"}
+                {"id": "quellcode", "name": "Quellcode", "untertitel": "Betrachtungsgegenstand"},
+                {"id": "anforderungen", "name": "Anforderungen", "untertitel": "Soll"},
+                {"id": "randbedingungen", "name": "Randbedingungen", "untertitel": "Grenzen"}
             ]
         },
         {
-            "name": "Sonde",
+            "name": "Ermittlung",
             "farbe": "#2481cc",
             "blocks": [
-                {"id": "discovery-py", "name": "discovery.py", "untertitel": "sechs Pfade"},
-                {"id": "config-py", "name": "config.py", "untertitel": "MSIX-Falle"}
+                {"id": "abstraktionsschichten", "name": "Abstraktionsschichten", "untertitel": "benennen"},
+                {"id": "interfaces", "name": "Interfaces", "untertitel": "Schnitte"},
+                {"id": "entkopplungspunkte", "name": "Entkopplungspunkte", "untertitel": "wo trennen"}
             ]
         },
         {
-            "name": "Klassifikation",
+            "name": "Messung",
             "farbe": "#6d5bd0",
             "blocks": [
-                {"id": "state-py", "name": "state.py", "untertitel": "fuenf Zustaende"}
+                {"id": "cc", "name": "CC", "untertitel": "zyklomatisch"},
+                {"id": "lcom", "name": "LCOM", "untertitel": "Kohaesionsmangel"},
+                {"id": "kopplung", "name": "Kopplung", "untertitel": "zwischen Modulen"},
+                {"id": "kohaesion", "name": "Kohaesion", "untertitel": "innerhalb"},
+                {"id": "vendor-lock-in", "name": "Vendor Lock-in", "untertitel": "Abhaengigkeit"}
+            ]
+        },
+        {
+            "name": "Ableitung",
+            "farbe": "#b45309",
+            "blocks": [
+                {"id": "6-stufige-roadmap", "name": "6-stufige Roadmap", "untertitel": "Schritt fuer Schritt"},
+                {"id": "refactoring-katalog", "name": "Refactoring-Katalog", "untertitel": "Massnahmen"},
+                {"id": "checklisten", "name": "Checklisten", "untertitel": "Grenzen pruefen"}
             ]
         },
         {
             "name": "Ausgabe",
-            "farbe": "#15803d",
+            "farbe": "#0f766e",
             "blocks": [
-                {"id": "report-py", "name": "report.py", "untertitel": "Textausgabe"},
-                {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"},
-                {"id": "index-html", "name": "index.html", "untertitel": "statische Seite"}
+                {"id": "bericht-de-en", "name": "Bericht de/en", "untertitel": "zweisprachig"},
+                {"id": "interface-vorlagen", "name": "Interface-Vorlagen", "untertitel": "Templates"},
+                {"id": "playbook", "name": "Playbook", "untertitel": "Modernisierung"}
             ]
         }
     ],
     "kanten": [
-        {"von": "mcp-domain", "nach": "discovery-py", "art": "fluss"},
-        {"von": "docs-mcp", "nach": "config-py", "art": "fluss"},
-        {"von": "well-known", "nach": "discovery-py", "art": "fluss"},
-        {"von": "config-json", "nach": "config-py", "art": "fluss"},
-        {"von": "discovery-py", "nach": "state-py", "art": "fluss"},
-        {"von": "config-py", "nach": "state-py", "art": "fluss"},
-        {"von": "state-py", "nach": "report-py", "art": "fluss"}
+        {"von": "quellcode", "nach": "abstraktionsschichten", "art": "fluss"},
+        {"von": "anforderungen", "nach": "interfaces", "art": "fluss"},
+        {"von": "randbedingungen", "nach": "entkopplungspunkte", "art": "fluss"},
+        {"von": "abstraktionsschichten", "nach": "cc", "art": "fluss"},
+        {"von": "interfaces", "nach": "lcom", "art": "fluss"},
+        {"von": "entkopplungspunkte", "nach": "kopplung", "art": "fluss"},
+        {"von": "cc", "nach": "6-stufige-roadmap", "art": "fluss"},
+        {"von": "lcom", "nach": "refactoring-katalog", "art": "fluss"},
+        {"von": "kopplung", "nach": "checklisten", "art": "fluss"},
+        {"von": "kohaesion", "nach": "6-stufige-roadmap", "art": "fluss"},
+        {"von": "vendor-lock-in", "nach": "refactoring-katalog", "art": "fluss"},
+        {"von": "6-stufige-roadmap", "nach": "bericht-de-en", "art": "fluss"},
+        {"von": "refactoring-katalog", "nach": "interface-vorlagen", "art": "fluss"},
+        {"von": "checklisten", "nach": "playbook", "art": "fluss"}
     ],
     "kantenarten": [
         {"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}
@@ -392,3 +412,4 @@ if __name__ == "__main__":
     
     output_file = sys.argv[1]
     generate_html(output_file)
+    print(f"Generated HTML file: {output_file}")
