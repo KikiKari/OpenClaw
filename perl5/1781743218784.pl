@@ -1,18 +1,20 @@
 #!/usr/bin/perl
 # 1781743218784.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
-# Parameter verarbeiten
+# Prüfe, ob genau ein Argument übergeben wurde
 if (@ARGV != 1) {
     print STDERR "Usage: perl script.pl <OutputPath>\n";
     exit 1;
 }
+
 my $outputPath = $ARGV[0];
 
+# HTML-Inhalt als mehrzeiliger String
 my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -221,7 +223,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Schreibe den Inhalt in die Ausgabedatei
-open(my $fh, '>:encoding(UTF-8)', $outputPath) or die "Konnte Datei '$outputPath' nicht öffnen: $!";
+# Schreibe den Inhalt in die angegebene Datei
+open my $fh, '>:encoding(utf8)', $outputPath or die "Cannot write to '$outputPath': $!";
 print $fh $htmlContent;
 close $fh;

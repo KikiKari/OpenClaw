@@ -1,23 +1,20 @@
-#!/bin/bash
-# 1781743218784.html — portiert nach shell
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-09 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Dieses Skript erzeugt eine HTML-Datei mit einer interaktiven Secret-Vault-Anwendung
-# Die Anwendung ermöglicht das Erstellen, Öffnen und Verwalten von verschlüsselten Secrets im Browser
-
-# Parameter: Ausgabedatei
-if [ $# -ne 1 ]; then
-    echo "Verwendung: $0 <ausgabedatei>"
-    exit 1
+# Prüfe Anzahl Argumente
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $0 <OutputPath>" >&2
+  exit 1
 fi
 
-OUTPUT_FILE="$1"
+output_path="$1"
 
-# Erzeuge die HTML-Datei mit allen benötigten Komponenten
-cat > "$OUTPUT_FILE" << 'EOF'
+# Schreibe HTML-Inhalt in Datei
+cat > "$output_path" << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -224,5 +221,3 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 EOF
-
-echo "HTML-Datei wurde erfolgreich erstellt: $OUTPUT_FILE"
