@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # 1781743218784.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
 # Parameter verarbeiten
 if len(sys.argv) != 2:
-    print('Usage: python script.py <OutputPath>', file=sys.stderr)
+    print("Usage: python script.py <OutputPath>", file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]

@@ -1,12 +1,20 @@
-#!/bin/bash
-# 1781743218784.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-generateHTML() {
-  cat <<'HTML_END'
+# Prüfe Anzahl der Argumente
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <OutputPath>" >&2
+    exit 1
+fi
+
+outputPath="$1"
+
+# HTML-Inhalt in eine Variable speichern
+htmlContent=$(cat <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -213,26 +221,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 HTML_END
-}
+)
 
-main() {
-  local args=("$@")
-  
-  if [ ${#args[@]} -ne 1 ]; then
-    echo "Usage: bash script.sh <output-file>" >&2
-    exit 1
-  fi
-  
-  local outputFile="${args[0]}"
-  
-  {
-    generateHTML
-  } > "$outputFile" 2>/dev/null || {
-    echo "Error generating HTML file: $?" >&2
-    exit 1
-  }
-  
-  echo "HTML file generated: $outputFile"
-}
-
-main "$@"
+# Schreibe den HTML-Inhalt in die Ausgabedatei
+echo "$htmlContent" > "$outputPath"

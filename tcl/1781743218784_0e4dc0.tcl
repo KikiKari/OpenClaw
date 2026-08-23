@@ -1,19 +1,18 @@
-#!/usr/bin/env tclsh8.6
-# 1781743218784.sh — portiert nach tcl
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env tclsh
+# 1781743218784_0e4dc0.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.html — portiert nach bash
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0.pl — portiert nach JavaScript
+# Quelle: perl5, Projects@abstractions:powershell/1781743218784_0e4dc0.pl
+# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
-    return {
-<!DOCTYPE html>
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -217,23 +216,23 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 }
 
-proc main {argv} {
-    if {[llength $argv] != 1} {
-        puts stderr {Usage: tclsh script.tcl <output-file>}
+proc main {args} {
+    if {[llength $args] != 1} {
+        puts stderr "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
     
-    set outputFile [lindex $argv 0]
+    set outputFile [lindex $args 0]
     
     # Generate HTML content and write to file
+    set htmlContent [generateHTML]
     set fh [open $outputFile w]
-    puts -nonewline $fh [generateHTML]
+    puts -nonewline $fh $htmlContent
     close $fh
     puts "HTML file generated: $outputFile"
 }
 
-main $argv
+main {*}$argv

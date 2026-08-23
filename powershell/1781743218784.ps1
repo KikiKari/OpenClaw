@@ -1,13 +1,14 @@
 #!/usr/bin/env pwsh
 # 1781743218784.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputPath
-)
+if ($args.Count -ne 1) {
+    Write-Error "Usage: pwsh script.ps1 <OutputPath>"
+    exit 1
+}
+$outputPath = $args[0]
 
 $htmlContent = @'
 <!DOCTYPE html>
@@ -217,5 +218,4 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
-# Schreibe den HTML-Inhalt in die angegebene Datei
-$htmlContent | Out-File -FilePath $OutputPath -Encoding utf8
+Set-Content -Path $outputPath -Value $htmlContent -Encoding UTF8
