@@ -1,30 +1,29 @@
 #!/usr/bin/env node
-// abstractions_manager.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/abstractions_manager.pl
-// Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+// abstractions_manager.py — portiert nach javascript
+// Quelle: python, OpenClaw@gateway1:skills/script-abstractions-manager/scripts/abstractions_manager.py
+// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-// abstractions_manager.pl — portiert nach JavaScript fuer Node 20
-// Quelle: perl5, OpenClaw@gateway1:skills/script-abstractions-manager/scripts/abstractions_manager.pl
-// Erzeugt: 2026-08-07 durch ABSTRACTIONS_MANAGER.pl
+/**
+ * Script Abstractions Manager - Multi-Node Edition
+ */
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const os = require('os');
 
 // Konfiguration
-const WORKSPACE = "/home/openclaw/.openclaw/workspace";
-const ABSTRACTIONS_REPO = path.join(WORKSPACE, "git", "Abstraktionen");
-const LOG_DIR = path.join(WORKSPACE, "logs", "abstractions-manager");
-const STATE_FILE = path.join(WORKSPACE, "db", "abstractions_state.json");
+const WORKSPACE = path.join('/home/openclaw/.openclaw/workspace');
+const ABSTRACTIONS_REPO = path.join(WORKSPACE, 'git', 'Abstraktionen');
+const LOG_DIR = path.join(WORKSPACE, 'logs', 'abstractions-manager');
+const STATE_FILE = path.join(WORKSPACE, 'db', 'abstractions_state.json');
 
 // Node-Konfiguration mit Prioritäten
 const NODES = {
-    "node1": { always_available: true, capacity: "medium", priority: 2 },  // Gateway-Master
-    "node2": { always_available: true, capacity: "medium", priority: 3 },  // Stable Worker
-    "node3": { always_available: false, capacity: "medium", priority: 4 }, // Bald verfügbar
-    "node5": { always_available: false, capacity: "low", priority: 5, device: "Redmi Note 11S", condition: "mobile_internet" },
-    "node7": { always_available: true, capacity: "high", priority: 1 },    // Docker Hauptarbeitspferd
+    "node1": {"always_available": true, "capacity": "medium", "priority": 2},  // Gateway-Master
+    "node2": {"always_available": true, "capacity": "medium", "priority": 3},  // Stable Worker
+    "node3": {"always_available": false, "capacity": "medium", "priority": 4}, // Bald verfügbar
+    "node5": {"always_available": false, "capacity": "low", "priority": 5, "device": "Redmi Note 11S", "condition": "mobile_internet"},
+    "node7": {"always_available": true, "capacity": "high", "priority": 1},    // Docker Hauptarbeitspferd
 };
 
 const AVAILABLE_MODELS = [
@@ -37,230 +36,224 @@ const AVAILABLE_MODELS = [
 ];
 
 const TARGET_LANGUAGES = {
-    "perl5": { ext: ".pl", shebang: "#!/usr/bin/env perl", header: "use strict;\nuse warnings;\n" },
-    "perl6": { ext: ".raku", shebang: "#!/usr/bin/env raku", header: "use v6;\n" },
-    "javascript": { ext: ".js", shebang: "#!/usr/bin/env node", header: "" },
-    "python": { ext: ".py", shebang: "#!/usr/bin/env python3", header: "" },
-    "shell": { ext: ".sh", shebang: "#!/bin/bash", header: "set -euo pipefail\n" },
-    "powershell": { ext: ".ps1", shebang: "#!/usr/bin/env pwsh", header: "#Requires -Version 7\n" },
-    "tcl": { ext: ".tcl", shebang: "#!/usr/bin/env tclsh", header: "package require Tcl 8.6\n" },
-    "ruby": { ext: ".rb", shebang: "#!/usr/bin/env ruby", header: "require 'json'\nrequire 'fileutils'\n" },
-    "lua": { ext: ".lua", shebang: "#!/usr/bin/env lua", header: "" },
-    "go": { ext: ".go", shebang: "// +build ignore", header: "package main\n" },
+    "perl5": {"ext": ".pl", "shebang": "#!/usr/bin/env perl", "header": "use strict;\nuse warnings;\n"},
+    "perl6": {"ext": ".raku", "shebang": "#!/usr/bin/env raku", "header": "use v6;\n"},
+    "javascript": {"ext": ".js", "shebang": "#!/usr/bin/env node", "header": ""},
+    "python": {"ext": ".py", "shebang": "#!/usr/bin/env python3", "header": ""},
+    "shell": {"ext": ".sh", "shebang": "#!/bin/bash", "header": "set -euo pipefail\n"},
+    "powershell": {"ext": ".ps1", "shebang": "#!/usr/bin/env pwsh", "header": "#Requires -Version 7\n"},
+    "tcl": {"ext": ".tcl", "shebang": "#!/usr/bin/env tclsh", "header": "package require Tcl 8.6\n"},
+    "ruby": {"ext": ".rb", "shebang": "#!/usr/bin/env ruby", "header": "require 'json'\nrequire 'fileutils'\n"},
+    "lua": {"ext": ".lua", "shebang": "#!/usr/bin/env lua", "header": ""},
+    "go": {"ext": ".go", "shebang": "// +build ignore", "header": "package main\n"},
 };
 
-function logMessage(message, level = "INFO") {
-    const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    const line = `[${timestamp}] [${level}] ${message}\n`;
-    console.log(line.trim());
-    
-    // Sicherstellen, dass das Log-Verzeichnis existiert
-    if (!fs.existsSync(LOG_DIR)) {
-        fs.mkdirSync(LOG_DIR, { recursive: true });
+function log(message, level = "INFO") {
+    const logDir = LOG_DIR;
+    if (!fs.existsSync(logDir)) {
+        fs.mkdirSync(logDir, { recursive: true });
     }
     
-    const logFile = path.join(LOG_DIR, new Date().toISOString().split('T')[0] + ".log");
-    fs.appendFileSync(logFile, line);
+    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const line = `[${timestamp}] [${level}] ${message}`;
+    console.log(line);
+    
+    const logFile = path.join(logDir, `${new Date().toISOString().split('T')[0]}.log`);
+    fs.appendFileSync(logFile, line + '\n');
 }
 
-function getNodeByPriority(jobWeight = "medium") {
-    let preferredOrder;
-    if (jobWeight === "heavy") {
-        preferredOrder = ["node7", "node2", "node1"];
-    } else if (jobWeight === "medium") {
-        preferredOrder = ["node2", "node1", "node7"];
-    } else {
-        preferredOrder = ["node5", "node1", "node2"];
+function get_node_by_priority(job_weight = "medium") {
+    /** Wählt Node basierend auf Job-Gewicht und Priorität */
+    
+    let preferred_order;
+    if (job_weight === "heavy") {
+        // Schwere Jobs → Node 7 (Docker mit vielen Ressourcen)
+        preferred_order = ["node7", "node2", "node1"];
+    } else if (job_weight === "medium") {
+        // Mittlere Jobs → Stable Nodes
+        preferred_order = ["node2", "node1", "node7"];
+    } else {  // light
+        // Leichte Jobs → Mobile/verfügbare Nodes
+        preferred_order = ["node5", "node1", "node2"];
     }
     
-    for (const nodeId of preferredOrder) {
-        if (!NODES[nodeId]) continue;
+    // Prüfe Verfügbarkeit
+    for (const node_id of preferred_order) {
+        if (!NODES[node_id]) {
+            continue;
+        }
+            
+        const node = NODES[node_id];
         
-        const node = NODES[nodeId];
-        if (!node.always_available && jobWeight !== "light") continue;
-        
-        if (checkNodeStatus(nodeId)) {
-            return nodeId;
+        // Skip nicht immer verfügbare Nodes wenn nicht explizit requested
+        if (!node.always_available && job_weight !== "light") {
+            continue;
+        }
+            
+        // Prüfe ob Node online
+        if (check_node_status(node_id)) {
+            return node_id;
         }
     }
     
+    // Fallback zu Node 1
     return "node1";
 }
 
-function checkNodeStatus(nodeId) {
+function check_node_status(node_id) {
+    /** Prüft ob ein Node erreichbar ist */
     try {
-        const output = execSync(`openclaw nodes status ${nodeId}`, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'ignore'] });
-        if (output.toLowerCase().includes('online') || output.toLowerCase().includes('active')) {
-            return true;
-        }
+        const result = execSync(`openclaw nodes status ${node_id}`, {
+            timeout: 5000,
+            encoding: 'utf-8'
+        });
+        return result.includes("online") || result.includes("active");
     } catch (error) {
-        // Befehl fehlgeschlagen
+        // Bei Timeout/Error: Prüfe letzten bekannten Status
+        return NODES[node_id]?.always_available || false;
     }
-    
-    return NODES[nodeId]?.always_available || false;
 }
 
-function getJobWeight(scriptSize, targetLangsCount) {
-    const totalWork = scriptSize * targetLangsCount;
+function get_job_weight(script_size, target_langs_count) {
+    /** Bewertet Job-Gewicht basierend auf Script-Größe und Anzahl Zielsprachen */
+    const total_work = script_size * target_langs_count;
     
-    if (totalWork > 50000) {
+    if (total_work > 50000) {  // Große Scripts, viele Sprachen
         return "heavy";
-    } else if (totalWork > 10000) {
+    } else if (total_work > 10000) {  // Mittlere Last
         return "medium";
     } else {
         return "light";
     }
 }
 
-function loadState() {
+function load_state() {
     if (fs.existsSync(STATE_FILE)) {
         try {
-            const jsonData = fs.readFileSync(STATE_FILE, 'utf8');
-            return JSON.parse(jsonData);
+            const data = fs.readFileSync(STATE_FILE, 'utf8');
+            return JSON.parse(data);
         } catch (error) {
-            // JSON konnte nicht gelesen werden
+            // ignore error
         }
     }
-    
-    return defaultState();
+    return {"processed": {}, "queue": [], "current_priority": "high", "stats": {"total_scripts": 0, "abstractions_created": 0}};
 }
 
-function defaultState() {
-    return {
-        processed: {},
-        queue: [],
-        current_priority: "high",
-        stats: { total_scripts: 0, abstractions_created: 0 }
-    };
-}
-
-function saveState(state) {
+function save_state(state) {
     const stateDir = path.dirname(STATE_FILE);
     if (!fs.existsSync(stateDir)) {
         fs.mkdirSync(stateDir, { recursive: true });
     }
-    
     fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
 }
 
-function findScriptsInDir(directory, excludePatterns = ["node_modules", ".git", "__pycache__", "dist", "build"]) {
-    const scripts = [];
-    
-    if (!fs.existsSync(directory) || !fs.statSync(directory).isDirectory()) {
-        return scripts;
+function find_scripts_in_dir(directory, exclude_patterns = null) {
+    if (exclude_patterns === null) {
+        exclude_patterns = ["node_modules", ".git", "__pycache__", "dist", "build"];
     }
     
-    const extensions = [".py", ".js", ".sh", ".pl", ".rb"];
-    
-    function walkDir(currentPath) {
-        const files = fs.readdirSync(currentPath);
-        
-        for (const file of files) {
-            const filePath = path.join(currentPath, file);
-            const stat = fs.statSync(filePath);
-            
-            if (stat.isDirectory()) {
-                let exclude = false;
-                for (const pattern of excludePatterns) {
-                    if (filePath.includes(pattern)) {
-                        exclude = true;
-                        break;
+    const scripts = [];
+    if (fs.existsSync(directory)) {
+        function walk(dir) {
+            const files = fs.readdirSync(dir);
+            for (const file of files) {
+                const filepath = path.join(dir, file);
+                const stat = fs.statSync(filepath);
+                
+                if (stat.isDirectory()) {
+                    if (!exclude_patterns.some(pattern => filepath.includes(pattern))) {
+                        walk(filepath);
                     }
-                }
-                if (!exclude) {
-                    walkDir(filePath);
-                }
-            } else {
-                const ext = path.extname(file);
-                if (extensions.includes(ext)) {
-                    let exclude = false;
-                    for (const pattern of excludePatterns) {
-                        if (filePath.includes(pattern)) {
-                            exclude = true;
-                            break;
+                } else {
+                    const ext = path.extname(file);
+                    if ([".py", ".js", ".sh", ".pl", ".rb"].includes(ext)) {
+                        if (!exclude_patterns.some(pattern => filepath.includes(pattern))) {
+                            scripts.push(filepath);
                         }
-                    }
-                    if (!exclude) {
-                        scripts.push(filePath);
                     }
                 }
             }
         }
+        walk(directory);
     }
-    
-    walkDir(directory);
     return scripts;
 }
 
-function createAbstraction(scriptPath, targetLang) {
+function create_abstraction(script_path, target_lang) {
     try {
-        if (!fs.existsSync(scriptPath)) {
-            throw new Error(`Cannot read ${scriptPath}: File does not exist`);
+        const original_content = fs.readFileSync(script_path, 'utf8');
+        
+        const ext = path.extname(script_path).substring(1);
+        const source_lang_map = {"py": "Python", "js": "JavaScript", "sh": "Shell", "pl": "Perl", "rb": "Ruby"};
+        const source_lang = source_lang_map[ext] || ext;
+        
+        const target_dir = path.join(ABSTRACTIONS_REPO, target_lang);
+        if (!fs.existsSync(target_dir)) {
+            fs.mkdirSync(target_dir, { recursive: true });
         }
         
-        const originalContent = fs.readFileSync(scriptPath, 'utf8');
-        const ext = path.extname(scriptPath).substring(1);
-        const sourceLangMap = { py: "Python", js: "JavaScript", sh: "Shell", pl: "Perl", rb: "Ruby" };
-        const sourceLang = sourceLangMap[ext] || ext;
+        const target_file = path.join(target_dir, path.basename(script_path, path.extname(script_path)) + TARGET_LANGUAGES[target_lang].ext);
         
-        const targetDir = path.join(ABSTRACTIONS_REPO, targetLang);
-        if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir, { recursive: true });
-        }
-        
-        const scriptName = path.basename(scriptPath, path.extname(scriptPath));
-        const targetFile = path.join(targetDir, scriptName + TARGET_LANGUAGES[targetLang].ext);
-        
-        if (fs.existsSync(targetFile)) {
+        if (fs.existsSync(target_file)) {
             return false;
         }
         
-        const template = TARGET_LANGUAGES[targetLang];
-        const lines = originalContent.split('\n').slice(0, 15);
+        const template = TARGET_LANGUAGES[target_lang];
+        const lines = original_content.split('\n').slice(0, 15);
         
-        let content = `${template.shebang}\n`;
-        content += `# ${scriptName} - ${targetLang.charAt(0).toUpperCase() + targetLang.slice(1)} Version\n`;
-        content += `# Portiert von ${sourceLang}\n`;
-        content += `# Original: ${scriptPath}\n`;
-        content += `# Erstellt: ${new Date().toISOString().split('T')[0]}\n#\n`;
-        if (template.header) {
-            content += `# ${template.header}\n`;
-        }
-        content += "# Original-Code-Referenz:\n";
-        content += "# " + lines.join("\n# ") + "\n\n";
-        content += "sub main {\n";
-        content += "    // TODO: Implementiere " + sourceLang + " Funktionalität in " + targetLang.charAt(0).toUpperCase() + targetLang.slice(1) + "\n";
-        content += "    return;\n";
-        content += "}\n\n";
-        content += "main();\n";
+        const content = `${template.shebang}
+# ${path.basename(script_path, path.extname(script_path))} - ${target_lang.charAt(0).toUpperCase() + target_lang.slice(1)} Version
+# Portiert von ${source_lang}
+# Original: ${script_path}
+# Erstellt: ${new Date().toISOString().split('T')[0]}
+#
+${template.header ? '# ' + template.header.trim().replace(/\n/g, '\n# ') : ''}
+
+# Original-Code-Referenz:
+# ${lines.join('\n# ')}
+
+function main() {
+    // TODO: Implementiere ${source_lang} Funktionalität in ${target_lang.charAt(0).toUpperCase() + target_lang.slice(1)}
+    pass
+}
+
+if (require.main === module) {
+    main();
+}
+`;
         
-        fs.writeFileSync(targetFile, content);
-        logMessage(`Created: ${targetFile}`);
+        fs.writeFileSync(target_file, content);
+        log(`Created: ${target_file}`);
         return true;
     } catch (error) {
-        logMessage(`Failed: ${scriptPath} - ${error.message}`, "ERROR");
+        log(`Failed: ${script_path} - ${error.message}`, "ERROR");
         return false;
     }
 }
 
-function processOnNode(nodeId, scripts, targetLangs) {
+function process_on_node(node_id, scripts, target_langs) {
+    /** Verarbeitet Scripts auf definiertem Node */
     let created = 0;
     
-    if (nodeId === "node1") {
+    if (node_id === "node1") {
+        // Lokale Verarbeitung
         for (const script of scripts) {
-            for (const lang of targetLangs) {
-                if (createAbstraction(script, lang)) {
+            for (const lang of target_langs) {
+                if (create_abstraction(script, lang)) {
                     created++;
                 }
             }
         }
     } else {
-        logMessage(`Dispatching ${scripts.length} jobs to ${nodeId}`);
+        // Remote-Verarbeitung
+        log(`Dispatching ${scripts.length} jobs to ${node_id}`);
+        // TODO: Implementiere Remote-Dispatch wenn Node-Infrastruktur bereit
+        // Für jetzt: Lokale Verarbeitung mit Node-Logging
         for (const script of scripts) {
-            for (const lang of targetLangs) {
-                if (createAbstraction(script, lang)) {
+            for (const lang of target_langs) {
+                if (create_abstraction(script, lang)) {
                     created++;
-                    logMessage(`Processed on ${nodeId}: ${script} -> ${lang}`);
+                    log(`Processed on ${node_id}: ${path.basename(script)} -> ${lang}`);
                 }
             }
         }
@@ -269,7 +262,7 @@ function processOnNode(nodeId, scripts, targetLangs) {
     return created;
 }
 
-function processPriorityHigh() {
+function process_priority_high() {
     let created = 0;
     const targets = [
         ["skill-creator", path.join(WORKSPACE, "skills", "skill-creator", "scripts")],
@@ -279,28 +272,27 @@ function processPriorityHigh() {
         ["tiktok-live", path.join(WORKSPACE, "skills", "tiktok-live", "scripts")],
     ];
     
-    for (const [skillName, scriptsDir] of targets) {
-        const scripts = findScriptsInDir(scriptsDir, ["node_modules", ".git", "test", "tests"]);
-        logMessage(`${skillName}: ${scripts.length} scripts found`);
+    for (const [skill_name, scripts_dir] of targets) {
+        const scripts = find_scripts_in_dir(scripts_dir, ["node_modules", ".git", "test", "tests"]);
+        log(`${skill_name}: ${scripts.length} scripts found`);
         
-        let count = 0;
-        for (const script of scripts) {
-            if (count++ >= 10) break;
-            const scriptSize = fs.statSync(script).size || 0;
-            const targetLangs = ["perl5", "javascript", "python", "shell", "tcl"];
-            const jobWeight = getJobWeight(scriptSize, targetLangs.length);
+        for (const script of scripts.slice(0, 10)) {  // Limit für erste Durchläufe
+            const script_size = fs.existsSync(script) ? fs.statSync(script).size : 0;
+            const target_langs = ["perl5", "javascript", "python", "shell", "tcl"];
+            const job_weight = get_job_weight(script_size, target_langs.length);
             
-            const selectedNode = getNodeByPriority(jobWeight);
-            logMessage(`Processing ${path.basename(script)} (${jobWeight}) on ${selectedNode}`);
+            // Wähle Node basierend auf Job-Gewicht
+            const selected_node = get_node_by_priority(job_weight);
+            log(`Processing ${path.basename(script)} (${job_weight}) on ${selected_node}`);
             
-            created += processOnNode(selectedNode, [script], targetLangs);
+            created += process_on_node(selected_node, [script], target_langs);
         }
     }
     
     return created;
 }
 
-function processPriorityMedium() {
+function process_priority_medium() {
     let created = 0;
     const targets = [
         ["workspace-scripts", path.join(WORKSPACE, "scripts")],
@@ -308,170 +300,131 @@ function processPriorityMedium() {
         ["log-collector", path.join(WORKSPACE, "skills", "log-collector", "scripts")],
     ];
     
-    for (const [dirName, scriptsDir] of targets) {
-        const scripts = findScriptsInDir(scriptsDir, ["node_modules", ".git"]);
+    for (const [dir_name, scripts_dir] of targets) {
+        const scripts = find_scripts_in_dir(scripts_dir, ["node_modules", ".git"]);
         
-        let count = 0;
-        for (const script of scripts) {
-            if (count++ >= 10) break;
-            const scriptSize = fs.statSync(script).size || 0;
-            const targetLangs = ["perl5", "javascript", "powershell", "python"];
-            const jobWeight = getJobWeight(scriptSize, targetLangs.length);
+        for (const script of scripts.slice(0, 10)) {
+            const script_size = fs.existsSync(script) ? fs.statSync(script).size : 0;
+            const target_langs = ["perl5", "javascript", "powershell", "python"];
+            const job_weight = get_job_weight(script_size, target_langs.length);
             
-            const priority = (jobWeight === "heavy") ? "medium" : jobWeight;
-            const selectedNode = getNodeByPriority(priority);
-            logMessage(`Processing ${path.basename(script)} (${jobWeight}) on ${selectedNode}`);
+            // Mittlere Priority → eher leichtere Jobs
+            const selected_node = get_node_by_priority(job_weight === "heavy" ? "medium" : job_weight);
+            log(`Processing ${path.basename(script)} (${job_weight}) on ${selected_node}`);
             
-            created += processOnNode(selectedNode, [script], targetLangs);
+            created += process_on_node(selected_node, [script], target_langs);
         }
     }
     
     return created;
 }
 
-function gitCommit(message) {
+function git_commit(message) {
     try {
-        const oldDir = process.cwd();
         process.chdir(ABSTRACTIONS_REPO);
-        execSync("git add .", { stdio: 'ignore' });
-        execSync(`git commit -m '${message}'`, { stdio: 'ignore' });
-        process.chdir(oldDir);
-        logMessage(`Git commit: ${message}`);
+        execSync("git add .", { stdio: 'pipe' });
+        execSync(`git commit -m "${message}"`, { stdio: 'pipe' });
+        log(`Git commit: ${message}`);
     } catch (error) {
-        logMessage(`Git commit failed: ${error.message}`, "ERROR");
+        // ignore errors
     }
 }
 
-function createStatusReport(state) {
-    const reportFile = path.join(ABSTRACTIONS_REPO, "STATUS.md");
+function create_status_report(state) {
+    const report_file = path.join(ABSTRACTIONS_REPO, "STATUS.md");
+    const lang_counts = {};
     
-    const langCounts = {};
     if (fs.existsSync(ABSTRACTIONS_REPO)) {
-        const langDirs = fs.readdirSync(ABSTRACTIONS_REPO);
-        for (const langDir of langDirs) {
-            if (langDir === "." || langDir === "..") continue;
-            const fullPath = path.join(ABSTRACTIONS_REPO, langDir);
-            if (fs.statSync(fullPath).isDirectory() && TARGET_LANGUAGES[langDir]) {
-                try {
-                    const files = fs.readdirSync(fullPath);
-                    const count = files.filter(file => {
-                        const filePath = path.join(fullPath, file);
-                        return fs.statSync(filePath).isFile();
-                    }).length;
-                    langCounts[langDir] = count;
-                } catch (error) {
-                    // Verzeichnis konnte nicht gelesen werden
-                }
+        const dirs = fs.readdirSync(ABSTRACTIONS_REPO);
+        for (const dir of dirs) {
+            const dirPath = path.join(ABSTRACTIONS_REPO, dir);
+            if (fs.statSync(dirPath).isDirectory() && TARGET_LANGUAGES[dir]) {
+                const files = fs.readdirSync(dirPath);
+                lang_counts[dir] = files.filter(f => fs.statSync(path.join(dirPath, f)).isFile()).length;
             }
         }
     }
     
-    let reportContent = "# Script Abstractions - Status Report\n\n";
-    reportContent += `**Letzte Aktualisierung:** ${new Date().toISOString().replace(/T/, ' ').substring(0, 16)}\n\n`;
-    reportContent += `- Aktuelle Priorität: ${state.current_priority || "high"}\n`;
-    reportContent += `- Verarbeitete Scripts: ${Object.keys(state.processed).length}\n`;
-    reportContent += `- Abstraktionen gesamt: ${state.stats.abstractions_created || 0}\n\n`;
+    let content = "# Script Abstractions - Status Report\n\n";
+    content += `**Letzte Aktualisierung:** ${new Date().toISOString().replace('T', ' ').substring(0, 16)}\n\n`;
+    content += `- Aktuelle Priorität: ${state.current_priority || 'high'}\n`;
+    content += `- Verarbeitete Scripts: ${Object.keys(state.processed).length}\n`;
+    content += `- Abstraktionen gesamt: ${state.stats.abstractions_created}\n\n`;
     
-    reportContent += "## Abstraktionen pro Sprache\n\n";
-    for (const lang in langCounts) {
-        reportContent += `- ${lang}: ${langCounts[lang]}\n`;
-    }
+    content += "## Abstraktionen pro Sprache\n\n";
+    Object.entries(lang_counts)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .forEach(([lang, count]) => {
+            content += `- ${lang}: ${count}\n`;
+        });
     
-    reportContent += "\n## Verfügbare Modelle\n\n";
+    content += "\n## Verfügbare Modelle\n\n";
     for (let i = 0; i < Math.min(3, AVAILABLE_MODELS.length); i++) {
-        reportContent += `- \`${AVAILABLE_MODELS[i]}\`\n`;
+        content += `- \`${AVAILABLE_MODELS[i]}\`\n`;
     }
-    reportContent += `- ... und ${Math.max(0, AVAILABLE_MODELS.length - 3)} weitere\n`;
+    content += `- ... und ${Math.max(0, AVAILABLE_MODELS.length - 3)} weitere\n`;
     
-    reportContent += "\n## Multi-Node Support\n\n";
-    reportContent += "| Node | Verfügbarkeit | Kapazität | Priorität | Gerät |\n";
-    reportContent += "|------|---------------|-----------|-----------|-------|\n";
-    const sortedNodes = Object.keys(NODES).sort();
-    for (const nodeId of sortedNodes) {
-        const config = NODES[nodeId];
+    content += "\n## Multi-Node Support\n\n";
+    content += "| Node | Verfügbarkeit | Kapazität | Priorität | Gerät |\n";
+    content += "|------|---------------|-----------|-----------|-------|\n";
+    Object.entries(NODES).forEach(([node_id, config]) => {
         const avail = config.always_available ? "✅ Immer" : "📱 Bedingt";
         const device = config.device || "Server";
-        reportContent += `| ${nodeId} | ${avail} | ${config.capacity || "unknown"} | ${config.priority || "-"} | ${device} |\n`;
-    }
+        content += `| ${node_id} | ${avail} | ${config.capacity || 'unknown'} | ${config.priority || '-'} | ${device} |\n`;
+    });
     
-    reportContent += "\n### Job-Verteilung\n\n";
-    reportContent += "- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)\n";
-    reportContent += "- **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)\n";
-    reportContent += "- **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)\n";
+    content += "\n### Job-Verteilung\n\n";
+    content += "- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)\n";
+    content += "- **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)\n";
+    content += "- **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)\n";
     
-    fs.writeFileSync(reportFile, reportContent);
+    fs.writeFileSync(report_file, content);
 }
 
 function main() {
-    logMessage("Script Abstractions Manager (Multi-Node) gestartet");
+    log("Script Abstractions Manager (Multi-Node) gestartet");
     
-    const state = loadState();
-    logMessage(`State loaded: ${Object.keys(state.processed).length} processed`);
+    const state = load_state();
+    log(`State loaded: ${Object.keys(state.processed).length} processed`);
     
-    const currentPriority = state.current_priority || "high";
+    const current_priority = state.current_priority || "high";
     let created = 0;
     
-    if (currentPriority === "high") {
-        logMessage("Processing HIGH priority: Top 5 Skills");
-        created = processPriorityHigh();
+    if (current_priority === "high") {
+        log("Processing HIGH priority: Top 5 Skills");
+        created = process_priority_high();
         if (created > 0) {
-            gitCommit(`High priority: ${created} abstractions`);
+            git_commit(`High priority: ${created} abstractions`);
         }
         state.current_priority = "medium";
-    } else if (currentPriority === "medium") {
-        logMessage("Processing MEDIUM priority: Workspace Scripts");
-        created = processPriorityMedium();
+    } else if (current_priority === "medium") {
+        log("Processing MEDIUM priority: Workspace Scripts");
+        created = process_priority_medium();
         if (created > 0) {
-            gitCommit(`Medium priority: ${created} abstractions`);
+            git_commit(`Medium priority: ${created} abstractions`);
         }
         state.current_priority = "high";  // Zyklus
     }
     
-    state.stats.last_run = new Date().toISOString().replace(/T/, ' ').substring(0, 19);
+    state.stats.last_run = new Date().toISOString();
     
-    let total = 0;
+    // Zähle alle Abstraktionen
+    let total_abstractions = 0;
     if (fs.existsSync(ABSTRACTIONS_REPO)) {
-        for (const lang in TARGET_LANGUAGES) {
+        for (const lang of Object.keys(TARGET_LANGUAGES)) {
             const langDir = path.join(ABSTRACTIONS_REPO, lang);
-            if (fs.existsSync(langDir) && fs.statSync(langDir).isDirectory()) {
-                try {
-                    const files = fs.readdirSync(langDir);
-                    total += files.filter(file => {
-                        const filePath = path.join(langDir, file);
-                        return fs.statSync(filePath).isFile();
-                    }).length;
-                } catch (error) {
-                    // Verzeichnis konnte nicht gelesen werden
-                }
+            if (fs.existsSync(langDir)) {
+                const files = fs.readdirSync(langDir);
+                total_abstractions += files.filter(f => fs.statSync(path.join(langDir, f)).isFile()).length;
             }
         }
     }
-    state.stats.abstractions_created = total;
+    state.stats.abstractions_created = total_abstractions;
     
-    saveState(state);
-    createStatusReport(state);
+    save_state(state);
+    create_status_report(state);
     
-    logMessage(`Abgeschlossen. ${created} neue Abstraktionen erstellt.`);
+    log(`Abgeschlossen. ${created} neue Abstraktionen erstellt.`);
 }
 
-if (require.main === module) {
-    main();
-}
-
-module.exports = {
-    logMessage,
-    getNodeByPriority,
-    checkNodeStatus,
-    getJobWeight,
-    loadState,
-    defaultState,
-    saveState,
-    findScriptsInDir,
-    createAbstraction,
-    processOnNode,
-    processPriorityHigh,
-    processPriorityMedium,
-    gitCommit,
-    createStatusReport,
-    main
-};
+main();

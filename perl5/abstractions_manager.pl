@@ -1,23 +1,22 @@
 #!/usr/bin/env perl
-# abstractions_manager.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/abstractions_manager.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# abstractions_manager.py — portiert nach perl5
+# Quelle: python, OpenClaw@gateway1:skills/script-abstractions-manager/scripts/abstractions_manager.py
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use JSON;
+use utf8;
+use JSON qw(decode_json encode_json);
 use File::Find;
 use File::Spec;
-use File::Path qw(make_path);
-use File::Basename;
-use Cwd;
+use Cwd qw(getcwd);
 use POSIX qw(strftime);
 
 # Konfiguration
-my $WORKSPACE = File::Spec->catdir($ENV{HOME}, '.openclaw', 'workspace');
-my $ABSTRACTIONS_REPO = File::Spec->catdir($WORKSPACE, 'git', 'Abstraktionen');
-my $LOG_DIR = File::Spec->catdir($WORKSPACE, 'logs', 'abstractions-manager');
-my $STATE_FILE = File::Spec->catdir($WORKSPACE, 'db', 'abstractions_state.json');
+my $WORKSPACE = "/home/openclaw/.openclaw/workspace";
+my $ABSTRACTIONS_REPO = "$WORKSPACE/git/Abstraktionen";
+my $LOG_DIR = "$WORKSPACE/logs/abstractions-manager";
+my $STATE_FILE = "$WORKSPACE/db/abstractions_state.json";
 
 # Node-Konfiguration mit Prioritäten
 my %NODES = (
@@ -25,7 +24,7 @@ my %NODES = (
     "node2" => {"always_available" => 1, "capacity" => "medium", "priority" => 3},  # Stable Worker
     "node3" => {"always_available" => 0, "capacity" => "medium", "priority" => 4}, # Bald verfügbar
     "node5" => {"always_available" => 0, "capacity" => "low", "priority" => 5, "device" => "Redmi Note 11S", "condition" => "mobile_internet"},
-    "node7" => {"always_available" => 1, "capacity" => "high", "priority" => 1},    # Docker Hauptarbeitspferd
+    "node7" => {"always_available" => 1, "capacity" => "high", "priority" => 1},     # Docker Hauptarbeitspferd
 );
 
 my @AVAILABLE_MODELS = (
@@ -54,223 +53,198 @@ sub log_message {
     my ($message, $level) = @_;
     $level //= "INFO";
     
-    make_path($LOG_DIR) unless -d $LOG_DIR;
-    my $timestamp = strftime "%Y-%m-%d %H:%M:%S", localtime;
-    my $line = "[$timestamp] [$level] $message\n";
-    print $line;
-    my $log_file = File::Spec->catfile($LOG_DIR, strftime "%Y-%m-%d", localtime) . ".log";
-    open my $fh, ">>", $log_file or die "Cannot open $log_file: $!";
-    print $fh $line;
-    close $fh;
+    system("mkdir", "-p", $LOG_DIR);
+    my $timestamp = strftime('%Y-%m-%d %H:%M:%S', localtime);
+    my $line = "[$timestamp] [$level] $message";
+    print "$line\n";
+    
+    my $log_file = "$LOG_DIR/" . strftime('%Y-%m-%d', localtime) . ".log";
+    open(my $fh, '>>', $log_file) or warn "Could not open log file: $!";
+    print $fh "$line\n";
+    close($fh);
 }
 
-sub getNodeByPriority {
-    my ($jobWeight) = @_;
-    $jobWeight //= "medium";
+sub get_node_by_priority {
+    my ($job_weight) = @_;
+    $job_weight //= "medium";
     
-    # Prioritäts-Matrix
-    my @preferredOrder;
-    if ($jobWeight eq "heavy") {
-        # Schwere Jobs → Node 7 (Docker mit vielen Ressourcen)
-        @preferredOrder = ("node7", "node2", "node1");
-    } elsif ($jobWeight eq "medium") {
-        # Mittlere Jobs → Stable Nodes
-        @preferredOrder = ("node2", "node1", "node7");
-    } else {  # light
-        # Leichte Jobs → Mobile/verfügbare Nodes
-        @preferredOrder = ("node5", "node1", "node2");
+    my @preferred_order;
+    if ($job_weight eq "heavy") {
+        @preferred_order = ("node7", "node2", "node1");
+    } elsif ($job_weight eq "medium") {
+        @preferred_order = ("node2", "node1", "node7");
+    } else {
+        @preferred_order = ("node5", "node1", "node2");
     }
     
-    # Prüfe Verfügbarkeit
-    for my $nodeId (@preferredOrder) {
-        next unless exists $NODES{$nodeId};
+    for my $node_id (@preferred_order) {
+        next unless exists $NODES{$node_id};
         
-        my $node = $NODES{$nodeId};
+        my $node = $NODES{$node_id};
+        next if (!$node->{"always_available"} && $job_weight ne "light");
         
-        # Skip nicht immer verfügbare Nodes wenn nicht explizit requested
-        next if !$node->{"always_available"} && $jobWeight ne "light";
-        
-        # Prüfe ob Node online
-        if (checkNodeStatus($nodeId)) {
-            return $nodeId;
+        if (check_node_status($node_id)) {
+            return $node_id;
         }
     }
     
-    # Fallback zu Node 1
     return "node1";
 }
 
-sub checkNodeStatus {
-    my ($nodeId) = @_;
-    # Prüft ob ein Node erreichbar ist
+sub check_node_status {
+    my ($node_id) = @_;
+    
     eval {
-        open my $pipe, "-|", "openclaw nodes status $nodeId" or die "Cannot run command: $!";
-        local $/ = undef;
-        my $result = <$pipe>;
-        close $pipe;
-        return ($result =~ /online/ || $result =~ /active/);
+        local $SIG{ALRM} = sub { die "timeout"; };
+        alarm(5);
+        my $result = `openclaw nodes status $node_id 2>/dev/null`;
+        alarm(0);
+        return ($? == 0 && ($result =~ /online/i || $result =~ /active/i));
     };
+    
     if ($@) {
-        # Bei Timeout/Error: Prüfe letzten bekannten Status
-        return $NODES{$nodeId}{"always_available"} // 0;
+        return $NODES{$node_id}->{"always_available"} // 0;
     }
+    
+    return 0;
 }
 
-sub getJobWeight {
-    my ($scriptSize, $targetLangsCount) = @_;
-    # Bewertet Job-Gewicht basierend auf Script-Größe und Anzahl Zielsprachen
-    my $totalWork = $scriptSize * $targetLangsCount;
+sub get_job_weight {
+    my ($script_size, $target_langs_count) = @_;
+    my $total_work = $script_size * $target_langs_count;
     
-    if ($totalWork > 50000) {  # Große Scripts, viele Sprachen
+    if ($total_work > 50000) {
         return "heavy";
-    } elsif ($totalWork > 10000) {  # Mittlere Last
+    } elsif ($total_work > 10000) {
         return "medium";
     } else {
         return "light";
     }
 }
 
-sub loadState {
-    if (-e $STATE_FILE) {
+sub load_state {
+    if (-f $STATE_FILE) {
         eval {
-            open my $fh, "<", $STATE_FILE or die "Cannot open $STATE_FILE: $!";
-            my $json_text = do { local $/; <$fh> };
-            close $fh;
-            my $data = decode_json($json_text);
-            return $data;
+            open(my $fh, '<', $STATE_FILE) or die "Cannot read state file: $!";
+            my $content = do { local $/; <$fh> };
+            close($fh);
+            return decode_json($content);
         };
-        if ($@) {
-            # ignore error
-        }
     }
-    return {"processed" => {}, "queue" => [], "current_priority" => "high", "stats" => {"total_scripts" => 0, "abstractions_created" => 0}};
+    
+    return {
+        "processed" => {},
+        "queue" => [],
+        "current_priority" => "high",
+        "stats" => {"total_scripts" => 0, "abstractions_created" => 0}
+    };
 }
 
-sub saveState {
+sub save_state {
     my ($state) = @_;
-    make_path(dirname($STATE_FILE)) unless -d dirname($STATE_FILE);
-    open my $fh, ">", $STATE_FILE or die "Cannot open $STATE_FILE: $!";
+    system("mkdir", "-p", dirname($STATE_FILE));
+    
+    open(my $fh, '>', $STATE_FILE) or warn "Cannot write state file: $!";
     print $fh encode_json($state);
-    close $fh;
+    close($fh);
 }
 
-sub findScriptsInDir {
-    my ($directory, $excludePatterns) = @_;
-    $excludePatterns //= ["node_modules", ".git", "__pycache__", "dist", "build"];
-    my @scripts = ();
-    if (-d $directory) {
-        my @files = getAllFiles($directory);
-        my @extensions = (".py", ".js", ".sh", ".pl", ".rb");
-        for my $file (@files) {
-            if (grep { $file =~ /\Q$_\E$/ } @extensions) {
-                my $exclude = 0;
-                for my $pattern (@$excludePatterns) {
-                    if ($file =~ /\Q$pattern\E/) {
-                        $exclude = 1;
-                        last;
-                    }
-                }
-                push @scripts, $file unless $exclude;
-            }
+sub dirname {
+    my ($path) = @_;
+    $path =~ s/\/[^\/]*$//;
+    return $path || "/";
+}
+
+sub find_scripts_in_dir {
+    my ($directory, $exclude_patterns) = @_;
+    $exclude_patterns //= ["node_modules", ".git", "__pycache__", "dist", "build"];
+    
+    my @scripts;
+    return @scripts unless -d $directory;
+    
+    my @extensions = qw(*.py *.js *.sh *.pl *.rb);
+    find(sub {
+        return if -d $_;
+        my $full_path = $File::Find::name;
+        for my $pattern (@$exclude_patterns) {
+            return if index($full_path, $pattern) != -1;
         }
-    }
+        push @scripts, $full_path if /\.(py|js|sh|pl|rb)$/i;
+    }, $directory);
+    
     return @scripts;
 }
 
-sub getAllFiles {
-    my ($dirPath, $arrayOfFiles) = @_;
-    $arrayOfFiles //= [];
-    opendir my $dh, $dirPath or die "Cannot opendir $dirPath: $!";
-    my @files = readdir($dh);
-    closedir $dh;
-    for my $file (@files) {
-        next if $file eq '.' || $file eq '..';
-        my $filePath = File::Spec->catfile($dirPath, $file);
-        if (-d $filePath) {
-            $arrayOfFiles = getAllFiles($filePath, $arrayOfFiles);
-        } else {
-            push @$arrayOfFiles, $filePath;
-        }
-    }
-    return @$arrayOfFiles;
-}
-
-sub createAbstraction {
-    my ($scriptPath, $targetLang) = @_;
+sub create_abstraction {
+    my ($script_path, $target_lang) = @_;
+    
     eval {
-        open my $fh, "<", $scriptPath or die "Cannot open $scriptPath: $!";
-        my $originalContent = do { local $/; <$fh> };
-        close $fh;
+        open(my $fh, '<:encoding(UTF-8)', $script_path) or die "Cannot read $script_path: $!";
+        my $original_content = do { local $/; <$fh> };
+        close($fh);
         
-        my ($name, $dirs, $suffix) = fileparse($scriptPath, qr/\.[^.]*/);
-        my %sourceLangMap = ("py" => "Python", "js" => "JavaScript", "sh" => "Shell", "pl" => "Perl", "rb" => "Ruby");
-        my $sourceLang = $sourceLangMap{substr($suffix, 1)} // substr($suffix, 1);
+        my ($ext) = $script_path =~ /\.(\w+)$/;
+        my %source_lang_map = ("py" => "Python", "js" => "JavaScript", "sh" => "Shell", "pl" => "Perl", "rb" => "Ruby");
+        my $source_lang = $source_lang_map{$ext} // $ext;
         
-        my $targetDir = File::Spec->catdir($ABSTRACTIONS_REPO, $targetLang);
-        make_path($targetDir) unless -d $targetDir;
+        my $target_dir = "$ABSTRACTIONS_REPO/$target_lang";
+        system("mkdir", "-p", $target_dir);
         
-        my $targetFile = File::Spec->catfile($targetDir, $name . $TARGET_LANGUAGES{$targetLang}{"ext"});
+        my ($basename) = $script_path =~ /([^\/]+)\.\w+$/;
+        my $target_file = "$target_dir/${basename}" . $TARGET_LANGUAGES{$target_lang}{"ext"};
         
-        if (-e $targetFile) {
-            return 0;
-        }
+        return 0 if -f $target_file;
         
-        my $template = $TARGET_LANGUAGES{$targetLang};
-        my @lines = split /\n/, $originalContent;
-        @lines = @lines[0..14] if @lines > 15;
+        my $template = $TARGET_LANGUAGES{$target_lang};
+        my @lines = split(/\n/, $original_content);
+        splice(@lines, 15) if @lines > 15;
+        my $first_lines = join("\n# ", @lines);
         
-        my $content = $template->{"shebang"} . "\n";
-        $content .= "# ${name} - " . ucfirst($targetLang) . " Version\n";
-        $content .= "# Portiert von $sourceLang\n";
-        $content .= "# Original: $scriptPath\n";
-        $content .= "# Erstellt: " . strftime("%Y-%m-%d", localtime) . "\n#\n";
-        $content .= $template->{"header"} . "\n" if $template->{"header"};
+        my $content = "$template->{shebang}\n";
+        $content .= "# $basename - " . ucfirst($target_lang) . " Version\n";
+        $content .= "# Portiert von $source_lang\n";
+        $content .= "# Original: $script_path\n";
+        $content .= "# Erstellt: " . strftime('%Y-%m-%d', localtime) . "\n#\n";
+        $content .= "# " . ($template->{header} // "") . "\n" if $template->{header};
         $content .= "# Original-Code-Referenz:\n";
-        $content .= "# " . join("\n# ", @lines) . "\n\n";
-        $content .= "function main() {\n";
-        $content .= "    // TODO: Implementiere $sourceLang Funktionalität in " . ucfirst($targetLang) . "\n";
-        $content .= "    console.log(\"Hello World\");\n";
+        $content .= "# $first_lines\n\n";
+        $content .= "sub main {\n";
+        $content .= "    # TODO: Implementiere $source_lang Funktionalität in " . ucfirst($target_lang) . "\n";
+        $content .= "    return;\n";
         $content .= "}\n\n";
-        $content .= "if (require.main === module) {\n";
-        $content .= "    main();\n";
-        $content .= "}\n";
+        $content .= "main() unless caller;\n";
         
-        open my $out_fh, ">", $targetFile or die "Cannot open $targetFile: $!";
-        print $out_fh $content;
-        close $out_fh;
-        log_message("Created: $targetFile");
+        open($fh, '>', $target_file) or die "Cannot write $target_file: $!";
+        print $fh $content;
+        close($fh);
+        
+        log_message("Created: $target_file");
         return 1;
     };
+    
     if ($@) {
-        log_message("Failed: $scriptPath - $@", "ERROR");
+        log_message("Failed: $script_path - $@", "ERROR");
         return 0;
     }
 }
 
-sub processOnNode {
-    my ($nodeId, $scripts, $targetLangs) = @_;
-    # Verarbeitet Scripts auf definiertem Node
+sub process_on_node {
+    my ($node_id, $scripts_ref, $target_langs_ref) = @_;
     my $created = 0;
     
-    if ($nodeId eq "node1") {
-        # Lokale Verarbeitung
-        for my $script (@$scripts) {
-            for my $lang (@$targetLangs) {
-                if (createAbstraction($script, $lang)) {
-                    $created++;
-                }
+    if ($node_id eq "node1") {
+        for my $script (@$scripts_ref) {
+            for my $lang (@$target_langs_ref) {
+                $created++ if create_abstraction($script, $lang);
             }
         }
     } else {
-        # Remote-Verarbeitung
-        log_message("Dispatching " . scalar(@$scripts) . " jobs to $nodeId");
-        # TODO: Implementiere Remote-Dispatch wenn Node-Infrastruktur bereit
-        # Für jetzt: Lokale Verarbeitung mit Node-Logging
-        for my $script (@$scripts) {
-            for my $lang (@$targetLangs) {
-                if (createAbstraction($script, $lang)) {
+        log_message("Dispatching " . scalar(@$scripts_ref) . " jobs to $node_id");
+        for my $script (@$scripts_ref) {
+            for my $lang (@$target_langs_ref) {
+                if (create_abstraction($script, $lang)) {
                     $created++;
-                    log_message("Processed on $nodeId: " . basename($script) . " -> $lang");
+                    log_message("Processed on $node_id: " . basename($script) . " -> $lang");
                 }
             }
         }
@@ -279,190 +253,191 @@ sub processOnNode {
     return $created;
 }
 
-sub processPriorityHigh {
+sub basename {
+    my ($path) = @_;
+    $path =~ s/.*\///;
+    return $path;
+}
+
+sub process_priority_high {
     my $created = 0;
     my @targets = (
-        ["skill-creator", File::Spec->catdir($WORKSPACE, "skills", "skill-creator", "scripts")],
-        ["json-utils", File::Spec->catdir($WORKSPACE, "skills", "json-utils", "scripts")],
-        ["scripting-utils", File::Spec->catdir($WORKSPACE, "skills", "scripting-utils", "scripts")],
-        ["model-usage", File::Spec->catdir($WORKSPACE, "skills", "model-usage", "scripts")],
-        ["tiktok-live", File::Spec->catdir($WORKSPACE, "skills", "tiktok-live", "scripts")],
+        ["skill-creator", "$WORKSPACE/skills/skill-creator/scripts"],
+        ["json-utils", "$WORKSPACE/skills/json-utils/scripts"],
+        ["scripting-utils", "$WORKSPACE/skills/scripting-utils/scripts"],
+        ["model-usage", "$WORKSPACE/skills/model-usage/scripts"],
+        ["tiktok-live", "$WORKSPACE/skills/tiktok-live/scripts"],
     );
     
     for my $target (@targets) {
-        my ($skillName, $scriptsDir) = @$target;
-        my @scripts = findScriptsInDir($scriptsDir, ["node_modules", ".git", "test", "tests"]);
-        log_message("$skillName: " . scalar(@scripts) . " scripts found");
+        my ($skill_name, $scripts_dir) = @$target;
+        my @scripts = find_scripts_in_dir($scripts_dir, ["node_modules", ".git", "test", "tests"]);
+        log_message("$skill_name: " . scalar(@scripts) . " scripts found");
         
-        for my $script (@scripts[0..9]) {  # Limit für erste Durchläufe
-            my $scriptSize = -e $script ? (stat($script))[7] : 0;
-            my @targetLangs = ("perl5", "javascript", "python", "shell", "tcl");
-            my $jobWeight = getJobWeight($scriptSize, scalar(@targetLangs));
+        my $count = 0;
+        for my $script (@scripts) {
+            last if $count++ >= 10;
+            my $script_size = -f $script ? (stat($script))[7] : 0;
+            my @target_langs = ("perl5", "javascript", "python", "shell", "tcl");
+            my $job_weight = get_job_weight($script_size, scalar(@target_langs));
             
-            # Wähle Node basierend auf Job-Gewicht
-            my $selectedNode = getNodeByPriority($jobWeight);
-            log_message("Processing " . basename($script) . " ($jobWeight) on $selectedNode");
+            my $selected_node = get_node_by_priority($job_weight);
+            log_message("Processing " . basename($script) . " ($job_weight) on $selected_node");
             
-            $created += processOnNode($selectedNode, [$script], \@targetLangs);
+            $created += process_on_node($selected_node, [$script], \@target_langs);
         }
     }
     
     return $created;
 }
 
-sub processPriorityMedium {
+sub process_priority_medium {
     my $created = 0;
     my @targets = (
-        ["workspace-scripts", File::Spec->catdir($WORKSPACE, "scripts")],
-        ["db-maintainer", File::Spec->catdir($WORKSPACE, "skills", "db-maintainer", "scripts")],
-        ["log-collector", File::Spec->catdir($WORKSPACE, "skills", "log-collector", "scripts")],
+        ["workspace-scripts", "$WORKSPACE/scripts"],
+        ["db-maintainer", "$WORKSPACE/skills/db-maintainer/scripts"],
+        ["log-collector", "$WORKSPACE/skills/log-collector/scripts"],
     );
     
     for my $target (@targets) {
-        my ($dirName, $scriptsDir) = @$target;
-        my @scripts = findScriptsInDir($scriptsDir, ["node_modules", ".git"]);
+        my ($dir_name, $scripts_dir) = @$target;
+        my @scripts = find_scripts_in_dir($scripts_dir, ["node_modules", ".git"]);
         
-        for my $script (@scripts[0..9]) {
-            my $scriptSize = -e $script ? (stat($script))[7] : 0;
-            my @targetLangs = ("perl5", "javascript", "powershell", "python");
-            my $jobWeight = getJobWeight($scriptSize, scalar(@targetLangs));
+        my $count = 0;
+        for my $script (@scripts) {
+            last if $count++ >= 10;
+            my $script_size = -f $script ? (stat($script))[7] : 0;
+            my @target_langs = ("perl5", "javascript", "powershell", "python");
+            my $job_weight = get_job_weight($script_size, scalar(@target_langs));
             
-            # Mittlere Priority → eher leichtere Jobs
-            my $selectedNode = getNodeByPriority($jobWeight eq "heavy" ? "medium" : $jobWeight);
-            log_message("Processing " . basename($script) . " ($jobWeight) on $selectedNode");
+            my $selected_priority = ($job_weight eq "heavy") ? "medium" : $job_weight;
+            my $selected_node = get_node_by_priority($selected_priority);
+            log_message("Processing " . basename($script) . " ($job_weight) on $selected_node");
             
-            $created += processOnNode($selectedNode, [$script], \@targetLangs);
+            $created += process_on_node($selected_node, [$script], \@target_langs);
         }
     }
     
     return $created;
 }
 
-sub gitCommit {
+sub git_commit {
     my ($message) = @_;
     eval {
-        my $old_dir = getcwd();
+        my $old_cwd = getcwd();
         chdir($ABSTRACTIONS_REPO);
-        system("git add .");
-        system("git commit -m \"$message\"");
+        system("git add . >/dev/null 2>&1");
+        system("git commit -m '$message' >/dev/null 2>&1");
+        chdir($old_cwd);
         log_message("Git commit: $message");
-        chdir($old_dir);
     };
-    # ignore error
 }
 
-sub createStatusReport {
+sub create_status_report {
     my ($state) = @_;
-    my $reportFile = File::Spec->catfile($ABSTRACTIONS_REPO, "STATUS.md");
-    my %langCounts = ();
+    my $report_file = "$ABSTRACTIONS_REPO/STATUS.md";
+    my %lang_counts;
+    
     if (-d $ABSTRACTIONS_REPO) {
-        opendir my $dh, $ABSTRACTIONS_REPO or die "Cannot opendir $ABSTRACTIONS_REPO: $!";
-        my @langs = readdir($dh);
-        closedir $dh;
-        for my $lang (@langs) {
-            next if $lang eq '.' || $lang eq '..';
-            my $langDir = File::Spec->catdir($ABSTRACTIONS_REPO, $lang);
-            if (-d $langDir && exists $TARGET_LANGUAGES{$lang}) {
-                opendir my $ldh, $langDir or die "Cannot opendir $langDir: $!";
-                my @files = readdir($ldh);
-                closedir $ldh;
+        opendir(my $dh, $ABSTRACTIONS_REPO) or warn "Cannot open repo dir: $!";
+        while (readdir($dh)) {
+            next if /^\.\.?$/;
+            my $lang_dir = "$ABSTRACTIONS_REPO/$_";
+            if (-d $lang_dir && exists $TARGET_LANGUAGES{$_}) {
+                opendir(my $ldh, $lang_dir) or next;
                 my $count = 0;
-                for my $file (@files) {
-                    next if $file eq '.' || $file eq '..';
-                    my $filePath = File::Spec->catfile($langDir, $file);
-                    $count++ if -f $filePath;
+                while (readdir($ldh)) {
+                    next if /^\.\.?$/;
+                    $count++ if -f "$lang_dir/$_";
                 }
-                $langCounts{$lang} = $count;
+                closedir($ldh);
+                $lang_counts{$_} = $count;
             }
         }
+        closedir($dh);
     }
     
-    my $content = "# Script Abstractions - Status Report\n\n";
-    $content .= "**Letzte Aktualisierung:** " . strftime("%Y-%m-%d %H:%M", localtime) . "\n\n";
-    $content .= "- Aktuelle Priorität: " . ($state->{"current_priority"} || "high") . "\n";
-    $content .= "- Verarbeitete Scripts: " . scalar(keys %{$state->{"processed"}}) . "\n";
-    $content .= "- Abstraktionen gesamt: " . $state->{"stats"}{"abstractions_created"} . "\n\n";
+    open(my $fh, '>', $report_file) or warn "Cannot write report: $!";
+    print $fh "# Script Abstractions - Status Report\n\n";
+    print $fh "**Letzte Aktualisierung:** " . strftime('%Y-%m-%d %H:%M', localtime) . "\n\n";
+    print $fh "- Aktuelle Priorität: " . ($state->{"current_priority"} // "high") . "\n";
+    print $fh "- Verarbeitete Scripts: " . (scalar(keys %{$state->{"processed"}})) . "\n";
+    print $fh "- Abstraktionen gesamt: " . ($state->{"stats"}{"abstractions_created"} // 0) . "\n\n";
     
-    $content .= "## Abstraktionen pro Sprache\n\n";
-    for my $lang (sort keys %langCounts) {
-        $content .= "- $lang: $langCounts{$lang}\n";
+    print $fh "## Abstraktionen pro Sprache\n\n";
+    for my $lang (sort keys %lang_counts) {
+        print $fh "- $lang: $lang_counts{$lang}\n";
     }
     
-    $content .= "\n## Verfügbare Modelle\n\n";
-    for my $model (@AVAILABLE_MODELS[0..2]) {
-        $content .= "- `$model`\n";
+    print $fh "\n## Verfügbare Modelle\n\n";
+    for my $i (0..2) {
+        last if $i >= @AVAILABLE_MODELS;
+        print $fh "- `$AVAILABLE_MODELS[$i]`\n";
     }
-    $content .= "- ... und " . (scalar(@AVAILABLE_MODELS) - 3) . " weitere\n";
+    print $fh "- ... und " . (@AVAILABLE_MODELS - 3) . " weitere\n" if @AVAILABLE_MODELS > 3;
     
-    $content .= "\n## Multi-Node Support\n\n";
-    $content .= "| Node | Verfügbarkeit | Kapazität | Priorität | Gerät |\n";
-    $content .= "|------|---------------|-----------|-----------|-------|\n";
-    for my $nodeId (sort keys %NODES) {
-        my $config = $NODES{$nodeId};
+    print $fh "\n## Multi-Node Support\n\n";
+    print $fh "| Node | Verfügbarkeit | Kapazität | Priorität | Gerät |\n";
+    print $fh "|------|---------------|-----------|-----------|-------|\n";
+    for my $node_id (sort keys %NODES) {
+        my $config = $NODES{$node_id};
         my $avail = $config->{"always_available"} ? "✅ Immer" : "📱 Bedingt";
-        my $device = $config->{"device"} || "Server";
-        $content .= "| $nodeId | $avail | " . ($config->{"capacity"} || "unknown") . " | " . ($config->{"priority"} || "-") . " | $device |\n";
+        my $device = $config->{"device"} // "Server";
+        print $fh "| $node_id | $avail | " . ($config->{"capacity"} // "unknown") . " | " . ($config->{"priority"} // "-") . " | $device |\n";
     }
     
-    $content .= "\n### Job-Verteilung\n\n";
-    $content .= "- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)\n";
-    $content .= "- **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)\n";
-    $content .= "- **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)\n";
-    
-    open my $fh, ">", $reportFile or die "Cannot open $reportFile: $!";
-    print $fh $content;
-    close $fh;
+    print $fh "\n### Job-Verteilung\n\n";
+    print $fh "- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)\n";
+    print $fh "- **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)\n";
+    print $fh "- **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)\n";
+    close($fh);
 }
 
 sub main {
     log_message("Script Abstractions Manager (Multi-Node) gestartet");
     
-    my $state = loadState();
-    log_message("State loaded: " . scalar(keys %{$state->{"processed"}}) . " processed");
+    my $state = load_state();
+    log_message("State loaded: " . (scalar(keys %{$state->{"processed"}})) . " processed");
     
-    my $currentPriority = $state->{"current_priority"} || "high";
+    my $current_priority = $state->{"current_priority"} // "high";
     my $created = 0;
     
-    if ($currentPriority eq "high") {
+    if ($current_priority eq "high") {
         log_message("Processing HIGH priority: Top 5 Skills");
-        $created = processPriorityHigh();
+        $created = process_priority_high();
         if ($created > 0) {
-            gitCommit("High priority: $created abstractions");
+            git_commit("High priority: $created abstractions");
         }
         $state->{"current_priority"} = "medium";
-    } elsif ($currentPriority eq "medium") {
+    } elsif ($current_priority eq "medium") {
         log_message("Processing MEDIUM priority: Workspace Scripts");
-        $created = processPriorityMedium();
+        $created = process_priority_medium();
         if ($created > 0) {
-            gitCommit("Medium priority: $created abstractions");
+            git_commit("Medium priority: $created abstractions");
         }
         $state->{"current_priority"} = "high";  # Zyklus
     }
     
-    $state->{"stats"}{"last_run"} = strftime("%Y-%m-%dT%H:%M:%S", localtime);
-    $state->{"stats"}{"abstractions_created"} = 0;
-    if (-d $ABSTRACTIONS_REPO) {
-        for my $lang (keys %TARGET_LANGUAGES) {
-            my $langDir = File::Spec->catdir($ABSTRACTIONS_REPO, $lang);
-            if (-d $langDir) {
-                opendir my $dh, $langDir or die "Cannot opendir $langDir: $!";
-                my @files = readdir($dh);
-                closedir $dh;
-                my $count = 0;
-                for my $file (@files) {
-                    next if $file eq '.' || $file eq '..';
-                    my $filePath = File::Spec->catfile($langDir, $file);
-                    $count++ if -f $filePath;
-                }
-                $state->{"stats"}{"abstractions_created"} += $count;
+    $state->{"stats"}{"last_run"} = strftime('%Y-%m-%dT%H:%M:%S', localtime);
+    
+    my $total_abstractions = 0;
+    for my $lang (keys %TARGET_LANGUAGES) {
+        my $lang_dir = "$ABSTRACTIONS_REPO/$lang";
+        if (-d $lang_dir) {
+            opendir(my $dh, $lang_dir) or next;
+            while (readdir($dh)) {
+                next if /^\.\.?$/;
+                $total_abstractions++ if -f "$lang_dir/$_";
             }
+            closedir($dh);
         }
     }
+    $state->{"stats"}{"abstractions_created"} = $total_abstractions;
     
-    saveState($state);
-    createStatusReport($state);
+    save_state($state);
+    create_status_report($state);
     
     log_message("Abgeschlossen. $created neue Abstraktionen erstellt.");
 }
 
-main();
+main() unless caller;

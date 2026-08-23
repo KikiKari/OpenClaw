@@ -1,13 +1,9 @@
 #!/bin/bash
-# abstractions_manager.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/abstractions_manager.js
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# abstractions_manager.py — portiert nach shell
+# Quelle: python, OpenClaw@gateway1:skills/script-abstractions-manager/scripts/abstractions_manager.py
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
-
-# abstractions_manager.py — portiert nach bash
-# Quelle: python, OpenClaw@gateway1:skills/script-abstractions-manager/scripts/abstractions_manager.py
-# Erzeugt: 2026-08-07 durch ABSTRACTIONS_MANAGER.py
 
 # Script Abstractions Manager - Multi-Node Edition
 
@@ -38,6 +34,7 @@ declare -A NODES=(
     ["node7.priority"]="1"
 )
 
+# Verfügbare Modelle
 readonly AVAILABLE_MODELS=(
     "openrouter/moonshotai/kimi-k2.5"
     "openrouter/openai/gpt-4o"
@@ -47,88 +44,111 @@ readonly AVAILABLE_MODELS=(
     "openrouter/qwen/qwen-2.5-coder-32b-instruct"
 )
 
-# Ziel-Sprachen-Konfiguration
-declare -A TARGET_LANGUAGES=(
-    ["perl5.ext"]=".pl"
-    ["perl5.shebang"]="#!/usr/bin/env perl"
-    ["perl5.header"]="use strict;
-use warnings;"
-    ["perl6.ext"]=".raku"
-    ["perl6.shebang"]="#!/usr/bin/env raku"
-    ["perl6.header"]="use v6;"
-    ["javascript.ext"]=".js"
-    ["javascript.shebang"]="#!/usr/bin/env node"
-    ["javascript.header"]=""
-    ["python.ext"]=".py"
-    ["python.shebang"]="#!/usr/bin/env python3"
-    ["python.header"]=""
-    ["shell.ext"]=".sh"
-    ["shell.shebang"]="#!/bin/bash"
-    ["shell.header"]="set -euo pipefail"
-    ["powershell.ext"]=".ps1"
-    ["powershell.shebang"]="#!/usr/bin/env pwsh"
-    ["powershell.header"]="#Requires -Version 7"
-    ["tcl.ext"]=".tcl"
-    ["tcl.shebang"]="#!/usr/bin/env tclsh"
-    ["tcl.header"]="package require Tcl 8.6"
-    ["ruby.ext"]=".rb"
-    ["ruby.shebang"]="#!/usr/bin/env ruby"
-    ["ruby.header"]="require 'json'
-require 'fileutils'"
-    ["lua.ext"]=".lua"
-    ["lua.shebang"]="#!/usr/bin/env lua"
-    ["lua.header"]=""
-    ["go.ext"]=".go"
-    ["go.shebang"]="// +build ignore"
-    ["go.header"]="package main"
+# Zielsprachenkonfiguration
+declare -A TARGET_LANGUAGES_PERL5=(
+    ["ext"]=".pl"
+    ["shebang"]="#!/usr/bin/env perl"
+    ["header"]="use strict;\nuse warnings;\n"
 )
+declare -A TARGET_LANGUAGES_PERL6=(
+    ["ext"]=".raku"
+    ["shebang"]="#!/usr/bin/env raku"
+    ["header"]="use v6;\n"
+)
+declare -A TARGET_LANGUAGES_JAVASCRIPT=(
+    ["ext"]=".js"
+    ["shebang"]="#!/usr/bin/env node"
+    ["header"]=""
+)
+declare -A TARGET_LANGUAGES_PYTHON=(
+    ["ext"]=".py"
+    ["shebang"]="#!/usr/bin/env python3"
+    ["header"]=""
+)
+declare -A TARGET_LANGUAGES_SHELL=(
+    ["ext"]=".sh"
+    ["shebang"]="#!/bin/bash"
+    ["header"]="set -euo pipefail\n"
+)
+declare -A TARGET_LANGUAGES_POWERSHELL=(
+    ["ext"]=".ps1"
+    ["shebang"]="#!/usr/bin/env pwsh"
+    ["header"]="#Requires -Version 7\n"
+)
+declare -A TARGET_LANGUAGES_TCL=(
+    ["ext"]=".tcl"
+    ["shebang"]="#!/usr/bin/env tclsh"
+    ["header"]="package require Tcl 8.6\n"
+)
+declare -A TARGET_LANGUAGES_RUBY=(
+    ["ext"]=".rb"
+    ["shebang"]="#!/usr/bin/env ruby"
+    ["header"]="require 'json'\nrequire 'fileutils'\n"
+)
+declare -A TARGET_LANGUAGES_LUA=(
+    ["ext"]=".lua"
+    ["shebang"]="#!/usr/bin/env lua"
+    ["header"]=""
+)
+declare -A TARGET_LANGUAGES_GO=(
+    ["ext"]=".go"
+    ["shebang"]="// +build ignore"
+    ["header"]="package main\n"
+)
+
+# Globale Variablen für den Zustand
+declare -A state_processed=()
+declare -a state_queue=()
+state_current_priority="high"
+state_total_scripts=0
+state_abstractions_created=0
 
 log() {
     local message="$1"
     local level="${2:-INFO}"
-    mkdir -p "${LOG_DIR}"
+    
+    mkdir -p "$LOG_DIR"
     local timestamp
     timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     local line="[${timestamp}] [${level}] ${message}"
-    echo "${line}"
-    local log_file
-    log_file="${LOG_DIR}/$(date '+%Y-%m-%d').log"
-    echo "${line}" >> "${log_file}"
+    echo "$line"
+    
+    local log_file="${LOG_DIR}/$(date '+%Y-%m-%d').log"
+    echo "$line" >> "$log_file"
 }
 
-getNodeByPriority() {
-    local jobWeight="${1:-medium}"
-    local preferredOrder
+get_node_by_priority() {
+    local job_weight="${1:-medium}"
+    local preferred_order=()
     
     # Prioritäts-Matrix
-    if [[ "${jobWeight}" == "heavy" ]]; then
+    if [[ "$job_weight" == "heavy" ]]; then
         # Schwere Jobs → Node 7 (Docker mit vielen Ressourcen)
-        preferredOrder=("node7" "node2" "node1")
-    elif [[ "${jobWeight}" == "medium" ]]; then
+        preferred_order=("node7" "node2" "node1")
+    elif [[ "$job_weight" == "medium" ]]; then
         # Mittlere Jobs → Stable Nodes
-        preferredOrder=("node2" "node1" "node7")
+        preferred_order=("node2" "node1" "node7")
     else  # light
         # Leichte Jobs → Mobile/verfügbare Nodes
-        preferredOrder=("node5" "node1" "node2")
+        preferred_order=("node5" "node1" "node2")
     fi
     
     # Prüfe Verfügbarkeit
-    local nodeId
-    for nodeId in "${preferredOrder[@]}"; do
-        if [[ -z "${NODES[${nodeId}.always_available]:-}" ]]; then
+    for node_id in "${preferred_order[@]}"; do
+        if [[ ! -v NODES["${node_id}.always_available"] ]]; then
             continue
         fi
         
-        local always_available="${NODES[${nodeId}.always_available]}"
+        local always_available="${NODES[${node_id}.always_available]}"
         
         # Skip nicht immer verfügbare Nodes wenn nicht explizit requested
-        if [[ "${always_available}" != "true" && "${jobWeight}" != "light" ]]; then
+        if [[ "$always_available" != "true" && "$job_weight" != "light" ]]; then
             continue
         fi
         
         # Prüfe ob Node online
-        if checkNodeStatus "${nodeId}"; then
-            echo "${nodeId}"
+        if check_node_status "$node_id"; then
+            echo "$node_id"
             return 0
         fi
     done
@@ -137,215 +157,231 @@ getNodeByPriority() {
     echo "node1"
 }
 
-checkNodeStatus() {
-    local nodeId="$1"
+check_node_status() {
+    local node_id="$1"
+    
     if command -v openclaw >/dev/null 2>&1; then
-        if timeout 5 openclaw nodes status "${nodeId}" 2>/dev/null | grep -qE "(online|active)"; then
+        if timeout 5 openclaw nodes status "$node_id" 2>/dev/null | grep -qiE "(online|active)"; then
             return 0
         fi
     fi
     
     # Bei Timeout/Error: Prüfe letzten bekannten Status
-    if [[ "${NODES[${nodeId}.always_available]:-}" == "true" ]]; then
+    if [[ -v NODES["${node_id}.always_available"] ]] && [[ "${NODES[${node_id}.always_available]}" == "true" ]]; then
         return 0
     fi
+    
     return 1
 }
 
-getJobWeight() {
-    local scriptSize="$1"
-    local targetLangsCount="$2"
-    local totalWork=$((scriptSize * targetLangsCount))
+get_job_weight() {
+    local script_size="$1"
+    local target_langs_count="$2"
+    local total_work=$((script_size * target_langs_count))
     
-    if (( totalWork > 50000 )); then  # Große Scripts, viele Sprachen
+    if (( total_work > 50000 )); then  # Große Scripts, viele Sprachen
         echo "heavy"
-    elif (( totalWork > 10000 )); then  # Mittlere Last
+    elif (( total_work > 10000 )); then  # Mittlere Last
         echo "medium"
     else
         echo "light"
     fi
 }
 
-loadState() {
-    if [[ -f "${STATE_FILE}" ]]; then
-        if jq empty "${STATE_FILE}" >/dev/null 2>&1; then
-            cat "${STATE_FILE}"
-            return 0
+load_state() {
+    if [[ -f "$STATE_FILE" ]]; then
+        if command -v jq >/dev/null 2>&1; then
+            # Lade verarbeitete Scripts
+            mapfile -t processed_keys < <(jq -r '.processed | keys[]' "$STATE_FILE" 2>/dev/null || true)
+            for key in "${processed_keys[@]}"; do
+                state_processed["$key"]=1
+            done
+            
+            # Lade Queue
+            mapfile -t state_queue < <(jq -r '.queue[]' "$STATE_FILE" 2>/dev/null || true)
+            
+            # Lade aktuelle Priorität
+            state_current_priority=$(jq -r '.current_priority // "high"' "$STATE_FILE" 2>/dev/null || echo "high")
+            
+            # Lade Statistiken
+            state_total_scripts=$(jq -r '.stats.total_scripts // 0' "$STATE_FILE" 2>/dev/null || echo "0")
+            state_abstractions_created=$(jq -r '.stats.abstractions_created // 0' "$STATE_FILE" 2>/dev/null || echo "0")
         fi
     fi
+}
+
+save_state() {
+    mkdir -p "$(dirname "$STATE_FILE")"
     
-    cat <<EOF
-{
-  "processed": {},
-  "queue": [],
-  "current_priority": "high",
-  "stats": {
-    "total_scripts": 0,
-    "abstractions_created": 0
-  }
-}
-EOF
+    # Erstelle JSON-Struktur
+    local json_content="{\"processed\":{},\"queue\":[],\"current_priority\":\"$state_current_priority\",\"stats\":{\"total_scripts\":$state_total_scripts,\"abstractions_created\":$state_abstractions_created}}"
+    
+    # Speichere mit jq oder als einfaches JSON
+    if command -v jq >/dev/null 2>&1; then
+        echo "$json_content" | jq '.' > "$STATE_FILE"
+    else
+        echo "$json_content" > "$STATE_FILE"
+    fi
 }
 
-saveState() {
-    local state="$1"
-    mkdir -p "$(dirname "${STATE_FILE}")"
-    echo "${state}" > "${STATE_FILE}"
-}
-
-findScriptsInDir() {
+find_scripts_in_dir() {
     local directory="$1"
-    local excludePatterns="${2:-node_modules .git __pycache__ dist build}"
+    shift
+    local exclude_patterns=("$@")
     
-    if [[ ! -d "${directory}" ]]; then
-        return 0
+    if [[ ${#exclude_patterns[@]} -eq 0 ]]; then
+        exclude_patterns=("node_modules" ".git" "__pycache__" "dist" "build")
     fi
     
-    local extensions=(".py" ".js" ".sh" ".pl" ".rb")
-    local files=()
+    local scripts=()
     
-    while IFS= read -r -d '' file; do
-        files+=("${file}")
-    done < <(find "${directory}" -type f -print0 2>/dev/null)
-    
-    local script
-    for script in "${files[@]}"; do
-        local should_exclude=false
-        for pattern in ${excludePatterns}; do
-            if [[ "${script}" == *"${pattern}"* ]]; then
-                should_exclude=true
-                break
-            fi
-        done
-        
-        if [[ "${should_exclude}" == false ]]; then
-            local ext="${script##*.}"
-            for extension in "${extensions[@]}"; do
-                if [[ ".${ext}" == "${extension}" ]]; then
-                    echo "${script}"
+    if [[ -d "$directory" ]]; then
+        while IFS= read -r -d '' file; do
+            local include=true
+            for pattern in "${exclude_patterns[@]}"; do
+                if [[ "$file" == *"$pattern"* ]]; then
+                    include=false
                     break
                 fi
             done
-        fi
-    done
+            if $include; then
+                scripts+=("$file")
+            fi
+        done < <(find "$directory" -type f \( -name "*.py" -o -name "*.js" -o -name "*.sh" -o -name "*.pl" -o -name "*.rb" \) -print0 2>/dev/null || true)
+    fi
+    
+    printf '%s\n' "${scripts[@]}"
 }
 
-createAbstraction() {
-    local scriptPath="$1"
-    local targetLang="$2"
+create_abstraction() {
+    local script_path="$1"
+    local target_lang="$2"
     
-    if [[ ! -f "${scriptPath}" ]]; then
-        log "Failed: ${scriptPath} - File not found" "ERROR"
+    if [[ ! -f "$script_path" ]]; then
+        log "Script not found: $script_path" "ERROR"
         return 1
     fi
     
-    local originalContent
-    originalContent=$(cat "${scriptPath}")
+    local original_content
+    original_content=$(cat "$script_path" 2>/dev/null || echo "")
     
-    local ext="${scriptPath##*.}"
-    local sourceLangMap_py="Python"
-    local sourceLangMap_js="JavaScript"
-    local sourceLangMap_sh="Shell"
-    local sourceLangMap_pl="Perl"
-    local sourceLangMap_rb="Ruby"
+    local ext
+    ext=$(basename "$script_path" | sed 's/.*\.//')
     
-    case "${ext}" in
-        py) local sourceLang="${sourceLangMap_py}" ;;
-        js) local sourceLang="${sourceLangMap_js}" ;;
-        sh) local sourceLang="${sourceLangMap_sh}" ;;
-        pl) local sourceLang="${sourceLangMap_pl}" ;;
-        rb) local sourceLang="${sourceLangMap_rb}" ;;
-        *) local sourceLang="${ext}" ;;
+    declare -A source_lang_map=(
+        ["py"]="Python"
+        ["js"]="JavaScript"
+        ["sh"]="Shell"
+        ["pl"]="Perl"
+        ["rb"]="Ruby"
+    )
+    
+    local source_lang="${source_lang_map[$ext]:-$ext}"
+    
+    local target_dir="${ABSTRACTIONS_REPO}/${target_lang}"
+    mkdir -p "$target_dir"
+    
+    local target_ext=""
+    case "$target_lang" in
+        "perl5") target_ext="${TARGET_LANGUAGES_PERL5[ext]}" ;;
+        "perl6") target_ext="${TARGET_LANGUAGES_PERL6[ext]}" ;;
+        "javascript") target_ext="${TARGET_LANGUAGES_JAVASCRIPT[ext]}" ;;
+        "python") target_ext="${TARGET_LANGUAGES_PYTHON[ext]}" ;;
+        "shell") target_ext="${TARGET_LANGUAGES_SHELL[ext]}" ;;
+        "powershell") target_ext="${TARGET_LANGUAGES_POWERSHELL[ext]}" ;;
+        "tcl") target_ext="${TARGET_LANGUAGES_TCL[ext]}" ;;
+        "ruby") target_ext="${TARGET_LANGUAGES_RUBY[ext]}" ;;
+        "lua") target_ext="${TARGET_LANGUAGES_LUA[ext]}" ;;
+        "go") target_ext="${TARGET_LANGUAGES_GO[ext]}" ;;
     esac
     
-    local targetDir="${ABSTRACTIONS_REPO}/${targetLang}"
-    mkdir -p "${targetDir}"
+    local target_file="${target_dir}/$(basename "$script_path" ."$ext")${target_ext}"
     
-    local targetFile="${targetDir}/$(basename "${scriptPath}" ".${ext}")${TARGET_LANGUAGES[${targetLang}.ext]}"
-    
-    if [[ -f "${targetFile}" ]]; then
+    if [[ -f "$target_file" ]]; then
         return 1
     fi
     
-    local template_shebang="${TARGET_LANGUAGES[${targetLang}.shebang]}"
-    local template_header="${TARGET_LANGUAGES[${targetLang}.header]:-}"
+    local shebang=""
+    local header=""
+    case "$target_lang" in
+        "perl5") shebang="${TARGET_LANGUAGES_PERL5[shebang]}"; header="${TARGET_LANGUAGES_PERL5[header]}" ;;
+        "perl6") shebang="${TARGET_LANGUAGES_PERL6[shebang]}"; header="${TARGET_LANGUAGES_PERL6[header]}" ;;
+        "javascript") shebang="${TARGET_LANGUAGES_JAVASCRIPT[shebang]}"; header="${TARGET_LANGUAGES_JAVASCRIPT[header]}" ;;
+        "python") shebang="${TARGET_LANGUAGES_PYTHON[shebang]}"; header="${TARGET_LANGUAGES_PYTHON[header]}" ;;
+        "shell") shebang="${TARGET_LANGUAGES_SHELL[shebang]}"; header="${TARGET_LANGUAGES_SHELL[header]}" ;;
+        "powershell") shebang="${TARGET_LANGUAGES_POWERSHELL[shebang]}"; header="${TARGET_LANGUAGES_POWERSHELL[header]}" ;;
+        "tcl") shebang="${TARGET_LANGUAGES_TCL[shebang]}"; header="${TARGET_LANGUAGES_TCL[header]}" ;;
+        "ruby") shebang="${TARGET_LANGUAGES_RUBY[shebang]}"; header="${TARGET_LANGUAGES_RUBY[header]}" ;;
+        "lua") shebang="${TARGET_LANGUAGES_LUA[shebang]}"; header="${TARGET_LANGUAGES_LUA[header]}" ;;
+        "go") shebang="${TARGET_LANGUAGES_GO[shebang]}"; header="${TARGET_LANGUAGES_GO[header]}" ;;
+    esac
     
-    # Erste 15 Zeilen des Originalcodes
+    # Hole die ersten 15 Zeilen
     local lines=""
-    local i=0
-    while IFS= read -r line && (( i < 15 )); do
-        lines+="# ${line}"$'\n'
-        ((i++))
-    done <<< "${originalContent}"
-    lines="${lines%$'\n'}"  # Entferne letztes Newline
+    lines=$(echo "$original_content" | head -n 15 | sed 's/^/# /')
     
-    local content="${template_shebang}
-# $(basename "${scriptPath}" ".${ext}") - ${targetLang^} Version
-# Portiert von ${sourceLang}
-# Original: ${scriptPath}
-# Erstellt: $(date '+%Y-%m-%d')
-#
-"
-    
-    if [[ -n "${template_header}" ]]; then
-        content+="${template_header}"$'\n\n'
+    local content=""
+    content+="$shebang"$'\n'
+    content+="# $(basename "$script_path" ."$ext") - ${target_lang^} Version"$'\n'
+    content+="# Portiert von $source_lang"$'\n'
+    content+="# Original: $script_path"$'\n'
+    content+="# Erstellt: $(date '+%Y-%m-%d')"$'\n'
+    content+="#"$'\n'
+    if [[ -n "$header" ]]; then
+        content+="# $header"$'\n'
     fi
+    content+=""$'\n'
+    content+="# Original-Code-Referenz:"$'\n'
+    content+="$lines"$'\n'
+    content+=""$'\n'
+    content+="def main():"$'\n'
+    content+="    # TODO: Implementiere ${source_lang} Funktionalität in ${target_lang^}"$'\n'
+    content+="    pass"$'\n'
+    content+=""$'\n'
+    content+="if __name__ == \"__main__\":"$'\n'
+    content+="    main()"$'\n'
     
-    content+="# Original-Code-Referenz:
-${lines}
-
-function main() {
-    # TODO: Implementiere ${sourceLang} Funktionalität in ${targetLang^}
-    echo \"Hello World\"
-}
-
-if [[ \"\${BASH_SOURCE[0]}\" == \"\${0}\" ]]; then
-    main
-fi
-"
-    
-    echo "${content}" > "${targetFile}"
-    log "Created: ${targetFile}"
+    echo -e "$content" > "$target_file"
+    log "Created: $target_file"
     return 0
 }
 
-processOnNode() {
-    local nodeId="$1"
+process_on_node() {
+    local node_id="$1"
     shift
     local scripts=("$@")
+    local target_langs=("${scripts[@]: -1}")
+    scripts=("${scripts[@]:0:${#scripts[@]}-1}")
     
     local created=0
-    local script
-    local lang
     
-    if [[ "${nodeId}" == "node1" ]]; then
+    if [[ "$node_id" == "node1" ]]; then
         # Lokale Verarbeitung
         for script in "${scripts[@]}"; do
-            for lang in "${targetLangs[@]}"; do
-                if createAbstraction "${script}" "${lang}"; then
+            for lang in "${target_langs[@]}"; do
+                if create_abstraction "$script" "$lang"; then
                     ((created++))
                 fi
             done
         done
     else
         # Remote-Verarbeitung
-        log "Dispatching ${#scripts[@]} jobs to ${nodeId}"
-        # TODO: Implementiere Remote-Dispatch wenn Node-Infrastruktur bereit
+        log "Dispatching ${#scripts[@]} jobs to $node_id"
         # Für jetzt: Lokale Verarbeitung mit Node-Logging
         for script in "${scripts[@]}"; do
-            for lang in "${targetLangs[@]}"; do
-                if createAbstraction "${script}" "${lang}"; then
+            for lang in "${target_langs[@]}"; do
+                if create_abstraction "$script" "$lang"; then
                     ((created++))
-                    log "Processed on ${nodeId}: $(basename "${script}") -> ${lang}"
+                    log "Processed on $node_id: $(basename "$script") -> $lang"
                 fi
             done
         done
     fi
     
-    echo "${created}"
+    echo "$created"
 }
 
-processPriorityHigh() {
+process_priority_high() {
     local created=0
     local targets=(
         "skill-creator:${WORKSPACE}/skills/skill-creator/scripts"
@@ -355,49 +391,46 @@ processPriorityHigh() {
         "tiktok-live:${WORKSPACE}/skills/tiktok-live/scripts"
     )
     
-    local target
     for target in "${targets[@]}"; do
-        local skillName="${target%%:*}"
-        local scriptsDir="${target#*:}"
+        local skill_name="${target%%:*}"
+        local scripts_dir="${target#*:}"
         
-        local scripts=()
-        while IFS= read -r script; do
-            scripts+=("${script}")
-        done < <(findScriptsInDir "${scriptsDir}" "node_modules .git test tests")
-        
-        log "${skillName}: ${#scripts[@]} scripts found"
+        local scripts
+        mapfile -t scripts < <(find_scripts_in_dir "$scripts_dir" "node_modules" ".git" "test" "tests")
+        log "${skill_name}: ${#scripts[@]} scripts found"
         
         local count=0
-        local script
         for script in "${scripts[@]}"; do
             if (( count >= 10 )); then
                 break
             fi
             
-            local scriptSize
-            scriptSize=$(stat -c%s "${script}" 2>/dev/null || echo "0")
+            local script_size=0
+            if [[ -f "$script" ]]; then
+                script_size=$(stat -c%s "$script" 2>/dev/null || echo "0")
+            fi
             
-            local targetLangs=("perl5" "javascript" "python" "shell" "tcl")
-            local jobWeight
-            jobWeight=$(getJobWeight "${scriptSize}" "${#targetLangs[@]}")
+            local target_langs=("perl5" "javascript" "python" "shell" "tcl")
+            local job_weight
+            job_weight=$(get_job_weight "$script_size" "${#target_langs[@]}")
             
             # Wähle Node basierend auf Job-Gewicht
-            local selectedNode
-            selectedNode=$(getNodeByPriority "${jobWeight}")
-            log "Processing $(basename "${script}") (${jobWeight}) on ${selectedNode}"
+            local selected_node
+            selected_node=$(get_node_by_priority "$job_weight")
+            log "Processing $(basename "$script") ($job_weight) on $selected_node"
             
             local result
-            result=$(processOnNode "${selectedNode}" "${script}")
-            ((created += result))
+            result=$(process_on_node "$selected_node" "$script" "${target_langs[@]}")
+            created=$((created + result))
             
             ((count++))
         done
     done
     
-    echo "${created}"
+    echo "$created"
 }
 
-processPriorityMedium() {
+process_priority_medium() {
     local created=0
     local targets=(
         "workspace-scripts:${WORKSPACE}/scripts"
@@ -405,216 +438,180 @@ processPriorityMedium() {
         "log-collector:${WORKSPACE}/skills/log-collector/scripts"
     )
     
-    local target
     for target in "${targets[@]}"; do
-        local dirName="${target%%:*}"
-        local scriptsDir="${target#*:}"
+        local dir_name="${target%%:*}"
+        local scripts_dir="${target#*:}"
         
-        local scripts=()
-        while IFS= read -r script; do
-            scripts+=("${script}")
-        done < <(findScriptsInDir "${scriptsDir}" "node_modules .git")
+        local scripts
+        mapfile -t scripts < <(find_scripts_in_dir "$scripts_dir" "node_modules" ".git")
         
-        local script
+        local count=0
         for script in "${scripts[@]}"; do
-            local scriptSize
-            scriptSize=$(stat -c%s "${script}" 2>/dev/null || echo "0")
+            if (( count >= 10 )); then
+                break
+            fi
             
-            local targetLangs=("perl5" "javascript" "powershell" "python")
-            local jobWeight
-            jobWeight=$(getJobWeight "${scriptSize}" "${#targetLangs[@]}")
+            local script_size=0
+            if [[ -f "$script" ]]; then
+                script_size=$(stat -c%s "$script" 2>/dev/null || echo "0")
+            fi
+            
+            local target_langs=("perl5" "javascript" "powershell" "python")
+            local job_weight
+            job_weight=$(get_job_weight "$script_size" "${#target_langs[@]}")
             
             # Mittlere Priority → eher leichtere Jobs
-            local adjustedWeight="${jobWeight}"
-            if [[ "${jobWeight}" == "heavy" ]]; then
-                adjustedWeight="medium"
+            local weight_for_node="$job_weight"
+            if [[ "$job_weight" == "heavy" ]]; then
+                weight_for_node="medium"
             fi
             
-            local selectedNode
-            selectedNode=$(getNodeByPriority "${adjustedWeight}")
-            log "Processing $(basename "${script}") (${jobWeight}) on ${selectedNode}"
+            local selected_node
+            selected_node=$(get_node_by_priority "$weight_for_node")
+            log "Processing $(basename "$script") ($job_weight) on $selected_node"
             
             local result
-            result=$(processOnNode "${selectedNode}" "${script}")
-            ((created += result))
+            result=$(process_on_node "$selected_node" "$script" "${target_langs[@]}")
+            created=$((created + result))
+            
+            ((count++))
         done
     done
     
-    echo "${created}"
+    echo "$created"
 }
 
-gitCommit() {
+git_commit() {
     local message="$1"
-    if command -v git >/dev/null 2>&1 && [[ -d "${ABSTRACTIONS_REPO}/.git" ]]; then
-        (
-            cd "${ABSTRACTIONS_REPO}" || return 1
-            git add . >/dev/null 2>&1 || true
-            git commit -m "${message}" >/dev/null 2>&1 || true
-            log "Git commit: ${message}"
-        ) || true
+    
+    if cd "$ABSTRACTIONS_REPO" 2>/dev/null && command -v git >/dev/null 2>&1; then
+        if git add . 2>/dev/null && git commit -m "$message" 2>/dev/null; then
+            log "Git commit: $message"
+        fi
     fi
 }
 
-createStatusReport() {
-    local state="$1"
-    local reportFile="${ABSTRACTIONS_REPO}/STATUS.md"
-    
-    local content="# Script Abstractions - Status Report
-
-**Letzte Aktualisierung:** $(date '+%Y-%m-%d %H:%M')
-
-"
-    
-    # Verarbeitete Scripts und Abstraktionen
-    local processed_count
-    processed_count=$(echo "${state}" | jq -r '(.processed | length)' 2>/dev/null || echo "0")
-    
-    local current_priority
-    current_priority=$(echo "${state}" | jq -r '.current_priority // "high"' 2>/dev/null || echo "high")
-    
-    local abstractions_created
-    abstractions_created=$(echo "${state}" | jq -r '.stats.abstractions_created // 0' 2>/dev/null || echo "0")
-    
-    content+="- Aktuelle Priorität: ${current_priority}
-- Verarbeitete Scripts: ${processed_count}
-- Abstraktionen gesamt: ${abstractions_created}
-
-## Abstraktionen pro Sprache
-
-"
+create_status_report() {
+    local report_file="${ABSTRACTIONS_REPO}/STATUS.md"
     
     # Zähle Abstraktionen pro Sprache
-    if [[ -d "${ABSTRACTIONS_REPO}" ]]; then
-        local lang
-        for lang in "${!TARGET_LANGUAGES[@]}"; do
-            if [[ "${lang}" == *".ext" ]]; then
-                continue
-            fi
-            
-            local langDir="${ABSTRACTIONS_REPO}/${lang}"
-            if [[ -d "${langDir}" ]]; then
-                local count
-                count=$(find "${langDir}" -maxdepth 1 -type f 2>/dev/null | wc -l)
-                if (( count > 0 )); then
-                    content+="- ${lang}: ${count}"$'\n'
+    declare -A lang_counts=()
+    if [[ -d "$ABSTRACTIONS_REPO" ]]; then
+        for lang_dir in "$ABSTRACTIONS_REPO"/*; do
+            if [[ -d "$lang_dir" ]] && [[ -n "$(basename "$lang_dir")" ]]; then
+                local lang_name
+                lang_name=$(basename "$lang_dir")
+                local count=0
+                if [[ -d "$lang_dir" ]]; then
+                    count=$(find "$lang_dir" -type f 2>/dev/null | wc -l)
                 fi
+                lang_counts["$lang_name"]="$count"
             fi
         done
     fi
     
-    content+="
-## Verfügbare Modelle
-
-"
-    
-    local i=0
-    for model in "${AVAILABLE_MODELS[@]}"; do
-        if (( i < 3 )); then
-            content+="- \`${model}\`"$'\n'
-        fi
-        ((i++))
-    done
-    
-    content+="- ... und $(( ${#AVAILABLE_MODELS[@]} - 3 )) weitere
-
-## Multi-Node Support
-
-| Node | Verfügbarkeit | Kapazität | Priorität | Gerät |
-|------|---------------|-----------|-----------|-------|
-"
-    
-    # Sortiere Nodes nach Priorität
-    local sorted_nodes=()
-    for node in node1 node2 node3 node5 node7; do
-        if [[ -n "${NODES[${node}.priority]:-}" ]]; then
-            sorted_nodes+=("${NODES[${node}.priority]}:${node}")
-        fi
-    done
-    IFS=$'\n' sorted_nodes=($(sort <<<"${sorted_nodes[*]}"))
-    unset IFS
-    
-    local entry
-    for entry in "${sorted_nodes[@]}"; do
-        local nodeId="${entry#*:}"
-        local avail="❓ Unbekannt"
-        if [[ "${NODES[${nodeId}.always_available]:-}" == "true" ]]; then
-            avail="✅ Immer"
-        elif [[ -n "${NODES[${nodeId}.always_available]:-}" ]]; then
-            avail="📱 Bedingt"
-        fi
+    {
+        echo "# Script Abstractions - Status Report"
+        echo ""
+        echo "**Letzte Aktualisierung:** $(date '+%Y-%m-%d %H:%M')"
+        echo ""
+        echo "- Aktuelle Priorität: ${state_current_priority:-high}"
+        echo "- Verarbeitete Scripts: ${#state_processed[@]}"
+        echo "- Abstraktionen gesamt: $state_abstractions_created"
+        echo ""
+        echo "## Abstraktionen pro Sprache"
+        echo ""
         
-        local capacity="${NODES[${nodeId}.capacity]:-unknown}"
-        local priority="${NODES[${nodeId}.priority]:--}"
-        local device="${NODES[${nodeId}.device]:-Server}"
+        for lang in "${!lang_counts[@]}"; do
+            echo "- $lang: ${lang_counts[$lang]}"
+        done
         
-        content+="| ${nodeId} | ${avail} | ${capacity} | ${priority} | ${device} |"$'\n'
-    done
-    
-    content+="
-### Job-Verteilung
-
-- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)
-- **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)
-- **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)
-"
-    
-    echo "${content}" > "${reportFile}"
+        echo ""
+        echo "## Verfügbare Modelle"
+        echo ""
+        
+        local i=0
+        for model in "${AVAILABLE_MODELS[@]}"; do
+            if (( i < 3 )); then
+                echo "- \`$model\`"
+            fi
+            ((i++))
+        done
+        echo "- ... und $(( ${#AVAILABLE_MODELS[@]} - 3 )) weitere"
+        
+        echo ""
+        echo "## Multi-Node Support"
+        echo ""
+        echo "| Node | Verfügbarkeit | Kapazität | Priorität | Gerät |"
+        echo "|------|---------------|-----------|-----------|-------|"
+        
+        for node_id in node1 node2 node3 node5 node7; do
+            if [[ -v NODES["${node_id}.always_available"] ]]; then
+                local avail="✅ Immer"
+                if [[ "${NODES[${node_id}.always_available]}" != "true" ]]; then
+                    avail="📱 Bedingt"
+                fi
+                
+                local capacity="${NODES[${node_id}.capacity]:-unknown}"
+                local priority="${NODES[${node_id}.priority]:--}"
+                local device="${NODES[${node_id}.device]:-Server}"
+                
+                echo "| $node_id | $avail | $capacity | $priority | $device |"
+            fi
+        done
+        
+        echo ""
+        echo "### Job-Verteilung"
+        echo ""
+        echo "- **Heavy Jobs** (>50KB × Sprachen) → Node 7 (Docker, hohe Ressourcen)"
+        echo "- **Medium Jobs** → Node 2 (Stable), Node 1 (Primary)"
+        echo "- **Light Jobs** → Node 5 (Redmi Note 11S, wenn verfügbar)"
+    } > "$report_file"
 }
 
 main() {
     log "Script Abstractions Manager (Multi-Node) gestartet"
     
-    local state
-    state=$(loadState)
-    local processed_count
-    processed_count=$(echo "${state}" | jq -r '(.processed | length)' 2>/dev/null || echo "0")
-    log "State loaded: ${processed_count} processed"
+    load_state
+    log "State loaded: ${#state_processed[@]} processed"
     
-    local current_priority
-    current_priority=$(echo "${state}" | jq -r '.current_priority // "high"' 2>/dev/null || echo "high")
+    local current_priority="$state_current_priority"
     local created=0
     
-    if [[ "${current_priority}" == "high" ]]; then
+    if [[ "$current_priority" == "high" ]]; then
         log "Processing HIGH priority: Top 5 Skills"
-        created=$(processPriorityHigh)
+        created=$(process_priority_high)
         if (( created > 0 )); then
-            gitCommit "High priority: ${created} abstractions"
+            git_commit "High priority: $created abstractions"
         fi
-        state=$(echo "${state}" | jq '.current_priority = "medium"')
-    elif [[ "${current_priority}" == "medium" ]]; then
+        state_current_priority="medium"
+    elif [[ "$current_priority" == "medium" ]]; then
         log "Processing MEDIUM priority: Workspace Scripts"
-        created=$(processPriorityMedium)
+        created=$(process_priority_medium)
         if (( created > 0 )); then
-            gitCommit "Medium priority: ${created} abstractions"
+            git_commit "Medium priority: $created abstractions"
         fi
-        state=$(echo "${state}" | jq '.current_priority = "high"')  # Zyklus
+        state_current_priority="high"  # Zyklus
     fi
     
     # Aktualisiere Statistiken
-    local total_abstractions=0
-    if [[ -d "${ABSTRACTIONS_REPO}" ]]; then
-        local lang
-        for lang in "${!TARGET_LANGUAGES[@]}"; do
-            if [[ "${lang}" == *".ext" ]]; then
-                continue
-            fi
-            
-            local langDir="${ABSTRACTIONS_REPO}/${lang}"
-            if [[ -d "${langDir}" ]]; then
-                local count
-                count=$(find "${langDir}" -maxdepth 1 -type f 2>/dev/null | wc -l)
-                ((total_abstractions += count))
+    state_abstractions_created=0
+    if [[ -d "$ABSTRACTIONS_REPO" ]]; then
+        for lang_dir in "$ABSTRACTIONS_REPO"/*; do
+            if [[ -d "$lang_dir" ]] && [[ -n "$(basename "$lang_dir")" ]]; then
+                if [[ -d "$lang_dir" ]]; then
+                    local count
+                    count=$(find "$lang_dir" -type f 2>/dev/null | wc -l)
+                    state_abstractions_created=$((state_abstractions_created + count))
+                fi
             fi
         done
     fi
     
-    state=$(echo "${state}" | jq ".stats.last_run = \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" | .stats.abstractions_created = ${total_abstractions}")
+    save_state
+    create_status_report
     
-    saveState "${state}"
-    createStatusReport "${state}"
-    
-    log "Abgeschlossen. ${created} neue Abstraktionen erstellt."
+    log "Abgeschlossen. $created neue Abstraktionen erstellt."
 }
 
-# Hauptausführung
 main "$@"
