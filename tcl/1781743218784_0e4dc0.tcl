@@ -1,15 +1,7 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0e4dc0.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:powershell/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
     return {<!DOCTYPE html>
@@ -224,15 +216,19 @@ proc main {args} {
         puts stderr "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
-    
+
     set outputFile [lindex $args 0]
     
     # Generate HTML content and write to file
-    set htmlContent [generateHTML]
-    set fh [open $outputFile w]
-    puts -nonewline $fh $htmlContent
-    close $fh
-    puts "HTML file generated: $outputFile"
+    if {[catch {
+        set fd [open $outputFile w]
+        puts -nonewline $fd [generateHTML]
+        close $fd
+        puts "HTML file generated: $outputFile"
+    } error]} {
+        puts stderr "Could not write file '$outputFile': $error"
+        exit 1
+    }
 }
 
 main {*}$argv

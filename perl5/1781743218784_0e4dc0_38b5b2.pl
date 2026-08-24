@@ -1,25 +1,19 @@
-#!/usr/bin/env perl
-# 1781743218784_0e4dc0.sh — portiert nach perl5
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0e4dc0_38b5b2.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use MIME::Base64;
 
-# 1781743218784_0e4dc0.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.sh — portiert nach JavaScript
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.html — portiert nach JavaScript
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+binmode(STDOUT, ':encoding(UTF-8)');
+binmode(STDERR, ':encoding(UTF-8)');
 
 sub generateHTML {
-    return <<'EOF';
+    return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -225,7 +219,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
 }
 
 sub main {
@@ -233,18 +227,20 @@ sub main {
         print STDERR "Usage: $0 <output-file>\n";
         exit 1;
     }
-    
+
     my $outputFile = $ARGV[0];
-    
-    # Generate HTML content and write to file
-    open(my $fh, '>', $outputFile) or do {
+
+    eval {
+        my $htmlContent = generateHTML();
+        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
+        print $fh $htmlContent;
+        close $fh;
+        print "HTML file generated: $outputFile\n";
+    };
+    if ($@) {
         print STDERR "Could not write to file '$outputFile'\n";
         exit 1;
-    };
-    print $fh generateHTML();
-    close($fh);
-    
-    print "HTML file generated: $outputFile\n";
+    }
 }
 
 main();

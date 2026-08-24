@@ -1,13 +1,15 @@
 #!/usr/bin/perl
-# 1781743218784_0e4dc0_4857ff.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_4857ff.py
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use open qw(:std :utf8);
 
 sub generate_html {
-    return <<'HTML';
+    return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -213,7 +215,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 }
 
 sub main {
@@ -239,4 +241,4 @@ sub main {
     }
 }
 
-main(@ARGV) if __FILE__ eq $0;
+main(@ARGV);

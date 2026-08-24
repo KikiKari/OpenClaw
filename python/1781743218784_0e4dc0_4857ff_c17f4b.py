@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_4857ff.sh — portiert nach python
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff_c17f4b.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_c17f4b.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import json
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -90,7 +87,7 @@ a{color:var(--accent);}
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
       <button class="btn primary" id="encBtn">Verschlüsseln</button>
-      <button class="btn" id="dlBtn">Als .svpb herunterladen</button>
+      <button class="btn" id="dlBtn">Als .svb herunterladen</button>
       <button class="btn" id="expBtn">Klartext-JSON exportieren</button>
       <span class="msg" id="saveMsg"></span>
     </div>
@@ -229,7 +226,7 @@ def main():
     html_content = generate_html()
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
-    print(f"HTML file generated: {output_file}")
+    print(f'HTML file generated: {output_file}')
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

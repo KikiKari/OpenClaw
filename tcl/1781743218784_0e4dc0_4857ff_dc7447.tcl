@@ -1,9 +1,9 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e4dc0_4857ff.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_4857ff.py
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-proc generate_html {} {
+proc generateHtml {} {
     return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -218,22 +218,18 @@ proc main {args} {
         exit 1
     }
 
-    set output_file [lindex $args 0]
+    set outputFile [lindex $args 0]
 
     # Generate HTML content and write to file
-    if {[catch {open $output_file w} fh]} {
-        puts stderr "Could not write to file '$output_file': $fh"
+    if {[catch {
+        set fd [open $outputFile w]
+        puts -nonewline $fd [generateHtml]
+        close $fd
+        puts "HTML file generated: $outputFile"
+    } e]} {
+        puts stderr "Could not write to file '$outputFile': $e"
         exit 1
     }
-    
-    puts -nonewline $fh [generate_html]
-    close $fh
-    puts "HTML file generated: $output_file"
 }
 
-if {$argc > 0} {
-    main {*}$argv
-} else {
-    # For interactive use, you can call main with arguments like this:
-    # main "output.html"
-}
+main $argv

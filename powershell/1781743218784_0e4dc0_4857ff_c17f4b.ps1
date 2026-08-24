@@ -1,14 +1,14 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_4857ff.sh — portiert nach powershell
+# 1781743218784_0e4dc0_4857ff_c17f4b.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_c17f4b.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_4857ff.sh — portiert nach javascript
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-function generateHTML {
-  @"
+function Generate-Html {
+  return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -217,21 +217,20 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 "@
 }
 
-function main {
-  param(
-    [string[]]$args
-  )
+function Main {
+  $args = $args
   
   if ($args.Count -ne 1) {
-    Write-Error "Usage: pwsh script.ps1 <output-file>"
+    Write-Error "Usage: powershell script.ps1 <output-file>"
     exit 1
   }
   
   $outputFile = $args[0]
   
   # Generate HTML content and write to file
-  generateHTML | Out-File -FilePath $outputFile -Encoding UTF8
+  $htmlContent = Generate-Html
+  Set-Content -Path $outputFile -Value $htmlContent
   Write-Output "HTML file generated: $outputFile"
 }
 
-main @args
+Main @args

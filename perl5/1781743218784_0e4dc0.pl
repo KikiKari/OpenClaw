@@ -1,10 +1,32 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+# 1781743218784_0e4dc0.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+use strict;
+use warnings;
+use utf8;
+use open qw(:std :utf8);
+
+# 1781743218784_0e4dc0.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
 # 1781743218784_0e4dc0.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
 # Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-use strict;
-use warnings;
+# 1781743218784_0e4dc0.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
+# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.sh — portiert nach JavaScript
+# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
+# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.html — portiert nach JavaScript
+# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
+# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
 
 sub generateHTML {
     return <<'HTML_END';
@@ -224,14 +246,19 @@ sub main {
         exit 1;
     }
     
-    my $output_file = $args[0];
+    my $outputFile = $args[0];
     
     # Generate HTML content and write to file
-    my $html_content = generateHTML();
-    open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
-    print $fh $html_content;
-    close $fh;
-    print "HTML file generated: $output_file\n";
+    eval {
+        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
+        print $fh generateHTML();
+        close $fh;
+        print "HTML file generated: $outputFile\n";
+    };
+    if ($@) {
+        print STDERR "Could not write file '$outputFile': $@\n";
+        exit 1;
+    }
 }
 
 main(@ARGV);

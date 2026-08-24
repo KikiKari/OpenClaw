@@ -1,12 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_4857ff.py — portiert nach javascript
+// 1781743218784_0e4dc0_4857ff_dc7447.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_4857ff_dc7447.pl
+// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0e4dc0_4857ff.py — portiert nach JavaScript
 // Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_4857ff.py
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
 function generateHtml() {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -210,26 +214,26 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-`;
+</html>`;
 }
 
 function main(args) {
-  if (args.length !== 1) {
-    console.error("Usage: node script.js <output-file>");
-    process.exit(1);
-  }
+    if (args.length !== 1) {
+        console.error("Usage: node script.js <output-file>");
+        process.exit(1);
+    }
 
-  const outputFile = args[0];
+    const outputFile = args[0];
 
-  // Generate HTML content and write to file
-  try {
-    fs.writeFileSync(outputFile, generateHtml(), 'utf-8');
-    console.log(`HTML file generated: ${outputFile}`);
-  } catch (e) {
-    console.error(`Could not write to file '${outputFile}': ${e.message}`);
-    process.exit(1);
-  }
+    try {
+        fs.writeFileSync(outputFile, generateHtml(), 'utf8');
+        console.log(`HTML file generated: ${outputFile}`);
+    } catch (error) {
+        console.error(`Could not write to file '${outputFile}': ${error.message}`);
+        process.exit(1);
+    }
 }
 
-main(process.argv.slice(2));
+if (require.main === module) {
+    main(process.argv.slice(2));
+}

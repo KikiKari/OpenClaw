@@ -1,20 +1,13 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # 1781743218784.js — portiert nach shell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Anzahl der Argumente
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <OutputPath>" >&2
-    exit 1
-fi
-
-outputPath="$1"
-
-# HTML-Inhalt in eine Variable speichern
-htmlContent=$(cat <<'HTML_END'
+# Function to generate HTML content
+generate_html() {
+    cat << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,8 +213,25 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
-)
+EOF
+}
 
-# Schreibe den HTML-Inhalt in die Ausgabedatei
-echo "$htmlContent" > "$outputPath"
+# Main function
+main() {
+    local args_count=$#
+    
+    if [[ $args_count -ne 1 ]]; then
+        echo "Usage: $0 <output-file>" >&2
+        exit 1
+    fi
+    
+    local output_file="$1"
+    
+    # Generate HTML content and write to file
+    generate_html > "$output_file"
+    
+    echo "HTML file generated: $output_file"
+}
+
+# Call main function with all arguments
+main "$@"

@@ -1,17 +1,9 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_4857ff.ps1 — portiert nach python
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_4857ff.ps1
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import base64
-import json
-import hashlib
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-import os
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -222,7 +214,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 def main(args):
     if len(args) != 1:
-        print("Usage: python3 script.py <output-file>", file=sys.stderr)
+        print("Usage: python3 script.py <output-file>")
         sys.exit(1)
     
     output_file = args[0]

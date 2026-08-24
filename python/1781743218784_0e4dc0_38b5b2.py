@@ -1,17 +1,12 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0.sh — portiert nach python
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.sh — portiert nach Python 3.12
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
 def generate_html():
-    """Generate the complete HTML content"""
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -35,7 +30,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 0;font-weight:700;}
+h1{font-size:21px;margin:0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -216,25 +211,22 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
 def main():
-    """Main function to generate HTML file"""
     if len(sys.argv) != 2:
-        print("Usage: {} <output-file>".format(sys.argv[0]), file=sys.stderr)
+        print("Usage: " + sys.argv[0] + " <output-file>", file=sys.stderr)
         sys.exit(1)
-    
+
     output_file = sys.argv[1]
-    
+
     try:
-        # Generate HTML content and write to file
         html_content = generate_html()
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
-        print("HTML file generated: {}".format(output_file))
+        print("HTML file generated: " + output_file)
     except Exception as e:
-        print("Could not write to file '{}': {}".format(output_file, str(e)), file=sys.stderr)
+        print("Could not write to file '" + output_file + "'", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":

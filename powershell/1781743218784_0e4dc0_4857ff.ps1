@@ -1,30 +1,18 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_4857ff.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_4857ff.py
+# 1781743218784_0e4dc0_4857ff.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff.js
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_4857ff.ps1 — portiert nach javascript
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_4857ff.ps1
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.pl — portiert nach JavaScript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
 # Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-<#
-.SYNOPSIS
-Generates an HTML file for Secret-Vault Public.
-
-.DESCRIPTION
-This script generates an HTML file containing the Secret-Vault Public application.
-The application is a client-side encrypted secret vault using WebCrypto (AES-256-GCM + PBKDF2).
-
-.PARAMETER OutputFile
-The path to the output HTML file.
-
-.EXAMPLE
-.\script.ps1 -OutputFile "secret-vault.html"
-#>
-
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputFile
-)
-
-function Generate-Html {
-    return @'
+function Generate-HTML {
+    return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -230,15 +218,25 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 }
 
-try {
-    $htmlContent = Generate-Html
-    Set-Content -Path $OutputFile -Value $htmlContent -Encoding UTF8
-    Write-Host "HTML file generated: $OutputFile"
+function Main {
+    param(
+        [string[]]$Args
+    )
+    
+    if ($Args.Count -ne 1) {
+        Write-Error "Usage: pwsh script.ps1 <output-file>"
+        exit 1
+    }
+    
+    $outputFile = $Args[0]
+    
+    # Generate HTML content and write to file
+    $htmlContent = Generate-HTML
+    Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+    Write-Host "HTML file generated: $outputFile"
 }
-catch {
-    Write-Error "Could not write to file '$OutputFile': $($_.Exception.Message)"
-    exit 1
-}
+
+Main -Args $args

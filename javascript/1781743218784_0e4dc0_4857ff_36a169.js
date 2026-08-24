@@ -1,20 +1,7 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_4857ff.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_4857ff.tcl
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_0e4dc0.pl — portiert nach tcl
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-// Node.js built-in modules
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// 1781743218784_0e4dc0_4857ff_36a169.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_4857ff_36a169.pl
+// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 function generateHTML() {
     return `<!DOCTYPE html>
@@ -229,14 +216,13 @@ function main(args) {
         console.error("Usage: node script.js <output-file>");
         process.exit(1);
     }
-    
+
     const outputFile = args[0];
     
     // Generate HTML content and write to file
-    const htmlContent = generateHTML();
-    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    const fs = require('fs');
+    fs.writeFileSync(outputFile, generateHTML(), 'utf8');
     console.log(`HTML file generated: ${outputFile}`);
 }
 
-// Execute main function with command line arguments
 main(process.argv.slice(2));
