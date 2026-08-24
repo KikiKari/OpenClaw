@@ -1,16 +1,12 @@
 #!/usr/bin/env tclsh
 # 1781743218784.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-# Parameter verarbeiten
-if {$argc != 1} {
-    puts stderr "Usage: tclsh script.tcl <OutputPath>"
-    exit 1
-}
-set outputPath [lindex $argv 0]
+package require Tcl 8.6
 
-set htmlContent {<!DOCTYPE html>
+proc generateHTML {} {
+    set html {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -215,7 +211,30 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>}
+    
+    return $html
+}
 
-set fp [open $outputPath w]
-puts -nonewline $fp $htmlContent
-close $fp
+proc main {} {
+    global argv
+    
+    if {[llength $argv] != 1} {
+        puts stderr "Usage: tclsh script.tcl <output-file>"
+        exit 1
+    }
+    
+    set outputFile [lindex $argv 0]
+    
+    if {[catch {
+        set htmlContent [generateHTML]
+        set fh [open $outputFile w]
+        puts -nonewline $fh $htmlContent
+        close $fh
+        puts "HTML file generated: $outputFile"
+    } error]} {
+        puts stderr "Error generating HTML file: $error"
+        exit 1
+    }
+}
+
+main
