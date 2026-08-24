@@ -19,7 +19,7 @@ DB_DIR = WORKSPACE
 
 class TreeIndexerV2:
     def __init__(self):
-        self.db_path = DB_DIR / "tree.db"
+        self.db_path = WORKSPACE / "db" / "tree.db"
         self.conn = None
         
     def connect(self):
