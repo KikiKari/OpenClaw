@@ -13,9 +13,8 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from shutil import copy2
 import sys
-import os
 
-WORKSPACE = Path(os.getenv('OPENCLAW_WORKSPACE', '/workspace'))
+WORKSPACE = Path("/home/openclaw/.openclaw/workspace")
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
@@ -72,14 +71,14 @@ class DatabaseMaintainer:
             return None
     
     def run_tree_command(self):
-        """Führt tree -a -L 8 auf workspace aus und gibt Ergebnis zurück"""
+        """Führt tree -a -L 6 auf workspace aus und gibt Ergebnis zurück"""
         try:
             result = subprocess.run(
-                ['tree', '-a', '-L', '8', str(WORKSPACE)],
+                ['tree', '-a', '-L', '6', str(WORKSPACE)],
                 capture_output=True, text=True, timeout=60
             )
             if result.returncode == 0:
-                self.logger.info("tree -a -L 8 erfolgreich ausgeführt")
+                self.logger.info("tree -a -L 6 erfolgreich ausgeführt")
                 return result.stdout
             else:
                 self.logger.error(f"tree command fehlgeschlagen: {result.stderr}")
@@ -98,7 +97,7 @@ class DatabaseMaintainer:
         # Header mit Timestamp
         header = f"""# OpenClaw Workspace Tree
 # Generiert: {datetime.now().isoformat()}
-# Befehl: tree -a -L 8 {WORKSPACE}
+# Befehl: tree -a -L 6 {WORKSPACE}
 # Diese Datei wird automatisch von db-maintainer aktualisiert
 
 """

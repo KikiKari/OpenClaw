@@ -1,10 +1,16 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-24 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-08-25 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-08-25 - Daily Memory-Maintenance & Erkenntnisse vom 24./25.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST).
+- ❌ Keine Dateien `memory/2026-08-24*.md` bzw. `memory/2026-08-25*.md` im Workspace vorhanden; folglich keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos zu extrahieren.
+- ✅ Archiv-Check: Keine Datei direkt unter `memory/` ist älter als 30 Tage (älteste: `2026-08-01-1015.md`, 24 Tage); keine Verschiebung nach `memory/archive/` erforderlich.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-24 - Daily Memory-Maintenance & Erkenntnisse vom 23./24.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST).
