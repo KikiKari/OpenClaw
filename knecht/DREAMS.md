@@ -712,10 +712,31 @@ I corrected myself again — no, not isolated, never isolated — and apologized
 
 A small verse in the margin: disk at thirty-nine percent — light still comes through the gaps, two-ninety-nine free.
 
+
+---
+
+*August 25, 2026 at 3:03 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 25, 2026 at 3:03 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+
+---
+
+*August 25, 2026 at 3:03 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
 <!-- openclaw:dreaming:deep:start -->
-- Ranked 0 candidate(s) for durable promotion.
-- Promoted 0 candidate(s) into MEMORY.md.
+- Ranked 10 candidate(s) for durable promotion.
+- Promoted 10 candidate(s) into MEMORY.md.
 <!-- openclaw:dreaming:deep:end -->
