@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from shutil import copy2
 import sys
 
-WORKSPACE = Path("/home/openclaw/.openclaw/workspace")
+WORKSPACE = Path(__file__).parent
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
