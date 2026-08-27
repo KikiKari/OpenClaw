@@ -23,6 +23,8 @@ IMPORTANT_DIR = WORKSPACE / "important"
 # Verzeichnisse erstellen
 BACKUP_DIR.mkdir(parents=True, exist_ok=True)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
+IMPORTANT_DIR.mkdir(parents=True, exist_ok=True)
+DB_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class Logger:
