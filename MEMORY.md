@@ -6,6 +6,12 @@
 
 ## 📓 Letzte Änderungen
 
+### 2026-08-28 - Daily Memory-Maintenance & Erkenntnisse vom 27./28.08.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST).
+- ❌ Keine Dateien `memory/2026-08-27*.md` bzw. `memory/2026-08-28*.md` im Workspace vorhanden; folglich keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos zu extrahieren.
+- ✅ Archiv-Check: Keine Datei direkt unter `memory/` ist älter als 30 Tage (älteste: `2026-08-01-1015.md`, 27 Tage); keine Verschiebung nach `memory/archive/` erforderlich.
+- **Kritische Erkenntnisse:** Keine.
+
 ### 2026-08-27 - Daily Memory-Maintenance & Erkenntnisse vom 26./27.08.
 - ✅ Memory-Maintenance heute geprüft (07:03 CEST).
 - ❌ Keine Dateien `memory/2026-08-26*.md` bzw. `memory/2026-08-27*.md` im Workspace vorhanden; folglich keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos zu extrahieren.
