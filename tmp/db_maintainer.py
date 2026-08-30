@@ -9,7 +9,6 @@ import sqlite3
 import hashlib
 import json
 import subprocess
-import os
 from pathlib import Path
 from datetime import datetime, timedelta
 from shutil import copy2
@@ -72,22 +71,18 @@ class DatabaseMaintainer:
             return None
     
     def run_tree_command(self):
-        """Generiert eine Baumansicht des Workspace ähnelt tree -a -L 6"""
+        """Führt tree -a -L 6 auf workspace aus und gibt Ergebnis zurück"""
         try:
-            lines = []
-            workspace_str = str(WORKSPACE)
-            for root, dirs, files in os.walk(WORKSPACE):
-                # Berechne Tiefe relativ zum WORKSPACE
-                depth = root.count(os.sep) - workspace_str.count(os.sep)
-                if depth > 6:  # -L 6
-                    continue
-                indent = '    ' * depth
-                lines.append(f'{indent}{os.path.basename(root)}/' if depth > 0 or root == workspace_str else f'{os.path.basename(root)}/')
-                subindent = '    ' * (depth + 1)
-                for f in sorted(files):
-                    lines.append(f'{subindent}{f}')
-            # Ausgabe als String
-            return '\n'.join(lines)
+            result = subprocess.run(
+                ['tree', '-a', '-L', '6', str(WORKSPACE)],
+                capture_output=True, text=True, timeout=60
+            )
+            if result.returncode == 0:
+                self.logger.info("tree -a -L 6 erfolgreich ausgeführt")
+                return result.stdout
+            else:
+                self.logger.error(f"tree command fehlgeschlagen: {result.stderr}")
+                return None
         except Exception as e:
             self.logger.error(f"tree command Exception: {e}")
             return None
