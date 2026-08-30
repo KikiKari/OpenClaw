@@ -60,7 +60,7 @@ class DatabaseMaintainer:
     def save_state(self, state):
         """Speichert aktuellen Zustand"""
         with open(self.state_file, 'w') as f:
-            json.dump(state, f, indent=2)
+            json.dump(f, state, indent=2)
     
     def get_file_hash(self, filepath):
         """Berechnet MD5-Hash einer Datei"""
@@ -304,7 +304,7 @@ def main():
     try:
         maintainer.run_cycle()
     except Exception as e:
-        maintainer.logger.error(f"CRITICAL ERROR: {e}")
+        self.logger.error(f"CRITICAL ERROR: {e}")
         sys.exit(1)
 
 
