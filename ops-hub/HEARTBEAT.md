@@ -1,8 +1,6 @@
-```markdown
 # Keep this file empty (or with only comments) to skip heartbeat API calls.
 
 # Add tasks below when you want the agent to check something periodically.
-```
 
 ---
 # HEARTBEAT.md - Recovery-Checkliste
@@ -16,29 +14,28 @@
 - If an OpenClaw CLI command is still required, run it on the Gateway, or call `/home/openclaw/.npm-global/bin/openclaw ...`.
 - Do not call `nodes` with `action: list`; valid node inventory comes from `nodes` `action: status` or `openclaw nodes status`.
 
-
 ### System
-- [x] System: vmstat
-- [x] Prozesse: ps aux | head -n 10
+- [ ] System: vmstat
+- [ ] Prozesse: ps aux | head -n 10
 - [x] Disk: df -h (< 80%)
-- [x] Memory: free -h
-- [x] Load: uptime
-- [x] Logs: journalctl -n 1000 -q
-- [x] Crons: Cron tool action=list
+- [ ] Memory: free -h
+- [ ] Load: uptime
+- [ ] Logs: journalctl -n 1000 -q
+- [ ] Crons: Cron tool action=list
 - [x] Agents: Agents tool
-- [x] Tasks: Gateway exec `/home/openclaw/.npm-global/bin/openclaw tasks list` if needed
-- [x] Channels: Gateway exec `/home/openclaw/.npm-global/bin/openclaw channels list` if needed
+- [ ] Tasks: Gateway exec `/home/openclaw/.npm-global/bin/openclaw tasks list` if needed
+- [ ] Channels: Gateway exec `/home/openclaw/.npm-global/bin/openclaw channels list` if needed
 - [x] Sessions: sessions_list tool or Gateway exec `/home/openclaw/.npm-global/bin/openclaw sessions` if needed
-- [x] Nodes: Nodes tool action=status only; do not call nodes action=list or `openclaw node list`
+- [ ] Nodes: Nodes tool action=status only; do not call nodes action=list or `openclaw node list`
 
 ### Cron-Jobs
-- [x] Ergebnisse in memory/ Dateien geschrieben?
-- [x] Alle eingegangenen Agent Meldungen protokolliert?
-- [x] Alle kritischen Erreignisse protokolliert?
-- [x] Agent knecht über alle kritischen Meldungen informiert?
-- [x] Agent knecht alle kritische Probleme gemeldet?
-- [x] Agent knecht alle kritischen Ereignisse gemeldet?
-- [x] Alle offenen Punkte in den WebChat geschrieben?
+- [ ] Ergebnisse in memory/ Dateien geschrieben?
+- [ ] Alle eingegangenen Agent Meldungen protokolliert?
+- [ ] Alle kritischen Erreignisse protokolliert?
+- [ ] Agent knecht über alle kritischen Meldungen informiert?
+- [ ] Agent knecht alle kritische Probleme gemeldet?
+- [ ] Agent knecht alle kritischen Ereignisse gemeldet?
+- [ ] Alle offenen Punkte in den WebChat geschrieben?
 
 ## Bei Problemen
 - API und Gateway immer Agent knecht informieren: openclaw doctor --yes && openclaw status && openclaw gateway status && openclaw nodes status
