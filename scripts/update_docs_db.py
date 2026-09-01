@@ -11,7 +11,7 @@ import sqlite3
 from pathlib import Path
 from time import time
 
-WORKSPACE = Path(os.environ.get('OPENCLAW_WORKSPACE', Path(__file__).resolve().parents[1]))
+WORKSPACE = Path('/workspace')
 DB_PATH = WORKSPACE / 'db' / 'docs.db'
 
 

@@ -11,9 +11,7 @@ import hashlib
 from pathlib import Path
 from datetime import datetime
 
-WORKSPACE = Path(
-    os.environ.get("OPENCLAW_WORKSPACE", Path(__file__).resolve().parents[1])
-)
+WORKSPACE = Path('/workspace')
 DB_DIR = WORKSPACE
 
 

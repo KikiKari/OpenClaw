@@ -14,8 +14,7 @@ from datetime import datetime, timedelta
 from shutil import copy2
 import sys
 
-import os
-WORKSPACE = Path(os.environ.get("OPENCLAW_WORKSPACE", "/workspace"))
+WORKSPACE = Path("/workspace")
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
