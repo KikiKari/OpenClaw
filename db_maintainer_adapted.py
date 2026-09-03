@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Database Maintainer Sub-Agent
+Database Maintainer Sub-Agent - Adapted for container
 Automated database maintenance with 30min checks, hourly backups (3 days retention),
 band tree command execution for important/openclaw-tree.txt
 """
@@ -13,8 +13,10 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from shutil import copy2
 import sys
+import os
 
-WORKSPACE = Path("/workspace")
+# Use the actual workspace path inside container
+WORKSPACE = Path("/workspace/.openclaw/workspace")
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
@@ -73,6 +75,7 @@ class DatabaseMaintainer:
     def run_tree_command(self):
         """Führt tree -a -L 6 auf workspace aus und gibt Ergebnis zurück"""
         try:
+            # First try to use system tree command
             result = subprocess.run(
                 ['tree', '-a', '-L', '6', str(WORKSPACE)],
                 capture_output=True, text=True, timeout=60
@@ -81,11 +84,44 @@ class DatabaseMaintainer:
                 self.logger.info("tree -a -L 6 erfolgreich ausgeführt")
                 return result.stdout
             else:
-                self.logger.error(f"tree command fehlgeschlagen: {result.stderr}")
-                return None
+                self.logger.warn(f"tree command fehlgeschlagen: {result.stderr}, fallback to Python implementation")
+                return self._python_tree()
+        except FileNotFoundError:
+            self.logger.warn("tree command nicht gefunden, verwende Python Implementation")
+            return self._python_tree()
         except Exception as e:
             self.logger.error(f"tree command Exception: {e}")
-            return None
+            return self._python_tree()
+    
+    def _python_tree(self):
+        """Python implementation of tree -a -L 6"""
+        try:
+            lines = []
+            max_depth = 6
+            
+            def _walk(dir_path, prefix="", depth=0):
+                if depth > max_depth:
+                    return
+                try:
+                    entries = sorted(os.scandir(dir_path), key=lambda e: e.name.lower())
+                except PermissionError:
+                    lines.append(prefix + "└── [Permission Denied]")
+                    return
+                
+                for i, entry in enumerate(entries):
+                    is_last = i == len(entries) - 1
+                    connector = "└── " if is_last else "├── "
+                    lines.append(prefix + connector + entry.name)
+                    if entry.is_dir() and depth < max_depth:
+                        extension = "    " if is_last else "│   "
+                        _walk(entry.path, prefix + extension, depth + 1)
+            
+            lines.append(WORKSPACE.name)
+            _walk(WORKSPACE)
+            return "\n".join(lines)
+        except Exception as e:
+            self.logger.error(f"Python tree implementation failed: {e}")
+            return f"Error generating tree: {e}"
     
     def update_tree_file(self, tree_output):
         """Schreibt tree-output in important/openclaw-tree.txt"""

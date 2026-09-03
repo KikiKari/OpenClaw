@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 from shutil import copy2
 import sys
 
-WORKSPACE = Path("/workspace")
+WORKSPACE = Path("/home/openclaw/.openclaw/workspace")
 DB_DIR = WORKSPACE / "db"
 BACKUP_DIR = DB_DIR / "backups"
 LOG_DIR = WORKSPACE / "logs" / "db-maintainer"
@@ -23,8 +23,6 @@ IMPORTANT_DIR = WORKSPACE / "important"
 # Verzeichnisse erstellen
 BACKUP_DIR.mkdir(parents=True, exist_ok=True)
 LOG_DIR.mkdir(parents=True, exist_ok=True)
-IMPORTANT_DIR.mkdir(parents=True, exist_ok=True)
-DB_DIR.mkdir(parents=True, exist_ok=True)
 
 
 class Logger:
