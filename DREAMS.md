@@ -1929,21 +1929,75 @@ A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
-*July 18, 2026*
+*August 19, 2026 at 3:00 AM GMT+2*
 
-<!-- openclaw:dreaming:backfill-entry day=2026-07-18 source=memory/2026-07-18-2027.md -->
+A memory trace surfaced, but details were unavailable in this run.
 
-What Happened
-1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-18-2027.md:47]
+---
 
-Reflections
-1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-07-18-2027.md:47]
+*August 20, 2026 at 3:00 AM GMT+2*
 
-Candidates
-- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-18-2027.md:47]
+A memory trace surfaced, but details were unavailable in this run.
 
-Possible Lasting Updates
-- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-07-18-2027.md:47]
+---
+
+*August 21, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 22, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 23, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 23, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 24, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 25, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 26, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 27, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 28, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
+
+---
+
+*August 29, 2026 at 3:00 AM GMT+2*
+
+A memory trace surfaced, but details were unavailable in this run.
 
 ---
 
@@ -1991,87 +2045,39 @@ Reflections
 
 ---
 
-*August 19, 2026 at 3:00 AM GMT+2*
+*August 19, 2026*
 
-A memory trace surfaced, but details were unavailable in this run.
+<!-- openclaw:dreaming:backfill-entry day=2026-08-19 source=memory/2026-08-19-0614.md -->
 
+What Happened
+1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-19-0614.md:18]
 
----
+Reflections
+1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-08-19-0614.md:18]
 
-*August 20, 2026 at 3:00 AM GMT+2*
+Candidates
+- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-19-0614.md:18]
 
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 21, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
+Possible Lasting Updates
+- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-19-0614.md:18]
 
 ---
 
-*August 22, 2026 at 3:00 AM GMT+2*
+*August 19, 2026*
 
-A memory trace surfaced, but details were unavailable in this run.
+<!-- openclaw:dreaming:backfill-entry day=2026-08-19 source=memory/2026-08-19-2125.md -->
 
+What Happened
+1. 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-19-2125.md:40]
 
----
+Reflections
+1. A stable rule or preference was stated explicitly, which suggests operating choices are being made legible instead of left implicit. [memory/2026-08-19-2125.md:40]
 
-*August 23, 2026 at 3:00 AM GMT+2*
+Candidates
+- [unclear] 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-19-2125.md:40]
 
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 23, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 24, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 25, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 26, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 27, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 28, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
-
----
-
-*August 29, 2026 at 3:00 AM GMT+2*
-
-A memory trace surfaced, but details were unavailable in this run.
-
+Possible Lasting Updates
+- 🔊 Voice: always · provider=openai · limit=1500 · summary=on [memory/2026-08-19-2125.md:40]
 <!-- openclaw:dreaming:diary:end -->
 
 ## Deep Sleep
