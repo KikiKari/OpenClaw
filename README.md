@@ -103,7 +103,7 @@ openclaw skills update --all
 | MCP Tool Utils | v1.0.0 | 701 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
 | Reports Creator | v1.0.0 | 616 | ✅ Pass | `openclaw skills install reports-creator` |
 | Relay Node | v1.0.0 | 634 | ✅ Pass | `openclaw skills install relay-node` |
-| JSON Utils | v1.0.0 | 693 | ✅ Pass | `openclaw skills install json-utils` |
+| JSON Utils | v1.0.0 | 694 | ✅ Pass | `openclaw skills install json-utils` |
 | Log Collector | v1.0.0 | 628 | 🔍 Review | `openclaw skills install log-collector` |
 | TikTok Live Monitor | v1.0.0 | 288 | 🔍 Review | `openclaw skills install tiktok-live-monitor` |
 | Doc Scraper | v1.0.0 | 608 | 🔍 Review | `openclaw skills install doc-scraper` |
