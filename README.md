@@ -100,7 +100,7 @@ openclaw skills update --all
 | Skill | Version | Downloads | Security | Install |
 | --- | --- | --- | --- | --- |
 | Cluster Gateway | v1.0.0 | 614 | ✅ Pass | `openclaw skills install cluster-gateway` |
-| MCP Tool Utils | v1.0.0 | 701 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
+| MCP Tool Utils | v1.0.0 | 702 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
 | Reports Creator | v1.0.0 | 616 | ✅ Pass | `openclaw skills install reports-creator` |
 | Relay Node | v1.0.0 | 634 | ✅ Pass | `openclaw skills install relay-node` |
 | JSON Utils | v1.0.0 | 694 | ✅ Pass | `openclaw skills install json-utils` |
