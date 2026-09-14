@@ -104,7 +104,7 @@ openclaw skills update --all
 | Reports Creator | v1.0.0 | 633 | ✅ Pass | `openclaw skills install reports-creator` |
 | Relay Node | v1.0.0 | 648 | ✅ Pass | `openclaw skills install relay-node` |
 | JSON Utils | v1.0.0 | 709 | ✅ Pass | `openclaw skills install json-utils` |
-| Log Collector | v1.0.0 | 642 | 🔍 Review | `openclaw skills install log-collector` |
+| Log Collector | v1.0.0 | 643 | 🔍 Review | `openclaw skills install log-collector` |
 | TikTok Live Monitor | v1.0.0 | 288 | 🔍 Review | `openclaw skills install tiktok-live-monitor` |
 | Doc Scraper | v1.0.0 | 622 | 🔍 Review | `openclaw skills install doc-scraper` |
 | Workspace Database Manager | v1.0.0 | 312 | 🔍 Review | `openclaw skills install workspace-database-manager` |
