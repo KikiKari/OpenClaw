@@ -102,13 +102,13 @@ openclaw skills update --all
 | Cluster Gateway | v1.0.0 | 641 | ✅ Pass | `openclaw skills install cluster-gateway` |
 | MCP Tool Utils | v1.0.0 | 737 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
 | Reports Creator | v1.0.0 | 648 | ✅ Pass | `openclaw skills install reports-creator` |
-| Relay Node | v1.0.0 | 659 | ✅ Pass | `openclaw skills install relay-node` |
-| JSON Utils | v1.0.0 | 719 | ✅ Pass | `openclaw skills install json-utils` |
+| Relay Node | v1.0.0 | 660 | ✅ Pass | `openclaw skills install relay-node` |
+| JSON Utils | v1.0.0 | 720 | ✅ Pass | `openclaw skills install json-utils` |
 | Log Collector | v1.0.0 | 654 | 🔍 Review | `openclaw skills install log-collector` |
 | TikTok Live Monitor | v1.0.0 | 288 | 🔍 Review | `openclaw skills install tiktok-live-monitor` |
 | Doc Scraper | v1.0.0 | 636 | 🔍 Review | `openclaw skills install doc-scraper` |
 | Workspace Database Manager | v1.0.0 | 312 | 🔍 Review | `openclaw skills install workspace-database-manager` |
-| Scripting Utils | v1.0.0 | 586 | 🔍 Review | `openclaw skills install scripting-utils` |
+| Scripting Utils | v1.0.0 | 587 | 🔍 Review | `openclaw skills install scripting-utils` |
 
 > Downloads und Security-Status werden vom Abstraction Manager bei jedem
 > Sync aktualisiert. / Downloads and security status are updated by the
