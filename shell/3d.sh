@@ -1,31 +1,33 @@
 #!/bin/bash
 # 3d.html — portiert nach shell
-# Quelle: html, Projects@Program-Derivation:public/3d.html
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Telegram-Monitor:public/3d.html
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Parameter: Ausgabedatei
-if [ $# -ne 1 ]; then
-  echo "Aufruf: $0 AUSGABEDATEI" >&2
+# Parameter prüfen
+if [[ $# -ne 1 ]]; then
+  echo "Aufruf: $0 <ausgabedatei>" >&2
   exit 1
 fi
-ausgabe="$1"
 
-# Erzeuge HTML-Dokument
-cat > "$ausgabe" << 'HTML_END'
+# Ausgabedatei setzen
+ausgabedatei="$1"
+
+# HTML-Dokument generieren
+cat > "$ausgabedatei" << 'EOF'
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Program-Derivation — Interaktive Architektur</title>
-<meta name="description" content="Erst ermitteln, dann messen, dann ableiten — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#6d5bd0">
+<title>Telegram Monitor — Interaktive Architektur</title>
+<meta name="description" content="Vom öffentlichen Kanal bis zur Meldung: Plattformen, Adapter, Kern, Ausgabe — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#2481cc">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#6d5bd0; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -73,8 +75,8 @@ cat > "$ausgabe" << 'HTML_END'
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Program-Derivation</h1>
-  <p class="lede">Erst ermitteln, dann messen, dann ableiten — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Telegram Monitor</h1>
+  <p class="lede">Vom öffentlichen Kanal bis zur Meldung: Plattformen, Adapter, Kern, Ausgabe — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -108,7 +110,7 @@ cat > "$ausgabe" << 'HTML_END'
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "quellcode", "name": "Quellcode", "untertitel": "Betrachtungsgegenstand"}, {"id": "anforderungen", "name": "Anforderungen", "untertitel": "Soll"}, {"id": "randbedingungen", "name": "Randbedingungen", "untertitel": "Grenzen"}]}, {"name": "Ermittlung", "farbe": "#2481cc", "blocks": [{"id": "abstraktionsschichten", "name": "Abstraktionsschichten", "untertitel": "benennen"}, {"id": "interfaces", "name": "Interfaces", "untertitel": "Schnitte"}, {"id": "entkopplungspunkte", "name": "Entkopplungspunkte", "untertitel": "wo trennen"}]}, {"name": "Messung", "farbe": "#6d5bd0", "blocks": [{"id": "cc", "name": "CC", "untertitel": "zyklomatisch"}, {"id": "lcom", "name": "LCOM", "untertitel": "Kohaesionsmangel"}, {"id": "kopplung", "name": "Kopplung", "untertitel": "zwischen Modulen"}, {"id": "kohaesion", "name": "Kohaesion", "untertitel": "innerhalb"}, {"id": "vendor-lock-in", "name": "Vendor Lock-in", "untertitel": "Abhaengigkeit"}]}, {"name": "Ableitung", "farbe": "#b45309", "blocks": [{"id": "6-stufige-roadmap", "name": "6-stufige Roadmap", "untertitel": "Schritt fuer Schritt"}, {"id": "refactoring-katalog", "name": "Refactoring-Katalog", "untertitel": "Massnahmen"}, {"id": "checklisten", "name": "Checklisten", "untertitel": "Grenzen pruefen"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "bericht-de-en", "name": "Bericht de/en", "untertitel": "zweisprachig"}, {"id": "interface-vorlagen", "name": "Interface-Vorlagen", "untertitel": "Templates"}, {"id": "playbook", "name": "Playbook", "untertitel": "Modernisierung"}]}], "kanten": [{"von": "quellcode", "nach": "abstraktionsschichten", "art": "fluss"}, {"von": "anforderungen", "nach": "interfaces", "art": "fluss"}, {"von": "randbedingungen", "nach": "entkopplungspunkte", "art": "fluss"}, {"von": "abstraktionsschichten", "nach": "cc", "art": "fluss"}, {"von": "interfaces", "nach": "lcom", "art": "fluss"}, {"von": "entkopplungspunkte", "nach": "kopplung", "art": "fluss"}, {"von": "cc", "nach": "6-stufige-roadmap", "art": "fluss"}, {"von": "lcom", "nach": "refactoring-katalog", "art": "fluss"}, {"von": "kopplung", "nach": "checklisten", "art": "fluss"}, {"von": "kohaesion", "nach": "6-stufige-roadmap", "art": "fluss"}, {"von": "vendor-lock-in", "nach": "refactoring-katalog", "art": "fluss"}, {"von": "6-stufige-roadmap", "nach": "bericht-de-en", "art": "fluss"}, {"von": "refactoring-katalog", "nach": "interface-vorlagen", "art": "fluss"}, {"von": "checklisten", "nach": "playbook", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#6d5bd0", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Plattformen", "farbe": "#5f6773", "blocks": [{"id": "t-me", "name": "t.me", "untertitel": "ohne Zugangsdaten"}, {"id": "bot-api", "name": "Bot-API", "untertitel": "Bot-Token"}, {"id": "mtproto", "name": "MTProto", "untertitel": "api_id + hash"}, {"id": "discord", "name": "Discord", "untertitel": "Invite-Lookup"}, {"id": "tiktok", "name": "TikTok", "untertitel": "oeffentliche Quellen"}]}, {"name": "Adapter", "farbe": "#2481cc", "blocks": [{"id": "telegram-web", "name": "telegram_web", "untertitel": "immer aktiv"}, {"id": "telegram-bot", "name": "telegram_bot", "untertitel": "Metadaten"}, {"id": "mtproto", "name": "mtproto", "untertitel": "globale Suche"}, {"id": "tiktok-live", "name": "tiktok_live", "untertitel": "Livegang"}]}, {"name": "Kern", "farbe": "#6d5bd0", "blocks": [{"id": "registry", "name": "registry", "untertitel": "zusammenfuehren"}, {"id": "store", "name": "store", "untertitel": "Zustand halten"}, {"id": "live", "name": "live", "untertitel": "Wechsel erkennen"}, {"id": "models", "name": "models", "untertitel": "Datenformen"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "notify", "name": "notify", "untertitel": "melden"}, {"id": "cli-py", "name": "cli.py", "untertitel": "Kommandozeile"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "web-pwa", "name": "web/ PWA", "untertitel": "installierbar"}]}], "kanten": [{"von": "t-me", "nach": "telegram-web", "art": "fluss"}, {"von": "bot-api", "nach": "telegram-bot", "art": "fluss"}, {"von": "mtproto", "nach": "mtproto", "art": "fluss"}, {"von": "discord", "nach": "tiktok-live", "art": "fluss"}, {"von": "tiktok", "nach": "telegram-web", "art": "fluss"}, {"von": "telegram-web", "nach": "registry", "art": "fluss"}, {"von": "telegram-bot", "nach": "store", "art": "fluss"}, {"von": "mtproto", "nach": "live", "art": "fluss"}, {"von": "tiktok-live", "nach": "models", "art": "fluss"}, {"von": "registry", "nach": "notify", "art": "fluss"}, {"von": "store", "nach": "cli-py", "art": "fluss"}, {"von": "live", "nach": "server-py", "art": "fluss"}, {"von": "models", "nach": "web-pwa", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#2481cc", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -335,6 +337,6 @@ cat > "$ausgabe" << 'HTML_END'
 </script>
 </body>
 </html>
-HTML_END
+EOF
 
-echo "HTML-Dokument wurde in '$ausgabe' geschrieben."
+echo "HTML-Dokument wurde erfolgreich in '$ausgabedatei' erstellt."
