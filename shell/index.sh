@@ -1,43 +1,37 @@
 #!/bin/bash
-# index.css — portiert nach shell
-# Quelle: css, OpenClaw@main:src/index.css
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+# index.html — portiert nach shell
+# Quelle: html, Projects@TikTok-Live-Companion:site/index.html
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Function to generate the CSS content
-generate_css() {
-    cat << 'EOF'
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+# Parameter prüfen
+if [[ $# -ne 1 ]]; then
+  echo "Aufruf: $0 <ausgabedatei>" >&2
+  exit 1
+fi
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-EOF
-}
+# Ausgabedatei vom ersten Parameter übernehmen
+ausgabedatei="$1"
 
-# Main function
-main() {
-    local output_file="${1:-}"
+# HTML-Dokument generieren und in die Ausgabedatei schreiben
+cat > "$ausgabedatei" << 'HTML_END'
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Dokumentation für TikTok LIVE Companion 0.8.2 – Chat-TTS, Zuschauerstatistik, Songerkennung und Stream-Informationen direkt im Browser." />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/png" href="/branding/staenderglobus-ios.png" />
+    <link rel="apple-touch-icon" href="/branding/staenderglobus-ios.png" />
+    <title>TikTok LIVE Companion – Dokumentation</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+HTML_END
 
-    if [[ -z "$output_file" ]]; then
-        echo "Usage: $0 <output_file>" >&2
-        exit 1
-    fi
-
-    # Generate CSS and write to the specified file
-    generate_css > "$output_file"
-    
-    echo "CSS file generated successfully: $output_file"
-}
-
-# Run main function with all arguments
-main "$@"
+echo "HTML-Datei wurde erfolgreich erstellt: $ausgabedatei"

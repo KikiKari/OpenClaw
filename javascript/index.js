@@ -1,81 +1,139 @@
 #!/usr/bin/env node
-// index.css — portiert nach javascript
-// Quelle: css, OpenClaw@main:src/index.css
-// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+// index.html — portiert nach javascript
+// Quelle: html, Projects@TikTok-Live-Companion:site/index.html
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-// CSS-Inhalt als strukturiertes Objekt
-const cssRules = {
-  body: {
-    margin: '0',
-    'font-family': [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      "'Segoe UI'",
-      "'Roboto'",
-      "'Oxygen'",
-      "'Ubuntu'",
-      "'Cantarell'",
-      "'Fira Sans'",
-      "'Droid Sans'",
-      "'Helvetica Neue'",
-      'sans-serif'
-    ].join(', '),
-    '-webkit-font-smoothing': 'antialiased',
-    '-moz-osx-font-smoothing': 'grayscale'
-  },
-  code: {
-    'font-family': [
-      'source-code-pro',
-      'Menlo',
-      'Monaco',
-      'Consolas',
-      "'Courier New'",
-      'monospace'
-    ].join(', ')
-  }
-};
+function createHtmlDocument() {
+  // Create document
+  const docType = '<!DOCTYPE html>';
+  const html = {
+    tagName: 'html',
+    attributes: { lang: 'de' },
+    children: []
+  };
 
-// Funktion zum Erzeugen des CSS-Strings
-function generateCSS(rules) {
-  let cssString = '';
-  
-  for (const [selector, properties] of Object.entries(rules)) {
-    cssString += `${selector} {\n`;
-    
-    for (const [property, value] of Object.entries(properties)) {
-      cssString += `  ${property}: ${value};\n`;
-    }
-    
-    cssString += '}\n\n';
-  }
-  
-  return cssString.trim();
+  // Create head
+  const head = {
+    tagName: 'head',
+    children: [
+      {
+        tagName: 'meta',
+        attributes: { charset: 'UTF-8' }
+      },
+      {
+        tagName: 'meta',
+        attributes: { 
+          name: 'viewport', 
+          content: 'width=device-width, initial-scale=1.0' 
+        }
+      },
+      {
+        tagName: 'meta',
+        attributes: { 
+          name: 'description', 
+          content: 'Dokumentation für TikTok LIVE Companion 0.8.2 – Chat-TTS, Zuschauerstatistik, Songerkennung und Stream-Informationen direkt im Browser.' 
+        }
+      },
+      {
+        tagName: 'meta',
+        attributes: { 
+          name: 'theme-color', 
+          content: '#ffffff' 
+        }
+      },
+      {
+        tagName: 'link',
+        attributes: { 
+          rel: 'icon', 
+          type: 'image/png', 
+          href: '/branding/staenderglobus-ios.png' 
+        }
+      },
+      {
+        tagName: 'link',
+        attributes: { 
+          rel: 'apple-touch-icon', 
+          href: '/branding/staenderglobus-ios.png' 
+        }
+      },
+      {
+        tagName: 'title',
+        children: ['TikTok LIVE Companion – Dokumentation']
+      }
+    ]
+  };
+
+  // Create body
+  const body = {
+    tagName: 'body',
+    children: [
+      {
+        tagName: 'div',
+        attributes: { id: 'root' },
+        children: []
+      },
+      {
+        tagName: 'script',
+        attributes: { 
+          type: 'module', 
+          src: '/src/main.tsx' 
+        },
+        children: []
+      }
+    ]
+  };
+
+  html.children.push(head);
+  html.children.push(body);
+
+  return { docType, html };
 }
 
-// Hauptfunktion
+function renderElement(element) {
+  if (typeof element === 'string') {
+    return element;
+  }
+
+  const tag = element.tagName;
+  const attrs = element.attributes || {};
+  
+  let attrString = '';
+  for (const [key, value] of Object.entries(attrs)) {
+    attrString += ` ${key}="${value}"`;
+  }
+
+  if (element.children && element.children.length > 0) {
+    const childrenContent = element.children.map(child => renderElement(child)).join('');
+    return `<${tag}${attrString}>${childrenContent}</${tag}>`;
+  } else {
+    return `<${tag}${attrString}></${tag}>`;
+  }
+}
+
+function generateHtmlString(doc) {
+  const htmlContent = renderElement(doc.html);
+  return `${doc.docType}\n${htmlContent}`;
+}
+
+// Main execution
 function main() {
-  // Prüfe Kommandozeilenargumente
-  if (process.argv.length < 3) {
-    console.error('Verwendung: node index.js <ausgabedatei>');
+  const outputFile = process.argv[2];
+  
+  if (!outputFile) {
+    console.error('Usage: node script.js <output-file>');
     process.exit(1);
   }
 
-  const outputFile = process.argv[2];
-  const cssContent = generateCSS(cssRules);
+  const doc = createHtmlDocument();
+  const htmlString = generateHtmlString(doc);
   
-  // Stelle sicher, dass das Ausgabeverzeichnis existiert
-  const outputDir = path.dirname(outputFile);
-  if (outputDir && !fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
+  const outputPath = path.resolve(outputFile);
+  fs.writeFileSync(outputPath, htmlString, 'utf8');
   
-  // Schreibe CSS in Datei
-  fs.writeFileSync(outputFile, cssContent, 'utf8');
-  
-  console.log(`CSS-Datei wurde erfolgreich erstellt: ${outputFile}`);
+  console.log(`HTML file generated successfully at: ${outputPath}`);
 }
 
 main();

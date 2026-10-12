@@ -3,56 +3,51 @@
 // Quelle: html, Projects@TikTok-Live-Companion:plugin-source/tests/sidepanel-harness.html
 // auch in: Projects@TikTok-Live-Companion-Android:plugin-source/tests/sidepanel-harness.html
 // auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/tests/sidepanel-harness.html
-// Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+// auch in: Projects@codex/0pe-177-peak-protection:plugin-source/tests/sidepanel-harness.html
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Helper to get __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function generateSidepanelHarness(outputPath) {
-  // Create the HTML structure
-  const docType = '<!doctype html>';
-  
-  const html = {
-    lang: 'de'
-  };
-  
-  const head = [];
-  const body = [];
-  
-  // Add meta tags
-  head.push({
-    tagName: 'meta',
-    attributes: { charset: 'utf-8' }
-  });
-  
-  head.push({
-    tagName: 'meta',
-    attributes: { 
-      name: 'viewport', 
-      content: 'width=device-width, initial-scale=1' 
-    }
-  });
-  
-  // Add title
-  const title = 'Sidepanel Test Harness';
-  head.push({
-    tagName: 'title',
-    textContent: title
-  });
-  
-  // Create the main script element
-  const scriptContent = `
+function generateHTML() {
+  const html = `<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sidepanel Test Harness</title>
+</head>
+<body>
+  <label>Caption-Testzustand
+    <select id="test-caption-scenario">
+      <option value="metadata">Seitenmetadaten</option>
+      <option value="mixed">DOM und WebSocket aktuell</option>
+      <option value="historical">Nur historische Captions</option>
+      <option value="none">Keine Captions</option>
+    </select>
+  </label>
+  <label>Embed-Testzustand
+    <select id="test-embed-scenario">
+      <option value="loading">Startet</option>
+      <option value="retry-wait">Serverfehler – Wiederanlauf</option>
+      <option value="awaiting-gesture">Benutzeraktion nötig</option>
+      <option value="playing">Wiedergabe bestätigt</option>
+      <option value="failed">Versuche ausgeschöpft</option>
+    </select>
+  </label>
+  <script>
     (async () => {
       const state = {
         page: { url: "https://www.tiktok.com/@demo/live", title: "Demo LIVE", scannedAtUtc: new Date().toISOString() },
         captionInfo: { present: true, open: true, supportLang: ["de", "en"], location: null, showType: 1 },
         menuCaptionAvailable: true,
         menuCaptionActive: false,
+        quickRecoverEnabled: false,
+        quickRecoverSeconds: 3,
         profileInfo: {
           present: true, nickname: "Demo Creator", uniqueId: "demo", signature: "Barrierefreier Teststream",
           followingCount: "12", followerCount: "238800", likeCount: "1800000", live: true, source: "metadata"
@@ -97,6 +92,7 @@ async function generateSidepanelHarness(outputPath) {
         debug: { enabled: false, entries: [{ atUtc: new Date().toISOString(), event: "scan", detail: { mediaCount: 3 } }] }
       };
 
+      const stateListeners = [];
       globalThis.chrome = {
         tabs: {
           query: async () => [{ id: 1, url: state.page.url, title: state.page.title }],
@@ -106,7 +102,25 @@ async function generateSidepanelHarness(outputPath) {
         runtime: {
           sendMessage: async (message) => {
             if (message.type === "TLC_GET_STATE") return { ok: true, state };
-            if (message.type === "TLC_GET_SETTINGS") return { ok: true, settings: { autoHook: true, keepSpeechActive: true, speechVolume: 0.5, speechLanguage: "auto", speakNames: true, shortenNames: false, serviceUrl: "http://127.0.0.1:43117", pairingCode: "", permanentMutes: [] } };
+            if (message.type === "TLC_OPEN_EMBED_LIVE") {
+              state.embedStartup = TLC_CONTENT_CORE.newEmbedSession(crypto.randomUUID(), "demo", Date.now());
+              return { ok: true, response: { activated: false, phase: "loading" } };
+            }
+            if (message.type === "TLC_CANCEL_EMBED_STARTUP" || message.type === "TLC_OPEN_NORMAL_LIVE") {
+              if (state.embedStartup) state.embedStartup = { ...state.embedStartup, phase: "cancelled", nextAttemptAtMs: null };
+              return { ok: true };
+            }
+            if (message.type === "TLC_GET_SETTINGS") return { ok: true, settings: { autoHook: true, keepSpeechActive: true, speechVolume: 0.5, speechLanguage: "auto", speakNames: true, shortenNames: false, serviceUrl: "http://127.0.0.1:43117", pairingCode: "", permanentMutes: [], quickRecoverEnabled: state.quickRecoverEnabled, quickRecoverSeconds: state.quickRecoverSeconds } };
+            if (message.type === "TLC_SET_QUICK_RECOVER") {
+              state.quickRecoverEnabled = Boolean(message.enabled);
+              state.quickRecoverSeconds = Math.max(1, Math.min(59, Math.round(Number(message.seconds) || 3)));
+              return { ok: true, state, seconds: state.quickRecoverSeconds };
+            }
+            if (message.type === "TLC_GET_CAPTION_JSONL_EXPORT") return { ok: true, records: TLC_EXPORT_PRIVACY.captions(state.captions) };
+            if (message.type === "TLC_GET_CAPTION_RAW_EXPORT") return { ok: true, report: TLC_EXPORT_PRIVACY.captionReport({
+              version: "0.8.2", generatedAtUtc: new Date().toISOString(), messages: state.captions,
+              dataStreams: state.media, data: { captionInfo: state.captionInfo, captionSources: state.captionSources, playerState: state.playerState }, stream: { page: state.page }
+            }) };
             if (message.type === "TLC_SCAN") {
               return { ok: true, response: { captionInfo: state.captionInfo, captionControl: true, mediaCount: state.media.length } };
             }
@@ -138,14 +152,15 @@ async function generateSidepanelHarness(outputPath) {
               return { ok: true };
             }
             if (message.type === "TLC_SET_MUTE") return { ok: true, state, settings: { permanentMutes: [] } };
-            if (message.type === "TLC_GET_DEBUG_REPORT") return { ok: true, report: { version: "0.7.0", debug: state.debug } };
+            if (message.type === "TLC_GET_DEBUG_REPORT") return { ok: true, report: TLC_EXPORT_PRIVACY.diagnosticReport({ version: "0.8.2", debug: state.debug, page: state.page, media: state.media }) };
             return { ok: true, response: { activated: true } };
           },
-          onMessage: { addListener() {} }
+          onMessage: { addListener(listener) { stateListeners.push(listener); } }
         }
       };
 
-      const source = await fetch("../browser-extension/sidepanel.html").then((response) => response.text());
+      const assetVersion = Date.now();
+      const source = await fetch("../browser-extension/sidepanel.html", { cache: "no-store" }).then((response) => response.text());
       const parsed = new DOMParser().parseFromString(source, "text/html");
       document.title = parsed.title;
       for (const child of [...parsed.body.children]) {
@@ -156,82 +171,61 @@ async function generateSidepanelHarness(outputPath) {
       css.href = "../browser-extension/sidepanel.css?v=0.7.0-1";
       document.head.append(css);
       const coreScript = document.createElement("script");
-      coreScript.src = "../browser-extension/content-core.js";
+      coreScript.src = \`../browser-extension/content-core.js?v=\${assetVersion}\`;
       coreScript.onload = () => {
-        const script = document.createElement("script");
-        script.src = "../browser-extension/sidepanel.js";
-        document.body.append(script);
+        document.getElementById("test-embed-scenario").addEventListener("change", (event) => {
+          state.embedStartup = {
+            ...TLC_CONTENT_CORE.newEmbedSession(crypto.randomUUID(), "demo", Date.now()),
+            phase: event.target.value, reason: "server-error", attempt: event.target.value === "failed" ? 3 : 1
+          };
+          stateListeners.forEach((listener) => listener({ type: "TLC_STATE_UPDATED", tabId: 1, state }));
+        });
+        document.getElementById("test-caption-scenario").addEventListener("change", (event) => {
+          const mode = event.target.value;
+          const observedAt = Date.now() - (mode === "historical" ? 60_000 : 0);
+          state.captions = mode === "none" ? [] : ["DomCaption", "WebcastCaptionMessage"].map((method) => ({
+            method, source: method === "DomCaption" ? "dom" : "websocket", receivedAtUtc: new Date(observedAt).toISOString(),
+            contents: [{ lang: "de", text: "Dies ist eine Test-Caption." }]
+          }));
+          state.captionSources = TLC_CONTENT_CORE.captionSourceSnapshot();
+          if (mode === "metadata") state.captionSources.metadata = { present: true, open: true, supportLang: ["de"] };
+          else for (const caption of state.captions) state.captionSources = TLC_CONTENT_CORE.observeCaptionSource(state.captionSources, caption, observedAt);
+          state.captionInfo = TLC_CONTENT_CORE.summarizeCaptionSources(state.captionSources);
+          stateListeners.forEach((listener) => listener({ type: "TLC_STATE_UPDATED", tabId: 1, state }));
+        });
+        const privacyScript = document.createElement("script");
+        privacyScript.src = \`../browser-extension/export-privacy.js?v=\${assetVersion}\`;
+        privacyScript.onload = () => {
+          const script = document.createElement("script");
+          script.src = \`../browser-extension/sidepanel.js?v=\${assetVersion}\`;
+          document.body.append(script);
+        };
+        document.body.append(privacyScript);
       };
       document.body.append(coreScript);
     })();
-  `;
+  </script>
+</body>
+</html>`;
 
-  const scriptElement = {
-    tagName: 'script',
-    textContent: scriptContent.trim()
-  };
-  
-  body.push(scriptElement);
-  
-  // Generate HTML string
-  function generateElement(element) {
-    if (typeof element === 'string') {
-      return element;
-    }
-    
-    if (element.textContent) {
-      return `<${element.tagName}>${element.textContent}</${element.tagName}>`;
-    }
-    
-    let attrs = '';
-    if (element.attributes) {
-      attrs = Object.entries(element.attributes)
-        .map(([key, value]) => `${key}="${value}"`)
-        .join(' ');
-      if (attrs) attrs = ' ' + attrs;
-    }
-    
-    if (element.textContent !== undefined) {
-      return `<${element.tagName}${attrs}>${element.textContent}</${element.tagName}>`;
-    }
-    
-    return `<${element.tagName}${attrs}></${element.tagName}>`;
-  }
-  
-  // Build the complete HTML document
-  let htmlContent = `${docType}\n<html lang="${html.lang}">\n<head>\n`;
-  
-  // Add head elements
-  for (const element of head) {
-    htmlContent += `  ${generateElement(element)}\n`;
-  }
-  
-  htmlContent += '</head>\n<body>\n';
-  
-  // Add body elements
-  for (const element of body) {
-    htmlContent += `  ${generateElement(element)}\n`;
-  }
-  
-  htmlContent += '</body>\n</html>';
-  
-  // Write to file
-  await fs.writeFile(outputPath, htmlContent, 'utf8');
+  return html;
 }
 
-// Get output path from command line argument
-const outputPath = process.argv[2];
-if (!outputPath) {
-  console.error('Usage: node script.js <output-file-path>');
-  process.exit(1);
-}
+async function main() {
+  let outputPath = './sidepanel-harness.html';
+  
+  if (process.argv.length > 2) {
+    outputPath = process.argv[2];
+  }
 
-// Generate the file
-generateSidepanelHarness(outputPath)
-  .then(() => {
-    console.log(`Sidepanel harness written to ${outputPath}`);
-  })
-  .catch((error) => {
-    console.error('Error generating sidepanel harness:', error);
+  try {
+    const htmlContent = generateHTML();
+    await fs.writeFile(outputPath, htmlContent, 'utf8');
+    console.log(`HTML file generated successfully at ${outputPath}`);
+  } catch (error) {
+    console.error('Error generating HTML file:', error);
     process.exit(1);
-  });
+  }
+}
+
+main();
