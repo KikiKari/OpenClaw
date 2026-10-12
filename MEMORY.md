@@ -1,10 +1,17 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-08-29 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-10-12 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-10-12 - Daily Memory-Maintenance & Erkenntnisse vom 11./12.10.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST).
+- ❌ Keine Dateien `memory/2026-10-11*.md` bzw. `memory/2026-10-12*.md` im Workspace vorhanden; folglich keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos zu extrahieren.
+- ✅ Archiv-Check: Alle 5 verbliebenen Tages-Dateien unter `memory/` waren >30 Tage alt (`2026-08-01-1015.md`, `2026-08-04-0707.md`, `2026-08-08-0038.md`, `2026-08-19-0614.md`, `2026-08-19-2125.md`) und wurden nach `memory/archive/2026-10-12/` verschoben. `memory/`-Root enthält jetzt nur noch `model-pools.yaml` sowie die Verzeichnisse `archive/`, `dreaming/`, `.dreams/`.
+- ℹ️ Inhalt der archivierten Dateien: Session-/Status-Logs (TikTok-Live-Checks, kurzlebige Stream-URLs, Usage-Werte) — keine neuen dauerhaften Erkenntnisse. Der bereits dokumentierte `db-maintainer`-Kontext (08.08.) bleibt relevant und in der Langzeit-Promotion erhalten.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-08-29 - Daily Memory-Maintenance & Erkenntnisse vom 28./29.08.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST).
