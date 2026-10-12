@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_55fc5d.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_55fc5d.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
-def generateHTML():
+def generate_html():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -218,20 +215,20 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 def main(args):
     if len(args) != 1:
-        print("Usage: python3 script.py <output-file>", file=sys.stderr)
+        print("Usage: python3 script.py <output-file>")
         sys.exit(1)
     
     output_file = args[0]
     
     # Generate HTML content and write to file
     try:
-        with open(output_file, 'w') as fh:
-            fh.write(generateHTML())
-    except Exception as error:
-        print(f"Could not open file '{output_file}': {error}", file=sys.stderr)
+        html_content = generate_html()
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        print(f"HTML file generated: {output_file}")
+    except Exception as e:
+        print(f"Could not write file '{output_file}': {str(e)}")
         sys.exit(1)
-    
-    print(f"HTML file generated: {output_file}")
 
 if __name__ == "__main__":
     main(sys.argv[1:])

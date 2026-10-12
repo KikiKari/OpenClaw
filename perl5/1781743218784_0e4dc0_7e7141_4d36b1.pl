@@ -1,29 +1,24 @@
-#!/usr/bin/env perl
-# 1781743218784_0e4dc0_7e7141.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.sh — portiert nach powershell
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0e4dc0_7e7141_4d36b1.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_4d36b1.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use File::Slurp qw(write_file);
 
-# SYNOPSIS
-#     Generates an HTML file containing a secret vault application.
-# DESCRIPTION
-#     This script generates an HTML file that contains a client-side secret vault application.
-#     The application allows users to encrypt and decrypt secrets using AES-256-GCM and PBKDF2.
-# PARAMETER OutputFile
-#     The path to the output HTML file.
-# EXAMPLE
-#     perl script.pl "vault.html"
+# Get command line arguments
+my @args = @ARGV;
+if (@args == 0) {
+    print STDERR "Usage: perl script.pl <OutputFile>\n";
+    exit 1;
+}
 
-my $output_file = shift @ARGV;
-die "Usage: $0 <output_file>\n" unless defined $output_file;
+my $outputFile = $args[0];
 
-sub generate_html {
+sub generateHtml {
     return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -234,10 +229,7 @@ HTML_END
 }
 
 # Generate HTML content and write to file
-my $html_content = generate_html();
-
-open my $fh, '>:encoding(UTF-8)', $output_file or die "Could not open file '$output_file': $!";
-print $fh $html_content;
-close $fh;
-
-print "HTML file generated: $output_file\n";
+my $htmlContent = generateHtml();
+write_file($outputFile, {binmode => ':utf8'}, $htmlContent);
+print "HTML file generated: $outputFile\n";
+1;

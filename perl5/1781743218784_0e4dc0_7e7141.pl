@@ -1,13 +1,10 @@
 #!/usr/bin/perl
 # 1781743218784_0e4dc0_7e7141.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use Encode qw(encode decode);
-use File::Slurp qw(write_file);
 
 sub generate_html {
     return <<'HTML_END';
@@ -231,7 +228,9 @@ sub main {
     
     # Generate HTML content and write to file
     my $html_content = generate_html();
-    write_file($output_file, encode('UTF-8', $html_content));
+    open(my $fh, '>', $output_file) or die "Could not open file '$output_file': $!";
+    print $fh $html_content;
+    close($fh);
     print "HTML file generated: $output_file\n";
 }
 

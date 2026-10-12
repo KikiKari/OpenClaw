@@ -1,10 +1,14 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
+# 1781743218784_0e4dc0_4857ff_dc7447.tcl — portiert nach powershell
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_4857ff_dc7447.tcl
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_4857ff.py — portiert nach tcl
+# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_4857ff.py
 # Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 function Generate-Html {
-    return @"
+    return @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -210,7 +214,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-"@
+'@
 }
 
 function Main {
@@ -225,9 +229,9 @@ function Main {
 
     $outputFile = $Args[0]
 
-    # Generate HTML content and write to file
     try {
-        Generate-Html | Out-File -FilePath $outputFile -Encoding UTF8
+        $htmlContent = Generate-Html
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
         Write-Host "HTML file generated: $outputFile"
     } catch {
         Write-Error "Could not write to file '$outputFile': $_"

@@ -1,21 +1,13 @@
 #!/bin/bash
-# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff_dc7447.tcl — portiert nach shell
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_4857ff_dc7447.tcl
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Argumente
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <output-file>" >&2
-  exit 1
-fi
-
-output_file="$1"
-
-# Generiere HTML-Inhalt
+# Funktion zur Generierung des HTML-Inhalts
 generate_html() {
-  cat <<'EOF'
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -224,6 +216,26 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-# Schreibe HTML-Inhalt in Datei
-generate_html > "$output_file"
-echo "HTML file generated: $output_file"
+# Hauptfunktion
+main() {
+    local args=("$@")
+    
+    # Prüfung der Argumente
+    if [[ ${#args[@]} -ne 1 ]]; then
+        echo "Usage: $0 <output-file>" >&2
+        exit 1
+    fi
+
+    local output_file="${args[0]}"
+
+    # Generiere HTML-Inhalt und schreibe in Datei
+    if ! generate_html > "$output_file"; then
+        echo "Could not write to file '$output_file'" >&2
+        exit 1
+    fi
+    
+    echo "HTML file generated: $output_file"
+}
+
+# Skriptaufruf
+main "$@"

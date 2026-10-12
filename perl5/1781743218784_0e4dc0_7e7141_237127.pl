@@ -1,24 +1,14 @@
-#!/usr/bin/env perl
-# 1781743218784_0e4dc0_7e7141.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_7e7141.tcl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0e4dc0_7e7141_237127.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_237127.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use File::Slurper qw(write_text);
 
-# 1781743218784_0e4dc0.sh — portiert nach tcl
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.sh — portiert nach Bash 5
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-sub generateHTML {
+sub generate_html {
     return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -236,14 +226,13 @@ sub main {
         exit 1;
     }
     
-    my $outputFile = $args[0];
+    my $output_file = $args[0];
     
     # Generate HTML content and write to file
-    my $htmlContent = generateHTML();
-    open(my $fh, '>', $outputFile) or die "Could not open file '$outputFile': $!";
-    print $fh $htmlContent;
-    close $fh;
-    print "HTML file generated: $outputFile\n";
+    my $html_content = generate_html();
+    chomp $html_content;
+    write_text($output_file, $html_content);
+    print "HTML file generated: $output_file\n";
 }
 
 # Check if arguments were provided via command line
@@ -252,4 +241,6 @@ if (@ARGV >= 1) {
 } else {
     # For interactive use, you can call main with desired arguments
     # Example: main("output.html");
+    print STDERR "Usage: perl script.pl <output-file>\n";
+    exit 1;
 }

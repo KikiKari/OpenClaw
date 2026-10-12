@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
+# 1781743218784_0e4dc0_4857ff_dc7447.sh — portiert nach python
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff_dc7447.sh
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_4857ff.py — portiert nach Python 3.12
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff.sh
 # Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 
+
 def generate_html():
+    """Generiere den HTML-Inhalt"""
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -210,24 +216,30 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
-def main(args):
-    if len(args) != 1:
-        print("Usage: python3 script.py <output-file>")
+
+def main():
+    """Hauptfunktion"""
+    args_count = len(sys.argv) - 1
+    
+    # Prüfe ob genau ein Argument übergeben wurde
+    if args_count != 1:
+        print("Usage: {} <output-file>".format(sys.argv[0]), file=sys.stderr)
         sys.exit(1)
-
-    output_file = args[0]
-
-    # Generate HTML content and write to file
+    
+    output_file = sys.argv[1]
+    
+    # Generiere HTML-Inhalt und schreibe in Datei
     try:
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(generate_html())
-        print(f"HTML file generated: {output_file}")
-    except Exception as e:
-        print(f"Could not write to file '{output_file}': {e}")
+    except IOError as e:
+        print("Could not write to file '{}'".format(output_file), file=sys.stderr)
         sys.exit(1)
+    
+    print("HTML file generated: {}".format(output_file))
+
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

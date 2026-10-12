@@ -1,15 +1,23 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e4dc0.ps1 — portiert nach tcl
+# 1781743218784_0e4dc0_58ff67.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_58ff67.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.ps1 — portiert nach javascript
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0.ps1
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.js — portiert nach node.js
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0.ps1
 # Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.js — portiert nach powershell
+# Portiert nach Tcl 8.6
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-# Portiert nach TCL 2024
+# Erzeugt: 2026-08-25 durch ABSTRACTIONS_MANAGER.py
 
-proc GenerateHTML {} {
-    return {<!DOCTYPE html>
+
+proc generateHTML {} {
+    set html {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -214,27 +222,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>}
+    return $html
 }
 
-proc Main {args} {
+
+proc main {args} {
     if {[llength $args] != 1} {
         puts stderr "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
-    
+
     set outputFile [lindex $args 0]
-    
+
     # Generate HTML content and write to file
     if {[catch {
+        set htmlContent [generateHTML]
         set fh [open $outputFile w]
-        puts -nonewline $fh [GenerateHTML]
+        puts -nonewline $fh $htmlContent
         close $fh
         puts "HTML file generated: $outputFile"
     } error]} {
-        puts stderr "Could not open file '$outputFile' $error"
+        puts stderr "Could not write file '$outputFile' $error"
         exit 1
     }
 }
 
-# Call main with command line arguments
-Main {*}$argv
+main {*}$argv

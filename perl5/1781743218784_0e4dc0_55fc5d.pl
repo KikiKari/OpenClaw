@@ -1,10 +1,17 @@
 #!/usr/bin/perl
-# 1781743218784_0e4dc0.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_55fc5d.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_55fc5d.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use MIME::Base64;
+use JSON qw(to_json from_json);
+
+binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
 
 sub generateHTML {
     return <<'HTML_END';
@@ -218,23 +225,25 @@ HTML_END
 
 sub main {
     my @args = @_;
-    
     if (@args != 1) {
         print STDERR "Usage: perl script.pl <output-file>\n";
         exit 1;
     }
-    
-    my $outputFile = $args[0];
-    
+
+    my $output_file = $args[0];
+
     # Generate HTML content and write to file
-    open(my $fh, '>', $outputFile) or do {
-        print STDERR "Could not open file '$outputFile': $!\n";
-        exit 1;
+    eval {
+        my $html_content = generateHTML();
+        open my $fh, '>:encoding(UTF-8)', $output_file or die "Could not open file '$output_file' for writing: $!";
+        print $fh $html_content;
+        close $fh;
+        print "HTML file generated: $output_file\n";
     };
-    
-    print $fh generateHTML();
-    close($fh);
-    print "HTML file generated: $outputFile\n";
+    if ($@) {
+        print STDERR "Could not write file '$output_file': $@\n";
+        exit 1;
+    }
 }
 
 main(@ARGV);

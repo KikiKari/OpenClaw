@@ -1,10 +1,10 @@
-#!/usr/bin/env tclsh8.6
-# 1781743218784_0e4dc0.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0.py
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env tclsh
+# 1781743218784_0e4dc0_6fa60a.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_6fa60a.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
-proc generate_html {} {
-    set html {<!DOCTYPE html>
+proc generateHtml {} {
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -209,7 +209,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>}
-    return $html
 }
 
 proc main {args} {
@@ -217,21 +216,19 @@ proc main {args} {
         puts stderr "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
-    
-    set output_file [lindex $args 0]
-    
+
+    set outputFile [lindex $args 0]
+
     # Generate HTML content and write to file
-    if {[catch {
-        set f [open $output_file w]
-        fconfigure $f -encoding utf-8
-        puts -nonewline $f [generate_html]
-        close $f
-        puts "HTML file generated: $output_file"
-    } error]} {
-        puts stderr "Could not open file '$output_file' $error"
+    if {[catch {set fd [open $outputFile w]} error]} {
+        puts stderr "Could not open file '$outputFile': $error"
         exit 1
     }
+    
+    puts $fd [generateHtml]
+    close $fd
+    
+    puts "HTML file generated: $outputFile"
 }
 
-# Call main with command line arguments
 main {*}$argv

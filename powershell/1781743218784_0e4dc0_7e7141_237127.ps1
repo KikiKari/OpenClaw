@@ -1,7 +1,11 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_7e7141.tcl — portiert nach powershell
+# 1781743218784_0e4dc0_7e7141_237127.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_237127.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_7e7141.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_7e7141.tcl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0e4dc0.sh — portiert nach tcl
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
@@ -15,8 +19,8 @@
 # Quelle: shell, Projects@abstractions:shell/1781743218784.sh
 # Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
 
-function generateHTML {
-    return @'
+function GenerateHTML {
+    return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,10 +226,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 }
 
-function main($args) {
+function Main($args) {
     if ($args.Count -ne 1) {
         Write-Error "Usage: pwsh script.ps1 <output-file>"
         exit 1
@@ -234,15 +238,17 @@ function main($args) {
     $outputFile = $args[0]
     
     # Generate HTML content and write to file
-    $htmlContent = generateHTML
-    [System.IO.File]::WriteAllLines($outputFile, $htmlContent.Trim())
+    $htmlContent = GenerateHTML
+    Set-Content -Path $outputFile -Value $htmlContent.Trim()
     Write-Host "HTML file generated: $outputFile"
 }
 
 # Check if arguments were provided via command line
 if ($args.Count -ge 1) {
-    main $args
+    Main $args
 } else {
-    # For interactive use, you can call main with desired arguments
-    # Example: main @("output.html")
+    # For interactive use, you can call Main with desired arguments
+    # Example: Main @("output.html")
+    Write-Error "Usage: pwsh script.ps1 <output-file>"
+    exit 1
 }

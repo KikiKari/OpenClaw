@@ -1,14 +1,18 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_4857ff_dc7447.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_4857ff_dc7447.pl
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_4857ff_dc7447.sh — portiert nach javascript
+// Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff_dc7447.sh
+// Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 // 1781743218784_0e4dc0_4857ff.py — portiert nach JavaScript
 // Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_4857ff.py
 // Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
+// Portierung von Python nach JavaScript (Node.js)
+// Originale Python-Datei: 1781743218784_0e4dc0_4857ff.py
+
 const fs = require('fs');
 
+// Funktion zur Generierung des HTML-Inhalts
 function generateHtml() {
     return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -217,23 +221,28 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 }
 
+// Hauptfunktion
 function main(args) {
-    if (args.length !== 1) {
+    const argsCount = args.length;
+    
+    // Prüfe ob genau ein Argument übergeben wurde
+    if (argsCount !== 1) {
         console.error("Usage: node script.js <output-file>");
         process.exit(1);
     }
-
+    
     const outputFile = args[0];
-
+    
+    // Generiere HTML-Inhalt und schreibe in Datei
     try {
-        fs.writeFileSync(outputFile, generateHtml(), 'utf8');
+        const htmlContent = generateHtml();
+        fs.writeFileSync(outputFile, htmlContent, 'utf8');
         console.log(`HTML file generated: ${outputFile}`);
     } catch (error) {
-        console.error(`Could not write to file '${outputFile}': ${error.message}`);
+        console.error(`Could not write to file '${outputFile}'`);
         process.exit(1);
     }
 }
 
-if (require.main === module) {
-    main(process.argv.slice(2));
-}
+// Skriptaufruf
+main(process.argv.slice(2));

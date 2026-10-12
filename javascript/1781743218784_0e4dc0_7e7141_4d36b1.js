@@ -1,17 +1,54 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_7e7141.ps1 — portiert nach javascript
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_7e7141_4d36b1.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_7e7141_4d36b1.pl
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0e4dc0.sh — portiert nach JavaScript
+// 1781743218784_0e4dc0_7e7141.ps1 — portiert nach perl5
+// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
+// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0e4dc0.sh — portiert nach powershell
 // Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
 // Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
-const path = require('path');
+/*
+SYNOPSIS
 
-// Function to generate HTML content
-function generateHtml() {
+    Generates an HTML file containing a secret vault application.
+
+DESCRIPTION
+
+    This script generates an HTML file that contains a client-side secret vault application.
+    The application allows users to encrypt and decrypt secrets using AES-256-GCM and PBKDF2.
+
+PARAMETERS
+
+- OutputFile - The path to the output HTML file.
+
+EXAMPLE
+
+    node script.js --outputfile "vault.html"
+*/
+
+import { writeFileSync } from 'fs';
+import { argv } from 'process';
+
+let OutputFile = null;
+
+// Simple argument parsing
+for (let i = 2; i < argv.length; i++) {
+    if (argv[i] === '--outputfile' && i + 1 < argv.length) {
+        OutputFile = argv[i + 1];
+        i++;
+    }
+}
+
+if (!OutputFile) {
+    console.error("Bitte geben Sie eine Ausgabedatei an.");
+    process.exit(1);
+}
+
+function Generate_Html() {
     return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,16 +256,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 }
 
-// Get output file path from command line arguments
-const outputFile = process.argv[2];
-
-if (!outputFile) {
-    console.error('Error: Output file path is required.');
-    console.log('Usage: node script.js <output-file>');
-    process.exit(1);
-}
-
 // Generate HTML content and write to file
-const htmlContent = generateHtml();
-fs.writeFileSync(outputFile, htmlContent, 'utf8');
-console.log(`HTML file generated: ${outputFile}`);
+const htmlContent = Generate_Html();
+writeFileSync(OutputFile, htmlContent, 'utf8');
+console.log(`HTML-Datei generiert: ${OutputFile}`);

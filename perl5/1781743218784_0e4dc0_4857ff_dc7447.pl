@@ -1,15 +1,17 @@
 #!/usr/bin/perl
-# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff_dc7447.sh — portiert nach perl5
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff_dc7447.sh
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
 
+# Portierung von Python nach Bash 5
+# Originale Python-Datei: 1781743218784_0e4dc0_4857ff.py
+
+# Funktion zur Generierung des HTML-Inhalts
 sub generate_html {
-    return <<'HTML_END';
+    return <<'EOF';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -215,30 +217,31 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF
 }
 
+# Hauptfunktion
 sub main {
-    my @args = @_;
+    my $args_count = scalar @_;
     
-    if (@args != 1) {
-        print STDERR "Usage: perl script.pl <output-file>\n";
+    # Prüfe ob genau ein Argument übergeben wurde
+    if ($args_count != 1) {
+        print STDERR "Usage: $0 <output-file>\n";
         exit 1;
     }
     
-    my $output_file = $args[0];
+    my $output_file = $_[0];
     
-    # Generate HTML content and write to file
-    eval {
-        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
-        print $fh generate_html();
-        close($fh);
-        print "HTML file generated: $output_file\n";
+    # Generiere HTML-Inhalt und schreibe in Datei
+    open(my $fh, '>', $output_file) or do {
+        print STDERR "Could not write to file '$output_file'\n";
+        exit 1;
     };
-    if ($@) {
-        print STDERR "Could not write to file '$output_file': $@\n";
-        exit 1;
-    }
+    print $fh generate_html();
+    close($fh);
+    
+    print "HTML file generated: $output_file\n";
 }
 
+# Skriptaufruf
 main(@ARGV);

@@ -1,9 +1,13 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e4dc0_4857ff_dc7447.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_4857ff_dc7447.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_4857ff_dc7447.sh — portiert nach tcl
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0_4857ff_dc7447.sh
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
-proc generateHtml {} {
+# Portierung von Python nach Tcl 8.6
+# Originale Python-Datei: 1781743218784_0e4dc0_4857ff.py
+
+# Funktion zur Generierung des HTML-Inhalts
+proc generate_html {} {
     return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -208,28 +212,32 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 }
 
-proc main {args} {
-    if {[llength $args] != 1} {
-        puts stderr "Usage: tclsh script.tcl <output-file>"
+# Hauptfunktion
+proc main {argv} {
+    set args_count [llength $argv]
+    
+    # Prüfe ob genau ein Argument übergeben wurde
+    if {$args_count != 1} {
+        puts stderr "Usage: [info script] <output-file>"
         exit 1
     }
-
-    set outputFile [lindex $args 0]
-
-    # Generate HTML content and write to file
-    if {[catch {
-        set fd [open $outputFile w]
-        puts -nonewline $fd [generateHtml]
-        close $fd
-        puts "HTML file generated: $outputFile"
-    } e]} {
-        puts stderr "Could not write to file '$outputFile': $e"
+    
+    set output_file [lindex $argv 0]
+    
+    # Generiere HTML-Inhalt und schreibe in Datei
+    if {[catch {set fd [open $output_file w]}]} {
+        puts stderr "Could not write to file '$output_file'"
         exit 1
     }
+    
+    puts -nonewline $fd [generate_html]
+    close $fd
+    
+    puts "HTML file generated: $output_file"
 }
 
+# Skriptaufruf
 main $argv

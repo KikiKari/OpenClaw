@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_0e4dc0.js — portiert nach tcl
-// Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_55fc5d.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_55fc5d.pl
+// Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
@@ -227,11 +223,10 @@ function main(args) {
     
     // Generate HTML content and write to file
     try {
-        const htmlContent = generateHTML();
-        fs.writeFileSync(outputFile, htmlContent);
+        fs.writeFileSync(outputFile, generateHTML());
         console.log(`HTML file generated: ${outputFile}`);
     } catch (error) {
-        console.error(`Could not write file '${outputFile}': ${error.message}`);
+        console.error(`Could not open file '${outputFile}': ${error.message}`);
         process.exit(1);
     }
 }

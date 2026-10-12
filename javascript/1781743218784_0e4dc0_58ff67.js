@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0.ps1 — portiert nach javascript
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0.ps1
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_58ff67.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_58ff67.pl
+// Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0e4dc0.js — portiert nach JavaScript für Node 20
+// 1781743218784_0e4dc0.ps1 — portiert nach JavaScript für Node 20
 // Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0.ps1
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
-const path = require('path');
 
 function generateHTML() {
   return `<!DOCTYPE html>
@@ -228,11 +227,10 @@ function main(args) {
 
   // Generate HTML content and write to file
   try {
-    const htmlContent = generateHTML();
-    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    fs.writeFileSync(outputFile, generateHTML(), 'utf8');
     console.log(`HTML file generated: ${outputFile}`);
   } catch (error) {
-    console.error(`Could not write file '${outputFile}' ${error.message}`);
+    console.error(`Could not write file '${outputFile}':`, error.message);
     process.exit(1);
   }
 }

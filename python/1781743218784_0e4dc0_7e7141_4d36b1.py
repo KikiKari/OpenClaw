@@ -1,16 +1,40 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_7e7141.ps1 — portiert nach python
+# 1781743218784_0e4dc0_7e7141_4d36b1.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_4d36b1.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_7e7141.ps1 — portiert nach javascript
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0e4dc0.sh — portiert nach powershell
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
 # Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-import argparse
-import sys
+#
+#.SYNOPSIS
+#    Generates an HTML file containing a secret vault application.
+#.DESCRIPTION
+#    This script generates an HTML file that contains a client-side secret vault application.
+#    The application allows users to encrypt and decrypt secrets using AES-256-GCM and PBKDF2.
+#.PARAMETER OutputFile
+#    The path to the output HTML file.
+#.EXAMPLE
+#    node script.js vault.html
+#
 
-def generate_html():
+import sys
+import os
+
+# Get command line arguments
+args = sys.argv[1:]
+if len(args) == 0:
+    print('Usage: python script.py <OutputFile>', file=sys.stderr)
+    sys.exit(1)
+
+outputFile = args[0]
+
+def generateHtml():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -215,24 +239,10 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
-def main():
-    parser = argparse.ArgumentParser(description='Generates an HTML file containing a secret vault application.')
-    parser.add_argument('output_file', help='The path to the output HTML file.')
-    
-    args = parser.parse_args()
-    
-    html_content = generate_html()
-    
-    try:
-        with open(args.output_file, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        print(f"HTML file generated: {args.output_file}")
-    except Exception as e:
-        print(f"Error writing file: {e}", file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == '__main__':
-    main()
+# Generate HTML content and write to file
+htmlContent = generateHtml()
+with open(outputFile, 'w', encoding='utf-8') as f:
+    f.write(htmlContent)
+print(f'HTML file generated: {outputFile}')

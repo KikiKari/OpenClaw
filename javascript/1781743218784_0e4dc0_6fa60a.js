@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0.py — portiert nach javascript
-// Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0.py
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_6fa60a.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_6fa60a.pl
+// Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
@@ -221,12 +221,11 @@ function main(args) {
 
   const outputFile = args[0];
 
-  // Generate HTML content and write to file
   try {
-    fs.writeFileSync(outputFile, generateHtml(), 'utf-8');
+    fs.writeFileSync(outputFile, generateHtml(), 'utf8');
     console.log(`HTML file generated: ${outputFile}`);
   } catch (error) {
-    console.error(`Could not open file '${outputFile}' ${error.message}`);
+    console.error(`Error writing to file '${outputFile}': ${error.message}`);
     process.exit(1);
   }
 }

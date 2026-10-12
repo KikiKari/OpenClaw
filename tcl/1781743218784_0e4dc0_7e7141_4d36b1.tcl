@@ -1,24 +1,28 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e4dc0_7e7141.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_7e7141_4d36b1.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_4d36b1.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.sh — portiert nach powershell
+# 1781743218784_0e4dc0_7e7141.ps1 -- portiert nach javascript
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.sh -- portiert nach powershell
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
 # Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
-# SYNOPSIS
+# .SYNOPSIS
 #     Generates an HTML file containing a secret vault application.
-# DESCRIPTION
+# .DESCRIPTION
 #     This script generates an HTML file that contains a client-side secret vault application.
 #     The application allows users to encrypt and decrypt secrets using AES-256-GCM and PBKDF2.
-# PARAMETER OutputFile
+# .PARAMETER OutputFile
 #     The path to the output HTML file.
-# EXAMPLE
+# .EXAMPLE
 #     tclsh script.tcl vault.html
 
-if {$argc != 1} {
-    puts stderr "Usage: [info script] <output_file>"
+if {$argc == 0} {
+    puts stderr "Usage: tclsh script.tcl <OutputFile>"
     exit 1
 }
 

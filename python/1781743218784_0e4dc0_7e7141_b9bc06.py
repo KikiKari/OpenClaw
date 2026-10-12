@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_7e7141.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_7e7141.pl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_7e7141_b9bc06.ps1 — portiert nach python
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141_b9bc06.ps1
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import json
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -213,21 +214,18 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '''
 
-def main(args):
-    if len(args) != 1:
+def main():
+    if len(sys.argv) != 2:
         print("Usage: python3 script.py <output-file>", file=sys.stderr)
         sys.exit(1)
     
-    output_file = args[0]
+    output_file = sys.argv[1]
     
     # Generate HTML content and write to file
-    try:
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(generate_html())
-        print(f"HTML file generated: {output_file}")
-    except Exception as e:
-        print(f"Could not open file '{output_file}': {e}", file=sys.stderr)
-        sys.exit(1)
+    html_content = generate_html()
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    print(f"HTML file generated: {output_file}")
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

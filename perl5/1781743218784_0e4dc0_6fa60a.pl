@@ -1,13 +1,13 @@
 #!/usr/bin/perl
-# 1781743218784_0e4dc0.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0.py
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_6fa60a.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_6fa60a.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 sub generate_html {
-    return <<'HTML';
+    return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -213,23 +213,24 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 }
 
 sub main {
     my @args = @_;
+    
     if (@args != 1) {
         print STDERR "Usage: perl script.pl <output-file>\n";
         exit 1;
     }
-
+    
     my $output_file = $args[0];
-
+    
     # Generate HTML content and write to file
     eval {
-        open my $fh, '>:encoding(UTF-8)', $output_file or die "Could not open file '$output_file' $!";
+        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
         print $fh generate_html();
-        close $fh;
+        close($fh);
         print "HTML file generated: $output_file\n";
     };
     if ($@) {

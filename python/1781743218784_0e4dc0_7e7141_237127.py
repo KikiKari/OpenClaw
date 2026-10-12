@@ -1,21 +1,12 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_7e7141.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_7e7141.tcl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.sh — portiert nach tcl
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.sh — portiert nach Bash 5
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_7e7141_237127.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_237127.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import json
+import base64
+import os
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -233,8 +224,8 @@ def main(args):
     
     # Generate HTML content and write to file
     html_content = generate_html()
-    with open(output_file, 'w') as fh:
-        fh.write(html_content.strip())
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content.strip())
     print(f"HTML file generated: {output_file}")
 
 # Check if arguments were provided via command line
@@ -244,4 +235,5 @@ if __name__ == "__main__":
     else:
         # For interactive use, you can call main with desired arguments
         # Example: main(["output.html"])
-        pass
+        print("Usage: python3 script.py <output-file>", file=sys.stderr)
+        sys.exit(1)

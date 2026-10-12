@@ -1,16 +1,13 @@
-#!/usr/bin/env perl
-# 1781743218784_0e4dc0.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0.ps1
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0e4dc0_58ff67.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_58ff67.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
-use File::Basename;
 
-sub generate_html {
-    return <<'HTML_END';
+sub generateHTML {
+  return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,26 +217,26 @@ HTML_END
 }
 
 sub main {
-    my @args = @_;
-    
-    if (@args != 1) {
-        print STDERR "Usage: perl script.pl <output-file>\n";
-        exit 1;
-    }
-    
-    my $output_file = $args[0];
-    
-    # Generate HTML content and write to file
-    eval {
-        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
-        print $fh generate_html();
-        close($fh);
-        print "HTML file generated: $output_file\n";
-    };
-    if ($@) {
-        print STDERR "Could not write to file '$output_file': $@\n";
-        exit 1;
-    }
+  my @args = @_;
+  if (@args != 1) {
+    print STDERR "Usage: perl script.pl <output-file>\n";
+    exit 1;
+  }
+
+  my $outputFile = $args[0];
+
+  # Generate HTML content and write to file
+  eval {
+    my $htmlContent = generateHTML();
+    open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile': $!";
+    print $fh $htmlContent;
+    close $fh;
+    print "HTML file generated: $outputFile\n";
+  };
+  if ($@) {
+    print STDERR "Could not write file '$outputFile' $@\n";
+    exit 1;
+  }
 }
 
 main(@ARGV);

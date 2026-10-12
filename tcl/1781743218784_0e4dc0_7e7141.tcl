@@ -1,22 +1,18 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0e4dc0_7e7141.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.sh — portiert nach javascript
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_7e7141.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_7e7141.pl
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.pl — portiert nach shell
+# 1781743218784_0e4dc0.js — portiert nach JavaScript für Node 20
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.sh — portiert nach Bash 5
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
-  return {<!DOCTYPE html>
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -220,24 +216,24 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
+</html>
+}
 }
 
 proc main {args} {
-  if {[llength $args] != 1} {
-    puts stderr "Usage: tclsh script.tcl <output-file>"
-    exit 1
-  }
-
-  set outputFile [lindex $args 0]
-  
-  # Generate HTML content and write to file
-  set htmlContent [generateHTML]
-  set fh [open $outputFile w]
-  puts -nonewline $fh $htmlContent
-  close $fh
-  puts "HTML file generated: $outputFile"
+    if {[llength $args] != 1} {
+        puts stderr "Usage: tclsh script.tcl <output-file>"
+        exit 1
+    }
+    
+    set outputFile [lindex $args 0]
+    
+    # Generate HTML content and write to file
+    set htmlContent [generateHTML]
+    set fh [open $outputFile w]
+    puts -nonewline $fh $htmlContent
+    close $fh
+    puts "HTML file generated: $outputFile"
 }
 
-# Call main with command line arguments
 main {*}$argv

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# 1781743218784_0e4dc0_7e7141.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_7e7141.ps1
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_7e7141_4d36b1.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_7e7141_4d36b1.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
@@ -13,18 +13,17 @@ set -euo pipefail
 # ARGUMENTS
 #     OutputFile - The path to the output HTML file.
 # EXAMPLE
-#     ./script.sh "vault.html"
+#     ./script.sh vault.html
 
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <OutputFile>"
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 <OutputFile>" >&2
     exit 1
 fi
 
 OUTPUT_FILE="$1"
 
-# Function to generate the HTML content
 generate_html() {
-    cat << 'EOF'
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -233,6 +232,5 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-# Generate HTML content and write to file
 generate_html > "$OUTPUT_FILE"
 echo "HTML file generated: $OUTPUT_FILE"

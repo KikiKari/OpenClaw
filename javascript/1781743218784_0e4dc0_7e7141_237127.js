@@ -1,19 +1,13 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_7e7141.tcl — portiert nach javascript
+// 1781743218784_0e4dc0_7e7141_237127.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_7e7141_237127.pl
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0e4dc0_7e7141.tcl — portiert nach perl5
 // Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_7e7141.tcl
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0e4dc0.sh — portiert nach tcl
-// Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-// Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_0e4dc0.pl — portiert nach shell
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-// Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784.sh — portiert nach Bash 5
-// Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-// Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
+'use strict';
 
 function generateHTML() {
     return `<!DOCTYPE html>
@@ -223,7 +217,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 }
 
-async function main(args) {
+function main(args) {
     if (args.length !== 1) {
         console.error("Usage: node script.js <output-file>");
         process.exit(1);
@@ -233,15 +227,15 @@ async function main(args) {
     
     // Generate HTML content and write to file
     const htmlContent = generateHTML();
-    const fs = await import('fs');
-    fs.writeFileSync(outputFile, htmlContent.trim());
+    require('fs').writeFileSync(outputFile, htmlContent);
     console.log(`HTML file generated: ${outputFile}`);
 }
 
 // Check if arguments were provided via command line
-if (process.argv.length >= 3) {
+if (require.main === module) {
     main(process.argv.slice(2));
 } else {
-    // For interactive use, you can call main with desired arguments
+    // For module use, you can call main with desired arguments
     // Example: main(["output.html"]);
+    module.exports = { main, generateHTML };
 }

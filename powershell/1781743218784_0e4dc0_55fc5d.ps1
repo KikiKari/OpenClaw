@@ -1,13 +1,9 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_55fc5d.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_55fc5d.js
+# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-function GenerateHTML {
+function Generate-HTML {
     return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -231,12 +227,11 @@ function Main {
     
     # Generate HTML content and write to file
     try {
-        $content = GenerateHTML
-        Set-Content -Path $outputFile -Value $content -Encoding UTF8
-        Write-Output "HTML file generated: $outputFile"
-    }
-    catch {
-        Write-Error "Could not write to file '$outputFile': $_"
+        $htmlContent = Generate-HTML
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+        Write-Host "HTML file generated: $outputFile"
+    } catch {
+        Write-Error "Could not write file '$outputFile': $($_.Exception.Message)"
         exit 1
     }
 }
