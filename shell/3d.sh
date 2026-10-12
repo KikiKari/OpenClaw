@@ -1,33 +1,34 @@
 #!/bin/bash
 # 3d.html — portiert nach shell
-# Quelle: html, Projects@Telegram-Monitor:public/3d.html
-# Erzeugt: 2026-10-11 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@TikTok-Live-Companion:public/3d.html
+# auch in: Projects@TikTok-Live-Companion-Android:public/3d.html
+# auch in: Projects@TikTok-Live-Companion-iOS:public/3d.html
+# auch in: Projects@codex/0pe-177-peak-protection:public/3d.html
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Parameter prüfen
+# Parameter: Ausgabedatei
 if [[ $# -ne 1 ]]; then
   echo "Aufruf: $0 <ausgabedatei>" >&2
   exit 1
 fi
+ausgabe="$1"
 
-# Ausgabedatei setzen
-ausgabedatei="$1"
-
-# HTML-Dokument generieren
-cat > "$ausgabedatei" << 'EOF'
+# HTML-Inhalt generieren
+cat > "$ausgabe" << 'EOF'
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Telegram Monitor — Interaktive Architektur</title>
-<meta name="description" content="Vom öffentlichen Kanal bis zur Meldung: Plattformen, Adapter, Kern, Ausgabe — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#2481cc">
+<title>TikTok LIVE Companion — Interaktive Architektur</title>
+<meta name="description" content="Die Schichtsicht der Browser-Erweiterung: Quelle, Beobachtung, Zustand, Ausgabe.">
+<meta name="theme-color" content="#fe2c55">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#fe2c55; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -75,8 +76,8 @@ cat > "$ausgabedatei" << 'EOF'
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Telegram Monitor</h1>
-  <p class="lede">Vom öffentlichen Kanal bis zur Meldung: Plattformen, Adapter, Kern, Ausgabe — drehen, zoomen, Knoten auswählen.</p>
+  <h1>TikTok LIVE Companion</h1>
+  <p class="lede">Die Schichtsicht der Browser-Erweiterung: Quelle, Beobachtung, Zustand, Ausgabe.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -110,7 +111,7 @@ cat > "$ausgabedatei" << 'EOF'
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Plattformen", "farbe": "#5f6773", "blocks": [{"id": "t-me", "name": "t.me", "untertitel": "ohne Zugangsdaten"}, {"id": "bot-api", "name": "Bot-API", "untertitel": "Bot-Token"}, {"id": "mtproto", "name": "MTProto", "untertitel": "api_id + hash"}, {"id": "discord", "name": "Discord", "untertitel": "Invite-Lookup"}, {"id": "tiktok", "name": "TikTok", "untertitel": "oeffentliche Quellen"}]}, {"name": "Adapter", "farbe": "#2481cc", "blocks": [{"id": "telegram-web", "name": "telegram_web", "untertitel": "immer aktiv"}, {"id": "telegram-bot", "name": "telegram_bot", "untertitel": "Metadaten"}, {"id": "mtproto", "name": "mtproto", "untertitel": "globale Suche"}, {"id": "tiktok-live", "name": "tiktok_live", "untertitel": "Livegang"}]}, {"name": "Kern", "farbe": "#6d5bd0", "blocks": [{"id": "registry", "name": "registry", "untertitel": "zusammenfuehren"}, {"id": "store", "name": "store", "untertitel": "Zustand halten"}, {"id": "live", "name": "live", "untertitel": "Wechsel erkennen"}, {"id": "models", "name": "models", "untertitel": "Datenformen"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "notify", "name": "notify", "untertitel": "melden"}, {"id": "cli-py", "name": "cli.py", "untertitel": "Kommandozeile"}, {"id": "server-py", "name": "server.py", "untertitel": "127.0.0.1"}, {"id": "web-pwa", "name": "web/ PWA", "untertitel": "installierbar"}]}], "kanten": [{"von": "t-me", "nach": "telegram-web", "art": "fluss"}, {"von": "bot-api", "nach": "telegram-bot", "art": "fluss"}, {"von": "mtproto", "nach": "mtproto", "art": "fluss"}, {"von": "discord", "nach": "tiktok-live", "art": "fluss"}, {"von": "tiktok", "nach": "telegram-web", "art": "fluss"}, {"von": "telegram-web", "nach": "registry", "art": "fluss"}, {"von": "telegram-bot", "nach": "store", "art": "fluss"}, {"von": "mtproto", "nach": "live", "art": "fluss"}, {"von": "tiktok-live", "nach": "models", "art": "fluss"}, {"von": "registry", "nach": "notify", "art": "fluss"}, {"von": "store", "nach": "cli-py", "art": "fluss"}, {"von": "live", "nach": "server-py", "art": "fluss"}, {"von": "models", "nach": "web-pwa", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#2481cc", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "tiktok-live-tab", "name": "TikTok-LIVE-Tab", "untertitel": "oeffentliche Seite"}, {"id": "oeffentliche-dom-daten", "name": "oeffentliche DOM-Daten", "untertitel": "gelesen"}, {"id": "eingebettete-metadaten", "name": "eingebettete Metadaten", "untertitel": "JSON"}]}, {"name": "Beobachtung", "farbe": "#2481cc", "blocks": [{"id": "content-js", "name": "content.js", "untertitel": "isolierte Welt"}, {"id": "websocket-hook", "name": "WebSocket-Hook", "untertitel": "passiv"}]}, {"name": "Zustand", "farbe": "#6d5bd0", "blocks": [{"id": "background-js", "name": "background.js", "untertitel": "Filter + Zustand"}, {"id": "storage-session", "name": "storage.session", "untertitel": "fluechtig"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "seitenpanel", "name": "Seitenpanel", "untertitel": "textContent"}, {"id": "vorlesen", "name": "Vorlesen", "untertitel": "lokal"}, {"id": "playersteuerung", "name": "Playersteuerung", "untertitel": "vorhandener Player"}]}, {"name": "Doku", "farbe": "#0f766e", "blocks": [{"id": "docs-de", "name": "docs/de", "untertitel": "deutsch"}, {"id": "docs-en", "name": "docs/en", "untertitel": "englisch"}, {"id": "vercel-site", "name": "Vercel-Site", "untertitel": "statisch"}]}], "kanten": [{"von": "tiktok-live-tab", "nach": "content-js", "art": "fluss"}, {"von": "oeffentliche-dom-daten", "nach": "websocket-hook", "art": "fluss"}, {"von": "eingebettete-metadaten", "nach": "content-js", "art": "fluss"}, {"von": "content-js", "nach": "background-js", "art": "fluss"}, {"von": "websocket-hook", "nach": "storage-session", "art": "fluss"}, {"von": "background-js", "nach": "seitenpanel", "art": "fluss"}, {"von": "storage-session", "nach": "vorlesen", "art": "fluss"}, {"von": "seitenpanel", "nach": "docs-de", "art": "fluss"}, {"von": "vorlesen", "nach": "docs-en", "art": "fluss"}, {"von": "playersteuerung", "nach": "vercel-site", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -339,4 +340,4 @@ cat > "$ausgabedatei" << 'EOF'
 </html>
 EOF
 
-echo "HTML-Dokument wurde erfolgreich in '$ausgabedatei' erstellt."
+echo "HTML-Dokument wurde in '$ausgabe' geschrieben."
