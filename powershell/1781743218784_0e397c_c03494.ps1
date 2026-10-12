@@ -1,7 +1,12 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e397c.pl — portiert nach powershell
+# 1781743218784_0e397c_c03494.py — portiert nach powershell
+# Quelle: python, Projects@abstractions:python/1781743218784_0e397c_c03494.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.pl — portiert nach python
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c.pl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Portiert nach PowerShell 7
 
 function GenerateHTML {
     $html = @'
@@ -211,7 +216,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 '@
-
     return $html
 }
 
@@ -221,7 +225,7 @@ function Main {
     )
     
     if ($args.Count -ne 1) {
-        Write-Output "Usage: powershell script.ps1 <output-file>"
+        Write-Host "Usage: powershell script.ps1 <output-file>"
         exit 1
     }
     
@@ -230,15 +234,13 @@ function Main {
     try {
         $htmlContent = GenerateHTML
         Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
-        Write-Output "HTML file generated: $outputFile"
+        Write-Host "HTML file generated: $outputFile"
     }
     catch {
-        $error = $_.Exception.Message
-        Write-Output "Error generating HTML file: $error"
+        Write-Host "Error generating HTML file: $_"
         exit 1
     }
 }
 
-if ($MyInvocation.InvocationName -ne '.') {
-    Main -args $args
-}
+# Entry point
+Main -args $args

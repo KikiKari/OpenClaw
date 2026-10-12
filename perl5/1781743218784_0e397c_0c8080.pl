@@ -1,10 +1,19 @@
 #!/usr/bin/perl
-# 1781743218784_0e397c.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_0c8080.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use MIME::Base64;
+use Crypt::PBKDF2;
+use Crypt::Mode::GCM;
+use JSON::PP;
+
+binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
 
 sub generateHTML {
     my $html = <<'HTML_END';
@@ -226,14 +235,14 @@ sub main {
         exit 1;
     }
     
-    my $output_file = $args[0];
+    my $outputFile = $args[0];
     
     eval {
-        my $html_content = generateHTML();
-        open(my $f, '>:encoding(UTF-8)', $output_file) or die "Cannot open file '$output_file': $!";
-        print $f $html_content;
-        close($f);
-        print "HTML file generated: $output_file\n";
+        my $htmlContent = generateHTML();
+        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile': $!";
+        print $fh $htmlContent;
+        close($fh);
+        print "HTML file generated: $outputFile\n";
     };
     if ($@) {
         print "Error generating HTML file: $@\n";

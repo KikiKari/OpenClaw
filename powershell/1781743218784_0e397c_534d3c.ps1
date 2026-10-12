@@ -1,10 +1,14 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e397c.sh — portiert nach powershell
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_534d3c.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_534d3c.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-function generateHTML {
-    @'
+# 1781743218784_0e397c.sh — portiert nach javascript
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c.sh
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+function Generate-Html {
+    return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -210,31 +214,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 }
 
-function main {
+function Main {
     param(
-        [string[]]$args
+        [string[]]$Args
     )
-    
-    if ($args.Count -ne 1) {
-        Write-Host "Usage: pwsh script.ps1 <output-file>"
+
+    if ($Args.Count -ne 1) {
+        Write-Host "Usage: powershell script.ps1 <output-file>"
         exit 1
     }
-    
-    $output_file = $args[0]
-    
-    # Generate HTML content and write to file
-    generateHTML | Out-File -FilePath $output_file -Encoding UTF8
-    
-    # Check if file was written successfully
-    if ($?) {
-        Write-Host "HTML file generated: $output_file"
-    } else {
-        Write-Host "Error generating HTML file"
+
+    $outputFile = $Args[0]
+
+    try {
+        $htmlContent = Generate-Html
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+        Write-Host "HTML file generated: $outputFile"
+    } catch {
+        Write-Error "Error generating HTML file"
         exit 1
     }
 }
 
-main $args
+Main -Args $args

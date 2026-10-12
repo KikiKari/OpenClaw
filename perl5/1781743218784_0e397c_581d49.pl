@@ -1,28 +1,15 @@
-#!/usr/bin/env perl
-# 1781743218784_0e397c.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0e397c_581d49.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_581d49.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use MIME::Base64;
 
-# 1781743218784.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
-
-sub GenerateHTML {
+sub generateHTML {
     my $html = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -234,7 +221,7 @@ HTML_END
     return $html;
 }
 
-sub Main {
+sub main {
     my @args = @_;
     
     if (@args != 1) {
@@ -245,10 +232,9 @@ sub Main {
     my $outputFile = $args[0];
     
     eval {
-        my $htmlContent = GenerateHTML();
-        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile': $!";
-        print $fh $htmlContent;
-        close $fh;
+        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Cannot open file '$outputFile': $!";
+        print $fh generateHTML();
+        close($fh);
         print "HTML file generated: $outputFile\n";
     };
     if ($@) {
@@ -257,4 +243,4 @@ sub Main {
     }
 }
 
-Main(@ARGV);
+main(@ARGV);

@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
-# 1781743218784_0e397c.sh — portiert nach python
+# 1781743218784_0e397c_534d3c.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_534d3c.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.sh — portiert nach javascript
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 
-def generate_html():
+def generateHTML():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -210,26 +214,23 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
-def main():
-    args = sys.argv[1:]
-    
+def main(args):
     if len(args) != 1:
         print("Usage: python3 script.py <output-file>")
         sys.exit(1)
-    
+
     output_file = args[0]
-    
-    # Generate HTML content and write to file
+
     try:
+        html_content = generateHTML()
         with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(generate_html())
+            f.write(html_content)
         print(f"HTML file generated: {output_file}")
-    except Exception as e:
+    except Exception as error:
         print("Error generating HTML file")
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

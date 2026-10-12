@@ -1,19 +1,23 @@
 #!/usr/bin/perl
 # 1781743218784.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(encode decode);
-use File::Slurp qw(write_file);
+use open qw(:std :utf8);
 
-binmode(STDOUT, ':encoding(UTF-8)');
-binmode(STDERR, ':encoding(UTF-8)');
+# Prüfe Aufrufparameter
+if (@ARGV != 1) {
+    my $script_name = $0;
+    $script_name =~ s|.*/||;
+    print STDERR "Aufruf: perl $script_name <Ausgabedatei>\n";
+    exit 1;
+}
+my $output_path = $ARGV[0];
 
-sub generateHTML {
-    my $html = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,30 +223,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
-    
-    return $html;
-}
+HTML
 
-sub main {
-    my @args = @ARGV;
-    
-    if (@args != 1) {
-        print STDERR "Usage: perl script.pl <output-file>\n";
-        exit 1;
-    }
-    
-    my $outputFile = $args[0];
-    
-    eval {
-        my $htmlContent = generateHTML();
-        write_file($outputFile, $htmlContent);
-        print "HTML file generated: $outputFile\n";
-    };
-    if ($@) {
-        print STDERR "Error generating HTML file: $@\n";
-        exit 1;
-    }
-}
-
-main();
+open my $fh, '>:encoding(UTF-8)', $output_path or die "Konnte Datei '$output_path' nicht schreiben: $!";
+print $fh $html_content;
+close $fh;

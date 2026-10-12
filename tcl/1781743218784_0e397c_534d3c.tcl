@@ -1,11 +1,11 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e397c.sh — portiert nach tcl
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_534d3c.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_534d3c.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.py — portiert nach shell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c.sh — portiert nach javascript — portiert nach Tcl 8.6
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c.sh
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py — portiert am 2024-11-21
 
 proc generateHTML {} {
     set html {<!DOCTYPE html>
@@ -221,23 +221,21 @@ proc main {args} {
         puts "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
-    
-    set output_file [lindex $args 0]
-    
-    # Generate HTML content and write to file
-    set html_content [generateHTML]
-    set fh [open $output_file w]
-    puts -nonewline $fh $html_content
-    close $fh
-    
-    # Check if file was written successfully
-    if {[file exists $output_file]} {
-        puts "HTML file generated: $output_file"
-    } else {
-        puts "Error generating HTML file"
+
+    set outputFile [lindex $args 0]
+
+    if {[catch {
+        set htmlContent [generateHTML]
+        set fh [open $outputFile w]
+        puts -nonewline $fh $htmlContent
+        close $fh
+        puts "HTML file generated: $outputFile"
+    } error]} {
+        puts "Error generating HTML file: $error"
         exit 1
     }
 }
 
-# Call main with command line arguments
+# Get command line arguments
+set argv [lassign $argv script_name]
 main {*}$argv

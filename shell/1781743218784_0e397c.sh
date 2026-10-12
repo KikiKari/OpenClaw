@@ -1,11 +1,12 @@
 #!/bin/bash
 # 1781743218784_0e397c.js — portiert nach shell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-generateHTML() {
+# Funktion zur Generierung des HTML-Codes
+generate_html() {
     cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -215,6 +216,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
+# Hauptfunktion
 main() {
     local args_count=$#
     
@@ -225,16 +227,19 @@ main() {
     
     local output_file="$1"
     
-    # Generate HTML content and write to file
-    generateHTML > "$output_file"
+    # Generiere den HTML-Inhalt und speichere ihn in der Datei
+    generate_html > "$output_file"
     
-    # Check if file was written successfully
-    if [[ $? -eq 0 && -f "$output_file" ]]; then
+    # Überprüfe, ob das Schreiben erfolgreich war
+    if [[ $? -eq 0 ]]; then
         echo "HTML file generated: $output_file"
     else
-        echo "Error generating HTML file"
+        echo "Error generating HTML file" >&2
         exit 1
     fi
 }
 
-main "$@"
+# Wenn das Skript direkt aufgerufen wird, führe die Hauptfunktion aus
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

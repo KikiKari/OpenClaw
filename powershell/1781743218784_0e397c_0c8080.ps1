@@ -1,9 +1,17 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e397c.tcl — portiert nach powershell
+# 1781743218784_0e397c_0c8080.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.py — portiert nach tcl
+# Quelle: python, Projects@abstractions:python/1781743218784.py
 # Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-function GenerateHTML {
+function Generate-HTML {
     $html = @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -154,7 +162,7 @@ async function deriveKey(pw,salt){
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pw,salt);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2)));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
   const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
@@ -220,19 +228,18 @@ function Main {
     )
     
     if ($Args.Count -ne 1) {
-        Write-Host "Usage: pwsh script.ps1 <output-file>"
+        Write-Host "Usage: powershell script.ps1 <output-file>"
         exit 1
     }
     
     $outputFile = $Args[0]
     
     try {
-        $htmlContent = GenerateHTML
+        $htmlContent = Generate-HTML
         [System.IO.File]::WriteAllText($outputFile, $htmlContent, [System.Text.Encoding]::UTF8)
         Write-Host "HTML file generated: $outputFile"
-    }
-    catch {
-        Write-Host "Error generating HTML file: $_"
+    } catch {
+        Write-Host "Error generating HTML file: $($_.Exception.Message)"
         exit 1
     }
 }

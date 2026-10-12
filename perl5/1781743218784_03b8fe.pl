@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# 1781743218784.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
@@ -16,7 +16,7 @@ if (@ARGV != 1) {
 
 my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML';
+my $html_content = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,8 +222,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 
-open my $fh, '>:encoding(UTF-8)', $output_path or die "Could not open '$output_path' for writing: $!";
+open my $fh, '>:encoding(UTF-8)', $output_path or die "Could not open file '$output_path': $!";
 print $fh $html_content;
 close $fh;

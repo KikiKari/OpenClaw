@@ -1,28 +1,12 @@
-#!/usr/bin/env bash
-# 1781743218784_0e397c.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 1781743218784_0e397c_581d49.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_581d49.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
-
-GenerateHTML() {
-    cat << 'EOF'
+generate_html() {
+  cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -231,26 +215,24 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-Main() {
-    local args=("$@")
-    
-    if [[ ${#args[@]} -ne 1 ]]; then
-        echo "Usage: bash script.sh <output-file>"
-        exit 1
-    fi
-    
-    local outputFile="${args[0]}"
-    
-    # Generate HTML content and write to file
-    GenerateHTML > "$outputFile"
-    
-    # Check if the write was successful
-    if [[ $? -eq 0 ]]; then
-        echo "HTML file generated: $outputFile"
-    else
-        echo "Error generating HTML file"
-        exit 1
-    fi
+main() {
+  if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <output-file>"
+    exit 1
+  fi
+
+  local output_file="$1"
+  
+  # Write the HTML content to the specified file
+  generate_html > "$output_file"
+  
+  # Check if the write was successful
+  if [[ $? -eq 0 ]]; then
+    echo "HTML file generated: $output_file"
+  else
+    echo "Error generating HTML file"
+    exit 1
+  fi
 }
 
-Main "$@"
+main "$@"

@@ -1,9 +1,9 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e397c.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_581d49.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_581d49.js
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-proc GenerateHTML {} {
+proc generateHTML {} {
     set html {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -148,19 +148,19 @@ function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromC
 function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function deriveKey(pw,salt){
   const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt: salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pw,salt);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv: iv},key,enc.encode(JSON.stringify(obj,null,2))));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
   const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
 async function decryptB64(b64,pw){
   const raw=b64u8(b64); if(dec.decode(raw.slice(0,5))!=="SVPB1") throw new Error("magic");
   const key=await deriveKey(pw,raw.slice(5,21));
-  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv: raw.slice(21,33)},key,raw.slice(33));
+  const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(21,33)},key,raw.slice(33));
   return JSON.parse(dec.decode(pt));
 }
 function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -212,24 +212,24 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
     return $html
 }
 
-proc Main {argv} {
-    if {[llength $argv] != 1} {
+proc main {args} {
+    if {[llength $args] != 1} {
         puts "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
+
+    set outputFile [lindex $args 0]
     
-    set outputFile [lindex $argv 0]
-    
-    if {[catch {
-        set htmlContent [GenerateHTML]
+    if [catch {
+        set htmlContent [generateHTML]
         set fh [open $outputFile w]
-        puts $fh $htmlContent
+        puts -nonewline $fh $htmlContent
         close $fh
         puts "HTML file generated: $outputFile"
-    } error]} {
+    } error] {
         puts "Error generating HTML file: $error"
         exit 1
     }
 }
 
-Main $argv
+main {*}$argv

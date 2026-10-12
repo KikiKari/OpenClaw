@@ -1,32 +1,15 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 # 1781743218784_0e397c.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use Encode qw(encode decode);
-use MIME::Base64 qw(encode_base64 decode_base64);
 
-# 1781743218784.py — portiert nach javascript
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+use File::Slurp qw(write_file);
 
-# 1781743218784.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
-
-sub generateHTML {
-    my $html = <<'HTML_END';
+sub generate_html {
+    return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -233,8 +216,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 HTML_END
-
-    return $html;
 }
 
 sub main {
@@ -245,14 +226,12 @@ sub main {
         exit 1;
     }
     
-    my $outputFile = $args[0];
+    my $output_file = $args[0];
     
     eval {
-        my $htmlContent = generateHTML();
-        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile': $!";
-        print $fh $htmlContent;
-        close($fh);
-        print "HTML file generated: $outputFile\n";
+        my $html_content = generate_html();
+        write_file($output_file, $html_content);
+        print "HTML file generated: $output_file\n";
     };
     if ($@) {
         print "Error generating HTML file: $@\n";
@@ -260,4 +239,6 @@ sub main {
     }
 }
 
-main();
+main() unless caller;
+
+1;

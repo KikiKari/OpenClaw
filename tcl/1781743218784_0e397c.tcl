@@ -1,10 +1,14 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0e397c.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c.pl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
-    set html {<!DOCTYPE html>
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -208,9 +212,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
-    return $html
+</html>}
 }
 
 proc main {} {
@@ -225,9 +227,9 @@ proc main {} {
     
     if {[catch {
         set htmlContent [generateHTML]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
-        close $fh
+        set fileId [open $outputFile "w"]
+        puts -nonewline $fileId $htmlContent
+        close $fileId
         puts "HTML file generated: $outputFile"
     } error]} {
         puts "Error generating HTML file: $error"
@@ -235,4 +237,6 @@ proc main {} {
     }
 }
 
-main
+if {[info script] eq $argv0} {
+    main
+}

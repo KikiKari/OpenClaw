@@ -1,14 +1,12 @@
 #!/usr/bin/env node
-// 1781743218784_0e397c.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e397c_0c8080.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c_0c8080.pl
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784.py — portiert nach tcl
-// Quelle: python, Projects@abstractions:python/1781743218784.py
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+const fs = require('fs');
 
 function generateHTML() {
-    const html = `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -212,29 +210,26 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-`;
-    return html;
+</html>`;
 }
 
 function main() {
-    const args = process.argv.slice(2);
-    
-    if (args.length !== 1) {
-        console.log("Usage: node script.js <output-file>");
-        process.exit(1);
-    }
-    
-    const outputFile = args[0];
-    
-    try {
-        const htmlContent = generateHTML();
-        require('fs').writeFileSync(outputFile, htmlContent, 'utf8');
-        console.log(`HTML file generated: ${outputFile}`);
-    } catch (error) {
-        console.log(`Error generating HTML file: ${error.message}`);
-        process.exit(1);
-    }
+  const args = process.argv.slice(2);
+  const outputFile = args[0];
+  
+  if (args.length !== 1) {
+    console.log("Usage: node script.js <output-file>");
+    process.exit(1);
+  }
+  
+  try {
+    const htmlContent = generateHTML();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML file generated: ${outputFile}`);
+  } catch (error) {
+    console.log(`Error generating HTML file: ${error.message}`);
+    process.exit(1);
+  }
 }
 
 main();

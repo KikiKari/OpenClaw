@@ -1,20 +1,16 @@
 #!/usr/bin/env tclsh
 # 1781743218784.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Prüfe Aufrufparameter
+if {$argc != 1} {
+    puts stderr "Aufruf: tclsh [info script] <Ausgabedatei>"
+    exit 1
+}
+set output_path [lindex $argv 0]
 
-# 1781743218784.js — portiert nach JavaScript für Node 20
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# Tcl 8.6 Port — erzeugt das gleiche HTML wie das Original
-
-proc generateHTML {} {
-    set html {<!DOCTYPE html>
+set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -188,12 +184,12 @@ function renderEditor(){
     root.appendChild(d);
   });
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
-  root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const \[p,k\]=b.dataset.del.split("|"); delete VAULT.providers\[p\]\[k\]; renderEditor(); });
-  root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers\[b.dataset.delp\]; renderEditor(); });
-  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers\[p\]\[nf\]=nv; renderEditor(); } });
+  root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
+  root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
+  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
 
-document.getElementById("file").onchange=e=>{ const f=e.target.files\[0\]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
+document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
 openBtn.onclick=async()=>{
   const m=document.getElementById("openMsg"); m.className="msg"; m.textContent="";
   if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
@@ -207,42 +203,21 @@ newBtn.onclick=()=>{
   VAULT={meta:{created:new Date().toISOString().slice(0,10),format:"SVPB1"},providers:{}}; renderEditor();
   m.className="msg ok"; m.textContent=tr("created");
 };
-addProvBtn.onclick=()=>{ if(!VAULT){ return; } const n=newProv.value.trim(); if(n){ VAULT.providers\[n\]=VAULT.providers\[n\]||{}; newProv.value=""; renderEditor(); } };
+addProvBtn.onclick=()=>{ if(!VAULT){ return; } const n=newProv.value.trim(); if(n){ VAULT.providers[n]=VAULT.providers[n]||{}; newProv.value=""; renderEditor(); } };
 encBtn.onclick=async()=>{
   const m=document.getElementById("saveMsg"); m.className="msg";
   if(!VAULT){ m.className="msg err"; m.textContent=tr("needOpen"); return; }
   if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
   result.value=await encryptObj(VAULT,pass.value); m.className="msg ok"; m.textContent=tr("encrypted");
 };
-dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob(\[result.value\],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
+dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
-    
-    return $html
+</html>
 }
 
-proc main {} {
-    global argv
-    
-    if {[llength $argv] != 1} {
-        puts stderr "Usage: tclsh script.tcl <output-file>"
-        exit 1
-    }
-    
-    set outputFile [lindex $argv 0]
-    
-    if {[catch {
-        set htmlContent [generateHTML]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
-        close $fh
-        puts "HTML file generated: $outputFile"
-    } error]} {
-        puts stderr "Error generating HTML file: $error"
-        exit 1
-    }
-}
-
-main
+# Schreibe HTML-Inhalt in Ausgabedatei
+set fh [open $output_path w]
+puts -nonewline $fh $html_content
+close $fh
