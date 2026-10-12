@@ -3,7 +3,8 @@
 # Quelle: python, Projects@TikTok-Live-Companion:plugin-source/scripts/package_artifacts.py
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/package_artifacts.py
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/package_artifacts.py
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/package_artifacts.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 param(
     [Parameter(Mandatory=$true)]
@@ -13,15 +14,17 @@ param(
 
     [string]$AndroidSource = "$PROJECT_ROOT/mobile/android",
 
-    [string]$IosSource = "$PROJECT_ROOT/mobile/ios"
+    [string]$IosSource = "$PROJECT_ROOT/mobile/ios",
+
+    [string]$NativeSharedSource = "$PROJECT_ROOT/mobile/shared"
 )
 
 $ErrorActionPreference = "Stop"
 
 # Define constants
-$ROOT = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
+$ROOT = Split-Path $PSScriptRoot -Parent
 $PROJECT_ROOT = Split-Path $ROOT -Parent
-$EXCLUDED_PARTS = @("__pycache__", ".gradle", ".kotlin", "build", "DerivedData", "xcuserdata")
+$EXCLUDED_PARTS = @("__pycache__", ".gradle", ".kotlin", ".cxx", "build", "DerivedData", "xcuserdata", "Pods")
 
 function Add-Tree {
     param(
@@ -30,88 +33,76 @@ function Add-Tree {
         [string]$Prefix = ""
     )
 
-    $sourcePath = Resolve-Path $Source
-    $items = Get-ChildItem -Path $sourcePath -Recurse -File | Sort-Object FullName
+    Get-ChildItem -Path $Source -Recurse -File | ForEach-Object {
+        $relativePath = Resolve-Path $_.FullName -Relative:$true
+        $relativePath = $relativePath -replace "^\.\\", ""
 
-    foreach ($item in $items) {
-        $relativePath = Resolve-Path $item.FullName -Relative:$true -RelativeTo $sourcePath
-        $shouldExclude = $false
-
-        # Check if any part of the path is in excluded parts
-        $pathParts = $item.FullName -split '[\\/]'
-        foreach ($part in $pathParts) {
+        # Check if any excluded part is in the path
+        $exclude = $false
+        foreach ($part in $relativePath.Split('\')) {
             if ($EXCLUDED_PARTS -contains $part) {
-                $shouldExclude = $true
+                $exclude = $true
                 break
             }
         }
 
-        # Check file extensions
-        if ($item.Extension -eq ".pyc" -or $item.Extension -eq ".aar") {
-            $shouldExclude = $true
+        # Skip if excluded or has .pyc/.aar extension
+        if ($exclude -or $_.Extension -eq ".pyc" -or $_.Extension -eq ".aar") {
+            return
         }
 
-        if ($shouldExclude) {
-            continue
-        }
-
-        $archivePath = Join-Path $Prefix $relativePath
+        $archivePath = Join-Path $Prefix $relativePath -Resolve
         $archivePath = $archivePath -replace '\\', '/'
 
-        # Create ZipEntry with fixed timestamp for reproducibility
-        $entry = New-Object System.IO.Compression.ZipArchiveEntry($Archive, $archivePath)
-        $entry.LastWriteTime = [datetime]"1980-01-01T00:00:00"
-        
-        # Write file content to zip
-        $destStream = $entry.Open()
-        $srcStream = [System.IO.File]::OpenRead($item.FullName)
-        $srcStream.CopyTo($destStream)
-        $srcStream.Close()
-        $destStream.Close()
+        $entry = $Archive.CreateEntry($archivePath, [System.IO.Compression.CompressionLevel]::Optimal)
+        $entryStream = $entry.Open()
+        [System.IO.File]::Copy($_.FullName, $entryStream.BaseStream, $true)
+        $entryStream.Close()
     }
 }
 
-# Create output directory
-$null = New-Item -ItemType Directory -Path $OutputDir -Force
+# Parse arguments and resolve paths
+$outputDir = Resolve-Path $OutputDir -ErrorAction SilentlyContinue
+if (-not $outputDir) {
+    New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
+    $outputDir = Resolve-Path $OutputDir
+}
 
-# Resolve paths
-$outputDirResolved = Resolve-Path $OutputDir
+# Read manifest and get version
 $manifestPath = Join-Path $ROOT "browser-extension" "manifest.json"
 $manifest = Get-Content $manifestPath | ConvertFrom-Json
 $version = $manifest.version
 
-$extensionZip = Join-Path $OutputDir "tiktok-live-companion-extension-$version.zip"
-$pluginZip = Join-Path $OutputDir "tiktok-live-companion-plugin-$version.zip"
-$serviceZip = Join-Path $OutputDir "tiktok-live-companion-service-$version.zip"
-$iosSourceZip = Join-Path $OutputDir "tiktok-live-companion-ios-$version-source.zip"
-$androidSourceZip = Join-Path $OutputDir "tiktok-live-companion-android-$version-source.zip"
-$androidApk = Join-Path $OutputDir "tiktok-live-companion-android-$version.apk"
-$extensionDir = Join-Path $OutputDir "tiktok-live-companion-extension-$version"
-$checksumFile = Join-Path $OutputDir "tiktok-live-companion-$version-SHA256.txt"
+# Define output file paths
+$extensionZip = Join-Path $outputDir "tiktok-live-companion-extension-$version.zip"
+$pluginZip = Join-Path $outputDir "tiktok-live-companion-plugin-$version.zip"
+$serviceZip = Join-Path $outputDir "tiktok-live-companion-service-$version.zip"
+$iosSourceZip = Join-Path $outputDir "tiktok-live-companion-ios-$version-source.zip"
+$androidSourceZip = Join-Path $outputDir "tiktok-live-companion-android-$version-source.zip"
+$androidApk = Join-Path $outputDir "tiktok-live-companion-android-$version.apk"
+$extensionDir = Join-Path $outputDir "tiktok-live-companion-extension-$version"
+$checksumFile = Join-Path $outputDir "tiktok-live-companion-$version-SHA256.txt"
 
+# Validate extension directory location
 $resolvedExtensionDir = Resolve-Path $extensionDir -ErrorAction SilentlyContinue
-if ($resolvedExtensionDir -and (Split-Path $resolvedExtensionDir.Parent.Path -Leaf) -ne (Split-Path $outputDirResolved -Leaf)) {
+if ($resolvedExtensionDir.Parent -ne $outputDir) {
     throw "Refusing to package outside the requested output directory"
 }
 
+# Remove existing extension directory if it exists
 if (Test-Path $extensionDir) {
     Remove-Item $extensionDir -Recurse -Force
 }
 
-# Copy browser extension
+# Copy browser-extension and companion-service directories
 Copy-Item (Join-Path $ROOT "browser-extension") $extensionDir -Recurse
+Copy-Item (Join-Path $ROOT "companion-service") (Join-Path $extensionDir "companion-service") -Recurse
 
-# Copy companion service
-$serviceDest = Join-Path $extensionDir "companion-service"
-Copy-Item (Join-Path $ROOT "companion-service") $serviceDest -Recurse
+# Create Windows batch script
+$batchScriptContent = '@echo off`r`ncall "%~dp0companion-service\Sprachdienst-reparieren.cmd"`r`n'
+Set-Content (Join-Path $extensionDir "Sprachdienst-reparieren.cmd") $batchScriptContent -Encoding UTF8
 
-# Create batch file
-$batchFilePath = Join-Path $extensionDir "Sprachdienst-reparieren.cmd"
-Set-Content $batchFilePath '@echo off
-call "%~dp0companion-service\Sprachdienst-reparieren.cmd"
-'
-
-# Create package.json
+# Create package.json content
 $packageJson = @{
     name = "tiktok-live-companion-extension-package"
     private = $true
@@ -122,86 +113,98 @@ $packageJson = @{
         test = "npm --prefix companion-service test"
     }
 } | ConvertTo-Json -Depth 10
-Set-Content (Join-Path $extensionDir "package.json") $packageJson
+Set-Content (Join-Path $extensionDir "package.json") "$packageJson`n" -Encoding UTF8
 
-# Load .NET assemblies for ZIP compression
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-Add-Type -AssemblyName System.IO.Compression
+# Create extension zip
+[System.IO.Compression.ZipFile]::CreateFromDirectory($extensionDir, $extensionZip)
 
-# Package extension zip
-$archive = [System.IO.Compression.ZipFile]::Open($extensionZip, "Create")
-Add-Tree -Archive $archive -Source $extensionDir
-$archive.Dispose()
+# Create plugin zip
+$tempPluginDir = Join-Path ([System.IO.Path]::GetTempPath()) "temp_plugin"
+Remove-Item $tempPluginDir -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Path $tempPluginDir | Out-Null
+Copy-Item "$ROOT/*" $tempPluginDir -Recurse -Exclude @("browser-extension", "companion-service")
+$pluginZipTemp = Join-Path ([System.IO.Path]::GetTempPath()) "plugin.zip"
+[System.IO.Compression.ZipFile]::CreateFromDirectory($tempPluginDir, $pluginZipTemp)
+Move-Item $pluginZipTemp $pluginZip -Force
+Remove-Item $tempPluginDir -Recurse -Force
 
-# Package plugin zip
-$archive = [System.IO.Compression.ZipFile]::Open($pluginZip, "Create")
-Add-Tree -Archive $archive -Source $ROOT -Prefix "tiktok-live-companion"
-$archive.Dispose()
+# Create service zip
+$serviceDir = Join-Path $ROOT "companion-service"
+[System.IO.Compression.ZipFile]::CreateFromDirectory($serviceDir, $serviceZip)
 
-# Package service zip
-$archive = [System.IO.Compression.ZipFile]::Open($serviceZip, "Create")
-Add-Tree -Archive $archive -Source (Join-Path $ROOT "companion-service")
-$archive.Dispose()
+# Resolve source directories
+$iosSourceResolved = Resolve-Path $IosSource -ErrorAction Stop
+$androidSourceResolved = Resolve-Path $AndroidSource -ErrorAction Stop
+$nativeSharedResolved = Resolve-Path $NativeSharedSource -ErrorAction Stop
 
-# Resolve source paths
-$iosSourceResolved = Resolve-Path $IosSource
-$androidSourceResolved = Resolve-Path $AndroidSource
-
-if (-not (Test-Path $iosSourceResolved -PathType Container) -or -not (Test-Path $androidSourceResolved -PathType Container)) {
-    throw "--ios-source and --android-source must point to existing source directories"
+# Validate source directories
+if (-not (Test-Path $iosSourceResolved -PathType Container)) {
+    throw "--ios-source must point to an existing source directory"
+}
+if (-not (Test-Path $androidSourceResolved -PathType Container)) {
+    throw "--android-source must point to an existing source directory"
+}
+if (-not (Test-Path (Join-Path $nativeSharedResolved "native" "tlc_peak_limiter.h") -PathType Leaf)) {
+    throw "Shared native limiter source is required for both mobile source packages"
 }
 
-# Package iOS source zip
-$archive = [System.IO.Compression.ZipFile]::Open($iosSourceZip, "Create")
-Add-Tree -Archive $archive -Source $iosSourceResolved -Prefix "TikTokLiveCompanion-iOS"
-$archive.Dispose()
+# Create iOS source zip
+$iosTempDir = Join-Path ([System.IO.Path]::GetTempPath()) "ios_temp"
+Remove-Item $iosTempDir -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Path $iosTempDir | Out-Null
+Copy-Item "$iosSourceResolved/*" (Join-Path $iosTempDir "TikTokLiveCompanion-iOS") -Recurse
+Copy-Item "$nativeSharedResolved/*" (Join-Path $iosTempDir "shared") -Recurse
+$iosZipTemp = Join-Path ([System.IO.Path]::GetTempPath()) "ios.zip"
+[System.IO.Compression.ZipFile]::CreateFromDirectory($iosTempDir, $iosZipTemp)
+Move-Item $iosZipTemp $iosSourceZip -Force
+Remove-Item $iosTempDir -Recurse -Force
 
-# Package Android source zip
-$archive = [System.IO.Compression.ZipFile]::Open($androidSourceZip, "Create")
-Add-Tree -Archive $archive -Source $androidSourceResolved -Prefix "TikTokLiveCompanion-Android"
-$archive.Dispose()
+# Create Android source zip
+$androidTempDir = Join-Path ([System.IO.Path]::GetTempPath()) "android_temp"
+Remove-Item $androidTempDir -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Path $androidTempDir | Out-Null
+Copy-Item "$androidSourceResolved/*" (Join-Path $androidTempDir "TikTokLiveCompanion-Android") -Recurse
+Copy-Item "$nativeSharedResolved/*" (Join-Path $androidTempDir "shared") -Recurse
+$androidZipTemp = Join-Path ([System.IO.Path]::GetTempPath()) "android.zip"
+[System.IO.Compression.ZipFile]::CreateFromDirectory($androidTempDir, $androidZipTemp)
+Move-Item $androidZipTemp $androidSourceZip -Force
+Remove-Item $androidTempDir -Recurse -Force
 
-# Handle Android APK if provided
+# Handle Android APK
 if ($AndroidApk) {
-    $sourceApk = Resolve-Path $AndroidApk
-    if (-not (Test-Path $sourceApk -PathType Leaf) -or [System.IO.Path]::GetExtension($sourceApk) -ne ".apk") {
+    $sourceApk = Resolve-Path $AndroidApk -ErrorAction Stop
+    if ((Get-Item $sourceApk).Extension.ToLower() -ne ".apk") {
         throw "--android-apk must point to an existing APK"
     }
-    
-    if ((Resolve-Path $sourceApk) -ne (Resolve-Path $androidApk)) {
-        Copy-Item $sourceApk $androidApk
+    if ($sourceApk -ne (Resolve-Path $androidApk -ErrorAction SilentlyContinue)) {
+        Copy-Item $sourceApk $androidApk -Force
     }
 }
 
-# Calculate checksums
+# Create list of artifacts
 $artifacts = @($extensionZip, $pluginZip, $serviceZip, $iosSourceZip, $androidSourceZip)
 if (Test-Path $androidApk) {
     $artifacts += $androidApk
 }
 
+# Generate SHA256 checksums
 $checksums = @()
 foreach ($artifact in $artifacts) {
-    $fileBytes = [System.IO.File]::ReadAllBytes($artifact)
-    $hash = [System.Security.Cryptography.SHA256]::Create().ComputeHash($fileBytes)
-    $hexHash = -join ($hash | ForEach-Object { "{0:x2}" -f $_ })
-    $fileName = Split-Path $artifact -Leaf
-    $checksums += "$hexHash  $fileName"
+    $hash = Get-FileHash $artifact -Algorithm SHA256
+    $checksums += "$($hash.Hash)  $(Split-Path $artifact -Leaf)"
 }
-
 Set-Content $checksumFile ($checksums -join "`n") -Encoding UTF8
 
-# Prepare result object
+# Output JSON result
 $result = @{
-    extension_dir = (Resolve-Path $extensionDir).Path
-    extension_zip = (Resolve-Path $extensionZip).Path
-    plugin_zip = (Resolve-Path $pluginZip).Path
-    service_zip = (Resolve-Path $serviceZip).Path
-    ios_source_zip = (Resolve-Path $iosSourceZip).Path
-    android_source_zip = (Resolve-Path $androidSourceZip).Path
-    android_apk = if (Test-Path $androidApk) { (Resolve-Path $androidApk).Path } else { $null }
-    checksum_file = (Resolve-Path $checksumFile).Path
+    extension_dir = $extensionDir
+    extension_zip = $extensionZip
+    plugin_zip = $pluginZip
+    service_zip = $serviceZip
+    ios_source_zip = $iosSourceZip
+    android_source_zip = $androidSourceZip
+    android_apk = if (Test-Path $androidApk) { $androidApk } else { $null }
+    checksum_file = $checksumFile
     version = $version
 }
-
-# Output result as JSON
-ConvertTo-Json $result -EnumsAsStrings
+$result | ConvertTo-Json -EscapeHandling EscapeNonAscii

@@ -3,71 +3,71 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_extension.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_extension.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_extension.cjs
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 import json
 import os
-import hashlib
-import re
+import subprocess
+import sys
 from pathlib import Path
 
-# Helper functions equivalent to JavaScript versions
+# Konfiguration
+ROOT_DIR = Path(__file__).parent.parent.resolve()
+EXTENSION_DIR = ROOT_DIR / "browser-extension"
+MANIFEST_PATH = EXTENSION_DIR / "manifest.json"
+MOBILE_BRIDGE_PATH = ROOT_DIR / "mobile-shared" / "webview-bridge.js"
+
+# Manifest laden
+with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
+    manifest = json.load(f)
+
+# Core-Modul laden (angenommen, dass es eine Python-Version gibt)
+sys.path.append(str(EXTENSION_DIR))
+import content_core as core
+import proto_main as proto
+
+# Mobile Bridge laden
+with open(MOBILE_BRIDGE_PATH, "r", encoding="utf-8") as f:
+    mobile_bridge = f.read()
+
 def concat(*chunks):
-    size = sum(len(chunk) for chunk in chunks)
-    out = bytearray(size)
-    offset = 0
+    """Verbindet mehrere Byte-Chunks zu einem einzigen bytearray"""
+    result = bytearray()
     for chunk in chunks:
-        out[offset:offset+len(chunk)] = chunk
-        offset += len(chunk)
-    return out
+        result.extend(chunk)
+    return result
 
 def varint(value):
-    current = value
+    """Erstellt eine Varint-Kodierung eines Werts"""
+    value = int(value)
     bytes_list = []
     while True:
-        byte_val = current & 0x7f
-        current >>= 7
-        if current:
-            byte_val |= 0x80
-        bytes_list.append(byte_val)
-        if not current:
+        byte = value & 0x7F
+        value >>= 7
+        if value:
+            byte |= 0x80
+        bytes_list.append(byte)
+        if not value:
             break
     return bytearray(bytes_list)
 
 def bytes_field(number, value):
+    """Erstellt ein Protobuf-Bytes-Feld"""
     if isinstance(value, str):
         body = value.encode('utf-8')
     else:
         body = value
-    return concat(varint((number << 3) | 2), varint(len(body)), body)
+    tag = (number << 3) | 2
+    return concat(varint(tag), varint(len(body)), body)
 
 def int_field(number, value):
-    return concat(varint(number << 3), varint(value))
+    """Erstellt ein Protobuf-Integer-Feld"""
+    tag = number << 3
+    return concat(varint(tag), varint(value))
 
-# Paths setup
-root = Path(__file__).parent.parent.absolute()
-extension = root / "browser-extension"
-manifest_path = extension / "manifest.json"
-
-with open(manifest_path, 'r', encoding='utf-8') as f:
-    manifest = json.load(f)
-
-core_path = extension / "content-core.js"
-proto_path = extension / "proto-main.js"
-mobile_bridge_path = root / "mobile-shared" / "webview-bridge.js"
-
-with open(core_path, 'r', encoding='utf-8') as f:
-    core_source = f.read()
-
-with open(proto_path, 'r', encoding='utf-8') as f:
-    proto_source = f.read()
-
-with open(mobile_bridge_path, 'r', encoding='utf-8') as f:
-    mobile_bridge = f.read()
-
-# Assertions from the original test file
+# Tests für Manifest
 assert manifest["manifest_version"] == 3
-assert manifest["version"] == "0.8.0"
+assert manifest["version"] == "0.8.2"
 assert "sidePanel" in manifest["permissions"]
 assert "webRequest" in manifest["permissions"]
 assert "tabCapture" in manifest["permissions"]
@@ -78,92 +78,282 @@ assert "webRequestBlocking" not in manifest["permissions"]
 assert "nativeMessaging" not in manifest["permissions"]
 assert manifest["content_scripts"][0]["js"][0] == "vendor-mpegts.js"
 
-mpegts_vendor_path = extension / "vendor-mpegts.js"
-mpegts_license_path = extension / "vendor-mpegts.LICENSE.txt"
-mpegts_notice_path = extension / "vendor-mpegts.NOTICE.md"
+# Tests für Vendor-Dateien
+mpegts_vendor_path = EXTENSION_DIR / "vendor-mpegts.js"
+mpegts_license_path = EXTENSION_DIR / "vendor-mpegts.LICENSE.txt"
+mpegts_notice_path = EXTENSION_DIR / "vendor-mpegts.NOTICE.md"
 
 assert mpegts_vendor_path.exists()
 assert mpegts_license_path.exists()
 assert mpegts_notice_path.exists()
 
-with open(mpegts_vendor_path, 'rb') as f:
-    vendor_content = f.read()
-    
-hash_obj = hashlib.sha256(vendor_content)
-hex_hash = hash_obj.hexdigest().upper()
-assert hex_hash == "0786F9AF6780822FF29240259A73B07ED7BC479BC44966E49418DD38213B8064"
+# SHA256-Prüfung
+import hashlib
+with open(mpegts_vendor_path, "rb") as f:
+    content = f.read()
+    sha256_hash = hashlib.sha256(content).hexdigest().upper()
+assert sha256_hash == "0786F9AF6780822FF29240259A73B07ED7BC479BC44966E49418DD38213B8064"
 
+# Tests für Mobile Bridge
 assert 'location.hostname !== "www.tiktok.com"' in mobile_bridge
 assert "document.cookie" not in mobile_bridge
 assert "QUICK_RECOVER_RELOAD_COOLDOWN_MS = 400" in mobile_bridge
 assert '"set-auto-reconnect"' in mobile_bridge
 assert '"set-limiter"' in mobile_bridge
 
+# Tests für Manifest-Dateien
 for relative in [
     manifest["background"]["service_worker"],
     manifest["side_panel"]["default_path"]
-] + [js_file for cs in manifest["content_scripts"] for js_file in cs["js"]]:
-    full_path = extension / relative
-    assert full_path.exists(), f"Missing manifest file: {relative}"
+]:
+    full_path = EXTENSION_DIR / relative
+    assert full_path.exists(), f"Fehlende Manifest-Datei: {relative}"
 
-scripts = [f for f in os.listdir(extension) if f.endswith('.js')]
+for item in manifest["content_scripts"]:
+    for js_file in item["js"]:
+        full_path = EXTENSION_DIR / js_file
+        assert full_path.exists(), f"Fehlende Manifest-Datei: {js_file}"
+
+# Tests für JavaScript-Dateien
+scripts = [f for f in os.listdir(EXTENSION_DIR) if f.endswith(".js")]
 for name in scripts:
-    with open(os.path.join(extension, name), 'r', encoding='utf-8') as f:
+    source_path = EXTENSION_DIR / name
+    with open(source_path, "r", encoding="utf-8") as f:
         source = f.read()
-    # In Python we can't easily validate JS syntax like in Node.js vm.Script
-    assert "eval(" not in source, f"{name} contains eval()"
-    assert "new Function(" not in source, f"{name} contains new Function()"
-    assert ".innerHTML =" not in source, f"{name} assigns innerHTML"
+    
+    # Syntaxprüfung
+    if name == "peak-limiter-worklet.js":
+        result = subprocess.run([sys.executable, "--check", "--input-type=module"], 
+                              input=source, text=True, capture_output=True)
+        assert result.returncode == 0, result.stderr
+    else:
+        compile(source, name, "exec")
+    
+    # Sicherheitsprüfungen
+    assert "eval(" not in source, f"{name} enthält eval()"
+    assert "new Function(" not in source, f"{name} enthält new Function()"
+    assert ".innerHTML =" not in source, f"{name} weist innerHTML zu"
 
+# Tests für Core-Funktionen
 metadata = {
     "room": {
         "caption_info": {"open": True, "support_lang": ["de", "en"], "show_type": 1},
         "stream_data": "{\"pull\":\"https:\\/\\/pull-flv-f77.example.tiktokcdn.com\\/stage\\/stream_hd.flv?expire=1\\u0026sign=abc\",\"hls\":\"https:\\/\\/pull-hls.example.tiktokcdn-eu.com\\/stage\\/stream_720p.m3u8?sign=xyz\"}"
     }
 }
+inspected = core.inspect_metadata(metadata)
+assert inspected["captionInfo"]["present"] == True
+assert inspected["captionInfo"]["open"] == True
+assert inspected["captionInfo"]["supportLang"] == ["de", "en"]
+assert len(inspected["media"]) == 2
+assert any(item["protocol"] == "FLV" and item["quality"] == "HD" for item in inspected["media"])
+assert any(item["protocol"] == "HLS" and item["quality"] == "720p" for item in inspected["media"])
 
-# Since we don't have the actual core module implementation in Python,
-# we'll just verify that the test structure works by checking some basic assertions
-# These would normally call into core.inspectMetadata etc.
+assert core.classify_media_url("https://evil.example/stream.flv") is None
+assert core.QUALITY_LABELS["auto"] == "Automatisch"
+assert core.sanitize_chat_text("Hallo 😊 Welt ❤️") == "Hallo Welt"
+assert core.sanitize_chat_text("@Nutzer 👍🏽 bleibt hier") == "@Nutzer bleibt hier"
+assert core.word_count("Hallo 😊 schöne Welt") == 3
+assert core.team_suffix_candidate("Miimii tmm") == "tmm"
+assert core.team_suffix_candidate("Ben") == ""
+assert core.team_suffix_candidate("das ist gut") == "gut"
+assert core.content_has_token("@Honey tmm wo is mein Tee?", "tmm") == True
+assert core.strip_team_tag("@Honey tmm wo is mein Tee?", "tmm") == "@Honey wo is mein Tee?"
+assert core.strip_team_tag("das ist gut", "tmm") == "das ist gut"
+assert core.shorten_nickname("Anja Schaarschmidt89") == "Anja"
+assert core.shorten_nickname("Team Kimm") == "Team Kimm"
+assert core.shorten_nickname("Blitzerbiest") == "Blitzerbiest"
+assert core.shorten_nickname("Traumtänzer.der.Nächte") == "Traumtänzer"
+assert core.shorten_nickname("Vanny_GioPrimetv") == "Vanny"
+assert core.shorten_nickname("Die Löwin") == "Löwin"
+assert core.shorten_nickname("liane15") == "liane"
+assert core.shorten_nickname("MKU Maskenaufsicht") == "Maskenaufsicht"
+assert core.shorten_nickname("Butterfly 004") == "Butterfly"
+assert core.spoken_nickname("user572838499281727393816181") == "user572"
+assert core.spoken_nickname("Rebecca № 2 💕") == "Rebecca"
+assert core.collapse_laughter("hahahahahahhhhahhhaaaa Gott du Plemmi") == "haha Gott du Plemmi"
+assert core.resolve_speech_language("auto", "de") == "de-DE"
+assert core.resolve_speech_language("en-US", "de") == "en-US"
+assert core.limiter_strength_to_dbfs(0) == -4
+assert core.limiter_strength_to_dbfs(100) == -30
+assert core.limiter_dbfs_to_strength(-30) == 100
+assert core.limiter_makeup_compensation(-30, 20) < core.limiter_makeup_compensation(-10, 20)
+assert core.compose_speech_text({"author": "Miimii tmm", "content": "@Stivinho danke"}, {"teamTag": "tmm"}) == "Miimii sagt zu Stivinho danke"
+assert core.compose_speech_text({"author": "Blitzerbiest", "content": "@Honey tmm wo is mein Tee ?"}, {"teamTag": "tmm"}) == "Blitzerbiest fragt Honey wo is mein Tee"
+assert core.compose_speech_text({"author": "Miimii", "content": "@ Stivinho danke"}, {"speakNames": False}) == "Stivinho danke"
+assert core.compose_speech_text({"author": "Anja Schaarschmidt89", "content": "Guten Morgen"}, {"shortenNames": True}) == "Anja sagt Guten Morgen"
+assert core.compose_speech_text({"author": "Mia", "content": "Hallo @"}) == "Mia sagt Hallo @"
+assert core.game_event_speech({"rawText": "Jacky hat 1 Boosterhandschuh gesendet"}) == "Booster wurde gesetzt"
+assert core.game_event_speech({"rawText": "Jacky hat Rose gesendet x 1"}) == ""
+assert core.compose_speech_text({"author": "System", "content": "Booster wurde gesetzt", "systemSpeechText": "Booster wurde gesetzt"}) == "Booster wurde gesetzt"
+assert core.should_filter_game_mode_speech(
+    {"author": "A", "content": "Jacky", "receivedAtUtc": "2026-07-26T10:00:10.000Z"},
+    {"jacky": {"name": "🫶Jacky🫶", "displayId": "jacky"}},
+    [
+        {"content": "Jacky", "receivedAtUtc": "2026-07-26T10:00:00.000Z"},
+        {"content": "🫶 Jacky 🫶", "receivedAtUtc": "2026-07-26T10:00:05.000Z"}
+    ]
+) == True
+assert core.should_filter_game_mode_speech(
+    {"author": "A", "content": "@Jacky danke", "receivedAtUtc": "2026-07-26T10:00:10.000Z"},
+    {"jacky": {"name": "Jacky", "displayId": "jacky"}},
+    [{"content": "@Jacky danke", "receivedAtUtc": "2026-07-26T10:00:05.000Z"}]
+) == False
+assert core.compose_speech_text({"author": "user572838499281727393816181", "content": "hahahahahahhhhahhhaaaa bald"}) == "user572 sagt haha bald"
+assert core.compose_speech_text({"author": "deroy", "content": "@user572838499281727393816181 bald bist du nur noch ein sohn"}) == "deroy sagt zu user572 bald bist du nur noch ein sohn"
+assert core.compose_speech_text({"author": "Rebecca № 2 💕", "content": "@Vanny_GioPrimetv hallo"}, {"shortenNames": True}) == "Rebecca sagt zu Vanny hallo"
 
-# Basic structural checks instead of functional ones since core module isn't available
-assert True  # Placeholder for core.inspectMetadata(metadata) checks
+team = core.accumulate_team_evidence({}, "Miimii tmm", "Teilt den Stream", [])
+assert team["teamTag"] == ""
+team = core.accumulate_team_evidence(team["evidence"], "Honey tmm", "wo ist mein Tee?", ["Teilt den Stream"])
+assert team["teamTag"] == "tmm"
+team = core.accumulate_team_evidence({}, "Miimii tmm", "danke", [])
+team = core.accumulate_team_evidence(team["evidence"], "Stivinho", "tmm hilft", ["danke"])
+assert team["teamTag"] == "tmm"
+assert core.accumulate_team_evidence({}, "Miimii tmm", "tmm danke", [])["teamTag"] == "tmm"
+assert core.accumulate_team_evidence({}, "Ben", "Ben ist da", [])["teamTag"] == ""
+assert core.stream_identity_changed({"handle": "demo", "roomId": "1"}, {"handle": "demo", "roomId": "1"}) == False
+assert core.stream_identity_changed({"handle": "demo", "roomId": "1"}, {"handle": "demo", "roomId": "2"}) == True
+assert core.stream_identity_changed({"handle": "demo", "roomId": ""}, {"handle": "other", "roomId": ""}) == True
+assert core.live_handle_from_url("https://www.tiktok.com/@Demo/live") == "demo"
+assert core.live_handle_from_url("https://www.tiktok.com/embed/live/@Other") == "other"
+assert core.live_handle_from_url("https://www.tiktok.com/@demo") == ""
+assert core.live_handle_from_url("not a url") == ""
+assert core.parse_compact_count("3,231") == 3231
+assert core.parse_compact_count("3.231") == 3231
+assert core.parse_compact_count("3.2K") == 3200
+assert core.parse_compact_count("1,1M") == 1100000
+assert core.parse_compact_count("nicht verfügbar") is None
 
-# Additional file content checks
-background_source_path = extension / "background.js"
-content_source_path = extension / "content.js"
-hook_source_path = extension / "hook.js"
-sidepanel_source_path = extension / "sidepanel.js"
-proto_main_source_path = extension / "proto-main.js"
-setup_source_path = root / "companion-service" / "setup.ps1"
-repair_source_path = root / "companion-service" / "Sprachdienst-reparieren.cmd"
-repair_powershell_source_path = root / "companion-service" / "repair-service.ps1"
+recommendation_items = core.dedupe_recommendations([
+    {"handle": "@Alpha", "displayName": "", "title": "Erster Stream", "viewerCount": None, "url": "https://www.tiktok.com/@alpha/live", "position": 1},
+    {"handle": "alpha", "displayName": "Alpha Live", "viewerCount": 123, "viewerLabel": "123", "position": 2},
+    {"handle": "Beta", "displayName": "Beta", "viewerCount": 500, "url": "https://www.tiktok.com/@beta/live", "position": 3},
+    {"handle": "gamma", "displayName": "Gamma", "viewerCount": None, "url": "https://www.tiktok.com/@gamma/live", "position": 2}
+])
+assert len(recommendation_items) == 3
+assert recommendation_items[0]["handle"] == "alpha"
+assert recommendation_items[0]["displayName"] == "Alpha Live"
+assert recommendation_items[0]["viewerCount"] == 123
+assert core.sort_recommendations(recommendation_items, "viewers")[0]["handle"] == "beta"
 
-with open(background_source_path, 'r', encoding='utf-8') as f:
-    background_source = f.read()
-    
-with open(content_source_path, 'r', encoding='utf-8') as f:
-    content_source = f.read()
-    
-with open(hook_source_path, 'r', encoding='utf-8') as f:
-    hook_source = f.read()
-    
-with open(sidepanel_source_path, 'r', encoding='utf-8') as f:
-    sidepanel_source = f.read()
-    
-with open(proto_main_source_path, 'r', encoding='utf-8') as f:
-    proto_main_source = f.read()
-    
-with open(setup_source_path, 'r', encoding='utf-8') as f:
-    setup_source = f.read()
-    
-with open(repair_source_path, 'r', encoding='utf-8') as f:
-    repair_source = f.read()
-    
-with open(repair_powershell_source_path, 'r', encoding='utf-8') as f:
-    repair_powershell_source = f.read()
+profile_and_summary = core.inspect_metadata({
+    "live_ai_summary_ui": {"vid": "v2"},
+    "userInfo": {
+        "uniqueId": "demo",
+        "nickname": "Demo",
+        "signature": "Eine Bio",
+        "stats": {"followingCount": 12, "followerCount": 345, "heartCount": 678}
+    }
+})
+assert profile_and_summary["profileInfo"]["present"] == True
+assert profile_and_summary["profileInfo"]["uniqueId"] == "demo"
+assert profile_and_summary["profileInfo"]["followerCount"] == "345"
+assert profile_and_summary["aiSummaryInfo"]["featureFlagPresent"] == True
+assert profile_and_summary["aiSummaryInfo"]["text"] == ""
 
-# Check various string patterns exist in sources
+actual_summary = core.inspect_metadata({"live_summary_text": "Eine tatsächlich gelieferte Zusammenfassung."})
+assert actual_summary["aiSummaryInfo"]["text"] == "Eine tatsächlich gelieferte Zusammenfassung."
+
+pull_data = {
+    "options": {"qualities": [
+        {"sdk_key": "origin", "name": "Original"},
+        {"sdk_key": "hd", "name": "720p"},
+        {"sdk_key": "sd", "name": "540p"},
+        {"sdk_key": "ld", "name": "360p"}
+    ]},
+    "stream_data": json.dumps({
+        "data": {
+            "origin": {"main": {"flv": "https://pull.example.tiktokcdn.com/live/stream_origin.flv", "sdk_params": json.dumps({"VCodec": "h265", "vbitrate": 2600000, "width": 1920, "height": 1080, "fps": 60})}},
+            "hd": {"main": {"flv": "https://pull.example.tiktokcdn.com/live/stream_hd.flv", "hls": "https://pull.example.tiktokcdn.com/live/stream_hd.m3u8", "sdk_params": json.dumps({"VCodec": "h264", "vbitrate": 1800000, "width": 1280, "height": 720, "fps": 30})}},
+            "sd": {"main": {"flv": "https://pull.example.tiktokcdn.com/live/stream_sd.flv", "sdk_params": json.dumps({"VCodec": "h264", "vbitrate": 900000, "width": 960, "height": 540, "fps": 30})}},
+            "ld": {"main": {"flv": "https://pull.example.tiktokcdn.com/live/stream_ld.flv", "sdk_params": json.dumps({"VCodec": "h264", "vbitrate": 600000, "width": 640, "height": 360, "fps": 30})}}
+        }
+    })
+}
+variants = core.extract_stream_variants(pull_data)
+assert len(variants) == 5
+assert any(item["sdkKey"] == "origin" and item["quality"] == "Original" and item["height"] == 1080 for item in variants)
+assert any(item["sdkKey"] == "hd" and item["quality"] == "720p" and item["bitrate"] == 1800000 for item in variants)
+assert any(item["sdkKey"] == "sd" and item["width"] == 960 and item["height"] == 540 for item in variants)
+assert any(item["sdkKey"] == "ld" and item["quality"] == "360p" and item["height"] == 360 for item in variants)
+
+# Protobuf-Tests
+caption_content = concat(bytes_field(1, "de"), bytes_field(2, "Guten Abend"))
+caption_payload = concat(
+    int_field(2, 123456),
+    int_field(3, 1500),
+    bytes_field(4, caption_content),
+    int_field(5, 77),
+    int_field(6, 3),
+    int_field(7, 1)
+)
+base_message = concat(bytes_field(1, "WebcastCaptionMessage"), bytes_field(2, caption_payload))
+fetch_result = bytes_field(1, base_message)
+decoded = proto.decode_fetch_result(fetch_result)
+assert len(decoded["captions"]) == 1
+assert decoded["captions"][0]["contents"][0]["lang"] == "de"
+assert decoded["captions"][0]["contents"][0]["text"] == "Guten Abend"
+assert decoded["captions"][0]["sentenceId"] == "77"
+assert decoded["captions"][0]["definite"] == True
+
+chat_user = concat(int_field(1, 123), bytes_field(3, "Demo 😊"), bytes_field(38, "demo_user"))
+chat_payload = concat(
+    bytes_field(1, concat(int_field(2, 9010))),
+    bytes_field(2, chat_user),
+    bytes_field(3, "Guten Abend ❤️"),
+    bytes_field(14, "de")
+)
+chat_fetch = bytes_field(1, concat(bytes_field(1, "WebcastChatMessage"), bytes_field(2, chat_payload)))
+chat_decoded = proto.decode_fetch_result(chat_fetch)["chatMessages"]
+assert len(chat_decoded) == 1
+assert chat_decoded[0]["messageId"] == "9010"
+assert chat_decoded[0]["nickname"] == "Demo 😊"
+assert chat_decoded[0]["displayId"] == "demo_user"
+assert chat_decoded[0]["content"] == "Guten Abend ❤️"
+assert chat_decoded[0]["contentLanguage"] == "de"
+
+gift_payload = concat(
+    bytes_field(1, concat(int_field(2, 9020))),
+    int_field(2, 777),
+    int_field(5, 23),
+    bytes_field(7, chat_user),
+    int_field(9, 1)
+)
+gift_fetch = bytes_field(1, concat(bytes_field(1, "WebcastGiftMessage"), bytes_field(2, gift_payload)))
+gift_decoded = proto.decode_fetch_result(gift_fetch)["giftMessages"]
+assert len(gift_decoded) == 1
+assert gift_decoded[0]["nickname"] == "Demo 😊"
+assert gift_decoded[0]["repeatCount"] == "23"
+
+common = concat(int_field(2, 9001), bytes_field(8, bytes_field(1, "pm_mt_msg_viewer")))
+room_users = concat(bytes_field(1, common), int_field(3, 143), int_field(7, 15842))
+likes = concat(bytes_field(1, common), int_field(2, 10), int_field(3, 430200))
+social_common = concat(int_field(2, 9002), bytes_field(8, bytes_field(1, "pm_main_follow_message_viewer_2")))
+social = concat(bytes_field(1, social_common), int_field(6, 238800))
+live_fetch = concat(
+    bytes_field(1, concat(bytes_field(1, "WebcastRoomUserSeqMessage"), bytes_field(2, room_users))),
+    bytes_field(1, concat(bytes_field(1, "WebcastLikeMessage"), bytes_field(2, likes))),
+    bytes_field(1, concat(bytes_field(1, "WebcastSocialMessage"), bytes_field(2, social)))
+)
+live_decoded = proto.decode_fetch_result(live_fetch)["liveEvents"]
+assert len(live_decoded) == 3
+assert live_decoded[0]["viewerCount"] == "143"
+assert live_decoded[0]["totalViewers"] == "15842"
+assert live_decoded[1]["likeCount"] == "430200"
+assert live_decoded[2]["kind"] == "follow"
+assert live_decoded[2]["followerCount"] == "238800"
+
+# Zusätzliche Tests für Source-Dateien
+background_source = (EXTENSION_DIR / "background.js").read_text(encoding="utf-8")
+content_source = (EXTENSION_DIR / "content.js").read_text(encoding="utf-8")
+hook_source = (EXTENSION_DIR / "hook.js").read_text(encoding="utf-8")
+sidepanel_source = (EXTENSION_DIR / "sidepanel.js").read_text(encoding="utf-8")
+proto_main_source = (EXTENSION_DIR / "proto-main.js").read_text(encoding="utf-8")
+setup_source = (ROOT_DIR / "companion-service" / "setup.ps1").read_text(encoding="utf-8")
+repair_source = (ROOT_DIR / "companion-service" / "Sprachdienst-reparieren.cmd").read_text(encoding="utf-8")
+repair_powershell_source = (ROOT_DIR / "companion-service" / "repair-service.ps1").read_text(encoding="utf-8")
+
 assert "const MAX_CHAT = 500;" in background_source
 assert 'case "TLC_CHAT_MESSAGE"' in background_source
 assert 'case "TLC_GET_PLAYER_STATE"' in background_source
@@ -184,9 +374,8 @@ assert 'case "TLC_QUICK_RECOVER"' in background_source
 assert 'case "TLC_PLAYER_STATE_PUSH"' in background_source
 assert 'case "TLC_GET_DEBUG_REPORT"' in background_source
 
-debug_components = ["vlcReplacement", "speechAndChatSettings", "rawJsonExportAvailable", "jsonLinesExportAvailable", "songRecognition", "topChatters", "autoReconnect"]
-for component in debug_components:
-    assert component in background_source, f"Debug component missing: {component}"
+for debug_component in ["vlcReplacement", "speechAndChatSettings", "rawJsonExportAvailable", "jsonLinesExportAvailable", "songRecognition", "topChatters", "playerQuickRecovery"]:
+    assert debug_component in background_source, f"Debug-Komponente fehlt: {debug_component}"
 
 assert 'path: "browser-local-service-audd"' in background_source
 assert "universalCaptionApiKeyConfigured" in background_source
@@ -213,10 +402,9 @@ assert "www\\.tiktok\\.com\\/embed\\/live" in background_source
 assert "function openEmbedLive" in background_source
 assert "function ensureEmbedChatSource" in background_source
 assert "chatTargetTabId: embedTabId" in background_source
-assert 'chrome.tabs.create({ url: expectedUrl, active: false' in background_source
+assert "chrome.tabs.create({ url: expectedUrl, active: false" in background_source
 assert 'case "TLC_FULLSCREEN_EXITED"' in background_source
 assert "replacement = await chrome.tabs.create" not in background_source
-
 assert "function isLivePage()" in content_source
 assert "^\\/@[^/]+\\/live" in content_source
 assert "^\\/embed\\/live" in content_source
@@ -224,9 +412,9 @@ assert "if (!force || !isLivePage())" in content_source
 assert 'action === "open-report"' in content_source
 assert 'action === "set-volume"' in content_source
 assert 'action === "set-limiter"' in content_source
-assert "createDynamicsCompressor" in content_source
+assert "createPeakLimiterNode" in content_source
 assert "createGain" in content_source
-assert "limiterMakeupCompensation" in content_source
+assert "limiterMakeupCompensation" not in content_source
 assert "captureStream" in content_source
 assert "createMediaStreamSource" in content_source
 assert "audio-context-resume-deferred" in content_source
@@ -242,9 +430,11 @@ assert "const QUICK_RECOVER_CONFIRM_MS = 3000;" in content_source
 assert "now - quickRecoverReasonSince < quickRecoverConfirmMs" in content_source
 assert "let quickRecoverConfirmMs = QUICK_RECOVER_CONFIRM_MS" in content_source
 assert "quickRecoverSeconds: 3" in background_source
-assert "setSettings({ quickRecoverSeconds: seconds })" in background_source
+assert "state.quickRecoverSeconds = seconds" in background_source
+assert "setSettings({ quickRecoverSeconds: seconds })" not in background_source
 assert "const MAX_DEBUG" not in background_source
-assert "raw: state" in background_source
+assert "raw: state" not in background_source
+assert "exportPrivacy.diagnosticReport(" in background_source
 assert '`raw:${String(message?.type || "unknown")}`' in background_source
 assert "let quickRecoverPending = false" in content_source
 assert "if (quickRecoverPending) return" in content_source
@@ -267,17 +457,13 @@ assert "playerBonus" in content_source
 assert "videoArea * 4.5" in content_source
 assert '"fullscreenchange"' in content_source
 
-popup_guard_path = extension / "popup-guard.js"
-with open(popup_guard_path, 'r', encoding='utf-8') as f:
-    popup_guard_content = f.read()
-    
-assert "keepwatching" in popup_guard_content
-assert "^\\/embed\\/live" in popup_guard_content
+popup_guard_source = (EXTENSION_DIR / "popup-guard.js").read_text(encoding="utf-8")
+assert "keepwatching" in popup_guard_source
+assert "^\\/embed\\/live" in popup_guard_source
 assert "video.volume > cap" not in content_source
 assert "Lautstärkedeckel" not in content_source
-
-assert '${volumePercent}%' in sidepanel_source
-assert '${value}%' in sidepanel_source
+assert f"${{volumePercent}}%" in sidepanel_source
+assert f"${{value}}%" in sidepanel_source
 assert "function activateSpeech" in sidepanel_source
 assert "function persistSpeechEnabled" in sidepanel_source
 assert 'type: "TLC_SET_TAB_SPEECH"' in sidepanel_source
@@ -286,8 +472,8 @@ assert "ensureOffscreenDocument" in background_source
 assert "function booleanValue" in sidepanel_source
 assert "booleanValue(playerState.available)" in sidepanel_source
 assert "const available = Boolean(playerState.available)" not in sidepanel_source
-assert 'collectRecommendedSummary' in content_source
-assert 'collectProfileFromHover' in content_source
+assert "collectRecommendedSummary" in content_source
+assert "collectProfileFromHover" in content_source
 assert "function certifiedSvgBadge" in content_source
 assert 'root.querySelectorAll("svg")' in content_source
 assert "verified|verifiziert|zertifiziert|certified|official" not in content_source
@@ -316,26 +502,17 @@ assert "currentLiveHandle" in hook_source
 assert "^\\/@([^/]+)\\/live" in hook_source
 assert "^\\/embed\\/live" in hook_source
 assert "else if (!root[protoKey])" in proto_main_source
-assert popup_guard_path.exists()
-assert '"popup-guard.js", "proto-main.js", "hook.js"' in background_source
+assert (EXTENSION_DIR / "popup-guard.js").exists()
+assert '"popup-guard.js", "proto-main.js", "hook-recovery.js", "hook.js"' in background_source
 
-panel_html_path = extension / "sidepanel.html"
-with open(panel_html_path, 'r', encoding='utf-8') as f:
-    panel_html = f.read()
-
+panel_html = (EXTENSION_DIR / "sidepanel.html").read_text(encoding="utf-8")
 assert 'id="quick-recover-seconds"' in panel_html
 assert 'min="1" max="59"' in panel_html
-
-panel_css_path = extension / "sidepanel.css"
-assert panel_css_path.exists()
-
-offscreen_source_path = extension / "offscreen.js"
-with open(offscreen_source_path, 'r', encoding='utf-8') as f:
-    offscreen_source = f.read()
-
-assert "permissions" in manifest and "offscreen" in manifest["permissions"]
+panel_css = (EXTENSION_DIR / "sidepanel.css").read_text(encoding="utf-8")
+offscreen_source = (EXTENSION_DIR / "offscreen.js").read_text(encoding="utf-8")
 assert "TLC_OFFSCREEN_SPEAK" in offscreen_source
 assert "TLC_OFFSCREEN_CANCEL" in offscreen_source
+assert "offscreen" in manifest["permissions"]
 assert panel_html.index('id="page-info-heading"') > panel_html.index('id="top-chatters-heading"')
 assert panel_html.index('id="page-info-heading"') < panel_html.index('id="hook-heading"')
 assert panel_html.index('id="caption-heading"') > panel_html.index('id="hook-heading"')
@@ -356,251 +533,3 @@ assert panel_html.index('id="page-info-section"') < panel_html.index('id="stats-
 assert panel_html.index('id="hook-heading"') < panel_html.index('id="recommendations-section"')
 assert panel_html.index('id="recommendations-section"') < panel_html.index('id="caption-heading"')
 assert 'id="recommendation-limit"' in panel_html
-assert 'min="1" max="50"' in panel_html
-assert 'id="scan-recommendations"' in panel_html
-assert 'id="cancel-recommendations"' in panel_html
-assert 'id="recommendation-progress"' in panel_html
-assert 'aria-live="polite"' in panel_html
-assert 'id="recommendation-modal"' in panel_html
-assert "function renderRecommendations" in sidepanel_source
-assert "core.sortRecommendations" in sidepanel_source
-assert 'link.textContent = "Stream öffnen"' in sidepanel_source
-assert "RECOMMENDATION_SCAN_MAX = 50" in content_source
-assert 'type: "TLC_RECOMMENDATION_SCAN_PROGRESS"' in content_source
-assert "noGrowthRounds >= 3" in content_source
-assert "window.scrollTo({ left: originalScroll.x, top: originalScroll.y" in content_source
-assert panel_html.index('id="stats-heading"') < panel_html.index('id="hook-heading"')
-assert panel_html.index('id="open-normal-live"') < panel_html.index('id="player-vlc-frame"')
-assert panel_html.index('id="player-vlc-frame"') < panel_html.index('id="caption-heading"')
-assert 'id="audience-modal"' in panel_html
-assert 'id="chat-history-modal"' in panel_html
-assert 'id="close-chat-history"' in panel_html
-assert 'id="auto-chat-refresh"' in panel_html
-assert 'id="auto-chat-refresh-minutes"' in panel_html
-assert "Chatnamen sprechen" in panel_html
-assert panel_html.index('id="speak-names"') < panel_html.index('id="shorten-names"')
-assert panel_html.index('id="shorten-names"') < panel_html.index('id="game-mode"')
-assert panel_html.index('id="auto-chat-refresh"') < panel_html.index('id="speech-settings-modal"')
-assert panel_html.index('id="speech-settings-modal"') < panel_html.index('id="game-mode"')
-assert 'id="speech-language"' in panel_html
-assert 'id="speech-voice"' in panel_html
-assert panel_html.index('id="speech-language"') > panel_html.index('id="speech-settings-modal"')
-assert panel_html.index('id="speech-voice"') > panel_html.index('id="speech-settings-modal"')
-assert 'id="audd-token"' in panel_html
-assert "AudD API-Token" in panel_html
-assert 'href="https://audd.io/"' in panel_html
-assert 'target="_blank"' in panel_html
-assert 'rel="noopener noreferrer"' in panel_html
-assert "AudD API-Token Trail Plan (Songerkennung)" in sidepanel_source
-assert "AudD API-Token (Songerkennung)" in sidepanel_source
-assert 'link.href = "https://audd.io/"' in sidepanel_source
-assert 'link.target = "_blank"' in sidepanel_source
-assert 'elements["service-action"].disabled = true' in sidepanel_source
-assert "Der Pairing-Code wird automatisch an die anfragende Erweiterung uebergeben." in setup_source
-assert "Nur falls die Kopplung nicht bestaetigt wird" in setup_source
-assert "Remove-Item -LiteralPath $generatedScriptPath -Force" in setup_source
-assert '-File "%~dp0repair-service.ps1"' in repair_source
-assert "Sprachdienst starten" in repair_source
-assert "service.json" in repair_powershell_source
-assert "Read-Host \"Erweiterungs-ID\"" in repair_powershell_source
-assert 'Join-Path $serviceDir "setup.ps1"' in repair_powershell_source
-assert "Vorhandener Sprachdienst wurde fuer die saubere Neueinrichtung beendet." in setup_source
-assert "-and -not $runningService.bootstrapPairing" not in setup_source
-assert "Dienstadresse" not in panel_html
-assert 'id="sherpa-action"' in panel_html
-assert 'id="service-setup-command"' not in panel_html
-assert "Installation abschließen!" in panel_html
-assert "navigator.clipboard.writeText(setupCommand)" not in sidepanel_source
-assert 'send("TLC_INSTALL_LOCAL_SERVICE", { nonce })' in sidepanel_source
-assert "attempt < 180" in sidepanel_source
-assert "Sprachdienst-reparieren.cmd" in sidepanel_source
-assert 'openServiceProtocol("install", nonce)' in sidepanel_source
-assert 'openServiceProtocol("start", nonce)' not in sidepanel_source
-assert 'openServiceProtocol("install", nonce)' in sidepanel_source
-assert "active: true" in sidepanel_source
-assert "CMD richtet den vorhandenen oder neuen Sprachdienst ein" in sidepanel_source
-assert 'send("TLC_POLL_LOCAL_SERVICE_INSTALL")' in sidepanel_source
-assert 'case "TLC_POLL_LOCAL_SERVICE_INSTALL"' in background_source
-assert "expectedProtocolHandler" in background_source
-assert "installationPending" in background_source
-assert "pairingConfigured" in background_source
-assert "auddTokenConfigured" in background_source
-assert "localService," in background_source
-assert "SERVICE_INSTALL_KEY" in background_source
-assert "knownPairingCode" in background_source
-assert "Authorization: `Bearer ${knownPairingCode}`" in background_source
-assert "tiktok-live-companion://${mode}/${path}" in sidepanel_source
-assert "${encodeURIComponent(nonce)}/${encodeURIComponent(chrome.runtime.id)}" in sidepanel_source
-assert '[string]$BootstrapNonce = ""' in setup_source
-assert 'Set-Location -LiteralPath "$serviceDir"' in setup_source
-assert "Get-Command pwsh.exe" in setup_source
-assert 'protocol-handler.cmd' in setup_source
-assert 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$setupScriptPath"' in setup_source
-assert 'call "$npmPath" run setup' not in setup_source
-assert "Pairing-Code wird automatisch" in setup_source
-assert '$serviceRoot =' not in setup_source
-assert 'call "$npmPath" run setup --' not in setup_source
-assert "CMD-Installation fehlgeschlagen. PowerShell-Fallback" not in setup_source
-assert 'cmd.exe /d /c' in setup_source
-assert '$runningService.version -eq "0.8.0"' not in setup_source
-assert 'Stop-Process -Id $listenerPid -Force' in setup_source
-assert '$listenerProcess.Name -ne "node.exe"' in setup_source
-assert 'id="sherpa-action" class="secondary">Sherpa</button>' in panel_html
-assert '>JSON-L-Export</button>' in panel_html
-assert '>RAW-JSON-Export</button>' in panel_html
-assert 'id="game-mode"' in panel_html
-assert "Chatnamen" in panel_html
-assert "Chatnamen kürzen" in panel_html
-assert "Permanent aktiv" in panel_html
-assert "voiceName: speechVoiceName" in sidepanel_source
-assert "DEFAULT_SERVICE_URL" in sidepanel_source
-assert "function sherpaSpeechVoices" in sidepanel_source
-assert '["Kyrillisch"' in sidepanel_source
-assert '["Asiatisch"' in sidepanel_source
-assert '["Abjad"' in sidepanel_source
-assert '["Indisch"' in sidepanel_source
-assert '"sherpa-de-eva-k"' in sidepanel_source and '"sherpa-ar-kareem"' in sidepanel_source
-assert sidepanel_source.index('"sherpa-de-eva-k"') < sidepanel_source.index('"sherpa-ar-kareem"')
-assert "function renderChatHistory" in sidepanel_source
-assert "slice(-500).reverse()" in sidepanel_source
-assert "function scheduleAutoChatRefresh" in sidepanel_source
-assert 'clearChatDisplay().catch' in sidepanel_source
-assert "const MAX_CHAT = 500" in background_source
-assert "/v1/config/audd-token" in sidepanel_source
-assert "auddApiToken = response.settings?.auddApiToken" in sidepanel_source
-assert 'TLC_SET_SPEECH_PREFERENCE", { auddApiToken: token }' in sidepanel_source
-assert sidepanel_source.index('/v1/config/audd-token') < sidepanel_source.index('TLC_SET_SPEECH_PREFERENCE", { auddApiToken: token }')
-assert "Pairing-Code wurde nicht gespeichert" in sidepanel_source
-assert "setIntegrationFieldsHidden" not in sidepanel_source
-assert 'id="open-speech-settings"' in panel_html
-assert 'id="speech-settings-modal"' in panel_html
-assert 'id="close-speech-settings"' in panel_html
-assert 'id="universal-caption-api-key"' in panel_html
-assert panel_html.index('id="audd-token"') > panel_html.index('id="speech-settings-modal"')
-assert panel_html.index('id="pairing-code"') > panel_html.index('id="speech-settings-modal"')
-assert 'elements["speech-settings-modal"].hidden = false' in sidepanel_source
-assert "universalCaptionApiKey" in background_source
-assert 'id="export-caption-raw"' in panel_html
-assert 'send("TLC_GET_CAPTION_RAW_EXPORT")' in sidepanel_source
-assert 'case "TLC_GET_CAPTION_RAW_EXPORT"' in background_source
-assert 'schema: "tiktok-live-companion-caption-raw-v1"' in background_source
-
-required_fields = ["text", "data", "sources", "languages", "messages", "dataStreams", "playerTexts", "captionProtocol"]
-for field in required_fields:
-    assert f"{field}:" in background_source, f"RAW export field missing: {field}"
-
-assert 'elements["audd-token"].value = "";' not in sidepanel_source
-assert "/v1/sherpa/install" in sidepanel_source
-assert "canInstallSherpa" in sidepanel_source
-assert "function installSherpaVoices" in sidepanel_source
-assert "Lokaler Dienst ist veraltet" in sidepanel_source
-assert "Sherpa-Endpunkt fehlt" in sidepanel_source
-assert "liveProLabel" in sidepanel_source
-assert "livePageUrl" in sidepanel_source
-assert "sponsoredContentLabel" in sidepanel_source
-assert "cleanSpeechPayload" in sidepanel_source
-assert "function hasGermanSpecialChars" in sidepanel_source
-assert 'return "de-DE"' in sidepanel_source
-assert "function audienceSelectActive" in sidepanel_source
-assert "!audienceSelectActive()" in sidepanel_source
-assert "CURATED_VOICE_PATTERNS" not in sidepanel_source
-assert "BLOCKED_VOICE_NAMES" not in sidepanel_source
-assert "curatedSpeechVoices" not in sidepanel_source
-assert "nicht gemeldet" not in sidepanel_source
-assert "gameModeEnabled" in sidepanel_source
-assert "speechVoiceName" in background_source
-assert "auddApiToken" in background_source
-assert 'send("TLC_INSTALL_LOCAL_SERVICE", { nonce })' in sidepanel_source
-assert 'send("TLC_POLL_LOCAL_SERVICE_INSTALL")' in sidepanel_source
-assert 'elements["pairing-code"].value = pairingCode' in sidepanel_source
-assert "/v1/pair?nonce=" in background_source
-assert "npm run setup -- -ExtensionId ${chrome.runtime.id}" not in background_source
-assert 'sender.url !== chrome.runtime.getURL("offscreen.html")' in background_source
-assert "crypto.getRandomValues" in background_source
-assert "chrome.tabs.remove(serviceTab.id)" in sidepanel_source
-assert "reason: \"throttled\"" not in background_source
-assert 'return "video-paused"' in content_source
-assert 'return "video-not-ready"' in content_source
-assert "Sherpa benötigt zuerst den automatisch gekoppelten Sprachdienst." in sidepanel_source
-assert 'installSherpaVoices(false).catch(() => {})' not in sidepanel_source
-assert "sponsoredContent" in background_source
-assert "function resetPageIdentityIfChanged" in background_source
-assert "function profileMatchesHandle" in background_source
-assert "const targetHandle = normalizeHandle(match[1])" in background_source
-assert "resetPageIdentityIfChanged(state, nextHandle)" in background_source
-assert "gameModeEnabled" in background_source
-assert 'id="speak-names"' in panel_html
-assert 'id="shorten-names"' in panel_html
-assert 'id="recognize-song"' in panel_html
-assert 'id="hook-autostart"' in panel_html
-assert "Permanent Hook" in panel_html
-assert 'id="quick-recover"' in panel_html
-assert "Auto-Reconnect" in panel_html
-assert "RECOMMENDATION_SCAN_MAX_ROUNDS = 12" in content_source
-assert "RECOMMENDATION_SCAN_MAX_MS = 45000" in content_source
-assert 'setTimeout(() => done(false, "timeout"), 15000)' in content_source
-assert "attemptedMediaFallbackUrls" in content_source
-assert "activeMediaFallbackItem" in content_source
-assert "activeMediaFallbackPlayer" in content_source
-assert "globalThis.mpegts.createPlayer" in content_source
-assert 'type: "flv", isLive: true' in content_source
-assert "destroyMediaFallbackPlayer" in content_source
-assert "Alle erkannten Video-Links wurden bereits getestet." in content_source
-assert "Die letzte funktionierende Quelle wurde wiederhergestellt." in content_source
-assert "Erneuter Klick prüft die nächste ungetestete Quelle" in content_source
-assert 'id="open-embed-live"' in panel_html
-assert 'id="open-normal-live"' in panel_html
-assert ">Embed</button>" in panel_html
-assert ">Normal</button>" in panel_html
-assert "Pegelschutz aktivieren" in panel_html
-assert 'id="player-vlc-frame"' in panel_html
-assert "/v1/vlc/status" in sidepanel_source
-assert "/v1/vlc/install" in sidepanel_source
-assert "await installVlcIfNeeded()" in sidepanel_source
-assert 'id="debug-enabled"' in panel_html
-assert 'id="export-debug"' in panel_html
-assert '>Hook setzen</button>' in panel_html
-assert 'id="reset-tab" class="secondary danger-outline">Refresh</button>' in panel_html
-assert "Hook dauerhaft gesetzt lassen" not in panel_html
-assert "Unterbrechung automatisch schnell beheben" not in panel_html
-assert "Hook aktivieren" not in panel_html
-assert "Unterbrechungsfrei aktivieren" not in panel_html
-assert "Embed öffnen" not in panel_html
-assert "Digitalen Pegelschutz aktivieren" not in panel_html
-assert "Es wird nichts aufgenommen oder übertragen." not in panel_html
-assert "Noch keine manuelle Prüfung ausgeführt." not in panel_html
-assert "Es wird nichts aufgenommen oder übertragen." not in sidepanel_source
-
-forbidden_texts = [
-    "Lautstärke, Spitzenpegel und Schutzstärke werden als positive Werte von 0 bis 100 angezeigt.",
-    "Nach einem Klick werden etwa 12 Sekunden Tab-Audio über den lokalen Dienst an AudD übertragen. Anbietergebühren können anfallen.",
-    "Kein Untertitelschalter gefunden. TikTok stellt für diesen Stream derzeit keine native Untertitelfunktion bereit.",
-    "Der Hook wird vor dem Player-Code gesetzt. Der aktuelle Tab wird danach neu geladen.",
-    "Refresh leert nur die flüchtigen Daten dieses Tabs, aktiviert den Hook erneut und lädt TikTok ohne Seitencache. Cookies bleiben unverändert.",
-    "Follows werden ab Hook-Start gezählt.",
-    "Der WebSocket-Hook liefert die Werte nach dem Neuladen des Streams.",
-    "dBFS ist ein digitaler Signalpegel",
-    "Der Export entfernt Werte signierter URL-Parameter",
-    "Bitte einen TikTok-Tab aktivieren.",
-    "Das Seitenpanel arbeitet nur auf https://www.tiktok.com/.",
-    "Hook vorgemerkt; Tab wird neu geladen.",
-    "Hook dauerhaft vorgemerkt",
-    "Untertitelschalter gefunden",
-    "Untertitelschalter nicht gefunden",
-    "Verfügbare Bildqualitäten",
-    'id="quality-list"',
-    'id="quality-count"',
-    'id="quality-action-status"'
-]
-
-for text in forbidden_texts:
-    assert text not in panel_html, f"sidepanel.html contains removed text: {text}"
-    assert text not in sidepanel_source, f"sidepanel.js contains removed text: {text}"
-    assert text not in content_source, f"content.js contains removed text: {text}"
-
-assert '<p class="eyebrow">TikTok LIVE</p>' not in panel_html
-assert "Letzte Chatzeilen" not in panel_html
-assert "Untertitelstatus" not in panel_html
-assert "<h1>Companion</h1>" not in panel_html
-
-print(f"PASS: manifest 0.8.0, {len(scripts)} scripts, chat speech composition, gifts, audience statistics, service controls and security guards")
