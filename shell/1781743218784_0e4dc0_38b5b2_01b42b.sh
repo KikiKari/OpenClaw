@@ -1,7 +1,7 @@
-#!/bin/bash
-# 1781743218784_0e4dc0_38b5b2.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2.pl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784_0e4dc0_38b5b2_01b42b.ps1 — portiert nach shell
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2_01b42b.ps1
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
@@ -217,15 +217,22 @@ EOF
 
 main() {
   if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <output-file>" >&2
+    echo "Usage: $(basename "$0") <output-file>" >&2
     exit 1
   fi
   
   local outputFile="$1"
   
   # Generate HTML content and write to file
-  generateHTML > "$outputFile"
-  echo "HTML file generated: $outputFile"
+  local html_content
+  html_content=$(generateHTML)
+  
+  if echo "$html_content" > "$outputFile"; then
+    echo "HTML file generated: $outputFile"
+  else
+    echo "Could not write to file '$outputFile'" >&2
+    exit 1
+  fi
 }
 
 main "$@"

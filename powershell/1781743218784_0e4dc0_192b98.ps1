@@ -1,10 +1,10 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_192b98.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_192b98.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-function GenerateHTML {
-    return @'
+function Generate-HTML {
+    return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -210,7 +210,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 }
 
 function Main {
@@ -226,7 +226,7 @@ function Main {
     $outputFile = $Args[0]
     
     # Generate HTML content and write to file
-    $htmlContent = GenerateHTML
+    $htmlContent = Generate-HTML
     Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
     Write-Host "HTML file generated: $outputFile"
 }

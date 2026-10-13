@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_38b5b2.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2.pl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2_01b42b.ps1 — portiert nach python
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2_01b42b.ps1
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
-def generateHTML():
+def generate_html():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -214,22 +214,22 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '''
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: {} <output-file>".format(sys.argv[0]), file=sys.stderr)
+def main(args):
+    if len(args) != 1:
+        print("Usage: {} <output-file>".format(os.path.basename(__file__)), file=sys.stderr)
         sys.exit(1)
     
-    output_file = sys.argv[1]
+    output_file = args[0]
     
     # Generate HTML content and write to file
-    html_content = generateHTML()
+    html_content = generate_html()
     try:
-        with open(output_file, 'w', encoding='utf-8') as fh:
-            fh.write(html_content)
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
         print("HTML file generated: {}".format(output_file))
     except Exception as e:
-        print("Could not write to file '{}': {}".format(output_file, str(e)), file=sys.stderr)
+        print("Could not write to file '{}'".format(output_file), file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

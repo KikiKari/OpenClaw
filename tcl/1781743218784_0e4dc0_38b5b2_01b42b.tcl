@@ -1,7 +1,11 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e4dc0_38b5b2.pl — portiert nach tcl
+# 1781743218784_0e4dc0_38b5b2_01b42b.ps1 — portiert nach tcl
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2_01b42b.ps1
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_38b5b2.pl — portiert nach powershell
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2.pl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0e4dc0.sh — portiert nach perl5
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
@@ -228,28 +232,28 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 }
 
-proc main {argv} {
-    if {[llength $argv] != 1} {
-        puts stderr "Usage: [lindex $argv 0] <output-file>"
+proc Main {Args} {
+    if {[llength $Args] != 1} {
+        puts stderr "Usage: [info script] <output-file>"
         exit 1
     }
     
-    set outputFile [lindex $argv 0]
+    set outputFile [lindex $Args 0]
     
     # Generate HTML content and write to file
     set html_content [generateHTML]
-    if {[catch {open $outputFile w} fh]} {
-        puts stderr "Could not write to file '$outputFile'"
+    if {[catch {set fileId [open $outputFile w]} error]} {
+        puts stderr "Could not open file '$outputFile' for writing"
         exit 1
     }
     
-    puts -nonewline $fh $html_content
-    close $fh
+    puts -nonewline $fileId $html_content
+    close $fileId
+    
     puts "HTML file generated: $outputFile"
 }
 
-main $argv
+Main $argv

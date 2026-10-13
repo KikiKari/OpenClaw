@@ -1,17 +1,29 @@
-#!/usr/bin/env bash
-# 1781743218784_0e4dc0.tcl — portiert nach shell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 1781743218784_0e4dc0_192b98.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_192b98.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784_0e4dc0.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
+# 1781743218784_0e4dc0.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.js — portiert nach JavaScript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
 # Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-# Funktion zum Generieren des HTML-Inhalts
-generateHTML() {
-cat << 'EOF'
+# Prüfe Argumente
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <output-file>" >&2
+    exit 1
+fi
+
+output_file="$1"
+
+# Generiere HTML-Inhalt
+generate_html() {
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,18 +232,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-# Hauptfunktion
-main() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: bash script.sh <output-file>" >&2
-        exit 1
-    fi
-    
-    local outputFile="$1"
-    
-    # Generiere HTML-Inhalt und schreibe in Datei
-    generateHTML > "$outputFile"
-    echo "HTML file generated: $outputFile"
-}
-
-main "$@"
+# Schreibe HTML-Inhalt in Ausgabedatei
+generate_html > "$output_file"
+echo "HTML file generated: $output_file"

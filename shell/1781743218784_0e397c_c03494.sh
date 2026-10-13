@@ -1,16 +1,12 @@
 #!/bin/bash
-# 1781743218784_0e397c_c03494.py — portiert nach shell
-# Quelle: python, Projects@abstractions:python/1781743218784_0e397c_c03494.py
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_c03494.ps1 — portiert nach shell
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c_c03494.ps1
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Shell-Portierung von 1781743218784_0e397c.pl → python → bash
-# Quelle: python, Projects@abstractions:python/1781743218784_0e397c_c03494.py
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.sh
-
-generateHTML() {
-    cat <<'EOF'
+generate_html() {
+    cat << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,22 +216,27 @@ EOF
 }
 
 main() {
-    local args=("$@")
-    
-    if [[ ${#args[@]} -ne 1 ]]; then
-        echo "Usage: $0 <output-file>" >&2
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: bash script.sh <output-file>"
         exit 1
     fi
     
-    local output_file="${args[0]}"
+    local output_file="$1"
     
-    # Generiere HTML-Inhalt und schreibe ihn in die Datei
-    if generateHTML > "$output_file"; then
-        echo "HTML file generated: $output_file"
-    else
-        echo "Error generating HTML file" >&2
-        exit 1
-    fi
+    # Create temporary file to hold the HTML content
+    local temp_file
+    temp_file=$(mktemp)
+    
+    # Generate HTML content into temporary file
+    generate_html > "$temp_file"
+    
+    # Move to final destination
+    mv "$temp_file" "$output_file"
+    
+    echo "HTML file generated: $output_file"
 }
 
-main "$@"
+# Only run main if script is executed directly (not sourced)
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

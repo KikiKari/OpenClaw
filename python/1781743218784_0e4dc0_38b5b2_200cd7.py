@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_38b5b2.ps1 — portiert nach python
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2_200cd7.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_200cd7.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-import argparse
 import sys
+import os
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -211,21 +211,24 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
 def main():
-    parser = argparse.ArgumentParser(description='Generates an HTML file containing a secret vault application.')
-    parser.add_argument('output_file', help='The path to the output HTML file.')
-    args = parser.parse_args()
-
+    args = sys.argv[1:]
+    
+    if len(args) != 1:
+        print('Usage: python3 script.py <output-file>', file=sys.stderr)
+        sys.exit(1)
+    
+    output_file = args[0]
+    
     try:
         html_content = generate_html()
-        with open(args.output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
-        print(f"HTML file generated: {args.output_file}")
+        print(f'HTML file generated: {output_file}')
     except Exception as e:
-        print(f"Could not write to file '{args.output_file}'", file=sys.stderr)
+        print(f'Could not write to file \'{output_file}\': {e}', file=sys.stderr)
         sys.exit(1)
 
 if __name__ == '__main__':

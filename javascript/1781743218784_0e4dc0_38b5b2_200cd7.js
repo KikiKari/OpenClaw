@@ -1,34 +1,35 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_38b5b2.ps1 — portiert nach javascript
+// 1781743218784_0e4dc0_38b5b2_200cd7.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2_200cd7.pl
+// Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0e4dc0_38b5b2.ps1 — portiert nach JavaScript
 // Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2.ps1
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
 
-/**
- * @description Generates an HTML file containing a secret vault application.
- * @param {string} outputFile - The path to the output HTML file.
- */
+// SYNOPSIS
+// Generiert eine HTML-Datei mit einer Secret-Vault-Anwendung.
+// BESCHREIBUNG
+// Dieses Skript generiert eine HTML-Datei, die eine clientseitige Secret-Vault-Anwendung enthält.
+// Die Anwendung ermöglicht es Benutzern, Geheimnisse mit AES-256-GCM und PBKDF2 zu ver- und entschlüsseln.
+// PARAMETER
+// output_file - Der Pfad zur Ausgabedatei.
 
-// Get command line arguments
 const args = process.argv.slice(2);
-let outputFile = null;
-
-for (let i = 0; i < args.length; i++) {
-  if (args[i] === '-OutputFile' && i + 1 < args.length) {
-    outputFile = args[i + 1];
-    break;
-  }
-}
+const outputFile = args[0];
 
 if (!outputFile) {
-  console.error('Error: OutputFile parameter is required.');
-  process.exit(1);
+    console.error(`Usage: ${process.argv[1]} <output_file>\n`);
+    process.exit(1);
 }
 
 function generateHtml() {
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -236,11 +237,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 try {
-  // Generate HTML content and write to file
-  const htmlContent = generateHtml();
-  fs.writeFileSync(outputFile, htmlContent, 'utf8');
-  console.log(`HTML file generated: ${outputFile}`);
+    const htmlContent = generateHtml();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML file generated: ${outputFile}`);
 } catch (error) {
-  console.error(`Could not write to file '${outputFile}'`);
-  process.exit(1);
+    console.error(`Could not write to file '${outputFile}': ${error.message}`);
+    process.exit(1);
 }

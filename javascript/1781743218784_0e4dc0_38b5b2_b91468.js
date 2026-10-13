@@ -1,16 +1,12 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_38b5b2.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_38b5b2.tcl
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_0e4dc0.sh — portiert nach tcl
-// Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_38b5b2_b91468.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2_b91468.pl
+// Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
 function generateHTML() {
-    const html = `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -215,7 +211,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>`;
-    return html;
 }
 
 function main(argv) {
@@ -225,18 +220,21 @@ function main(argv) {
     }
     
     const outputFile = argv[0];
+    
+    // Generate HTML content and write to file
     const htmlContent = generateHTML();
     
     try {
         fs.writeFileSync(outputFile, htmlContent);
+        
         if (!fs.existsSync(outputFile)) {
             console.error("Could not write to file '" + outputFile + "'");
             process.exit(1);
         } else {
             console.log("HTML file generated: " + outputFile);
         }
-    } catch (error) {
-        console.error("Could not open file '" + outputFile + "' for writing: " + error.message);
+    } catch (err) {
+        console.error("Could not open file '" + outputFile + "' for writing: " + err.message);
         process.exit(1);
     }
 }

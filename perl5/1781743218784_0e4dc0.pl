@@ -1,20 +1,10 @@
-#!/usr/bin/perl
-# 1781743218784_0e4dc0.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env perl
+# 1781743218784_0e4dc0.tcl — portiert nach perl5
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use JSON::PP;
-
-# 1781743218784_0e4dc0.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 sub generateHTML {
     return <<'HTML_END';
@@ -41,7 +31,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 10px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -237,11 +227,17 @@ sub main {
     my $outputFile = $args[0];
     
     # Generate HTML content and write to file
-    my $htmlContent = generateHTML();
-    open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile': $!";
-    print $fh $htmlContent;
-    close($fh);
-    print "HTML file generated: $outputFile\n";
+    eval {
+        open(my $fd, '>', $outputFile) or die "Could not open file '$outputFile' for writing: $!";
+        print $fd generateHTML();
+        close($fd);
+        print "HTML file generated: $outputFile\n";
+    };
+    if ($@) {
+        print STDERR "Could not write file '$outputFile': $@\n";
+        exit 1;
+    }
 }
 
+# Call main with command line arguments
 main(@ARGV);

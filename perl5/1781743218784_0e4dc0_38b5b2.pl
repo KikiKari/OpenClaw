@@ -1,19 +1,13 @@
 #!/usr/bin/perl
 # 1781743218784_0e4dc0_38b5b2.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use Encode qw(encode decode);
-use MIME::Base64;
-
-binmode(STDOUT, ':encoding(UTF-8)');
-binmode(STDERR, ':encoding(UTF-8)');
 
 sub generateHTML {
-    return <<'HTML_END';
+  return <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -223,24 +217,24 @@ HTML_END
 }
 
 sub main {
-    if (@ARGV != 1) {
-        print STDERR "Usage: $0 <output-file>\n";
-        exit 1;
-    }
-
-    my $outputFile = $ARGV[0];
-
-    eval {
-        my $htmlContent = generateHTML();
-        open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' $!";
-        print $fh $htmlContent;
-        close $fh;
-        print "HTML file generated: $outputFile\n";
-    };
-    if ($@) {
-        print STDERR "Could not write to file '$outputFile'\n";
-        exit 1;
-    }
+  my @args = @_;
+  if (@args != 1) {
+    print STDERR "Usage: $0 <output-file>\n";
+    exit 1;
+  }
+  
+  my $outputFile = $args[0];
+  
+  # Generate HTML content and write to file
+  my $html_content = generateHTML();
+  if (open(my $fh, '>', $outputFile)) {
+    print $fh $html_content;
+    close $fh;
+    print "HTML file generated: $outputFile\n";
+  } else {
+    print STDERR "Could not write to file '$outputFile'\n";
+    exit 1;
+  }
 }
 
-main();
+main(@ARGV);

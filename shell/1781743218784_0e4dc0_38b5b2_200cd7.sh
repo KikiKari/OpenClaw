@@ -1,33 +1,12 @@
-#!/usr/bin/env bash
-# 1781743218784_0e4dc0_38b5b2.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 1781743218784_0e4dc0_38b5b2_200cd7.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_200cd7.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784_0e4dc0.sh — portiert nach powershell
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-# SYNOPSIS
-# Generates an HTML file containing a secret vault application.
-# DESCRIPTION
-# This script generates an HTML file that contains a client-side secret vault application.
-# The application allows users to encrypt and decrypt secrets using AES-256-GCM and PBKDF2.
-# ARGUMENTS
-# OutputFile - The path to the output HTML file.
-# EXAMPLE
-# ./1781743218784_0e4dc0.sh "vault.html"
-
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <OutputFile>"
-    exit 1
-fi
-
-OUTPUT_FILE="$1"
-
 generate_html() {
-    cat << 'EOF'
+  cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -236,11 +215,26 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-{
-    # Generate HTML content and write to file
-    generate_html > "$OUTPUT_FILE"
-    echo "HTML file generated: $OUTPUT_FILE"
-} || {
-    echo "Could not write to file '$OUTPUT_FILE'" >&2
+main() {
+  local args=("$@")
+  
+  if [[ ${#args[@]} -ne 1 ]]; then
+    echo "Usage: $0 <output-file>" >&2
     exit 1
+  fi
+  
+  local output_file="${args[0]}"
+  
+  # Write HTML content to file
+  generate_html > "$output_file"
+  
+  # Check if write was successful
+  if [[ $? -eq 0 ]] && [[ -f "$output_file" ]]; then
+    echo "HTML file generated: $output_file"
+  else
+    echo "Could not write to file '$output_file'" >&2
+    exit 1
+  fi
 }
+
+main "$@"

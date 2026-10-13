@@ -1,10 +1,11 @@
 #!/usr/bin/perl
-# 1781743218784_0e4dc0_38b5b2.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_38b5b2.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2_99ccdf.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_99ccdf.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use File::Basename;
 
 sub generate_html {
     return <<'HTML_END';
@@ -217,19 +218,20 @@ HTML_END
 }
 
 sub main {
-    my $script_name = $0;
-    if (@_ != 1) {
-        print STDERR "Usage: $script_name <output-file>\n";
+    my @args = @ARGV;
+    
+    if (@args != 1) {
+        print STDERR "Usage: " . basename($0) . " <output-file>\n";
         exit 1;
     }
     
-    my $output_file = $_[0];
+    my $output_file = $args[0];
     
     eval {
         my $html_content = generate_html();
         open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
         print $fh $html_content;
-        close($fh);
+        close $fh;
         print "HTML file generated: $output_file\n";
     };
     if ($@) {
@@ -238,4 +240,4 @@ sub main {
     }
 }
 
-main(@ARGV) if !caller;
+main();

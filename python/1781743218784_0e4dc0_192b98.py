@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_192b98.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_192b98.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import base64
+import json
+import hashlib
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import hashes, padding
+from cryptography.hazmat.backends import default_backend
+import os
 
-def generateHTML():
+def generate_html():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -216,18 +220,62 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
+def derive_key(password, salt):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=210000,
+        backend=default_backend()
+    )
+    key = kdf.derive(password.encode())
+    return key
+
+def encrypt_obj(obj, password):
+    salt = os.urandom(16)
+    iv = os.urandom(12)
+    key = derive_key(password, salt)
+    
+    plaintext = json.dumps(obj, indent=2).encode('utf-8')
+    
+    cipher = Cipher(algorithms.AES(key), modes.GCM(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
+    ciphertext = encryptor.update(plaintext) + encryptor.finalize()
+    
+    magic = b'SVPB1'
+    out = magic + salt + iv + encryptor.tag + ciphertext
+    return base64.b64encode(out).decode('utf-8')
+
+def decrypt_b64(b64_data, password):
+    raw = base64.b64decode(b64_data.strip())
+    if raw[:5].decode('utf-8') != 'SVPB1':
+        raise Exception("magic")
+        
+    salt = raw[5:21]
+    iv = raw[21:33]
+    tag = raw[33:49]
+    ciphertext = raw[49:]
+    
+    key = derive_key(password, salt)
+    
+    cipher = Cipher(algorithms.AES(key), modes.GCM(iv, tag), backend=default_backend())
+    decryptor = cipher.decryptor()
+    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+    
+    return json.loads(plaintext.decode('utf-8'))
+
 def main(args):
     if len(args) != 1:
-        print("Usage: python3 script.py <output-file>", file=sys.stderr)
+        print("Usage: python3 script.py <output-file>")
         sys.exit(1)
     
-    outputFile = args[0]
+    output_file = args[0]
     
     # Generate HTML content and write to file
-    htmlContent = generateHTML()
-    with open(outputFile, 'w') as fh:
-        fh.write(htmlContent)
-    print(f"HTML file generated: {outputFile}")
+    html_content = generate_html()
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    print(f"HTML file generated: {output_file}")
 
 if __name__ == "__main__":
     main(sys.argv[1:])

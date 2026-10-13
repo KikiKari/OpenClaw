@@ -1,10 +1,15 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0.js — portiert nach powershell
+# 1781743218784_0e4dc0.tcl — portiert nach powershell
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
 # Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Portiert nach PowerShell 7: 2024-12-20
 
 function generateHTML {
-    return @"
+    return @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -28,7 +33,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 10px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -210,21 +215,30 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-"@
+'@
 }
 
-function main($args) {
-    if ($args.Count -ne 1) {
+function Main {
+    param(
+        [string[]]$Args
+    )
+
+    if ($Args.Count -ne 1) {
         Write-Error "Usage: pwsh script.ps1 <output-file>"
         exit 1
     }
-    
-    $outputFile = $args[0]
-    
-    # Generate HTML content and write to file
-    $htmlContent = generateHTML
-    Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
-    Write-Host "HTML file generated: $outputFile"
+
+    $outputFile = $Args[0]
+
+    try {
+        $htmlContent = generateHTML
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+        Write-Output "HTML file generated: $outputFile"
+    } catch {
+        Write-Error "Could not write file '$outputFile': $_"
+        exit 1
+    }
 }
 
-main($args)
+# Call main with command line arguments
+Main -Args $args

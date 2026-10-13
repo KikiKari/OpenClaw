@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784.tcl — portiert nach javascript
+// Quelle: tcl, Projects@abstractions:tcl/1781743218784.tcl
+// Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784.js — portiert nach perl5
-// Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+// 1781743218784.js — portiert nach JavaScript für Node 20
+// Quelle: tcl, Projects@abstractions:tcl/1781743218784.tcl
 // Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
+const path = require('path');
 
-function generate_html() {
+function generateHTML() {
     const html = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -227,12 +228,12 @@ function main() {
         process.exit(1);
     }
     
-    const output_file = args[0];
+    const outputFile = args[0];
     
     try {
-        const html_content = generate_html();
-        fs.writeFileSync(output_file, html_content);
-        console.log(`HTML file generated: ${output_file}`);
+        const htmlContent = generateHTML();
+        fs.writeFileSync(outputFile, htmlContent, 'utf8');
+        console.log(`HTML file generated: ${outputFile}`);
     } catch (error) {
         console.error(`Error generating HTML file: ${error.message}`);
         process.exit(1);

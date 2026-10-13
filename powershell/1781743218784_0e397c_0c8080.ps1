@@ -1,18 +1,15 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e397c_0c8080.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_0c8080.sh — portiert nach powershell
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c_0c8080.sh
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e397c.tcl — portiert nach javascript
+# 1781743218784_0e397c.tcl — portiert nach shell
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
 # Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-function Generate-HTML {
-    $html = @"
+# Generate HTML content
+function generateHTML {
+    @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,29 +216,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 "@
-    return $html
 }
 
-function Main {
+function main {
     param(
-        [string[]]$Args
+        [string[]]$argv = @()
     )
     
-    if ($Args.Count -ne 1) {
-        Write-Host "Usage: powershell script.ps1 <output-file>"
+    if ($argv.Count -ne 1) {
+        Write-Error "Usage: $($MyInvocation.MyCommand.Name) <output-file>"
         exit 1
     }
     
-    $outputFile = $Args[0]
+    $output_file = $argv[0]
     
+    # Generate HTML content and write to file
     try {
-        $htmlContent = Generate-HTML
-        [System.IO.File]::WriteAllText($outputFile, $htmlContent, [System.Text.Encoding]::UTF8)
-        Write-Host "HTML file generated: $outputFile"
-    } catch {
-        Write-Host "Error generating HTML file: $($_.Exception.Message)"
+        generateHTML | Out-File -FilePath $output_file -Encoding UTF8
+        Write-Output "HTML file generated: $output_file"
+    }
+    catch {
+        Write-Error "Error generating HTML file"
         exit 1
     }
 }
 
-Main -Args $args
+main @args

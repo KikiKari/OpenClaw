@@ -1,14 +1,9 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0.tcl
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e4dc0_192b98.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_192b98.pl
+// Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0e4dc0.js — portiert nach tcl
-// Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-const fs = require('fs');
-
+// Function to generate HTML content
 function generateHTML() {
     return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -217,6 +212,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 }
 
+// Main function
 function main(args) {
     if (args.length !== 1) {
         console.error("Usage: node script.js <output-file>");
@@ -227,8 +223,9 @@ function main(args) {
     
     // Generate HTML content and write to file
     const htmlContent = generateHTML();
-    fs.writeFileSync(outputFile, htmlContent);
+    require('fs').writeFileSync(outputFile, htmlContent);
     console.log(`HTML file generated: ${outputFile}`);
 }
 
+// Execute main function with command line arguments
 main(process.argv.slice(2));

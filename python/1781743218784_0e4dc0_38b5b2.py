@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # 1781743218784_0e4dc0_38b5b2.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -213,21 +212,22 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: " + sys.argv[0] + " <output-file>", file=sys.stderr)
+def main(args):
+    if len(args) != 2:
+        print("Usage: {} <output-file>".format(args[0]), file=sys.stderr)
         sys.exit(1)
-
-    output_file = sys.argv[1]
-
+    
+    output_file = args[1]
+    
+    # Generate HTML content and write to file
+    html_content = generate_html()
     try:
-        html_content = generate_html()
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
         print("HTML file generated: " + output_file)
-    except Exception as e:
+    except Exception as err:
         print("Could not write to file '" + output_file + "'", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

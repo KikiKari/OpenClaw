@@ -1,13 +1,13 @@
 #!/bin/bash
-# 1781743218784_0e397c.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c.tcl — portiert nach shell
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Funktion zur Generierung des HTML-Codes
+# Function to generate HTML content
 generate_html() {
-    cat <<'EOF'
+    cat << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -216,30 +216,26 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-# Hauptfunktion
+# Main function
 main() {
-    local args_count=$#
-    
-    if [[ $args_count -ne 1 ]]; then
-        echo "Usage: $0 <output-file>"
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: bash script.sh <output-file>"
         exit 1
     fi
-    
+
     local output_file="$1"
     
-    # Generiere den HTML-Inhalt und speichere ihn in der Datei
+    # Generate HTML content and write to file
     generate_html > "$output_file"
     
-    # Überprüfe, ob das Schreiben erfolgreich war
-    if [[ $? -eq 0 ]]; then
+    # Check if file was created successfully
+    if [[ $? -eq 0 && -f "$output_file" ]]; then
         echo "HTML file generated: $output_file"
     else
-        echo "Error generating HTML file" >&2
+        echo "Error generating HTML file"
         exit 1
     fi
 }
 
-# Wenn das Skript direkt aufgerufen wird, führe die Hauptfunktion aus
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+# Call main function with all arguments
+main "$@"

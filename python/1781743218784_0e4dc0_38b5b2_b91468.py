@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-# 1781743218784_0e4dc0_38b5b2.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_38b5b2.tcl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2_b91468.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_b91468.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.sh — portiert nach tcl
+# 1781743218784_0e4dc0_38b5b2.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_38b5b2.tcl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.sh — portiert nach JavaScript
 # Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
 # Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+
+import sys
 
 def generateHTML():
     html = '''<!DOCTYPE html>
@@ -216,30 +222,27 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
     return html
 
 def main(argv):
-    import sys
-    import os
-    
     if len(argv) != 1:
-        print("Usage: {} <output-file>".format(sys.argv[0]), file=sys.stderr)
+        print("Usage: " + sys.argv[0] + " <output-file>", file=sys.stderr)
         sys.exit(1)
     
-    outputFile = argv[0]
+    output_file = argv[0]
     
     # Generate HTML content and write to file
-    htmlContent = generateHTML()
+    html_content = generateHTML()
     try:
-        with open(outputFile, 'w') as fd:
-            fd.write(htmlContent)
-    except Exception as errorMsg:
-        print("Could not open file '{}' for writing: {}".format(outputFile, errorMsg), file=sys.stderr)
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+    except Exception as error:
+        print("Could not write to file '" + output_file + "': " + str(error), file=sys.stderr)
         sys.exit(1)
-    
-    if not os.path.exists(outputFile):
-        print("Could not write to file '{}'".format(outputFile), file=sys.stderr)
+
+    try:
+        with open(output_file, 'r'):
+            print("HTML file generated: " + output_file)
+    except Exception as error:
+        print("Could not write to file '" + output_file + "'", file=sys.stderr)
         sys.exit(1)
-    else:
-        print("HTML file generated: {}".format(outputFile))
 
 if __name__ == "__main__":
-    import sys
     main(sys.argv[1:])

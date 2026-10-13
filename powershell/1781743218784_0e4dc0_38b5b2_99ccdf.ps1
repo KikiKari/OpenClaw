@@ -1,14 +1,10 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_38b5b2.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_38b5b2.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.sh — portiert nach python
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2_99ccdf.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_99ccdf.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 function Generate-Html {
-    return @'
+    return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -214,10 +210,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 }
 
 function Main {
+    $args = $args
+    
     if ($args.Count -ne 1) {
         Write-Error "Usage: $($MyInvocation.MyCommand.Name) <output-file>"
         exit 1
@@ -229,8 +227,7 @@ function Main {
         $htmlContent = Generate-Html
         Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
         Write-Output "HTML file generated: $outputFile"
-    }
-    catch {
+    } catch {
         Write-Error "Could not write to file '$outputFile': $($_.Exception.Message)"
         exit 1
     }

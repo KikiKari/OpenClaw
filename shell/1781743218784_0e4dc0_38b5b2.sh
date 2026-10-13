@@ -1,29 +1,17 @@
 #!/bin/bash
 # 1781743218784_0e4dc0_38b5b2.js — portiert nach shell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2.js
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784_0e4dc0.sh — portiert nach javascript
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2.pl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach javascript
+# 1781743218784_0e4dc0.js — portiert nach Node.js
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-21 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.sh — portiert nach JavaScript
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.html — portiert nach JavaScript
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 if [[ $# -ne 1 ]]; then
     echo "Usage: $0 <output-file>" >&2
@@ -32,6 +20,7 @@ fi
 
 output_file="$1"
 
+# Funktion zur Generierung des HTML-Inhalts
 generate_html() {
     cat <<'EOF'
 <!DOCTYPE html>
@@ -242,16 +231,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-main() {
-    local html_content
-    html_content=$(generate_html)
-    
-    if ! printf '%s' "$html_content" > "$output_file"; then
-        echo "Could not write to file '$output_file'" >&2
-        exit 1
-    fi
-    
-    echo "HTML file generated: $output_file"
-}
+# Generiere HTML-Inhalt und schreibe in Datei
+generate_html > "$output_file"
 
-main "$@"
+echo "HTML file generated: $output_file"

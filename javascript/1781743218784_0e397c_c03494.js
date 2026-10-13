@@ -1,13 +1,9 @@
 #!/usr/bin/env node
-// 1781743218784_0e397c_c03494.ps1 — portiert nach javascript
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c_c03494.ps1
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0e397c_c03494.py — portiert nach javascript
+// Quelle: python, Projects@abstractions:python/1781743218784_0e397c_c03494.py
+// Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0e397c.pl — portiert nach powershell
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c.pl
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
-
-function generateHtml() {
+function generateHTML() {
     const html = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -213,11 +209,15 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>`;
-
     return html;
 }
 
-function main(args) {
+function main() {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const args = process.argv.slice(2);
+    
     if (args.length !== 1) {
         console.log("Usage: node script.js <output-file>");
         process.exit(1);
@@ -226,17 +226,17 @@ function main(args) {
     const outputFile = args[0];
     
     try {
-        const fs = require('fs');
-        const htmlContent = generateHtml();
-        fs.writeFileSync(outputFile, htmlContent, 'utf8');
+        const htmlContent = generateHTML();
+        fs.writeFileSync(outputFile, htmlContent, 'utf-8');
         console.log(`HTML file generated: ${outputFile}`);
-    }
-    catch (error) {
-        console.log(`Error generating HTML file: ${error.message}`);
+    } catch (error) {
+        console.log(`Error generating HTML file: ${error}`);
         process.exit(1);
     }
 }
 
 if (require.main === module) {
-    main(process.argv.slice(2));
+    main();
 }
+
+module.exports = { generateHTML, main };

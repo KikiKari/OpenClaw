@@ -1,26 +1,13 @@
 #!/usr/bin/env tclsh
+# 1781743218784_0e4dc0_38b5b2_200cd7.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_200cd7.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+
 # 1781743218784_0e4dc0_38b5b2.ps1 — portiert nach tcl
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# SYNOPSIS
-# Generates an HTML file containing a secret vault application.
-# DESCRIPTION
-# This script generates an HTML file that contains a client-side secret vault application.
-# The application allows users to encrypt and decrypt secrets using AES-256-GCM and PBKDF2.
-# PARAMETER OutputFile
-# The path to the output HTML file.
-# EXAMPLE
-# tclsh 1781743218784_0e4dc0_38b5b2.tcl vault.html
-
-if {$argc != 1} {
-    puts stderr "Usage: [info script] <OutputFile>"
-    exit 1
-}
-
-set OutputFile [lindex $argv 0]
-
-proc GenerateHtml {} {
+proc generateHtml {} {
     return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -228,13 +215,24 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>}
 }
 
-if {[catch {
-    set htmlContent [GenerateHtml]
-    set fh [open $OutputFile w]
-    puts -nonewline $fh $htmlContent
-    close $fh
-    puts "HTML file generated: $OutputFile"
-} error]} {
-    puts stderr "Could not write to file '$OutputFile': $error"
-    exit 1
+proc main {argv} {
+    if {[llength $argv] != 1} {
+        puts stderr "Usage: tclsh script.tcl <output-file>"
+        exit 1
+    }
+    
+    set outputFile [lindex $argv 0]
+    
+    if {[catch {
+        set htmlContent [generateHtml]
+        set fh [open $outputFile w]
+        puts -nonewline $fh $htmlContent
+        close $fh
+        puts "HTML file generated: $outputFile"
+    } error]} {
+        puts stderr "Could not write to file '$outputFile'"
+        exit 1
+    }
 }
+
+main $argv

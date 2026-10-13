@@ -1,13 +1,17 @@
 #!/usr/bin/env node
-// 1781743218784_0e4dc0_38b5b2.py — portiert nach javascript
+// 1781743218784_0e4dc0_38b5b2_99ccdf.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2_99ccdf.pl
+// Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0e4dc0_38b5b2.py — portiert nach perl5
 // Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_38b5b2.py
-// Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// Portiert nach JavaScript fuer Node 20
 
 const fs = require('fs');
-const path = require('path');
 
-function generateHtml() {
-  return `<!DOCTYPE html>
+function generate_html() {
+    return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -215,25 +219,25 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 function main() {
-  const args = process.argv.slice(2);
-  
-  if (args.length !== 1) {
-    console.error(`Usage: ${path.basename(process.argv[1])} <output-file>`);
-    process.exit(1);
-  }
-  
-  const outputFile = args[0];
-  
-  try {
-    const htmlContent = generateHtml();
-    fs.writeFileSync(outputFile, htmlContent, 'utf8');
-    console.log(`HTML file generated: ${outputFile}`);
-  } catch (error) {
-    console.error(`Could not write to file '${outputFile}': ${error.message}`);
-    process.exit(1);
-  }
+    const args = process.argv.slice(2);
+    
+    if (args.length !== 1) {
+        console.error("Usage: " + process.argv[1] + " <output-file>");
+        process.exit(1);
+    }
+    
+    const output_file = args[0];
+    
+    try {
+        const html_content = generate_html();
+        fs.writeFileSync(output_file, html_content, 'utf8');
+        console.log("HTML file generated: " + output_file);
+    } catch (error) {
+        console.error("Could not write to file '" + output_file + "': " + error.message);
+        process.exit(1);
+    }
 }
 
 if (require.main === module) {
-  main();
+    main();
 }

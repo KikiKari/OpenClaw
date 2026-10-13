@@ -1,28 +1,10 @@
-#!/usr/bin/env perl
-# 1781743218784_0e4dc0_38b5b2.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e4dc0_38b5b2.ps1
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0e4dc0_38b5b2_200cd7.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_200cd7.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use Encode qw(decode_utf8);
-use Getopt::Long;
-
-# SYNOPSIS
-# Generiert eine HTML-Datei mit einer Secret-Vault-Anwendung.
-# BESCHREIBUNG
-# Dieses Skript generiert eine HTML-Datei, die eine clientseitige Secret-Vault-Anwendung enthält.
-# Die Anwendung ermöglicht es Benutzern, Geheimnisse mit AES-256-GCM und PBKDF2 zu ver- und entschlüsseln.
-# PARAMETER OutputFile
-# Der Pfad zur Ausgabedatei.
-
-my $output_file;
-GetOptions('OutputFile=s' => \$output_file) or die "Ungültige Optionen\n";
-
-if (!$output_file) {
-    die "OutputFile ist erforderlich\n";
-}
 
 sub generate_html {
     return <<'HTML';
@@ -234,17 +216,27 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 HTML
 }
 
-eval {
-    my $html_content = generate_html();
+sub main {
+    my @args = @ARGV;
     
-    open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Konnte nicht in Datei '$output_file' schreiben: $!";
-    print $fh $html_content;
-    close($fh);
+    if (@args != 1) {
+        print STDERR "Usage: perl script.pl <output-file>\n";
+        exit 1;
+    }
     
-    print "HTML-Datei generiert: $output_file\n";
-};
-
-if ($@) {
-    print STDERR "Fehler beim Schreiben der Datei '$output_file': $@\n";
-    exit 1;
+    my $output_file = $args[0];
+    
+    eval {
+        my $html_content = generate_html();
+        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file' $!";
+        print $fh $html_content;
+        close $fh;
+        print "HTML file generated: $output_file\n";
+    };
+    if ($@) {
+        print STDERR "Could not write to file '$output_file': $@\n";
+        exit 1;
+    }
 }
+
+main();

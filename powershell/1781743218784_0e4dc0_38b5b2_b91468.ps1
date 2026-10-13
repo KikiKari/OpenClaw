@@ -1,29 +1,17 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_38b5b2.tcl — portiert nach powershell
+# 1781743218784_0e4dc0_38b5b2_b91468.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0_38b5b2_b91468.js
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0_38b5b2.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e4dc0_38b5b2.tcl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e4dc0.sh — portiert nach JavaScript
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
 # Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
-<#
-.SYNOPSIS
-Generates an HTML file for the Secret Vault Public application.
-
-.DESCRIPTION
-This script generates a self-contained HTML file that implements a client-side
-secret vault using WebCrypto APIs. The output is written to a specified file.
-
-.PARAMETER OutputFile
-The path to the output HTML file.
-
-.EXAMPLE
-./script.ps1 vault.html
-#>
-
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputFile
-)
-
-function Generate-Html {
+function generateHTML {
     $html = @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -234,11 +222,34 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
     return $html
 }
 
-try {
-    $htmlContent = Generate-Html
-    Set-Content -Path $OutputFile -Value $htmlContent -Encoding UTF8
-    Write-Host "HTML file generated: $OutputFile"
-} catch {
-    Write-Error "Failed to generate HTML file: $_"
-    exit 1
+function main($argv) {
+    if ($argv.Count -ne 1) {
+        Write-Error "Usage: $($MyInvocation.MyCommand.Name) <output-file>"
+        exit 1
+    }
+    
+    $outputFile = $argv[0]
+    
+    # Generate HTML content and write to file
+    $htmlContent = generateHTML
+    try {
+        [System.IO.File]::WriteAllText($outputFile, $htmlContent)
+    } catch {
+        Write-Error "Could not write to file '$outputFile': $($_.Exception.Message)"
+        exit 1
+    }
+
+    try {
+        if (Test-Path $outputFile) {
+            Write-Host "HTML file generated: $outputFile"
+        } else {
+            Write-Error "Could not write to file '$outputFile'"
+            exit 1
+        }
+    } catch {
+        Write-Error "Could not write to file '$outputFile'"
+        exit 1
+    }
 }
+
+main $args

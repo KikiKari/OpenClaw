@@ -1,30 +1,10 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e4dc0_38b5b2.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0_38b5b2.pl
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e4dc0_38b5b2_01b42b.py — portiert nach powershell
+# Quelle: python, Projects@abstractions:python/1781743218784_0e4dc0_38b5b2_01b42b.py
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e4dc0.sh — portiert nach perl5
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e4dc0.sh
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e4dc0.pl
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0e4dc0.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e4dc0.js
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.sh — portiert nach JavaScript
-# Quelle: shell, Projects@abstractions:shell/1781743218784.sh
-# Erzeugt: 2026-08-18 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.html — portiert nach JavaScript
-# Quelle: html, Projects@secret-vault-public:secret-vault-public/versions/1781743218784.html
-# Erzeugt: 2026-08-08 durch ABSTRACTIONS_MANAGER.py
-
-function generateHTML {
-  return @'
+function GenerateHTML {
+    return @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -233,27 +213,23 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '@
 }
 
-function main {
-  param(
-    [string[]]$args
-  )
-  
-  if ($args.Count -ne 1) {
-    Write-Error "Usage: $($MyInvocation.MyCommand.Name) <output-file>"
-    exit 1
-  }
-  
-  $outputFile = $args[0]
-  
-  # Generate HTML content and write to file
-  $html_content = generateHTML
-  try {
-    Set-Content -Path $outputFile -Value $html_content -Encoding UTF8
-    Write-Host "HTML file generated: $outputFile"
-  } catch {
-    Write-Error "Could not write to file '$outputFile'"
-    exit 1
-  }
+function Main($args) {
+    if ($args.Count -ne 1) {
+        Write-Error "Usage: $($MyInvocation.MyCommand.Name) <output-file>"
+        exit 1
+    }
+
+    $outputFile = $args[0]
+
+    # Generate HTML content and write to file
+    $htmlContent = GenerateHTML
+    try {
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+        Write-Host "HTML file generated: $outputFile"
+    } catch {
+        Write-Error "Could not write to file '$outputFile'"
+        exit 1
+    }
 }
 
-main $args
+Main $args
