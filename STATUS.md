@@ -1,6 +1,6 @@
 # Script Abstractions — Status
 
-**Letzter Lauf:** 2026-10-12 16:44 UTC
+**Letzter Lauf:** 2026-10-13 04:01 UTC
 
 Jede Quelldatei der drei Repositories wird in sechs Zielsprachen portiert.
 Es werden vollstaendige Uebersetzungen abgelegt; Erzeugnisse ohne gueltige
@@ -23,16 +23,16 @@ Syntax oder mit Platzhaltern werden verworfen.
 | Prioritaet | Quelldateien | Bedeutung |
 |---|---:|---|
 | high | 128 | Betriebsscripte aus scripts-Verzeichnissen |
-| medium | 2361 | uebriger ausfuehrbarer Code |
+| medium | 2371 | uebriger ausfuehrbarer Code |
 | low | 63 | Markup und Stilvorlagen |
-| **gesamt** | **2552** | nach Inhalt dedupliziert |
+| **gesamt** | **2562** | nach Inhalt dedupliziert |
 
-Noch offene Sprachpaare: **12770**
+Noch offene Sprachpaare: **12819**
 
 ## Letzter Lauf
 
 - bearbeitete Quelldateien: 1
-- erzeugte Uebersetzungen: 6
+- erzeugte Uebersetzungen: 1
 - verworfen: 0
 
 ## Herkunft
