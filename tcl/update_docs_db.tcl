@@ -1,201 +1,224 @@
 #!/usr/bin/env tclsh8.6
 # update_docs_db.py — portiert nach tcl
-# Quelle: python, OpenClaw@gateway2:scripts/update_docs_db.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Quelle: python, OpenClaw@gateway1:scripts/update_docs_db.py
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
-# Scan documentation files and refresh docs.db for the mounted workspace.
+# Scannt alle vorhandenen Dokumentationen und aktualisiert docs.db
 
 package require sqlite3
-package require md5
-package require json
 
-# Determine workspace path
-set WORKSPACE [expr {[info exists ::env(OPENCLAW_WORKSPACE)] ? $::env(OPENCLAW_WORKSPACE) : [file dirname [file dirname [info script]]]}]
-set DB_PATH [file join $WORKSPACE "docs.db"]
+set WORKSPACE "/home/openclaw/.openclaw/workspace"
+set DB_PATH "$WORKSPACE/db/docs.db"
 
-proc iter_docs {} {
+proc scan_documentations {} {
     global WORKSPACE
     set docs {}
     
-    # Recursively find all .md files
-    set files {}
-    proc scan_dir {dir} {
-        global files
-        foreach item [glob -nocomplain -dir $dir *] {
-            if {[file isdirectory $item]} {
-                # Skip node_modules, .git, backups directories
-                set basename [file tail $item]
-                if {$basename ni {node_modules .git backups}} {
-                    scan_dir $item
-                }
-            } elseif {[file extension $item] eq ".md" && [file isfile $item] && ![file type $item] eq "link"} {
-                lappend files $item
+    # Hauptverzeichnis
+    foreach md_file [glob -nocomplain "$WORKSPACE/*.md"] {
+        if {[file isfile $md_file] && ![file type $md_file] eq "link"} {
+            lappend docs [dict create \
+                name [file tail $md_file] \
+                path "/" \
+                category "main" \
+                description [get_description $md_file] \
+                type "doc" \
+                has_symlink false \
+                symlink_path "" \
+                last_update [get_mtime $md_file]]
+        }
+    }
+    
+    # WebSearch Verzeichnis
+    set websearch_dir "$WORKSPACE/websearch"
+    if {[file exists $websearch_dir]} {
+        foreach md_file [glob -nocomplain "$websearch_dir/*.md"] {
+            set basename [file tail $md_file]
+            lappend docs [dict create \
+                name $basename \
+                path "websearch/" \
+                category "websearch" \
+                description [get_description $md_file] \
+                type [expr {"GUIDE" in $basename ? "guide" : "config"}] \
+                has_symlink true \
+                symlink_path "websearch/$basename" \
+                last_update [get_mtime $md_file]]
+        }
+    }
+    
+    # MCP Verzeichnis
+    set mcp_dir "$WORKSPACE/mcp"
+    if {[file exists $mcp_dir]} {
+        foreach md_file [glob -nocomplain "$mcp_dir/*.md"] {
+            set is_symlink [expr {[file type $md_file] eq "link"}]
+            set symlink_path ""
+            if {$is_symlink} {
+                set symlink_path [file readlink $md_file]
+            }
+            lappend docs [dict create \
+                name [file tail $md_file] \
+                path "mcp/" \
+                category "mcp" \
+                description [get_description $md_file] \
+                type [expr {$is_symlink ? "symlink" : "guide"}] \
+                has_symlink $is_symlink \
+                symlink_path $symlink_path \
+                last_update [get_mtime $md_file]]
+        }
+    }
+    
+    # Docs-Unterverzeichnisse
+    set docs_dir "$WORKSPACE/docs"
+    if {[file exists $docs_dir]} {
+        foreach subdir [glob -nocomplain -directory $docs_dir -type d *] {
+            set dirname [file tail $subdir]
+            foreach md_file [glob -nocomplain "$subdir/*.md"] {
+                lappend docs [dict create \
+                    name [file tail $md_file] \
+                    path "docs/$dirname/" \
+                    category $dirname \
+                    description [get_description $md_file] \
+                    type "doc" \
+                    has_symlink false \
+                    symlink_path "" \
+                    last_update [get_mtime $md_file]]
             }
         }
     }
     
-    # Initialize the scan
-    set files {}
-    scan_dir $WORKSPACE
-    
-    # Filter and return relative paths
-    set result {}
-    foreach filepath $files {
-        set relpath [file normalize [string range $filepath [string length $WORKSPACE] end]]
-        set relpath [string trimleft $relpath "/\\"]
-        
-        # Check if any part is in skip list
-        set parts [split $relpath "/\\"]
-        set skip false
-        foreach part {node_modules .git backups} {
-            if {[lsearch -exact $parts $part] != -1} {
-                set skip true
-                break
+    # Cluster, Memory, Reports, Skills
+    foreach category {cluster memory reports skills} {
+        set cat_dir "$WORKSPACE/$category"
+        if {[file exists $cat_dir]} {
+            foreach md_file [glob -nocomplain "$cat_dir/*.md"] {
+                lappend docs [dict create \
+                    name [file tail $md_file] \
+                    path "$category/" \
+                    category $category \
+                    description [get_description $md_file] \
+                    type "doc" \
+                    has_symlink false \
+                    symlink_path "" \
+                    last_update [get_mtime $md_file]]
             }
         }
-        
-        if {!$skip} {
-            lappend result $filepath
-        }
     }
     
-    return $result
+    return $docs
 }
 
-proc file_hash {path} {
-    set chan [open $path rb]
-    set digest [md5::md5 -channel $chan]
-    close $chan
-    return $digest
+proc get_description {md_file} {
+    # Extrahiert erste Zeile als Beschreibung
+    if {[catch {open $md_file r} fh]} {
+        return "Dokumentation"
+    }
+    set first_line [string trim [gets $fh]]
+    close $fh
+    
+    if {[string match "#*" $first_line]} {
+        return [string trim [string range $first_line 1 end]]
+    }
+    if {[string length $first_line] > 50} {
+        return "[string range $first_line 0 49]..."
+    }
+    return $first_line
 }
 
-proc word_count {path} {
-    if {[catch {set chan [open $path r]}]} {
-        return 0
+proc get_mtime {md_file} {
+    # Gibt letzte Änderung zurück
+    if {[catch {file mtime $md_file} mtime]} {
+        return "2026-04-18"
     }
-    
-    if {[catch {set content [read $chan]}]} {
-        close $chan
-        return 0
-    }
-    
-    close $chan
-    
-    # Split by whitespace and count words
-    set words [regexp -all {\S+} $content]
-    return $words
+    return [clock format $mtime -format "%Y-%m-%d"]
 }
 
-proc build_rows {} {
-    set rows {}
-    set indexed [clock seconds]
-    
-    foreach md_file [iter_docs] {
-        global WORKSPACE
-        set relpath [file normalize [string range $md_file [string length $WORKSPACE] end]]
-        set relpath [string trimleft $relpath "/\\"]
-        
-        dict set row path $relpath
-        dict set row content_hash [file_hash $md_file]
-        dict set row last_indexed $indexed
-        dict set row word_count [word_count $md_file]
-        
-        lappend rows $row
-    }
-    
-    return $rows
-}
-
-proc ensure_schema {conn} {
-    $conn eval {
-        CREATE TABLE IF NOT EXISTS documents (
-            path TEXT PRIMARY KEY,
-            content_hash TEXT,
-            last_indexed REAL,
-            word_count INTEGER
-        )
-    }
-    
-    $conn eval {
-        CREATE TABLE IF NOT EXISTS tags (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            path TEXT,
-            tag TEXT
-        )
-    }
-}
-
-proc update_database {rows} {
+proc update_database {docs} {
     global DB_PATH
-    sqlite3 conn $DB_PATH
+    sqlite3 db $DB_PATH
     
-    ensure_schema conn
-    conn eval {DELETE FROM documents}
+    # Lösche alte Einträge (außer config)
+    db eval {DELETE FROM documents WHERE category != 'config'}
     
-    set stmt [conn prepare {
-        INSERT INTO documents (path, content_hash, last_indexed, word_count) VALUES (?, ?, ?, ?)
-    }]
-    
-    foreach row $rows {
-        $stmt bind 1 [dict get $row path]
-        $stmt bind 2 [dict get $row content_hash]
-        $stmt bind 3 [dict get $row last_indexed]
-        $stmt bind 4 [dict get $row word_count]
-        $stmt step
-        $stmt reset
+    # Füge neue ein
+    set inserted 0
+    foreach doc $docs {
+        db eval {
+            INSERT INTO documents 
+            (name, path, category, description, type, has_symlink, symlink_path, last_update)
+            VALUES ($name, $path, $category, $description, $type, $has_symlink, $symlink_path, $last_update)
+        } {
+            set name [dict get $doc name]
+            set path [dict get $doc path]
+            set category [dict get $doc category]
+            set description [dict get $doc description]
+            set type [dict get $doc type]
+            set has_symlink [dict get $doc has_symlink]
+            set symlink_path [dict get $doc symlink_path]
+            set last_update [dict get $doc last_update]
+        }
+        incr inserted
     }
     
-    $stmt finalize
-    conn close
+    db close
+    return $inserted
 }
 
-proc export_table {table} {
+proc export_all {} {
     global DB_PATH WORKSPACE
-    sqlite3 conn $DB_PATH
-    conn eval "SELECT * FROM $table" rows {
-        lappend all_rows $rows
-    }
+    sqlite3 db $DB_PATH
     
-    # Convert to list of dicts for JSON export
-    set data {}
-    if {[info exists all_rows]} {
-        set keys [lindex $all_rows 0]
-        for {set i 1} {$i < [llength $all_rows]} {incr i} {
-            set row_dict {}
-            set values [lindex $all_rows $i]
-            for {set j 0} {$j < [llength $keys]} {incr j} {
-                dict set row_dict [lindex $keys $j] [lindex $values $j]
-            }
-            lappend data $row_dict
-        }
-    }
-    
-    # Write JSON
-    set json_path [file join $WORKSPACE "db_${table}.json"]
-    set json_fh [open $json_path w]
-    puts $json_fh [json::write object {*}$data]
-    close $json_fh
-    
-    # Write CSV
-    set csv_path [file join $WORKSPACE "db_${table}.csv"]
-    set csv_fh [open $csv_path w]
-    
-    if {[info exists all_rows] && [llength $all_rows] > 0} {
-        # Write header
-        set header [lindex $all_rows 0]
-        puts $csv_fh [join $header ","]
+    # JSON Export
+    foreach table {documents skills symlinks} {
+        set rows [db eval "SELECT * FROM $table" row {
+            array set record $row
+            lappend all_rows [array get record]
+        }]
         
-        # Write data rows
-        for {set i 1} {$i < [llength $all_rows]} {incr i} {
-            set row [lindex $all_rows $i]
-            puts $csv_fh [join $row ","]
+        # JSON Export
+        set json_path "$WORKSPACE/db_${table}.json"
+        set fh [open $json_path w]
+        puts $fh "\["
+        set first_row 1
+        foreach row_data $all_rows {
+            if {!$first_row} {
+                puts $fh ","
+            }
+            puts -nonewline $fh "  \{"
+            set first_col 1
+            foreach {key value} $row_data {
+                if {!$first_col} {
+                    puts -nonewline $fh ", "
+                }
+                puts -nonewline $fh "\"$key\": \"[string map {\" \"\\\"} $value]\""
+                set first_col 0
+            }
+            puts -nonewline $fh "\}"
+            set first_row 0
         }
-    } else {
-        puts $csv_fh ""
+        puts $fh "\n\]"
+        close $fh
+        puts "✅ $json_path"
+        
+        # CSV Export
+        set csv_path "$WORKSPACE/db_${table}.csv"
+        set fh [open $csv_path w]
+        set columns [db eval "PRAGMA table_info($table)" row {
+            lappend cols [lindex $row 1]
+        }]
+        puts $fh [join $cols ","]
+        
+        db eval "SELECT * FROM $table" row {
+            set values {}
+            foreach col $cols {
+                lappend values [dict get $row $col]
+            }
+            puts $fh [join $values ","]
+        }
+        close $fh
+        puts "✅ $csv_path"
     }
     
-    close $csv_fh
-    conn close
+    db close
 }
 
 proc main {} {
@@ -203,18 +226,18 @@ proc main {} {
     puts "DOCS.DB UPDATER"
     puts [string repeat "=" 60]
     
-    set rows [build_rows]
-    puts "Gefunden: [llength $rows] Dokumente"
+    puts "\n--- Scanne Dokumentationen ---"
+    set docs [scan_documentations]
+    puts "Gefunden: [llength $docs] Dokumente"
     
-    update_database $rows
-    puts "✅ [llength $rows] Dokumente in docs.db aktualisiert"
+    puts "\n--- Aktualisiere docs.db ---"
+    set inserted [update_database $docs]
+    puts "✅ $inserted Dokumente in docs.db aktualisiert"
     
-    export_table "documents"
-    export_table "tags"
-    puts "✅ Exporte aktualisiert"
+    puts "\n--- Erstelle Exporte ---"
+    export_all
     
-    puts ""
-    puts [string repeat "=" 60]
+    puts "\n[string repeat "=" 60]"
     puts "DOCS.DB AKTUALISIERT"
     puts [string repeat "=" 60]
 }

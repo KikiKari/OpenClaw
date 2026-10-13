@@ -1,138 +1,187 @@
 #!/usr/bin/env bash
 # update_docs_db.py — portiert nach shell
-# Quelle: python, OpenClaw@gateway2:scripts/update_docs_db.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
+# Quelle: python, OpenClaw@gateway1:scripts/update_docs_db.py
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Scan documentation files and refresh docs.db for the mounted workspace.
+# Scannt alle vorhandenen Dokumentationen und aktualisiert docs.db
 
-WORKSPACE="${OPENCLAW_WORKSPACE:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
-DB_PATH="$WORKSPACE/docs.db"
+readonly WORKSPACE="/home/openclaw/.openclaw/workspace"
+readonly DB_PATH="${WORKSPACE}/db/docs.db"
 
-# Function to find all .md files recursively, excluding certain directories
-iter_docs() {
-    find "$WORKSPACE" -type f -name "*.md" ! -path "*/node_modules/*" ! -path "*/.git/*" ! -path "*/backups/*" 2>/dev/null || true
+# Funktion zum Extrahieren der ersten Zeile als Beschreibung
+get_description() {
+    local md_file="$1"
+    local first_line
+    first_line=$(head -n 1 "$md_file" 2>/dev/null || echo "Dokumentation")
+    if [[ $first_line == \#* ]]; then
+        first_line=${first_line#\#}
+        first_line=$(echo "$first_line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+    fi
+    if [ ${#first_line} -gt 50 ]; then
+        first_line="${first_line:0:50}..."
+    fi
+    echo "$first_line"
 }
 
-# Function to compute MD5 hash of a file
-file_hash() {
-    local path="$1"
-    if command -v md5sum >/dev/null 2>&1; then
-        md5sum < "$path" | cut -d' ' -f1
-    elif command -v md5 >/dev/null 2>&1; then
-        md5 -q "$path"
+# Funktion zum Abrufen des letzten Änderungsdatums
+get_mtime() {
+    local md_file="$1"
+    if stat --version &>/dev/null; then
+        stat -c %Y "$md_file" 2>/dev/null | xargs -I {} date -d @{} +%Y-%m-%d 2>/dev/null || echo "2026-04-18"
     else
-        echo "No MD5 utility found" >&2
-        exit 1
+        stat -f %m "$md_file" 2>/dev/null | xargs -I {} date -r {} +%Y-%m-%d 2>/dev/null || echo "2026-04-18"
     fi
 }
 
-# Function to count words in a file
-word_count() {
-    local path="$1"
-    if [[ -r "$path" ]]; then
-        wc -w < "$path" 2>/dev/null || echo 0
-    else
-        echo 0
-    fi
-}
-
-# Function to build rows of data for insertion into database
-build_rows() {
-    local indexed
-    indexed=$(date +%s.%N)
-    while IFS= read -r md_file; do
-        local rel_path
-        rel_path="${md_file#$WORKSPACE/}"
-        local hash
-        hash=$(file_hash "$md_file")
-        local wc
-        wc=$(word_count "$md_file")
-        printf '%s|%s|%s|%s\n' "$rel_path" "$hash" "$indexed" "$wc"
-    done < <(iter_docs)
-}
-
-# Function to ensure schema exists in SQLite database
-ensure_schema() {
-    sqlite3 "$DB_PATH" <<EOF
-CREATE TABLE IF NOT EXISTS documents (
-    path TEXT PRIMARY KEY,
-    content_hash TEXT,
-    last_indexed REAL,
-    word_count INTEGER
-);
-CREATE TABLE IF NOT EXISTS tags (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    path TEXT,
-    tag TEXT
-);
-EOF
-}
-
-# Function to update the database with new document data
+# Funktion zum Aktualisieren der Datenbank
 update_database() {
-    local temp_data="$1"
-    ensure_schema
-    sqlite3 "$DB_PATH" <<EOF
-DELETE FROM documents;
-.separator |
-.import $temp_data documents
-EOF
+    local temp_sql=$(mktemp)
+    local inserted=0
+
+    # Lösche alte Einträge (außer config)
+    echo "DELETE FROM documents WHERE category != 'config';" > "$temp_sql"
+
+    # Füge neue ein
+    while IFS=$'\t' read -r name path category description type has_symlink symlink_path last_update; do
+        printf "INSERT INTO documents (name, path, category, description, type, has_symlink, symlink_path, last_update) VALUES ('%s','%s','%s','%s','%s',%s,%s,'%s');\n" \
+            "$(echo "$name" | sed "s/'/''/g")" \
+            "$(echo "$path" | sed "s/'/''/g")" \
+            "$(echo "$category" | sed "s/'/''/g")" \
+            "$(echo "$description" | sed "s/'/''/g")" \
+            "$(echo "$type" | sed "s/'/''/g")" \
+            "$has_symlink" \
+            "$symlink_path" \
+            "$(echo "$last_update" | sed "s/'/''/g")" >> "$temp_sql"
+        ((inserted++))
+    done < <(cat "${WORKSPACE}/docs_temp.tsv")
+
+    sqlite3 "$DB_PATH" < "$temp_sql"
+    rm -f "$temp_sql"
+    echo "$inserted"
 }
 
-# Function to export table data to JSON and CSV formats
-export_table() {
-    local table="$1"
-    local json_path="$WORKSPACE/db_${table}.json"
-    local csv_path="$WORKSPACE/db_${table}.csv"
-    
-    # Export to CSV
-    sqlite3 -header -csv "$DB_PATH" "SELECT * FROM $table;" > "$csv_path"
-    
-    # Export to JSON using jq if available
-    if command -v jq >/dev/null 2>&1; then
-        sqlite3 -separator ',' "$DB_PATH" "SELECT * FROM $table;" | \
-        jq -R -s 'split("\n")[:-1] | map(split(",")) | .[0] as $header | .[1:] | map( [$header, .] | transpose | map({key:.[0], value:.[1]}) | from_entries )' > "$json_path"
-    else
-        # Fallback without jq: create simple array format
-        sqlite3 -separator ',' "$DB_PATH" "SELECT * FROM $table;" | \
-        awk 'BEGIN {FS=","; OFS="\",\""; print "["} NR==1 {for(i=1;i<=NF;i++) header[i]=$i } NR>1 { printf "  {"; for(i=1;i<=NF;i++) printf "\"%s\":\"%s\"" (i<NF ? "," : ""), header[i], $i; print "}" } END {print "]"}' > "$json_path"
-    fi
+# Funktion zum Erstellen aller Exporte
+export_all() {
+    local tables=("documents" "skills" "symlinks")
+    for table in "${tables[@]}"; do
+        local json_path="${WORKSPACE}/db_${table}.json"
+        local csv_path="${WORKSPACE}/db_${table}.csv"
+        
+        # JSON Export
+        sqlite3 -json "$DB_PATH" "SELECT * FROM $table;" > "$json_path"
+        echo "✅ $json_path"
+        
+        # CSV Export
+        sqlite3 -header -csv "$DB_PATH" "SELECT * FROM $table;" > "$csv_path"
+        echo "✅ $csv_path"
+    done
 }
 
-# Main function
+# Hauptfunktion
 main() {
     echo "============================================================"
     echo "DOCS.DB UPDATER"
     echo "============================================================"
-    
-    local temp_data
-    temp_data=$(mktemp)
-    
-    # Build rows and write to temporary file
-    build_rows > "$temp_data"
-    local doc_count
-    doc_count=$(wc -l < "$temp_data" | tr -d ' ')
-    
-    echo "Gefunden: $doc_count Dokumente"
-    
-    # Update database
-    update_database "$temp_data"
-    echo "✅ $doc_count Dokumente in docs.db aktualisiert"
-    
-    # Export tables
-    export_table "documents"
-    export_table "tags"
-    echo "✅ Exporte aktualisiert"
-    
-    # Cleanup
-    rm -f "$temp_data"
-    
-    echo ""
+
+    # Temporäre TSV-Datei für die Dokumente erstellen
+    local docs_temp="${WORKSPACE}/docs_temp.tsv"
+    > "$docs_temp"
+
+    echo
+    echo "--- Scanne Dokumentationen ---"
+
+    # Hauptverzeichnis
+    while IFS= read -r -d '' file; do
+        if [[ -f "$file" && ! -L "$file" ]]; then
+            local name=$(basename "$file")
+            local description=$(get_description "$file")
+            local last_update=$(get_mtime "$file")
+            printf "%s\t/\tmain\t%s\tdoc\t0\tNULL\t%s\n" "$name" "$description" "$last_update" >> "$docs_temp"
+        fi
+    done < <(find "$WORKSPACE" -maxdepth 1 -name "*.md" -type f -print0 2>/dev/null || true)
+
+    # WebSearch Verzeichnis
+    if [[ -d "${WORKSPACE}/websearch" ]]; then
+        while IFS= read -r -d '' file; do
+            local name=$(basename "$file")
+            local description=$(get_description "$file")
+            local last_update=$(get_mtime "$file")
+            local type="config"
+            if [[ $name == *"GUIDE"* ]]; then
+                type="guide"
+            fi
+            printf "%s\twebsearch/\twebsearch\t%s\t%s\t1\twebsearch/%s\t%s\n" "$name" "$description" "$type" "$name" "$last_update" >> "$docs_temp"
+        done < <(find "${WORKSPACE}/websearch" -maxdepth 1 -name "*.md" -type f -print0 2>/dev/null || true)
+    fi
+
+    # MCP Verzeichnis
+    if [[ -d "${WORKSPACE}/mcp" ]]; then
+        while IFS= read -r -d '' file; do
+            local name=$(basename "$file")
+            local description=$(get_description "$file")
+            local last_update=$(get_mtime "$file")
+            local is_symlink=0
+            local symlink_path="NULL"
+            local type="guide"
+            
+            if [[ -L "$file" ]]; then
+                is_symlink=1
+                symlink_path=$(readlink "$file" 2>/dev/null || echo "NULL")
+                type="symlink"
+            fi
+            
+            printf "%s\tmcp/\tmcp\t%s\t%s\t%d\t%s\t%s\n" "$name" "$description" "$type" "$is_symlink" "$symlink_path" "$last_update" >> "$docs_temp"
+        done < <(find "${WORKSPACE}/mcp" -maxdepth 1 -name "*.md" -type f -o -type l -print0 2>/dev/null || true)
+    fi
+
+    # Docs-Unterverzeichnisse
+    if [[ -d "${WORKSPACE}/docs" ]]; then
+        while IFS= read -r -d '' dir; do
+            local subdir_name=$(basename "$dir")
+            while IFS= read -r -d '' file; do
+                local name=$(basename "$file")
+                local description=$(get_description "$file")
+                local last_update=$(get_mtime "$file")
+                printf "%s\tdocs/%s/\t%s\t%s\tdoc\t0\tNULL\t%s\n" "$name" "$subdir_name" "$subdir_name" "$description" "$last_update" >> "$docs_temp"
+            done < <(find "$dir" -maxdepth 1 -name "*.md" -type f -print0 2>/dev/null || true)
+        done < <(find "${WORKSPACE}/docs" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null || true)
+    fi
+
+    # Cluster, Memory, Reports, Skills
+    local categories=("cluster" "memory" "reports" "skills")
+    for category in "${categories[@]}"; do
+        if [[ -d "${WORKSPACE}/${category}" ]]; then
+            while IFS= read -r -d '' file; do
+                local name=$(basename "$file")
+                local description=$(get_description "$file")
+                local last_update=$(get_mtime "$file")
+                printf "%s\t%s/\t%s\t%s\tdoc\t0\tNULL\t%s\n" "$name" "$category" "$category" "$description" "$last_update" >> "$docs_temp"
+            done < <(find "${WORKSPACE}/${category}" -maxdepth 1 -name "*.md" -type f -print0 2>/dev/null || true)
+        fi
+    done
+
+    local count=$(wc -l < "$docs_temp" | tr -d ' ')
+    echo "Gefunden: $count Dokumente"
+
+    echo
+    echo "--- Aktualisiere docs.db ---"
+    local inserted=$(update_database)
+    echo "✅ $inserted Dokumente in docs.db aktualisiert"
+
+    echo
+    echo "--- Erstelle Exporte ---"
+    export_all
+
+    echo
     echo "============================================================"
     echo "DOCS.DB AKTUALISIERT"
     echo "============================================================"
+
+    # Temporäre Datei aufräumen
+    rm -f "$docs_temp"
 }
 
-main "$@"
+# Skript starten
+main
