@@ -1,34 +1,32 @@
 #!/bin/bash
 # 3d.html — portiert nach shell
-# Quelle: html, Projects@TikTok-Live-Companion:public/3d.html
-# auch in: Projects@TikTok-Live-Companion-Android:public/3d.html
-# auch in: Projects@TikTok-Live-Companion-iOS:public/3d.html
-# auch in: Projects@codex/0pe-177-peak-protection:public/3d.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Vision-Check:public/3d.html
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Parameter: Ausgabedatei
+# Parameter prüfen
 if [[ $# -ne 1 ]]; then
-  echo "Aufruf: $0 <ausgabedatei>" >&2
-  exit 1
+    echo "Aufruf: $0 <ausgabedatei>" >&2
+    exit 1
 fi
-ausgabe="$1"
 
-# HTML-Inhalt generieren
-cat > "$ausgabe" << 'EOF'
+AUSGABE="$1"
+
+# HTML-Dokument generieren
+cat > "$AUSGABE" << 'HTML_Ende'
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TikTok LIVE Companion — Interaktive Architektur</title>
-<meta name="description" content="Die Schichtsicht der Browser-Erweiterung: Quelle, Beobachtung, Zustand, Ausgabe.">
-<meta name="theme-color" content="#fe2c55">
+<title>Vision-Check — Interaktive Architektur</title>
+<meta name="description" content="Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#0f766e">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#fe2c55; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -76,8 +74,8 @@ cat > "$ausgabe" << 'EOF'
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>TikTok LIVE Companion</h1>
-  <p class="lede">Die Schichtsicht der Browser-Erweiterung: Quelle, Beobachtung, Zustand, Ausgabe.</p>
+  <h1>Vision-Check</h1>
+  <p class="lede">Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -111,7 +109,7 @@ cat > "$ausgabe" << 'EOF'
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "tiktok-live-tab", "name": "TikTok-LIVE-Tab", "untertitel": "oeffentliche Seite"}, {"id": "oeffentliche-dom-daten", "name": "oeffentliche DOM-Daten", "untertitel": "gelesen"}, {"id": "eingebettete-metadaten", "name": "eingebettete Metadaten", "untertitel": "JSON"}]}, {"name": "Beobachtung", "farbe": "#2481cc", "blocks": [{"id": "content-js", "name": "content.js", "untertitel": "isolierte Welt"}, {"id": "websocket-hook", "name": "WebSocket-Hook", "untertitel": "passiv"}]}, {"name": "Zustand", "farbe": "#6d5bd0", "blocks": [{"id": "background-js", "name": "background.js", "untertitel": "Filter + Zustand"}, {"id": "storage-session", "name": "storage.session", "untertitel": "fluechtig"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "seitenpanel", "name": "Seitenpanel", "untertitel": "textContent"}, {"id": "vorlesen", "name": "Vorlesen", "untertitel": "lokal"}, {"id": "playersteuerung", "name": "Playersteuerung", "untertitel": "vorhandener Player"}]}, {"name": "Doku", "farbe": "#0f766e", "blocks": [{"id": "docs-de", "name": "docs/de", "untertitel": "deutsch"}, {"id": "docs-en", "name": "docs/en", "untertitel": "englisch"}, {"id": "vercel-site", "name": "Vercel-Site", "untertitel": "statisch"}]}], "kanten": [{"von": "tiktok-live-tab", "nach": "content-js", "art": "fluss"}, {"von": "oeffentliche-dom-daten", "nach": "websocket-hook", "art": "fluss"}, {"von": "eingebettete-metadaten", "nach": "content-js", "art": "fluss"}, {"von": "content-js", "nach": "background-js", "art": "fluss"}, {"von": "websocket-hook", "nach": "storage-session", "art": "fluss"}, {"von": "background-js", "nach": "seitenpanel", "art": "fluss"}, {"von": "storage-session", "nach": "vorlesen", "art": "fluss"}, {"von": "seitenpanel", "nach": "docs-de", "art": "fluss"}, {"von": "vorlesen", "nach": "docs-en", "art": "fluss"}, {"von": "playersteuerung", "nach": "vercel-site", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Erfassung", "farbe": "#5f6773", "blocks": [{"id": "getusermedia", "name": "getUserMedia", "untertitel": "MediaStream"}, {"id": "4k-auswahl", "name": "4K-Auswahl", "untertitel": "3840x2160"}, {"id": "geraete-dropdown", "name": "Geraete-Dropdown", "untertitel": "mehrere Kameras"}]}, {"name": "On-Device-KI", "farbe": "#2481cc", "blocks": [{"id": "tensorflow-js", "name": "TensorFlow.js", "untertitel": "im Browser"}, {"id": "coco-ssd-v2", "name": "COCO-SSD v2", "untertitel": "80 Klassen"}, {"id": "webgl", "name": "WebGL", "untertitel": "bald WebGPU"}]}, {"name": "Bildverbesserung", "farbe": "#6d5bd0", "blocks": [{"id": "clahe-4x", "name": "CLAHE 4x", "untertitel": "Kontrast"}, {"id": "unsharp-mask", "name": "Unsharp-Mask", "untertitel": "5 Stufen"}, {"id": "helligkeit-saettigung", "name": "Helligkeit/Saettigung", "untertitel": "Gegenlicht"}]}, {"name": "Cloud Vision", "farbe": "#b45309", "blocks": [{"id": "gpt-4o", "name": "GPT-4o", "untertitel": "detail:high"}, {"id": "gemini-2-5", "name": "Gemini 2.5", "untertitel": "Bounding-Box"}, {"id": "claude", "name": "Claude", "untertitel": "Domaenenwissen"}, {"id": "worker-proxy", "name": "Worker-Proxy", "untertitel": "CORS fuer Claude"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pixel-inspektor", "name": "Pixel-Inspektor", "untertitel": "8x-Lupe"}, {"id": "overlay", "name": "Overlay", "untertitel": "Echtzeit"}, {"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}]}], "kanten": [{"von": "getusermedia", "nach": "tensorflow-js", "art": "fluss"}, {"von": "4k-auswahl", "nach": "coco-ssd-v2", "art": "fluss"}, {"von": "geraete-dropdown", "nach": "webgl", "art": "fluss"}, {"von": "tensorflow-js", "nach": "clahe-4x", "art": "fluss"}, {"von": "coco-ssd-v2", "nach": "unsharp-mask", "art": "fluss"}, {"von": "webgl", "nach": "helligkeit-saettigung", "art": "fluss"}, {"von": "clahe-4x", "nach": "gpt-4o", "art": "fluss"}, {"von": "unsharp-mask", "nach": "gemini-2-5", "art": "fluss"}, {"von": "helligkeit-saettigung", "nach": "claude", "art": "fluss"}, {"von": "gpt-4o", "nach": "pixel-inspektor", "art": "fluss"}, {"von": "gemini-2-5", "nach": "overlay", "art": "fluss"}, {"von": "claude", "nach": "pwa", "art": "fluss"}, {"von": "worker-proxy", "nach": "pixel-inspektor", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -338,6 +336,6 @@ cat > "$ausgabe" << 'EOF'
 </script>
 </body>
 </html>
-EOF
+HTML_Ende
 
-echo "HTML-Dokument wurde in '$ausgabe' geschrieben."
+echo "HTML-Datei wurde erfolgreich erstellt: $AUSGABE"

@@ -1,36 +1,47 @@
 #!/usr/bin/perl
 # 3d.html — portiert nach perl5
-# Quelle: html, Projects@TikTok-Live-Companion:public/3d.html
-# auch in: Projects@TikTok-Live-Companion-Android:public/3d.html
-# auch in: Projects@TikTok-Live-Companion-iOS:public/3d.html
-# auch in: Projects@codex/0pe-177-peak-protection:public/3d.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Vision-Check:public/3d.html
+# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use JSON;
 
-# Read the specification from DATA section
+# Read specification from DATA section or file
 my $spec_json = do {
     local $/;
-    <DATA>
+    <DATA>;
 };
-my $SPEC = decode_json($spec_json);
+my $spec = decode_json($spec_json);
 
-# Generate the HTML document
-print <<'EOF';
+# Generate HTML content
+my $html_content = generate_html($spec);
+
+# Write to file if parameter provided
+if (@ARGV) {
+    open my $fh, '>', $ARGV[0] or die "Cannot write to file '$ARGV[0]': $!";
+    print $fh $html_content;
+    close $fh;
+} else {
+    print $html_content;
+}
+
+sub generate_html {
+    my ($spec) = @_;
+    
+    my $html = <<'HTML_HEADER';
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TikTok LIVE Companion — Interaktive Architektur</title>
-<meta name="description" content="Die Schichtsicht der Browser-Erweiterung: Quelle, Beobachtung, Zustand, Ausgabe.">
-<meta name="theme-color" content="#fe2c55">
+<title>Vision-Check — Interaktive Architektur</title>
+<meta name="description" content="Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#0f766e">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#fe2c55; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -78,8 +89,8 @@ print <<'EOF';
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>TikTok LIVE Companion</h1>
-  <p class="lede">Die Schichtsicht der Browser-Erweiterung: Quelle, Beobachtung, Zustand, Ausgabe.</p>
+  <h1>Vision-Check</h1>
+  <p class="lede">Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -114,13 +125,12 @@ print <<'EOF';
 (function(){
   "use strict";
   var SPEC = 
-EOF
+HTML_HEADER
 
-# Output the SPEC data as JavaScript object
-print_json_to_js($SPEC);
-
-print <<'EOF';
-;
+    # Add the specification data as a JavaScript object
+    $html .= encode_json($spec);
+    
+    $html .= <<'HTML_FOOTER';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -347,48 +357,10 @@ print <<'EOF';
 </script>
 </body>
 </html>
-EOF
+HTML_FOOTER
 
-# Helper function to convert Perl data structure to JavaScript
-sub print_json_to_js {
-    my ($data) = @_;
-    
-    if (ref $data eq 'HASH') {
-        print "{";
-        my @keys = keys %$data;
-        for my $i (0..$#keys) {
-            my $key = $keys[$i];
-            print "," if $i > 0;
-            print "\"$key\":";
-            print_json_to_js($data->{$key});
-        }
-        print "}";
-    } elsif (ref $data eq 'ARRAY') {
-        print "[";
-        for my $i (0..$#{$data}) {
-            print "," if $i > 0;
-            print_json_to_js($data->[$i]);
-        }
-        print "]";
-    } elsif (!defined $data) {
-        print "null";
-    } elsif ($data =~ /^[+-]?\d+$/) {
-        print $data;
-    } elsif ($data =~ /^[+-]?\d*\.\d+([eE][+-]?\d+)?$/) {
-        print $data;
-    } elsif ($data eq 'true' || $data eq 'false') {
-        print $data;
-    } else {
-        # Escape string for JavaScript
-        my $escaped = $data;
-        $escaped =~ s/\\/\\\\/g;
-        $escaped =~ s/"/\\"/g;
-        $escaped =~ s/\n/\\n/g;
-        $escaped =~ s/\r/\\r/g;
-        $escaped =~ s/\t/\\t/g;
-        print "\"$escaped\"";
-    }
+    return $html;
 }
 
 __DATA__
-{"schichten": [{"name": "Quelle", "farbe": "#5f6773", "blocks": [{"id": "tiktok-live-tab", "name": "TikTok-LIVE-Tab", "untertitel": "oeffentliche Seite"}, {"id": "oeffentliche-dom-daten", "name": "oeffentliche DOM-Daten", "untertitel": "gelesen"}, {"id": "eingebettete-metadaten", "name": "eingebettete Metadaten", "untertitel": "JSON"}]}, {"name": "Beobachtung", "farbe": "#2481cc", "blocks": [{"id": "content-js", "name": "content.js", "untertitel": "isolierte Welt"}, {"id": "websocket-hook", "name": "WebSocket-Hook", "untertitel": "passiv"}]}, {"name": "Zustand", "farbe": "#6d5bd0", "blocks": [{"id": "background-js", "name": "background.js", "untertitel": "Filter + Zustand"}, {"id": "storage-session", "name": "storage.session", "untertitel": "fluechtig"}]}, {"name": "Ausgabe", "farbe": "#fe2c55", "blocks": [{"id": "seitenpanel", "name": "Seitenpanel", "untertitel": "textContent"}, {"id": "vorlesen", "name": "Vorlesen", "untertitel": "lokal"}, {"id": "playersteuerung", "name": "Playersteuerung", "untertitel": "vorhandener Player"}]}, {"name": "Doku", "farbe": "#0f766e", "blocks": [{"id": "docs-de", "name": "docs/de", "untertitel": "deutsch"}, {"id": "docs-en", "name": "docs/en", "untertitel": "englisch"}, {"id": "vercel-site", "name": "Vercel-Site", "untertitel": "statisch"}]}], "kanten": [{"von": "tiktok-live-tab", "nach": "content-js", "art": "fluss"}, {"von": "oeffentliche-dom-daten", "nach": "websocket-hook", "art": "fluss"}, {"von": "eingebettete-metadaten", "nach": "content-js", "art": "fluss"}, {"von": "content-js", "nach": "background-js", "art": "fluss"}, {"von": "websocket-hook", "nach": "storage-session", "art": "fluss"}, {"von": "background-js", "nach": "seitenpanel", "art": "fluss"}, {"von": "storage-session", "nach": "vorlesen", "art": "fluss"}, {"von": "seitenpanel", "nach": "docs-de", "art": "fluss"}, {"von": "vorlesen", "nach": "docs-en", "art": "fluss"}, {"von": "playersteuerung", "nach": "vercel-site", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]}
+{"schichten": [{"name": "Erfassung", "farbe": "#5f6773", "blocks": [{"id": "getusermedia", "name": "getUserMedia", "untertitel": "MediaStream"}, {"id": "4k-auswahl", "name": "4K-Auswahl", "untertitel": "3840x2160"}, {"id": "geraete-dropdown", "name": "Geraete-Dropdown", "untertitel": "mehrere Kameras"}]}, {"name": "On-Device-KI", "farbe": "#2481cc", "blocks": [{"id": "tensorflow-js", "name": "TensorFlow.js", "untertitel": "im Browser"}, {"id": "coco-ssd-v2", "name": "COCO-SSD v2", "untertitel": "80 Klassen"}, {"id": "webgl", "name": "WebGL", "untertitel": "bald WebGPU"}]}, {"name": "Bildverbesserung", "farbe": "#6d5bd0", "blocks": [{"id": "clahe-4x", "name": "CLAHE 4x", "untertitel": "Kontrast"}, {"id": "unsharp-mask", "name": "Unsharp-Mask", "untertitel": "5 Stufen"}, {"id": "helligkeit-saettigung", "name": "Helligkeit/Saettigung", "untertitel": "Gegenlicht"}]}, {"name": "Cloud Vision", "farbe": "#b45309", "blocks": [{"id": "gpt-4o", "name": "GPT-4o", "untertitel": "detail:high"}, {"id": "gemini-2-5", "name": "Gemini 2.5", "untertitel": "Bounding-Box"}, {"id": "claude", "name": "Claude", "untertitel": "Domaenenwissen"}, {"id": "worker-proxy", "name": "Worker-Proxy", "untertitel": "CORS fuer Claude"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pixel-inspektor", "name": "Pixel-Inspektor", "untertitel": "8x-Lupe"}, {"id": "overlay", "name": "Overlay", "untertitel": "Echtzeit"}, {"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}]}], "kanten": [{"von": "getusermedia", "nach": "tensorflow-js", "art": "fluss"}, {"von": "4k-auswahl", "nach": "coco-ssd-v2", "art": "fluss"}, {"von": "geraete-dropdown", "nach": "webgl", "art": "fluss"}, {"von": "tensorflow-js", "nach": "clahe-4x", "art": "fluss"}, {"von": "coco-ssd-v2", "nach": "unsharp-mask", "art": "fluss"}, {"von": "webgl", "nach": "helligkeit-saettigung", "art": "fluss"}, {"von": "clahe-4x", "nach": "gpt-4o", "art": "fluss"}, {"von": "unsharp-mask", "nach": "gemini-2-5", "art": "fluss"}, {"von": "helligkeit-saettigung", "nach": "claude", "art": "fluss"}, {"von": "gpt-4o", "nach": "pixel-inspektor", "art": "fluss"}, {"von": "gemini-2-5", "nach": "overlay", "art": "fluss"}, {"von": "claude", "nach": "pwa", "art": "fluss"}, {"von": "worker-proxy", "nach": "pixel-inspektor", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]}
