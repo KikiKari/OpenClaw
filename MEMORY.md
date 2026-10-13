@@ -1,10 +1,19 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-10-12 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-10-13 (07:00 CEST)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-10-13 - Daily Memory-Maintenance & Erkenntnisse vom 12./13.10.
+- ✅ Memory-Maintenance heute geprüft (07:00 CEST).
+- ❌ Keine Tages-Dateien `memory/2026-10-12*.md` bzw. `memory/2026-10-13*.md` im Workspace-Root vorhanden; folglich keine neuen dauerhaften Entscheidungen, Projekte oder offenen ToDos zu extrahieren.
+- ✅ Analysiert: die beiden Heartbeat-Protokolle `memory/heartbeat-2026-10-12-1206.md` (ClawHub↔Git-Sync, DB-Wartung) und `memory/heartbeat-2026-10-12-1426.md` (db-maintainer-Lauf, System-Checks). Inhalt: regulärer Wartungsbetrieb (tree.db/docs.db aktualisiert, Integrität ok, Backups erstellt, Retentions-Check) — keine neuen dauerhaften Erkenntnisse.
+- ✅ Deep-Sleep-Protokoll 2026-10-13 geprüft: 0 Kandidaten zur dauerhaften Promotion, Recall-Store repariert (-3 dangling) — keine beförderungswürdige neue Erkenntnis.
+- ✅ Archiv-Check: Keine Datei direkt unter `memory/` ist >30 Tage alt (die beiden Heartbeat-Dateien sind 1 Tag alt); keine Verschiebung nach `memory/archive/` erforderlich. Alle >30 Tage alten Dateien liegen bereits in `memory/archive/`.
+- ℹ️ Unverändert relevanter Kontext: `db-maintainer`-Lauf (08.08.) — Live-DBs im Workspace-Root (`docs.db`, `tree.db`), Backup-Namensschema `YYYY-MM-DD_HH-MM_{docs,tree}.db.bak`, Python-Fallback statt `tree`, Sandbox-Exec nur Einzelbefehle. Offen/nicht kritisch: git→clawhub `runtime-event` braucht Schreibzugriff auf `skills/` (Host-Lauf); Legacy memory table `openclaw doctor --fix`.
+- **Kritische Erkenntnisse:** Keine.
 
 ### 2026-10-12 - Daily Memory-Maintenance & Erkenntnisse vom 11./12.10.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST).
