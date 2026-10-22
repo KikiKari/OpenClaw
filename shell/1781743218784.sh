@@ -1,19 +1,12 @@
-#!/usr/bin/env bash
-# 1781743218784.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 1781743218784.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+# Erzeugt: 2026-10-22 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Aufrufparameter
-if [[ $# -ne 1 ]]; then
-    echo "Aufruf: $0 <Ausgabedatei>" >&2
-    exit 1
-fi
-output_path="$1"
-
-# Schreibe den HTML-Inhalt in die Ausgabedatei
-cat > "$output_path" << 'EOF'
+generate_html() {
+    cat <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,4 +212,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
+}
+
+main() {
+    local args_count=$#
+    
+    if [[ $args_count -ne 1 ]]; then
+        echo "Usage: bash script.sh <output-file>" >&2
+        exit 1
+    fi
+    
+    local output_file="$1"
+    
+    # Generate HTML content and save to file
+    generate_html > "$output_file"
+    
+    # Check if the file was created successfully
+    if [[ $? -eq 0 && -f "$output_file" ]]; then
+        echo "HTML file generated: $output_file"
+    else
+        echo "Error generating HTML file" >&2
+        exit 1
+    fi
+}
+
+main "$@"
