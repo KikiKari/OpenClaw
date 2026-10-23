@@ -3,46 +3,40 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_mobile_bridge.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_mobile_bridge.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_mobile_bridge.cjs
-# Erzeugt: 2026-08-23 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_mobile_bridge.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# Tcl Port of test_mobile_bridge.cjs
+# Tcl equivalent of the JavaScript test file for mobile bridge
 
-# Helper function to check if substring exists in string
-proc string_contains {haystack needle} {
-    return [expr {[string first $needle $haystack] != -1}]
+# Load required packages
+package require Tcl 8.6
+
+# Function to check if substring exists in string
+proc string_contains {str substr} {
+    return [expr {[string first $substr $str] != -1}]
 }
 
-# Helper function to read file content
+# Function to read file content
 proc read_file {filepath} {
     if {![file exists $filepath]} {
         error "File not found: $filepath"
     }
+    
     set fh [open $filepath r]
     set content [read $fh]
     close $fh
     return $content
 }
 
-# Get current directory and set up paths
+# Get current directory and determine paths
 set script_dir [file dirname [info script]]
-set root [file normalize [file join $script_dir ".."]]
-set bridgePath [file join $root "mobile-shared" "webview-bridge.js"]
+set root [file normalize "$script_dir/.."]
+set bridge_path [file join $root "mobile-shared" "webview-bridge.js"]
 
 # Read the main bridge file
-if {![file exists $bridgePath]} {
-    puts stderr "Bridge file not found: $bridgePath"
-    exit 1
-}
-set source [read_file $bridgePath]
+set source [read_file $bridge_path]
 
-# Basic syntax check by attempting to create a procedure
-# This mimics the JS behavior of compiling/checking syntax
-if {[catch {proc test_compile {} $source} err]} {
-    puts stderr "Syntax error in bridge file: $err"
-    exit 1
-}
-
-# Assertions - check for required strings
+# Perform assertions - check that specific strings exist in source
 set checks {
     {location.hostname !== \"www.tiktok.com\"}
     {root.top === root}
@@ -65,12 +59,11 @@ set checks {
 
 foreach check $checks {
     if {![string_contains $source $check]} {
-        puts stderr "FAIL: Required pattern not found: $check"
-        exit 1
+        error "Assertion failed: '$check' not found in source"
     }
 }
 
-# Negative assertions - ensure these patterns are NOT present
+# Check that certain forbidden strings do NOT exist
 set forbidden {
     {.send =}
     {document.cookie}
@@ -79,10 +72,9 @@ set forbidden {
     {innerHTML}
 }
 
-foreach forbidden_pattern $forbidden {
-    if {[string_contains $source $forbidden_pattern]} {
-        puts stderr "FAIL: Forbidden pattern found: $forbidden_pattern"
-        exit 1
+foreach forbid $forbidden {
+    if {[string_contains $source $forbid]} {
+        error "Forbidden pattern found: '$forbid'"
     }
 }
 
@@ -93,15 +85,9 @@ set copies [list \
 ]
 
 foreach copy $copies {
-    if {![file exists $copy]} {
-        puts stderr "FAIL: Bridge copy not found: $copy"
-        exit 1
-    }
-    
     set copy_content [read_file $copy]
     if {$copy_content ne $source} {
-        puts stderr "FAIL: Bridge copy drifted: $copy"
-        exit 1
+        error "Bridge copy drifted: $copy"
     }
 }
 

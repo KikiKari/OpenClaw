@@ -3,8 +3,8 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_peak_limiter.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_peak_limiter.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_peak_limiter.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_peak_limiter.cjs
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_peak_limiter.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # Import necessary modules
 using namespace System.Collections.Generic
@@ -12,9 +12,9 @@ using namespace System.Linq
 
 # Define helper functions to mimic Node.js behavior
 function Assert-Equal {
-    param($Expected, $Actual, $Message)
-    if ($Expected -ne $Actual) {
-        throw "Assertion failed: $Message"
+    param($Actual, $Expected, $Message)
+    if ($Actual -ne $Expected) {
+        throw "Assertion failed: $Message - Expected '$Expected', but got '$Actual'"
     }
 }
 
@@ -25,268 +25,306 @@ function Assert-True {
     }
 }
 
-# Mimic Math functions
-function Max($a, $b) { if ($a -gt $b) { return $a } else { return $b } }
-function Abs($x) { if ($x -lt 0) { return -$x } else { return $x } }
-function Sin($x) { return [Math]::Sin($x) }
-function PI() { return [Math]::PI }
-
-# Convert dBFS to linear scale
-function Convert-LimiterStrengthToDbfs {
-    param($strength)
-    return -0.02 * $strength
-}
-
-# Peak detection function
-function Get-Peak {
-    param($channel)
-    $maxVal = 0
-    foreach ($value in $channel) {
+function Max-Peak {
+    param([float[]]$Channel)
+    $max = 0
+    foreach ($value in $Channel) {
         $absValue = [Math]::Abs($value)
-        if ($absValue -gt $maxVal) {
-            $maxVal = $absValue
+        if ($absValue -gt $max) {
+            $max = $absValue
         }
     }
-    return $maxVal
+    return $max
 }
 
-# Create Peak Limiter Kernel
+# Load content-core.js equivalent logic (assuming it's been converted to a PowerShell module or script)
+# For this example, we'll define the required functions directly here
+
+# Mock createPeakLimiter function
 class PeakLimiterKernel {
     [int]$delaySamples
-    [double[]]$buffer
+    [float]$lastGain
+    [float[]]$delayBufferLeft
+    [float[]]$delayBufferRight
     [int]$bufferIndex
-    [double]$gain
+    [int]$sampleRate
 
-    PeakLimiterKernel([int]$sampleRate) {
-        $this.delaySamples = [Math]::Floor(0.005 * $sampleRate) # 5ms delay
-        $this.buffer = @(0) * ($this.delaySamples * 2) # Double buffer size for safety
+    PeakLimiterKernel([int]$rate) {
+        $this.sampleRate = $rate
+        $this.delaySamples = [Math]::Floor(0.005 * $rate) # 5ms delay
+        $this.delayBufferLeft = New-Object float[] $this.delaySamples
+        $this.delayBufferRight = New-Object float[] $this.delaySamples
         $this.bufferIndex = 0
-        $this.gain = 1.0
+        $this.lastGain = 1.0
     }
 
-    [void] Process($input, $output, $enabled, $strength) {
-        $ceiling = [Math]::Pow(10, (Convert-LimiterStrengthToDbfs $strength) / 20)
+    [void] Process([System.Collections.Generic.List[float[]]]$input, [System.Collections.Generic.List[float[]]]$output, [bool]$enabled, [int]$strength) {
+        # Simplified limiter implementation for testing purposes
+        $channels = $input.Count
+        $length = if ($input.Count -gt 0) { $input[0].Length } else { 0 }
         
-        # Handle empty input case (drain buffer)
-        if ($input.Count -eq 0 -or $input[0].Count -eq 0) {
-            for ($i = 0; $i -lt $output[0].Count; $i++) {
-                $output[0][$i] = 0
+        # Initialize output arrays if needed
+        for ($c = 0; $c -lt $channels; $c++) {
+            if ($output[$c].Length -lt $length) {
+                $temp = New-Object float[] $length
+                [Array]::Copy($output[$c], $temp, [Math]::Min($output[$c].Length, $length))
+                $output[$c] = $temp
             }
-            return
         }
 
-        $channels = $input.Count
-        $frameCount = $input[0].Count
-        
-        # Find maximum absolute value across all channels (linked stereo)
-        $peakValue = 0
-        for ($i = 0; $i -lt $frameCount; $i++) {
-            foreach ($channel in $input) {
-                $absValue = [Math]::Abs($channel[$i])
-                if ($absValue -gt $peakValue) {
-                    $peakValue = $absValue
+        # Calculate ceiling from strength
+        $dbfs = -0.03 * $strength
+        $ceiling = [Math]::Pow(10, $dbfs / 20)
+
+        # Simple peak detection and limiting
+        for ($i = 0; $i -lt $length; $i++) {
+            $peak = 0
+            for ($c = 0; $c -lt $channels; $c++) {
+                $absSample = [Math]::Abs($input[$c][$i])
+                if ($absSample -gt $peak) {
+                    $peak = $absSample
                 }
             }
-        }
-        
-        # Calculate required gain reduction
-        if ($enabled -and $peakValue * $this.gain > $ceiling) {
-            $requiredGain = $ceiling / $peakValue
-            if ($requiredGain -lt $this.gain) {
-                $this.gain = $requiredGain
+
+            # Determine gain factor
+            $gain = 1.0
+            if ($peak -gt $ceiling) {
+                $gain = $ceiling / $peak
             }
-        }
-        
-        # Apply gain and delay
-        for ($ch = 0; $ch -lt $channels; $ch++) {
-            for ($i = 0; $i -lt $frameCount; $i++) {
-                # Write input to buffer
-                $this.buffer[$this.bufferIndex + $ch * $this.delaySamples] = $input[$ch][$i]
-                
-                # Read from buffer with delay and apply gain
-                $delayedIndex = ($this.bufferIndex + $ch * $this.delaySamples - $this.delaySamples) % $this.buffer.Length
-                if ($delayedIndex -lt 0) { $delayedIndex += $this.buffer.Length }
-                $output[$ch][$i] = $this.buffer[$delayedIndex] * $this.gain
+
+            # Apply gain to all channels
+            for ($c = 0; $c -lt $channels; $c++) {
+                # Store in delay buffer
+                if ($c -eq 0) {
+                    $this.delayBufferLeft[$this.bufferIndex] = $input[$c][$i]
+                } elseif ($c -eq 1) {
+                    $this.delayBufferRight[$this.bufferIndex] = $input[$c][$i]
+                }
+
+                # Retrieve delayed sample
+                $delayedSample = 0
+                if ($c -eq 0) {
+                    $delayedSample = $this.delayBufferLeft[$this.bufferIndex]
+                } elseif ($c -eq 1) {
+                    $delayedSample = $this.delayBufferRight[$this.bufferIndex]
+                }
+
+                # Apply gain
+                if ($enabled) {
+                    $output[$c][$i] = $delayedSample * $gain
+                } else {
+                    $output[$c][$i] = $delayedSample
+                }
             }
+
+            # Update buffer index
+            $this.bufferIndex = ($this.bufferIndex + 1) % $this.delaySamples
         }
-        
-        # Slowly release gain (recovery after transient)
-        if ($this.gain -lt 1.0) {
-            $this.gain += (1.0 - $this.gain) * 0.0001
-        }
-        
-        $this.bufferIndex = ($this.bufferIndex + $frameCount) % $this.delaySamples
     }
 }
 
-function New-PeakLimiter {
-    param($sampleRate)
-    return [PeakLimiterKernel]::new($sampleRate)
+function Create-PeakLimiter {
+    param([int]$rate)
+    return [PeakLimiterKernel]::new($rate)
+}
+
+function Limiter-Strength-To-Dbfs {
+    param([int]$strength)
+    return -0.03 * $strength
 }
 
 # Render function
-function Invoke-Render {
+function Render-Signal {
     param(
-        [array]$signal,
+        [System.Collections.Generic.List[float[]]]$signal,
         [int]$strength,
         [int]$rate = 48000,
         [bool]$enabled = $true
     )
     
-    $kernel = New-PeakLimiter $rate
-    $output = @()
+    $kernel = Create-PeakLimiter -rate $rate
+    $outputChannels = New-Object System.Collections.Generic.List[float[]]
+    
+    # Initialize output arrays with padding for delay
     foreach ($channel in $signal) {
-        $output += ,@(0) * ($channel.Length + $kernel.delaySamples)
+        $paddedChannel = New-Object float[] ($channel.Length + $kernel.delaySamples)
+        $outputChannels.Add($paddedChannel)
     }
     
-    for ($start = 0; $start -lt $output[0].Length; $start += 128) {
-        $length = [Math]::Min(128, $output[0].Length - $start)
+    # Process in blocks of 128 samples
+    $start = 0
+    while ($start -lt $outputChannels[0].Length) {
+        $length = [Math]::Min(128, $outputChannels[0].Length - $start)
         
         # Prepare input block
-        $input = @()
+        $inputChannels = New-Object System.Collections.Generic.List[float[]]
         foreach ($channel in $signal) {
-            $block = @(0) * $length
+            $inputBlock = New-Object float[] $length
             for ($i = 0; $i -lt $length; $i++) {
-                if (($start + $i) -lt $channel.Length) {
-                    $block[$i] = $channel[$start + $i]
+                $index = $start + $i
+                if ($index -lt $channel.Length) {
+                    $inputBlock[$i] = $channel[$index]
+                } else {
+                    $inputBlock[$i] = 0
                 }
             }
-            $input += ,$block
+            $inputChannels.Add($inputBlock)
         }
         
         # Prepare output block
-        $outBlock = @()
-        for ($ch = 0; $ch -lt $output.Count; $ch++) {
-            $block = @(0) * $length
-            $outBlock += ,$block
+        $outputBlocks = New-Object System.Collections.Generic.List[float[]]
+        for ($c = 0; $c -lt $outputChannels.Count; $c++) {
+            $outputBlock = New-Object float[] $length
+            $outputBlocks.Add($outputBlock)
         }
         
-        # Process block
-        $kernel.Process($input, $outBlock, $enabled, $strength)
+        # Process the block
+        $kernel.Process($inputChannels, $outputBlocks, $enabled, $strength)
         
-        # Copy processed block to output
-        for ($ch = 0; $ch -lt $output.Count; $ch++) {
+        # Copy processed block back to output array
+        for ($c = 0; $c -lt $outputChannels.Count; $c++) {
             for ($i = 0; $i -lt $length; $i++) {
-                $output[$ch][$start + $i] = $outBlock[$ch][$i]
+                $outputChannels[$c][$start + $i] = $outputBlocks[$c][$i]
             }
         }
+        
+        $start += 128
     }
     
     return @{
-        output = $output
+        output = $outputChannels
         delay = $kernel.delaySamples
     }
 }
 
 # Test cases
+Write-Host "Running tests..."
+
+# Test isolated and high-frequency peaks are bounded
 foreach ($rate in @(44100, 48000, 96000)) {
-    Write-Host "Testing isolated and high-frequency peaks are bounded at $rate Hz"
+    Write-Host "Testing isolated and high-frequency peaks at $rate Hz"
     
-    $signal = @(0) * $rate
+    # Create test signal
+    $signal = New-Object float[] $rate
     $signal[1] = 1
     $signal[127] = -1
-    
     for ($i = 1000; $i -lt 1100; $i++) {
         $signal[$i] = [Math]::Sin(2 * [Math]::PI * 8000 * $i / $rate)
     }
     
     $previous = 1
     foreach ($strength in @(25, 75, 100)) {
-        $result = Invoke-Render $signal $strength $rate
-        $output = $result.output
-        $delay = $result.delay
+        $result = Render-Signal -signal @($signal) -strength $strength -rate $rate
+        $measured = Max-Peak -Channel $result.output[0]
+        $ceiling = [Math]::Pow(10, (Limiter-Strength-To-Dbfs -strength $strength) / 20)
         
-        $measured = Get-Peak $output[0]
-        $ceiling = [Math]::Pow(10, (Convert-LimiterStrengthToDbfs $strength) / 20)
-        
-        Assert-True ($measured -le $ceiling + 1e-7) "$measured exceeds $ceiling"
-        Assert-True ($measured -lt $previous) "higher strength must attenuate more"
-        Assert-True ($delay / $rate -le 0.01)
+        Assert-True ($measured -le $ceiling + 1e-7) "Measured value $measured exceeds ceiling $ceiling"
+        Assert-True ($measured -lt $previous) "Higher strength must attenuate more"
+        Assert-True (($result.delay / $rate) -le 0.01) "Delay should be less than 1%"
         
         $previous = $measured
     }
 }
 
-Write-Host "Testing bypass preserves every sample with the documented delay"
-$signal = @(0) * 10000
+# Test bypass preserves every sample
+Write-Host "Testing bypass preserves every sample"
+$signal = New-Object float[] 10000
 for ($i = 0; $i -lt 10000; $i++) {
     $signal[$i] = [Math]::Sin($i * 0.7) * 0.8
 }
+$result = Render-Signal -signal @($signal) -strength 100 -rate 48000 -enabled $false
+$sliceStart = $result.delay
+$sliceEnd = $signal.Length
+$outputSlice = $result.output[0][$sliceStart..($sliceStart + $sliceEnd - 1)]
 
-$result = Invoke-Render $signal 100 48000 $false
-$output = $result.output
-$delay = $result.delay
-
-$slice = $output[0][($delay)..($output[0].Length-1)]
-Assert-Equal $slice.Length $signal.Length "Output slice length mismatch"
-
+# Compare slices
+$match = $true
 for ($i = 0; $i -lt $signal.Length; $i++) {
-    Assert-Equal $signal[$i] $slice[$i] "Sample mismatch at index $i"
+    if ([Math]::Abs($outputSlice[$i] - $signal[$i]) -gt 1e-10) {
+        $match = $false
+        break
+    }
 }
+Assert-True $match "Bypass should preserve every sample"
 
-Write-Host "Testing quiet speech-band signal is not permanently attenuated"
-$signal = @(0) * 48000
+# Test quiet speech-band signal is not permanently attenuated
+Write-Host "Testing quiet speech-band signal preservation"
+$signal = New-Object float[] 48000
 for ($i = 0; $i -lt 48000; $i++) {
     $signal[$i] = 0.01 * [Math]::Sin($i * 2 * [Math]::PI * 200 / 48000)
 }
+$result = Render-Signal -signal @($signal) -strength 100
+$sliceStart = $result.delay
+$sliceEnd = $signal.Length
+$outputSlice = $result.output[0][$sliceStart..($sliceStart + $sliceEnd - 1)]
 
-$result = Invoke-Render $signal 100
-$output = $result.output
-$delay = $result.delay
-
-$slice = $output[0][($delay)..($output[0].Length-1)]
-Assert-Equal $slice.Length $signal.Length "Output slice length mismatch"
-
+# Compare slices
+$match = $true
 for ($i = 0; $i -lt $signal.Length; $i++) {
-    Assert-Equal $signal[$i] $slice[$i] "Sample mismatch at index $i"
+    if ([Math]::Abs($outputSlice[$i] - $signal[$i]) -gt 1e-10) {
+        $match = $false
+        break
+    }
 }
+Assert-True $match "Quiet speech-band signal should not be permanently attenuated"
 
-Write-Host "Testing linked stereo gain preserves balance and limits either channel"
-$left = @(0) * 1000
-$right = @(0) * 1000
+# Test linked stereo gain preserves balance
+Write-Host "Testing linked stereo gain balance"
+$left = New-Object float[] 1000
+$right = New-Object float[] 1000
 $left[127] = 0.5
 $right[127] = 1
+$result = Render-Signal -signal @($left, $right) -strength 100
 
-$result = Invoke-Render @($left, $right) 100
-$output = $result.output
-$delay = $result.delay
+$ratio = $result.output[0][127 + $result.delay] * 2
+$rightVal = $result.output[1][127 + $result.delay]
+Assert-True ([Math]::Abs($ratio - $rightVal) -lt 1e-10) "Stereo balance should be preserved"
 
-Assert-Equal ($output[0][127 + $delay] * 2) $output[1][127 + $delay] "Stereo balance not preserved"
-Assert-True ((Get-Peak $output[1]) -le ([Math]::Pow(10, (-30 / 20)) + 1e-7)) "Right channel not limited"
+$peakRight = Max-Peak -Channel $result.output[1]
+$limit = [Math]::Pow(10, (-30 / 20)) + 1e-7
+Assert-True ($peakRight -le $limit) "Either channel should be limited"
 
-Write-Host "Testing gain recovers after a transient and invalid samples cannot poison the graph"
-$signal = @(0) * 48000
+# Test gain recovery after transient
+Write-Host "Testing gain recovery after transient"
+$signal = New-Object float[] 48000
 $signal[10] = 1
 $signal[100] = [Double]::NaN
 $signal[200] = [Double]::PositiveInfinity
-
 for ($i = 24000; $i -lt $signal.Length; $i++) {
     $signal[$i] = 0.01
 }
+$result = Render-Signal -signal @($signal) -strength 100
 
-$result = Invoke-Render $signal 100
-$output = $result.output
-
-foreach ($sample in $output[0]) {
-    Assert-True ([Double]::IsFinite($sample)) "Non-finite sample detected"
+# Check all values are finite
+$allFinite = $true
+foreach ($val in $result.output[0]) {
+    if (-not [Double]::IsFinite($val)) {
+        $allFinite = $false
+        break
+    }
 }
+Assert-True $allFinite "All output values should be finite"
 
-Assert-True ($output[0][40000] -gt 0.00999) "Gain did not recover properly"
+# Check recovery at specific point
+$valueAt40k = $result.output[0][40000]
+Assert-True ($valueAt40k -gt 0.00999) "Gain should recover after transient"
 
-Write-Host "Testing empty input drains delayed audio and then returns to silence"
-$kernel = New-PeakLimiter 48000
-$block = @(0.01) * 128
-$out = @(0) * 128
+# Test empty input drains delayed audio
+Write-Host "Testing empty input drains delayed audio"
+$kernel = Create-PeakLimiter -rate 48000
+$block = , (New-Object float[] 128)
+for ($i = 0; $i -lt 128; $i++) {
+    $block[0][$i] = 0.01
+}
+$out = New-Object float[] 128
+$kernel.Process($block, @($out), $true, 100)
 
-$input = @($block)
-$outputRef = @($out)
-$kernel.Process($input, $outputRef, $true, 100)
-
+# Process empty inputs
 for ($n = 0; $n -lt 4; $n++) {
-    $emptyInput = @()
-    $kernel.Process($emptyInput, $outputRef, $true, 100)
+    $kernel.Process(@(), @($out), $true, 100)
 }
 
-Assert-Equal (Get-Peak $out) 0 "Output not silent after draining"
+$finalPeak = Max-Peak -Channel $out
+Assert-Equal $finalPeak 0 "Empty input should drain to silence"
 
 Write-Host "All tests passed!"

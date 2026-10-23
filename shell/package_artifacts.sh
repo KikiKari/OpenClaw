@@ -3,64 +3,77 @@
 # Quelle: python, Projects@TikTok-Live-Companion:plugin-source/scripts/package_artifacts.py
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/package_artifacts.py
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/package_artifacts.py
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/package_artifacts.py
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/package_artifacts.py
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Globale Variablen
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly ROOT="$(realpath "$SCRIPT_DIR/../..")"
-readonly PROJECT_ROOT="$(realpath "$ROOT/..")"
-readonly EXCLUDED_PARTS=("__pycache__" ".gradle" ".kotlin" ".cxx" "build" "DerivedData" "xcuserdata" "Pods")
-readonly EXCLUDED_SUFFIXES=(".pyc" ".aar")
+readonly ROOT="$(dirname "$SCRIPT_DIR")"
+readonly PROJECT_ROOT="$(dirname "$ROOT")"
+readonly EXCLUDED_PARTS="__pycache__ .gradle .kotlin .cxx build DerivedData xcuserdata Pods"
+readonly EXCLUDED_SUFFIXES=".pyc .aar"
 
-# Funktionen
+# Funktion zur Bestimmung des relativen Pfads
+relpath() {
+    local target="$1"
+    local base="${2:-$PWD}"
+    python3 -c "import os.path; print(os.path.relpath('$target', '$base'))"
+}
+
+# Funktion zum Hinzufügen eines Verzeichnisbaums zum ZIP-Archiv
 add_tree() {
     local archive="$1"
     local source="$2"
     local prefix="${3:-}"
 
-    # Finde alle Dateien rekursiv im Quellverzeichnis
-    find "$source" -type f | sort | while read -r file; do
-        # Prüfe ob Datei in ausgeschlossenen Ordnern liegt
-        local skip=false
-        for part in "${EXCLUDED_PARTS[@]}"; do
+    # Finde alle Dateien im Quellverzeichnis
+    find "$source" -type f | while IFS= read -r file; do
+        # Überprüfe ausgeschlossene Teile im Pfad
+        local exclude_file=false
+        for part in $EXCLUDED_PARTS; do
             if [[ "$file" == *"/$part/"* ]] || [[ "$file" == *"/$part" ]]; then
-                skip=true
+                exclude_file=true
                 break
             fi
         done
-        
-        # Prüfe auf ausgeschlossene Suffixe
-        if ! $skip; then
-            for suffix in "${EXCLUDED_SUFFIXES[@]}"; do
+
+        # Überprüfe ausgeschlossene Suffixe
+        if [ "$exclude_file" = false ]; then
+            for suffix in $EXCLUDED_SUFFIXES; do
                 if [[ "$file" == *"$suffix" ]]; then
-                    skip=true
+                    exclude_file=true
                     break
                 fi
             done
         fi
-        
-        if $skip; then
+
+        # Überspringe ausgeschlossene Dateien
+        if [ "$exclude_file" = true ]; then
             continue
         fi
 
-        # Berechne relativen Pfad
-        local relative_path="${file#$source/}"
-        local archive_path="$relative_path"
-        if [[ -n "$prefix" ]]; then
-            archive_path="$prefix/$relative_path"
-        fi
+        # Berechne den relativen Pfad
+        local relative_path
+        relative_path=$(relpath "$file" "$source")
+        local archive_path="${prefix:+$prefix/}$relative_path"
 
-        # Setze Dateiberechtigungen basierend auf Dateiname
+        # Entferne führende Schrägstriche
+        archive_path="${archive_path#/}"
+
+        # Setze die Zugriffsrechte basierend auf dem Dateinamen
         local permissions="644"
         if [[ "$(basename "$file")" == "gradlew" ]]; then
             permissions="755"
         fi
 
-        # Füge Datei zum ZIP-Archiv hinzu
-        zip --junk-paths --names-stdin "$archive" <<< "$archive_path" < "$file"
+        # Füge die Datei zum ZIP-Archiv hinzu
+        zip -j "$archive" "$file" -X -9 >/dev/null
+        # Setze die externen Attribute manuell (Unix-Zugriffsrechte)
+        # Dies ist eine Vereinfachung, da Bash keine direkte Möglichkeit bietet,
+        # die externen Attribute wie in Python zu setzen.
+        # In einer produktiven Umgebung könnte dies durch eine spezielle ZIP-Bibliothek verbessert werden.
     done
 }
 
@@ -102,142 +115,180 @@ main() {
         esac
     done
 
+    # Überprüfe erforderliche Argumente
     if [[ -z "$output_dir" ]]; then
         echo "--output-dir ist erforderlich" >&2
         exit 1
     fi
 
-    # Ausgabeverzeichnis erstellen
+    # Erstelle das Ausgabeverzeichnis
     mkdir -p "$output_dir"
     output_dir="$(realpath "$output_dir")"
 
-    # Version aus manifest.json lesen
-    local manifest_file="$ROOT/browser-extension/manifest.json"
-    if [[ ! -f "$manifest_file" ]]; then
-        echo "manifest.json nicht gefunden: $manifest_file" >&2
+    # Lese die Version aus der Manifestdatei
+    local manifest="$ROOT/browser-extension/manifest.json"
+    if [[ ! -f "$manifest" ]]; then
+        echo "Manifestdatei nicht gefunden: $manifest" >&2
         exit 1
     fi
-    
     local version
-    version=$(jq -r '.version' "$manifest_file")
-    if [[ "$version" == "null" ]] || [[ -z "$version" ]]; then
-        echo "Konnte Version aus manifest.json nicht extrahieren" >&2
-        exit 1
-    fi
+    version=$(jq -r '.version' "$manifest")
 
-    # Artefakte definieren
+    # Definiere die Artefaktpfade
     local extension_zip="$output_dir/tiktok-live-companion-extension-$version.zip"
     local plugin_zip="$output_dir/tiktok-live-companion-plugin-$version.zip"
     local service_zip="$output_dir/tiktok-live-companion-service-$version.zip"
     local ios_source_zip="$output_dir/tiktok-live-companion-ios-$version-source.zip"
     local android_source_zip="$output_dir/tiktok-live-companion-android-$version-source.zip"
-    local android_apk_file="$output_dir/tiktok-live-companion-android-$version.apk"
+    local android_apk_out="$output_dir/tiktok-live-companion-android-$version.apk"
     local extension_dir="$output_dir/tiktok-live-companion-extension-$version"
     local checksum_file="$output_dir/tiktok-live-companion-$version-SHA256.txt"
 
-    # Extension-Verzeichnis bereinigen und kopieren
+    # Überprüfe, ob das Erweiterungsverzeichnis im Ausgabeverzeichnis liegt
+    local resolved_extension_dir
+    resolved_extension_dir="$(realpath "$extension_dir" 2>/dev/null || echo "$extension_dir")"
+    if [[ "$(dirname "$resolved_extension_dir")" != "$output_dir" ]]; then
+        echo "Refusing to package outside the requested output directory" >&2
+        exit 1
+    fi
+
+    # Entferne vorhandenes Erweiterungsverzeichnis
     if [[ -d "$extension_dir" ]]; then
         rm -rf "$extension_dir"
     fi
-    
+
+    # Kopiere Browser-Erweiterung
     cp -r "$ROOT/browser-extension" "$extension_dir"
+
+    # Kopiere Begleitdienst
     cp -r "$ROOT/companion-service" "$extension_dir/companion-service"
-    
+
+    # Erstelle Reparatur-Skript für Sprachdienst
     cat > "$extension_dir/Sprachdienst-reparieren.cmd" << 'EOF'
 @echo off
 call "%~dp0companion-service\Sprachdienst-reparieren.cmd"
 EOF
 
-    # package.json erstellen
-    jq -n --arg version "$version" '{
-        name: "tiktok-live-companion-extension-package",
-        private: true,
-        version: $version,
-        scripts: {
-            setup: "npm --prefix companion-service run setup --",
-            start: "npm --prefix companion-service start",
-            test: "npm --prefix companion-service test"
-        }
-    }' > "$extension_dir/package.json"
+    # Erstelle package.json
+    jq -n \
+        --arg name "tiktok-live-companion-extension-package" \
+        --arg version "$version" \
+        '{
+            name: $name,
+            private: true,
+            version: $version,
+            scripts: {
+                setup: "npm --prefix companion-service run setup --",
+                start: "npm --prefix companion-service start",
+                test: "npm --prefix companion-service test"
+            }
+        }' > "$extension_dir/package.json"
 
-    # ZIP-Dateien erstellen
-    zip -rq "$extension_zip" "$extension_dir"
-    zip -rq "$plugin_zip" "$ROOT" --exclude "*/.*/*" "*/build/*" "*/node_modules/*" "*/dist/*" "*/out/*"
-    zip -rq "$service_zip" "$ROOT/companion-service" --exclude "*/.*/*" "*/node_modules/*" "*/dist/*"
+    # Erstelle ZIP-Archive
+    # Extension ZIP
+    (
+        cd "$extension_dir" || exit 1
+        zip -r "$extension_zip" . -X -9 >/dev/null
+    )
 
-    # Mobile Source ZIPs erstellen
-    ios_source="$(realpath "$ios_source")"
-    android_source="$(realpath "$android_source")"
-    native_shared_source="$(realpath "$native_shared_source")"
-    
+    # Plugin ZIP
+    (
+        cd "$ROOT" || exit 1
+        zip -r "$plugin_zip" . -X -9 >/dev/null
+        # Entferne unerwünschte Dateien aus dem Plugin-Archiv
+        zip -d "$plugin_zip" "*/__pycache__/*" "__pycache__/*" "*/.gradle/*" ".gradle/*" "*/.kotlin/*" ".kotlin/*" "*/.cxx/*" ".cxx/*" "*/build/*" "build/*" "*/DerivedData/*" "DerivedData/*" "*/xcuserdata/*" "xcuserdata/*" "*/Pods/*" "Pods/*" "*.pyc" "*.aar" >/dev/null
+    )
+
+    # Service ZIP
+    (
+        cd "$ROOT/companion-service" || exit 1
+        zip -r "$service_zip" . -X -9 >/dev/null
+        # Entferne unerwünschte Dateien aus dem Service-Archiv
+        zip -d "$service_zip" "*/__pycache__/*" "__pycache__/*" "*/.gradle/*" ".gradle/*" "*/.kotlin/*" ".kotlin/*" "*/.cxx/*" ".cxx/*" "*/build/*" "build/*" "*/DerivedData/*" "DerivedData/*" "*/xcuserdata/*" "xcuserdata/*" "*/Pods/*" "Pods/*" "*.pyc" "*.aar" >/dev/null
+    )
+
+    # Überprüfe Quellverzeichnisse
     if [[ ! -d "$ios_source" ]] || [[ ! -d "$android_source" ]]; then
-        echo "--ios-source und --android-source müssen auf existierende Verzeichnisse zeigen" >&2
+        echo "--ios-source and --android-source must point to existing source directories" >&2
         exit 1
     fi
-    
+
+    # Überprüfe gemeinsame native Quelle
     if [[ ! -f "$native_shared_source/native/tlc_peak_limiter.h" ]]; then
-        echo "Gemeinsame native Limiter-Quelle ist für beide mobilen Quellpakete erforderlich" >&2
+        echo "Shared native limiter source is required for both mobile source packages" >&2
         exit 1
     fi
 
     # iOS Source ZIP
-    temp_ios_dir=$(mktemp -d)
-    trap 'rm -rf "$temp_ios_dir"' EXIT
-    cp -r "$ios_source" "$temp_ios_dir/TikTokLiveCompanion-iOS"
-    cp -r "$native_shared_source" "$temp_ios_dir/shared"
-    zip -rq "$ios_source_zip" "$temp_ios_dir"/*
-    rm -rf "$temp_ios_dir"
+    (
+        cd "$(dirname "$ios_source")" || exit 1
+        zip -r "$ios_source_zip" "$(basename "$ios_source")" -X -9 >/dev/null
+        # Entferne unerwünschte Dateien aus dem iOS-Quellarchiv
+        zip -d "$ios_source_zip" "*/__pycache__/*" "__pycache__/*" "*/.gradle/*" ".gradle/*" "*/.kotlin/*" ".kotlin/*" "*/.cxx/*" ".cxx/*" "*/build/*" "build/*" "*/DerivedData/*" "DerivedData/*" "*/xcuserdata/*" "xcuserdata/*" "*/Pods/*" "Pods/*" "*.pyc" "*.aar" >/dev/null
+    )
+    # Füge gemeinsame native Quelle hinzu
+    (
+        cd "$(dirname "$native_shared_source")" || exit 1
+        zip -r "$ios_source_zip" "$(basename "$native_shared_source")" -X -9 >/dev/null
+        # Entferne unerwünschte Dateien aus dem gemeinsamen Archiv
+        zip -d "$ios_source_zip" "*/__pycache__/*" "__pycache__/*" "*/.gradle/*" ".gradle/*" "*/.kotlin/*" ".kotlin/*" "*/.cxx/*" ".cxx/*" "*/build/*" "build/*" "*/DerivedData/*" "DerivedData/*" "*/xcuserdata/*" "xcuserdata/*" "*/Pods/*" "Pods/*" "*.pyc" "*.aar" >/dev/null
+    )
 
     # Android Source ZIP
-    temp_android_dir=$(mktemp -d)
-    trap 'rm -rf "$temp_android_dir"' EXIT
-    cp -r "$android_source" "$temp_android_dir/TikTokLiveCompanion-Android"
-    cp -r "$native_shared_source" "$temp_android_dir/shared"
-    zip -rq "$android_source_zip" "$temp_android_dir"/*
-    rm -rf "$temp_android_dir"
+    (
+        cd "$(dirname "$android_source")" || exit 1
+        zip -r "$android_source_zip" "$(basename "$android_source")" -X -9 >/dev/null
+        # Entferne unerwünschte Dateien aus dem Android-Quellarchiv
+        zip -d "$android_source_zip" "*/__pycache__/*" "__pycache__/*" "*/.gradle/*" ".gradle/*" "*/.kotlin/*" ".kotlin/*" "*/.cxx/*" ".cxx/*" "*/build/*" "build/*" "*/DerivedData/*" "DerivedData/*" "*/xcuserdata/*" "xcuserdata/*" "*/Pods/*" "Pods/*" "*.pyc" "*.aar" >/dev/null
+    )
+    # Füge gemeinsame native Quelle hinzu
+    (
+        cd "$(dirname "$native_shared_source")" || exit 1
+        zip -r "$android_source_zip" "$(basename "$native_shared_source")" -X -9 >/dev/null
+        # Entferne unerwünschte Dateien aus dem gemeinsamen Archiv
+        zip -d "$android_source_zip" "*/__pycache__/*" "__pycache__/*" "*/.gradle/*" ".gradle/*" "*/.kotlin/*" ".kotlin/*" "*/.cxx/*" ".cxx/*" "*/build/*" "build/*" "*/DerivedData/*" "DerivedData/*" "*/xcuserdata/*" "xcuserdata/*" "*/Pods/*" "Pods/*" "*.pyc" "*.aar" >/dev/null
+    )
 
-    # Android APK kopieren falls angegeben
+    # Behandle Android APK
     if [[ -n "$android_apk" ]]; then
-        android_apk="$(realpath "$android_apk")"
         if [[ ! -f "$android_apk" ]] || [[ "${android_apk##*.}" != "apk" ]]; then
-            echo "--android-apk muss auf eine vorhandene APK-Datei verweisen" >&2
+            echo "--android-apk must point to an existing APK" >&2
             exit 1
         fi
-        
-        if [[ "$(realpath "$android_apk")" != "$(realpath "$android_apk_file")" ]]; then
-            cp "$android_apk" "$android_apk_file"
+        if [[ "$(realpath "$android_apk")" != "$(realpath "$android_apk_out")" ]]; then
+            cp "$android_apk" "$android_apk_out"
         fi
     fi
 
-    # Checksummen berechnen
+    # Erstelle Prüfsummen
     local artifacts=("$extension_zip" "$plugin_zip" "$service_zip" "$ios_source_zip" "$android_source_zip")
-    if [[ -f "$android_apk_file" ]]; then
-        artifacts+=("$android_apk_file")
+    if [[ -f "$android_apk_out" ]]; then
+        artifacts+=("$android_apk_out")
     fi
-    
-    {
-        for artifact in "${artifacts[@]}"; do
-            local sha256_hash
-            sha256_hash=$(sha256sum "$artifact" | cut -d' ' -f1)
-            echo "$sha256_hash  $(basename "$artifact")"
-        done
-    } > "$checksum_file"
 
-    # JSON-Ausgabe erstellen
-    local android_apk_json_value="null"
-    if [[ -f "$android_apk_file" ]]; then
-        android_apk_json_value="\"$(realpath "$android_apk_file")\""
-    fi
-    
+    local checksums=()
+    for artifact in "${artifacts[@]}"; do
+        if [[ -f "$artifact" ]]; then
+            local digest
+            digest=$(sha256sum "$artifact" | cut -d' ' -f1)
+            local filename
+            filename=$(basename "$artifact")
+            checksums+=("$digest  $filename")
+        fi
+    done
+
+    printf '%s\n' "${checksums[@]}" > "$checksum_file"
+
+    # Gib JSON-Ausgabe aus
     jq -n \
-        --arg extension_dir "$(realpath "$extension_dir")" \
-        --arg extension_zip "$(realpath "$extension_zip")" \
-        --arg plugin_zip "$(realpath "$plugin_zip")" \
-        --arg service_zip "$(realpath "$service_zip")" \
-        --arg ios_source_zip "$(realpath "$ios_source_zip")" \
-        --arg android_source_zip "$(realpath "$android_source_zip")" \
-        --arg android_apk "$android_apk_json_value" \
-        --arg checksum_file "$(realpath "$checksum_file")" \
+        --arg extension_dir "$extension_dir" \
+        --arg extension_zip "$extension_zip" \
+        --arg plugin_zip "$plugin_zip" \
+        --arg service_zip "$service_zip" \
+        --arg ios_source_zip "$ios_source_zip" \
+        --arg android_source_zip "$android_source_zip" \
+        --arg android_apk "$android_apk_out" \
+        --arg checksum_file "$checksum_file" \
         --arg version "$version" \
         '{
             extension_dir: $extension_dir,
@@ -246,10 +297,11 @@ EOF
             service_zip: $service_zip,
             ios_source_zip: $ios_source_zip,
             android_source_zip: $android_source_zip,
-            android_apk: ($android_apk | fromjson),
+            android_apk: (if ($android_apk | test("/dev/null")) then null else $android_apk end),
             checksum_file: $checksum_file,
             version: $version
         }'
 }
 
+# Skript ausführen
 main "$@"

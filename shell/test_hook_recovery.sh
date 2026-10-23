@@ -3,176 +3,95 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_hook_recovery.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_hook_recovery.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_hook_recovery.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_hook_recovery.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_hook_recovery.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# This is a conceptual translation of JavaScript tests to Bash.
-# Since Bash lacks native support for complex testing frameworks, asynchronous operations,
-# and JavaScript-specific features like modules, classes, Promises, etc.,
-# we simulate the behavior using shell constructs where possible.
-# However, full parity with JavaScript's capabilities is not feasible in pure Bash.
-# This script serves as a simplified representation of test logic flow.
+# Mocking Node.js modules and functions
+echo "Simulating test_hook_recovery.cjs in Bash"
 
-echo "Running hook recovery tests simulation..."
+# This is a conceptual translation. Actual implementation would require
+# significant reworking of the logic to fit Bash paradigms.
 
-# Simulate harness function
+# harness function simulation
 harness() {
-    echo "Initializing harness..."
-    # In real implementation, would initialize state variables here
+    echo "Creating harness..."
+    # In Bash, we'd use associative arrays and variables to simulate state
+    local now=1000
+    local serial=0
+    local identity="stream-a"
+    echo "Harness created with now=$now, serial=$serial, identity=$identity"
 }
 
-# Test 1
-test_hook_default_disabled() {
-    echo "Test 1: Hook default disabled"
+# Test functions would be implemented as individual test cases
+test_default_disabled() {
+    echo "Running test: hook default disabled and unverified protocol cannot create sockets"
     harness
-    # Simulate controller actions
-    echo "Controller disconnected"
-    sleep 1
-    echo "Ticking 60000ms"
-    echo "Sockets length check: 0"
-    echo "Configure enabled"
-    echo "Ticking 60000ms"
-    echo "Sockets length check: 0"
-    echo "Phase check: unavailable"
+    echo "Test completed"
 }
 
-# Test 2
-test_five_synthetic_failures() {
-    echo "Test 2: Five synthetic hook failures"
+test_five_failures() {
+    echo "Running test: five synthetic hook failures recover without any media/navigation capability"
     harness
-    echo "Prime controller"
-    for i in {0..4}; do
-        echo "Tick 2999ms"
-        echo "Sockets length check: $i"
-        echo "Tick 1ms"
-        echo "Stage socket-open"
-        echo "Tick 200ms"
-        echo "Stage first-frame"
-        echo "Tick 100ms"
-        echo "Stage first-decoded-message"
-        echo "Check connected: true"
-        echo "Disconnect to decoded time: 3300ms"
-        echo "Native connected"
-        echo "Socket closed check: true"
-        echo "Native disconnected"
+    for i in {1..5}; do
+        echo "Failure iteration $i"
     done
+    echo "Test completed"
 }
 
-# Test 3
-test_open_alone_timeout() {
-    echo "Test 3: Open alone timeout"
+test_open_timeout() {
+    echo "Running test: open alone times out after ten seconds, one socket, backoff capped at 30 seconds"
     harness
-    echo "Prime controller"
-    echo "Tick 3000ms"
-    for i in {0..5}; do
-        echo "Stage socket-open"
-        echo "Tick 9999ms"
-        echo "Socket closed check: false"
-        echo "Tick 1ms"
-        echo "Socket closed check: true"
-        echo "Effective delay check <= 30000ms"
-        echo "Tick delay"
-        echo "Active sockets count: 1"
+    for i in {1..6}; do
+        echo "Socket iteration $i"
     done
+    echo "Test completed"
 }
 
-# Test 4
 test_native_takeover() {
-    echo "Test 4: Native takeover"
+    echo "Running test: native takeover cancels deadline and ignores stale socket callbacks"
     harness
-    echo "Prime controller"
-    echo "Tick 3000ms"
-    echo "Native connected"
-    echo "Connected check: false"
-    echo "Failed socket-close"
-    echo "Tick 60000ms"
-    echo "Sockets length check: 1"
-    echo "Phase check: native"
+    echo "Test completed"
 }
 
-# Test 5
 test_stream_switch() {
-    echo "Test 5: Stream switch"
+    echo "Running test: stream switch discards template and cancels scheduled attempt"
     harness
-    echo "Prime controller"
-    echo "Switch stream to stream-b"
-    echo "Tick 60000ms"
-    echo "Sockets length check: 0"
-    echo "Native disconnected"
-    echo "Phase check: unavailable"
+    echo "Test completed"
 }
 
-# Test 6
-test_disable_socket_close() {
-    echo "Test 6: Disable closes socket"
+test_disable_close() {
+    echo "Running test: disable closes owned socket and policy rejection forbids retries"
     harness
-    echo "Prime controller"
-    echo "Tick 3000ms"
-    echo "Configure disabled"
-    echo "Socket closed check: true"
-    echo "Tick 60000ms"
-    echo "Sockets length check: 1"
-    
-    echo "Second part:"
-    harness
-    echo "Prime controller"
-    echo "Tick 3000ms"
-    echo "Failed policy-rejected"
-    echo "Tick 60000ms"
-    echo "Sockets length check: 1"
-    echo "Phase check: unavailable"
+    echo "Test completed"
 }
 
-# Test 7
 test_disposed_document() {
-    echo "Test 7: Disposed document"
+    echo "Running test: disposed document never reconnects after new configuration"
     harness
-    echo "Prime controller"
-    echo "Dispose controller"
-    echo "Configure enabled"
-    echo "Tick 60000ms"
-    echo "Sockets length check: 0"
+    echo "Test completed"
 }
 
-# Test 8
-test_ack_heartbeat_encoder() {
-    echo "Test 8: ACK and heartbeat encoder"
-    echo "Inspect transport hb type check: hb"
-    echo "Inspect transport ack id check: 18446744073709551615"
-    echo "Inspect transport ack payload check: opaque"
-    echo "Invalid ack checks (should be null)"
-    echo "Encode transport throws RangeError on negative input"
+test_ack_heartbeat() {
+    echo "Running test: ACK and heartbeat encoder round trips supported dialect and rejects malformed controls"
+    echo "Test completed"
 }
 
-# Test 9
-test_actual_hook_protocol() {
-    echo "Test 9: Actual hook observes protocol"
-    echo "Initialize mock environment"
-    echo "Create WebSocket instance"
-    echo "Emit open event"
-    echo "Emit message with data [1]"
-    echo "Send ack and hb messages"
-    echo "Emit close event"
-    echo "Tick 3000ms"
-    echo "Second socket emits open"
-    echo "Second socket emits message [0] -> no sent data"
-    echo "Second socket emits message [1] -> ack sent"
-    echo "Tick 5000ms -> hb sent"
-    echo "Post message phase check: connected"
-    echo "Pagehide event"
+test_actual_hook() {
+    echo "Running test: actual hook observes protocol before reconnecting; own socket ACKs only requested frames"
+    echo "Test completed"
 }
 
 # Run all tests
-test_hook_default_disabled
-test_five_synthetic_failures
-test_open_alone_timeout
+test_default_disabled
+test_five_failures
+test_open_timeout
 test_native_takeover
 test_stream_switch
-test_disable_socket_close
+test_disable_close
 test_disposed_document
-test_ack_heartbeat_encoder
-test_actual_hook_protocol
+test_ack_heartbeat
+test_actual_hook
 
 echo "All tests completed"

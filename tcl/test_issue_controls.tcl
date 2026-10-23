@@ -3,125 +3,33 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_issue_controls.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_issue_controls.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_issue_controls.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_issue_controls.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_issue_controls.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 package require Tcl 8.6
-package require tdom
 
-# Mock Node.js modules and functions
-proc require {module} {
-    # In Tcl, we don't have require, but we can simulate the needed functionality
-    switch $module {
-        "node:test" {
-            return [dict create test test]
-        }
-        "node:assert/strict" {
-            return [dict create assert assert]
-        }
-        default {
-            return ""
-        }
-    }
-}
+# Tcl doesn't have native testing framework like node:test
+# We'll implement basic testing functionality
 
-proc readFileSync {filepath} {
-    set fp [open $filepath r]
-    set data [read $fp]
-    close $fp
-    return $data
-}
-
-proc joinPath {args} {
-    return [join $args "/"]
-}
-
-proc dirname {} {
-    return [file dirname [info script]]
-}
-
-# Load source files
-set source [readFileSync [joinPath [dirname] "../browser-extension/sidepanel.js"]]
-set core_content [readFileSync [joinPath [dirname] "../browser-extension/content-core.js"]]
-
-# Fragment function
-proc fragment {start end} {
-    global source
-    set a [string first $start $source]
-    set b [string first $end $source [expr {$a + [string length $start]}]]
-    if {$a < 0 || $b <= $a} {
-        error "Fragment not found"
-    }
-    return [string range $source $a [expr {$b - 1}]]
-}
-
-# Controls function
-proc controls {} {
-    # In Tcl, we'll use arrays to simulate objects
-    array set elements {}
-    
-    # Document simulation
-    set document [dict create activeElement ""]
-    
-    # Element creation function
-    proc createElement {id} {
-        return [dict create \
-            hidden true \
-            disabled false \
-            textContent "Off" \
-            handlers [dict create] \
-            addEventListener [list addEventListener $id] \
-            focus [list focus $id] \
-            click [list click $id]]
-    }
-    
-    proc addEventListener {id name fn} {
-        variable elements
-        set elem [dict get $elements $id]
-        dict set elem handlers $name $fn
-        dict set elements $id $elem
-    }
-    
-    proc focus {id} {
-        variable document
-        dict set document activeElement $id
-    }
-    
-    proc click {id} {
-        variable elements
-        if {[dict exists $elements $id]} {
-            set elem [dict get $elements $id]
-            if {[dict exists $elem handlers click]} {
-                set handler [dict get $elem handlers click]
-                # Execute handler with mock event
-                uplevel #0 $handler [list [dict create target $elem]]
-            }
-        }
-    }
-    
-    return [dict create elements [array get elements] document $document]
-}
-
-# Test framework simulation
 proc test {description script} {
     puts "Running test: $description"
-    if [catch {uplevel #0 $script} error] {
-        puts "Test failed: $error"
+    if {[catch {uplevel #0 $script} error]} {
+        puts "FAIL: $description - $error"
+        exit 1
     } else {
-        puts "Test passed"
+        puts "PASS: $description"
     }
 }
 
-# Assertion functions
 proc assert_equal {actual expected} {
-    if {$actual != $expected} {
-        error "Assertion failed: expected $expected, got $actual"
+    if {$actual ne $expected} {
+        error "Assertion failed: expected '$expected', got '$actual'"
     }
 }
 
-proc assert_match {actual pattern} {
-    if {![regexp $pattern $actual]} {
-        error "Assertion failed: '$actual' does not match pattern '$pattern'"
+proc assert_match {text pattern} {
+    if {![regexp $pattern $text]} {
+        error "Assertion failed: '$text' does not match pattern '$pattern'"
     }
 }
 
@@ -129,138 +37,420 @@ proc assert_fail {message} {
     error "Assertion failed: $message"
 }
 
-# Test cases
+# Mock file reading
+proc read_file {filename} {
+    set fp [open $filename r]
+    set content [read $fp]
+    close $fp
+    return $content
+}
+
+# Get directory of this script
+set script_dir [file dirname [info script]]
+
+# Read source files
+set source [read_file [file join $script_dir ../browser-extension/sidepanel.js]]
+# Note: content-core.js is referenced but not loaded as it's not used directly in tests
+
+# Helper function to extract code fragments
+proc fragment {start end} {
+    global source
+    set a [string first $start $source]
+    if {$a == -1} {
+        error "Start string '$start' not found"
+    }
+    set b [string first $end $source [expr {$a + [string length $start]}]]
+    if {$b <= $a} {
+        error "End string '$end' not found after start"
+    }
+    return [string range $source $a [expr {$b - 1}]]
+}
+
+# Create controls mock
+proc controls {} {
+    # In Tcl we'll use arrays and dicts to simulate the JS objects
+    set elements [dict create]
+    set document [dict create activeElement ""]
+    
+    # Return a dict containing our mock objects
+    return [list elements $elements document $document]
+}
+
+# Test 175
 test "175 manual and automatic speech reject raw point triggers before author prefixes" {
-    foreach enabled {false true} {
+    foreach enabled [list false true] {
         set spoken [list]
+        
+        # Build context dictionary (like JS object)
         array set s [list \
-            core $core_content \
+            core "" \
             filterExternalSpeechTriggers $enabled \
+            externalSpeechTriggerCharacters "." \
             speechEnabled true \
             speechQueue [list] \
             elements [dict create speech-status [dict create]] \
             pumpSpeech {} \
-            speechText {proc speechText item {return "Autor sagt [dict get \$item content]"}} \
-            speechLang {proc speechLang {} {return "de"}} \
-            serviceSpeech [list serviceSpeech spoken] \
-            browserSpeech {proc browserSpeech {} {assert_fail "unexpected fallback"}}]
+            speechText "Autor sagt %s" \
+            speechLang "de" \
+            serviceSpeech [list service_speech_callback spoken] \
+            browserSpeech "fail" \
+        ]
         
-        # Execute the speech functions from fragments
-        set speakItemCode [fragment "  async function speakItem(" "  async function pumpSpeech("]
-        set enqueueSpeechCode [fragment "  function enqueueSpeech(" "  function "]
-        
-        # Simplified execution model
-        proc speakItem {item} {
-            variable s
-            lappend s(spoken) [$s(speechText) $item]
+        proc service_speech_callback {var text} {
+            upvar $var spoken_list
+            lappend spoken_list $text
         }
         
-        proc enqueueSpeech {item} {
-            variable s
-            lappend s(spoken) [$s(speechText) $item]
+        # Extract and execute relevant functions
+        set func1 [fragment "  async function speakItem(" "  async function pumpSpeech("]
+        set func2 [fragment "  function enqueueSpeech(" "  function "]
+        
+        # Evaluate functions in global scope
+        eval $func1
+        eval $func2
+        
+        # Test data
+        set contents [list ".Text" ". Text" "  .Text" "Normal" "Ein Satz. Noch einer"]
+        foreach content $contents {
+            # Call speakItem and enqueueSpeech
+            speakItem [list content $content]
+            enqueueSpeech [list content $content]
         }
         
-        foreach content {.Text ". Text" "  .Text" Normal "Ein Satz. Noch einer"} {
-            speakItem [dict create content $content]
-            enqueueSpeech [dict create content $content]
-        }
-        
-        assert_equal [llength $spoken] [expr {$enabled ? 2 : 5}]
-        assert_equal [llength $s(speechQueue)] [expr {$enabled ? 2 : 5}]
+        # Check results
+        set expected_count [expr {$enabled ? 2 : 5}]
+        assert_equal [llength $spoken] $expected_count
+        assert_equal [llength [array get s speechQueue]] $expected_count
     }
 }
 
-test "176 speech switch commits On/Off only after a successful request" {
-    array set s [controls]
-    dict set s speechEnabled false
-    dict set s send {proc send {} {}}
-    dict set s refresh {proc refresh {} {}}
-    dict set s activateSpeech {proc activateSpeech {} {dict set s speechEnabled true}}
-    dict set s stopSpeech {proc stopSpeech {} {dict set s speechEnabled false}}
-    
-    # Add event listeners (simplified)
-    set toggleHookCode [fragment "  elements\[\"toggle-speech\"\].addEventListener" "  elements\[\"speech-volume\"\].addEventListener"]
-    
-    # Simulate clicks
-    click "toggle-speech"
-    assert_equal [dict get $s speechEnabled] true
-    
-    dict set s send {proc send {} {error "failed"}}
-    click "toggle-speech"
-    assert_equal [dict get $s speechEnabled] true
-    
-    # Check status text contains failed
-    if {![regexp "failed" [dict get $s elements speech-status textContent]]} {
-        assert_fail "Status text should contain 'failed'"
-    }
-    
-    dict set s send {proc send {} {}}
-    click "toggle-speech"
-    assert_equal [dict get $s speechEnabled] false
-}
-
-test "176 Connection selects both commands and preserves state on rejection" {
+# Test 187 input truncates pasted values
+test "187 input truncates pasted values and checkbox preserves selection" {
     set calls [list]
-    array set s [controls]
-    dict set s currentState [dict create hook [dict create armed false]]
-    dict set s send [list lappend calls]
-    dict set s refresh {proc refresh {} {dict set s currentState hook armed [expr {![dict get $s currentState hook armed]}]}}
     
-    # Add event listeners (simplified)
-    set toggleHookCode [fragment "  elements\[\"toggle-hook\"\].addEventListener" "  elements\[\"reset-tab\"\].addEventListener"]
+    # Create controls
+    array set control_data [controls]
+    set elements [dict get $control_data elements]
+    set document [dict get $control_data document]
     
-    # Simulate clicks
-    click "toggle-hook"
-    click "toggle-hook"
-    assert_equal $calls [list TLC_ENABLE_HOOK TLC_DISABLE_HOOK]
+    # Add event handling capabilities to elements
+    proc add_element_event_handlers {element_dict} {
+        dict set element_dict handlers [dict create]
+        dict set element_dict addEventListener [list add_event_listener element_dict]
+        dict set element_dict click [list click_element element_dict]
+        dict set element_dict focus [list focus_element element_dict]
+        return $element_dict
+    }
     
-    dict set s send {proc send {} {error "failed"}}
-    click "toggle-hook"
-    assert_equal [dict get $s currentState hook armed] false
-    if {![regexp "failed" [dict get $s elements notice textContent]]} {
-        assert_fail "Notice text should contain 'failed'"
+    proc add_event_listener {element_var name fn} {
+        upvar $element_var element
+        dict set element handlers $name $fn
+    }
+    
+    proc click_element {element_var} {
+        upvar $element_var element
+        set handler [dict get $element handlers click]
+        if {$handler ne ""} {
+            # Call handler with mock event
+            eval $handler [list target $element]
+        }
+    }
+    
+    proc focus_element {element_var} {
+        upvar $element_var element
+        # Focus implementation would go here
+    }
+    
+    # Build context
+    array set s [list \
+        elements $elements \
+        document $document \
+        core "" \
+        filterExternalSpeechTriggers false \
+        externalSpeechTriggerCharacters ".,-" \
+        send [list send_callback calls] \
+    ]
+    
+    proc send_callback {var type payload} {
+        upvar $var call_list
+        lappend call_list [dict merge [list type $type] $payload]
+    }
+    
+    # Extract and run event listeners
+    set event_code [fragment {  elements["filter-external-speech-triggers"].addEventListener} {  elements["game-mode"].addEventListener}]
+    eval $event_code
+    
+    # Test input value truncation
+    set input_element [dict get $s(elements) external-speech-trigger-characters]
+    dict set input_element value ".,-;:!"
+    
+    # Trigger input event
+    set input_handler [dict get $input_element handlers input]
+    if {$input_handler ne ""} {
+        eval $input_handler
+    }
+    
+    assert_equal [dict get $input_element value] ".,-;:"
+    assert_equal [dict get [lindex $calls end] externalSpeechTriggerCharacters] ".,-;:"
+    
+    # Test checkbox toggle
+    set toggle_element [dict get $s(elements) filter-external-speech-triggers]
+    dict set toggle_element checked true
+    
+    set change_handler [dict get $toggle_element handlers change]
+    if {$change_handler ne ""} {
+        eval $change_handler
+    }
+    
+    dict set toggle_element checked false
+    if {$change_handler ne ""} {
+        eval $change_handler
+    }
+    
+    assert_equal [dict get $input_element value] ".,-;:"
+    assert_equal [dict get $input_element disabled] false
+    assert_equal [dict get [lindex $calls end] filterExternalSpeechTriggers] false
+    
+    # Test emoji truncation
+    dict set input_element value "😀😁😂😃😄😅"
+    if {$input_handler ne ""} {
+        eval $input_handler
+    }
+    assert_equal [dict get $input_element value] "😀😁😂😃😄"
+    
+    # Test empty value
+    dict set input_element value ""
+    if {$input_handler ne ""} {
+        eval $input_handler
+    }
+    assert_equal [dict get [lindex $calls end] externalSpeechTriggerCharacters] ""
+}
+
+# Test 187 custom prefixes
+test "187 custom prefixes apply to manual and automatic speech before author prefixes" {
+    foreach enabled [list false true] {
+        set spoken [list]
+        
+        # Build context
+        array set s [list \
+            core "" \
+            filterExternalSpeechTriggers $enabled \
+            externalSpeechTriggerCharacters ".,-" \
+            speechEnabled true \
+            speechQueue [list] \
+            elements [dict create speech-status [dict create]] \
+            pumpSpeech {} \
+            speechText "Autor sagt %s" \
+            speechLang "de" \
+            serviceSpeech [list service_speech_callback spoken] \
+            browserSpeech "fail" \
+        ]
+        
+        # Extract and execute relevant functions
+        set func1 [fragment "  async function speakItem(" "  async function pumpSpeech("]
+        set func2 [fragment "  function enqueueSpeech(" "  function "]
+        
+        eval $func1
+        eval $func2
+        
+        # Test data
+        set contents [list ".Hallo" ",Hallo" "- Hallo" "Hallo, zusammen."]
+        foreach content $contents {
+            speakItem [list content $content]
+            enqueueSpeech [list content $content]
+        }
+        
+        # Check results
+        set expected_count [expr {$enabled ? 1 : 4}]
+        assert_equal [llength $spoken] $expected_count
+        assert_equal [llength [array get s speechQueue]] $expected_count
     }
 }
 
+# Test 176 speech switch
+test "176 speech switch commits On/Off only after a successful request" {
+    # Create controls
+    array set control_data [controls]
+    set elements [dict get $control_data elements]
+    set document [dict get $control_data document]
+    
+    # Build context
+    array set s [list \
+        elements $elements \
+        document $document \
+        speechEnabled false \
+        send {} \
+        refresh {} \
+        activateSpeech {set s(speechEnabled) true} \
+        stopSpeech {set s(speechEnabled) false} \
+    ]
+    
+    # Add methods to manipulate speechEnabled
+    proc activateSpeech {} {
+        global s
+        set s(speechEnabled) true
+    }
+    
+    proc stopSpeech {} {
+        global s
+        set s(speechEnabled) false
+    }
+    
+    # Extract and run event listeners
+    set event_code [fragment {  elements["toggle-speech"].addEventListener} {  elements["speech-volume"].addEventListener}]
+    eval $event_code
+    
+    # Test successful toggle
+    proc set_send_success {} {
+        global s
+        set s(send) "success_send"
+    }
+    
+    proc success_send {} {
+        # Do nothing - success
+    }
+    
+    set_send_success
+    set toggle_element [dict get $s(elements) toggle-speech]
+    click_element toggle_element
+    assert_equal $s(speechEnabled) true
+    
+    # Test failed toggle
+    proc set_send_failure {} {
+        global s
+        set s(send) "fail_send"
+    }
+    
+    proc fail_send {} {
+        error "failed"
+    }
+    
+    set_send_failure
+    click_element toggle_element
+    assert_equal $s(speechEnabled) true
+    assert_match [dict get [dict get $s(elements) speech-status] textContent] "failed"
+    
+    # Test successful disable
+    set_send_success
+    click_element toggle_element
+    assert_equal $s(speechEnabled) false
+}
+
+# Test 176 Connection
+test "176 Connection selects both commands and preserves state on rejection" {
+    # Create controls
+    array set control_data [controls]
+    set elements [dict get $control_data elements]
+    
+    # Build context
+    set calls [list]
+    array set s [list \
+        elements $elements \
+        currentState [dict create hook [dict create armed false]] \
+        send [list connection_send calls] \
+        refresh [list connection_refresh] \
+    ]
+    
+    proc connection_send {var cmd} {
+        upvar $var call_list
+        lappend call_list $cmd
+        # Simulate state change
+        global s
+        dict set s(currentState) hook armed [expr {![dict get $s(currentState) hook armed]}]
+    }
+    
+    proc connection_refresh {} {
+        global s
+        dict set s(currentState) hook armed [expr {![dict get $s(currentState) hook armed]}]
+    }
+    
+    # Extract and run event listeners
+    set event_code [fragment {  elements["toggle-hook"].addEventListener} {  elements["reset-tab"].addEventListener}]
+    eval $event_code
+    
+    # Test toggling
+    set toggle_element [dict get $s(elements) toggle-hook]
+    click_element toggle_element
+    click_element toggle_element
+    assert_equal $calls [list "TLC_ENABLE_HOOK" "TLC_DISABLE_HOOK"]
+    
+    # Test failure case
+    proc failing_send {} {
+        error "failed"
+    }
+    
+    set s(send) failing_send
+    click_element toggle_element
+    assert_equal [dict get $s(currentState) hook armed] false
+    assert_match [dict get $s(elements) notice textContent] "failed"
+}
+
+# Test 176 Connection dialog focus
 test "176 Connection dialog returns focus and traps Tab in both directions" {
-    array set s [controls]
+    # Create controls
+    array set control_data [controls]
+    set elements [dict get $control_data elements]
+    set document [dict get $control_data document]
     
-    # Add event listeners (simplified)
-    set connectionSettingsCode [fragment "  elements\[\"open-connection-settings\"\].addEventListener" "  elements\[\"open-speech-settings\"\].addEventListener"]
+    # Build context
+    array set s [list \
+        elements $elements \
+        document $document \
+    ]
     
-    # Set up key event handling
-    set keyHandler ""
-    dict set s document addEventListener [list set keyHandler]
+    # Extract and run event listeners
+    set event_code1 [fragment {  elements["open-connection-settings"].addEventListener} {  elements["open-speech-settings"].addEventListener}]
+    eval $event_code1
     
-    set keyDownCode [fragment "  document.addEventListener(\"keydown\"" "  elements\[\"keep-speech-active\"\].addEventListener"]
+    set key_handler ""
+    proc add_document_event_listener {var name fn} {
+        upvar $var handler_var
+        set handler_var $fn
+    }
+    
+    dict set s(document) addEventListener [list add_document_event_listener key_handler]
+    
+    set event_code2 [fragment {  document.addEventListener("keydown"} {  elements["keep-speech-active"].addEventListener}]
+    eval $event_code2
     
     # Simulate opening connection settings
-    click "open-connection-settings"
-    assert_equal [dict get $s elements connection-settings-modal hidden] false
-    assert_equal [dict get $s document activeElement] [dict get $s elements close-connection-settings]
+    set open_element [dict get $s(elements) open-connection-settings]
+    click_element open_element
     
-    # Set up modal elements
-    set first [dict get $s elements close-connection-settings]
-    set last [dict create quick-recover-seconds {}]
-    dict set s elements connection-settings-modal querySelectorAll [list return [list $first $last]]
+    assert_equal [dict get [dict get $s(elements) connection-settings-modal] hidden] false
+    assert_equal [dict get $s(document) activeElement] [dict get $s(elements) close-connection-settings]
     
-    # Simulate tab navigation
+    # Set up first and last elements
+    set first [dict get $s(elements) close-connection-settings]
+    set last [dict get $s(elements) quick-recover-seconds]
+    
+    # Mock querySelectorAll
+    proc mock_query_selector_all {modal} {
+        global first last
+        return [list $first $last]
+    }
+    
+    dict set s(elements) connection-settings-modal [dict create querySelectorAll mock_query_selector_all]
+    
     set prevented 0
-    set preventDefaultProc {incr prevented}
+    proc prevent_default {var} {
+        upvar $var count
+        incr count
+    }
     
-    # Shift+Tab
-    uplevel #0 $keyHandler [list [dict create key Tab shiftKey true preventDefault $preventDefaultProc]]
-    assert_equal [dict get $s document activeElement] $last
+    # Test shift+tab
+    $key_handler [dict create key "Tab" shiftKey true preventDefault [list prevent_default prevented]]
+    assert_equal [dict get $s(document) activeElement] $last
     
-    # Tab
-    uplevel #0 $keyHandler [list [dict create key Tab shiftKey false preventDefault $preventDefaultProc]]
-    assert_equal [dict get $s document activeElement] $first
+    # Test tab
+    $key_handler [dict create key "Tab" shiftKey false preventDefault [list prevent_default prevented]]
+    assert_equal [dict get $s(document) activeElement] $first
     assert_equal $prevented 2
     
-    # Escape
-    uplevel #0 $keyHandler [list [dict create key Escape]]
-    assert_equal [dict get $s elements connection-settings-modal hidden] true
-    assert_equal [dict get $s document activeElement] [dict get $s elements open-connection-settings]
+    # Test escape
+    $key_handler [dict create key "Escape"]
+    assert_equal [dict get [dict get $s(elements) connection-settings-modal] hidden] true
+    assert_equal [dict get $s(document) activeElement] [dict get $s(elements) open-connection-settings]
 }
 
-puts "All tests completed"
+puts "All tests completed successfully!"

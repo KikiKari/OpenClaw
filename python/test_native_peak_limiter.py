@@ -3,68 +3,19 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_native_peak_limiter.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_native_peak_limiter.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_native_peak_limiter.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_native_peak_limiter.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_native_peak_limiter.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import struct
 import math
 import subprocess
 import array
+from typing import List, Tuple, Optional
 
-def create_peak_limiter(rate):
-    # Simplified implementation based on typical peak limiter behavior
-    class PeakLimiter:
-        def __init__(self, sample_rate):
-            self.sample_rate = sample_rate
-            self.delay_samples = int(sample_rate * 0.005)  # 5ms lookahead
-            self.envelope = 0.0
-            self.gain = 1.0
-            self.attack_coeff = 1.0 - math.exp(-1.0 / (0.001 * sample_rate))  # 1ms attack
-            self.release_coeff = 1.0 - math.exp(-1.0 / (0.050 * sample_rate))  # 50ms release
-            
-        def process(self, input_block, output_block, enabled, strength):
-            threshold = 1.0 - (strength / 100.0) * 0.5  # Map strength to threshold
-            
-            if not enabled:
-                # Just copy input to output when disabled
-                for c in range(len(input_block)):
-                    for i in range(len(input_block[c])):
-                        output_block[c][i] = input_block[c][i]
-                return
-                
-            # Simple peak limiting algorithm
-            for i in range(len(input_block[0])):
-                # Find peak across all channels
-                peak = 0.0
-                for c in range(len(input_block)):
-                    sample = abs(input_block[c][i])
-                    if sample > peak:
-                        peak = sample
-                
-                # Apply envelope follower
-                if peak > self.envelope:
-                    self.envelope = self.envelope + self.attack_coeff * (peak - self.envelope)
-                else:
-                    self.envelope = self.envelope + self.release_coeff * (peak - self.envelope)
-                
-                # Calculate gain
-                if self.envelope > threshold and self.envelope > 0:
-                    target_gain = threshold / self.envelope
-                else:
-                    target_gain = 1.0
-                    
-                # Smooth gain changes
-                if target_gain < self.gain:
-                    self.gain = self.gain + self.attack_coeff * (target_gain - self.gain)
-                else:
-                    self.gain = self.gain + self.release_coeff * (target_gain - self.gain)
-                    
-                # Apply gain to all channels
-                for c in range(len(input_block)):
-                    output_block[c][i] = input_block[c][i] * self.gain
-                    
-    return PeakLimiter(rate)
+# Import the peak limiter implementation
+# Assuming content_core.py contains the createPeakLimiter function
+from content_core import createPeakLimiter
 
 def main():
     if len(sys.argv) < 2:
@@ -78,8 +29,9 @@ def main():
         for channels in [1, 2, 6]:
             for enabled, strength in [[False, 100], [True, 25], [True, 75], [True, 100]]:
                 frames = round(rate * 0.25)
-                input_data = []
                 
+                # Create input data
+                input_data = []
                 for c in range(channels):
                     channel_data = array.array('f')
                     for i in range(frames):
@@ -96,88 +48,74 @@ def main():
                         channel_data.append(value)
                     input_data.append(channel_data)
                 
-                kernel = create_peak_limiter(rate)
-                count = frames + kernel.delay_samples
+                # Create kernel
+                kernel = createPeakLimiter(rate)
                 
-                # Create wire buffer
+                # Prepare wire buffer
+                count = frames + kernel.delaySamples
                 wire = bytearray(count * channels * 4)
+                
+                # Fill wire buffer
                 for i in range(count):
                     for c in range(channels):
-                        idx = i if i < len(input_data[c]) else len(input_data[c]) - 1
-                        if idx < 0:
-                            idx = 0
-                        value = input_data[c][idx] if i < len(input_data[c]) else 0.0
-                        # Handle special values
-                        if math.isnan(value):
-                            value = 0.0
-                        elif math.isinf(value):
-                            value = 1.0 if value > 0 else -1.0
-                        struct.pack_into('<f', wire, (i * channels + c) * 4, value)
+                        value = input_data[c][i] if i < len(input_data[c]) else 0.0
+                        # Convert to little-endian float and write to buffer
+                        packed = struct.pack('<f', value)
+                        offset = (i * channels + c) * 4
+                        wire[offset:offset+4] = packed
                 
-                # Run native executable
-                result = subprocess.run(
-                    [executable, str(rate), str(channels), str(int(enabled)), str(strength)],
-                    input=wire,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
-                )
-                
-                if result.returncode != 0:
-                    print(f"Process failed with code {result.returncode}")
-                    print(result.stderr.decode())
-                    sys.exit(1)
+                # Run executable
+                try:
+                    result = subprocess.run(
+                        [executable, str(rate), str(channels), str(int(enabled)), str(strength)],
+                        input=wire,
+                        capture_output=True,
+                        check=True
+                    )
+                except subprocess.CalledProcessError as e:
+                    print(f"Process failed with stderr: {e.stderr.decode()}")
+                    raise
                     
-                if len(result.stdout) != len(wire):
-                    print(f"Output length mismatch: expected {len(wire)}, got {len(result.stdout)}")
-                    sys.exit(1)
+                # Check output length
+                assert len(result.stdout) == len(wire), f"Output length mismatch: {len(result.stdout)} != {len(wire)}"
                 
+                # Validate results
                 max_error = 0.0
                 for start in range(0, count, 127):
                     size = min(127, count - start)
                     
-                    # Prepare input block
+                    # Create block data
                     block = []
-                    for c in range(channels):
+                    for channel in input_data:
                         channel_block = array.array('f')
                         for i in range(size):
                             idx = start + i
-                            if idx < len(input_data[c]):
-                                value = input_data[c][idx]
-                                # Handle special values like the C++ version would
-                                if math.isnan(value):
-                                    value = 0.0
-                                elif math.isinf(value):
-                                    value = 1.0 if value > 0 else -1.0
-                            else:
-                                value = 0.0
+                            value = channel[idx] if idx < len(channel) else 0.0
                             channel_block.append(value)
                         block.append(channel_block)
                     
-                    # Prepare output block
-                    output = []
-                    for c in range(channels):
-                        output.append(array.array('f', [0.0] * size))
+                    # Create output arrays
+                    output = [array.array('f', [0.0] * size) for _ in range(channels)]
                     
-                    # Process with Python implementation
+                    # Process with kernel
                     kernel.process(block, output, enabled, strength)
                     
-                    # Compare results
+                    # Compare with native output
                     for i in range(size):
                         for c in range(channels):
-                            actual_bytes = result.stdout[((start + i) * channels + c) * 4:((start + i) * channels + c) * 4 + 4]
-                            actual = struct.unpack('<f', actual_bytes)[0]
+                            offset = ((start + i) * channels + c) * 4
+                            # Read float from stdout
+                            actual = struct.unpack('<f', result.stdout[offset:offset+4])[0]
                             
-                            if not math.isfinite(actual):
-                                print(f"Non-finite value detected: {actual}")
-                                sys.exit(1)
-                                
+                            # Check if finite
+                            assert math.isfinite(actual), f"Non-finite value detected: {actual}"
+                            
+                            # Calculate error
                             error = abs(actual - output[c][i])
                             max_error = max(max_error, error)
                 
-                if max_error > 1e-7:
-                    print(f"{rate}/{channels}/{enabled}/{strength}: {max_error}")
-                    sys.exit(1)
-                    
+                # Check maximum error tolerance
+                assert max_error <= 1e-7, f"{rate}/{channels}/{enabled}/{strength}: {max_error}"
                 cases += 1
     
     print(f"{cases} native/JavaScript PCM equivalence cases passed (error <= 1e-7).")

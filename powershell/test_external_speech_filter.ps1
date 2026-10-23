@@ -3,80 +3,123 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_external_speech_filter.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_external_speech_filter.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_external_speech_filter.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_external_speech_filter.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_external_speech_filter.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# Führe Tests für die shouldFilterExternalSpeechTrigger-Funktion durch
-# Portiert von test_external_speech_filter.cjs
+# Import necessary modules
+using module ./browser-extension/content-core.psm1
 
-# Definiere die Filterfunktion als PowerShell-Funktion
-function ShouldFilterExternalSpeechTrigger {
+# Helper function to mimic node's assert.equal
+function Assert-Equal {
     param(
-        [string]$text,
-        [bool]$enabled
+        $Actual,
+        $Expected,
+        [string]$Message = ""
     )
     
-    # Importiere die Funktion aus der content-core.js-Datei
-    # In PowerShell müssen wir den Pfad zur Datei anpassen
-    $scriptPath = Join-Path $PSScriptRoot "..\browser-extension\content-core.ps1"
-    
-    if (Test-Path $scriptPath) {
-        # Source die Datei, um die Funktion zu laden
-        . $scriptPath
-    } else {
-        throw "content-core.ps1 nicht gefunden unter: $scriptPath"
+    if ($Actual -ne $Expected) {
+        throw "Assertion failed: Expected '$Expected', but got '$Actual'. $Message"
     }
-    
-    # Wenn shouldFilterExternalSpeechTrigger in der Datei definiert ist, rufe sie auf
-    # Andernfalls implementiere die Logik direkt hier
-    
-    # Originallogik: enabled && text.TrimStart().StartsWith('.')
-    return $enabled -and $text.TrimStart().StartsWith('.')
 }
 
-# Testfälle definieren
-$testCases = @()
-$enabledValues = @($false, $true)
-$textValues = @('.Text', '. Text', '  .Text', "`t`n. Text", 'Normal', 'Ein Satz. Noch einer', '')
-
-foreach ($enabled in $enabledValues) {
-    foreach ($text in $textValues) {
-        $testCase = @{
-            enabled = $enabled
-            text = $text
-            expected = $enabled -and $text.TrimStart().StartsWith('.')
+# Test cases for shouldFilterExternalSpeechTrigger
+foreach ($enabled in @($false, $true)) {
+    foreach ($text in @('.Text', '. Text', '  .Text', "`t`n. Text", 'Normal', 'Ein Satz. Noch einer', '')) {
+        $testName = "{enabled:$enabled,text:'$text'}"
+        try {
+            $result = shouldFilterExternalSpeechTrigger -text $text -enabled $enabled
+            $expected = $enabled -and $text.TrimStart().StartsWith('.')
+            Assert-Equal -Actual $result -Expected $expected -Message "Test: $testName"
+            Write-Host "PASS: $testName"
         }
-        $testCases += $testCase
+        catch {
+            Write-Error "FAIL: $testName - $_"
+        }
     }
 }
 
-# Tests ausführen
-$failedTests = 0
-$totalTests = 0
+# 0PE-187: individual literal prefixes, commas and semicolons are not separators
+foreach ($enabled in @($false, $true)) {
+    # Test cases where filter should return true when enabled
+    foreach ($text in @('.Hallo', ',Hallo', '- Hallo', '  , Hallo')) {
+        try {
+            $result = shouldFilterExternalSpeechTrigger -text $text -enabled $enabled -prefixes '.,-'
+            Assert-Equal -Actual $result -Expected $enabled -Message "Prefix test with '$text'"
+            Write-Host "PASS: Prefix test with '$text' (enabled=$enabled)"
+        }
+        catch {
+            Write-Error "FAIL: Prefix test with '$text' (enabled=$enabled) - $_"
+        }
+    }
 
-foreach ($testCase in $testCases) {
-    $totalTests++
-    $testName = "enabled:$($testCase.enabled), text:'$($testCase.text)'"
-    
+    # Test cases where filter should return false
+    foreach ($text in @('Hallo, zusammen.', 'Normal-Text', 'Hallo', '.')) {
+        try {
+            $result = shouldFilterExternalSpeechTrigger -text $text -enabled $enabled -prefixes ',-'
+            Assert-Equal -Actual $result -Expected $false -Message "Non-prefix test with '$text'"
+            Write-Host "PASS: Non-prefix test with '$text' (enabled=$enabled)"
+        }
+        catch {
+            Write-Error "FAIL: Non-prefix test with '$text' (enabled=$enabled) - $_"
+        }
+    }
+
+    # Semicolon test
     try {
-        $result = ShouldFilterExternalSpeechTrigger -text $testCase.text -enabled $testCase.enabled
-        
-        if ($result -eq $testCase.expected) {
-            Write-Host "✓ Test bestanden: $testName" -ForegroundColor Green
-        } else {
-            Write-Host "✗ Test fehlgeschlagen: $testName" -ForegroundColor Red
-            Write-Host "  Erwartet: $($testCase.expected), Tatsächlich: $result" -ForegroundColor Red
-            $failedTests++
-        }
-    } catch {
-        Write-Host "✗ Testfehler: $testName - $($_.Exception.Message)" -ForegroundColor Red
-        $failedTests++
+        $result = shouldFilterExternalSpeechTrigger -text ';Hallo' -enabled $enabled -prefixes ';'
+        Assert-Equal -Actual $result -Expected $enabled -Message "Semicolon test"
+        Write-Host "PASS: Semicolon test (enabled=$enabled)"
+    }
+    catch {
+        Write-Error "FAIL: Semicolon test (enabled=$enabled) - $_"
+    }
+
+    # Bracket tests
+    try {
+        $result = shouldFilterExternalSpeechTrigger -text '[Hallo' -enabled $enabled -prefixes '['
+        Assert-Equal -Actual $result -Expected $enabled -Message "Bracket start test"
+        Write-Host "PASS: Bracket start test (enabled=$enabled)"
+    }
+    catch {
+        Write-Error "FAIL: Bracket start test (enabled=$enabled) - $_"
+    }
+
+    try {
+        $result = shouldFilterExternalSpeechTrigger -text 'Hallo' -enabled $enabled -prefixes '['
+        Assert-Equal -Actual $result -Expected $false -Message "Non-bracket test"
+        Write-Host "PASS: Non-bracket test (enabled=$enabled)"
+    }
+    catch {
+        Write-Error "FAIL: Non-bracket test (enabled=$enabled) - $_"
     }
 }
 
-# Zusammenfassung anzeigen
-Write-Host "`n$($totalTests - $failedTests)/$totalTests Tests bestanden" -ForegroundColor $(if ($failedTests -eq 0) { "Green" } else { "Red" })
+# 0PE-187: five Unicode scalar triggers, paste sanitization and explicit empty selection
+try {
+    # Test normalize function
+    Assert-Equal -Actual (normalizeExternalSpeechTriggerCharacters -text $null) -Expected '.' -Message "Normalize undefined"
+    Assert-Equal -Actual (normalizeExternalSpeechTriggerCharacters -text '') -Expected '' -Message "Normalize empty string"
+    Assert-Equal -Actual (normalizeExternalSpeechTriggerCharacters -text '.,-;:!' ) -Expected '.,-;:' -Message "Normalize multiple chars"
+    Assert-Equal -Actual (normalizeExternalSpeechTriggerCharacters -text ' a1 "''.,- ') -Expected '.,-' -Message "Normalize with spaces and quotes"
+    Assert-Equal -Actual (normalizeExternalSpeechTriggerCharacters -text '😀😁😂😃😄😅') -Expected '😀😁😂😃😄' -Message "Normalize Unicode scalars"
+    
+    Write-Host "PASS: Normalize tests"
 
-if ($failedTests -gt 0) {
-    exit 1
+    # Test filter with Unicode prefix
+    $result = shouldFilterExternalSpeechTrigger -text '😀Hallo' -enabled $true -prefixes '😀'
+    Assert-Equal -Actual $result -Expected $true -Message "Unicode prefix filter test"
+    Write-Host "PASS: Unicode prefix filter test"
+
+    # Test filter with empty prefix
+    $result = shouldFilterExternalSpeechTrigger -text '.Hallo' -enabled $true -prefixes ''
+    Assert-Equal -Actual $result -Expected $false -Message "Empty prefix filter test"
+    Write-Host "PASS: Empty prefix filter test"
+
+    # Test filter with different prefix
+    $result = shouldFilterExternalSpeechTrigger -text '.Hallo' -enabled $true -prefixes ','
+    Assert-Equal -Actual $result -Expected $false -Message "Different prefix filter test"
+    Write-Host "PASS: Different prefix filter test"
+}
+catch {
+    Write-Error "FAIL: Normalization and Unicode tests - $_"
 }

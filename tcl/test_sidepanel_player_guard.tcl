@@ -3,109 +3,136 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_sidepanel_player_guard.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_sidepanel_player_guard.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_sidepanel_player_guard.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_sidepanel_player_guard.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_sidepanel_player_guard.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# Tcl does not have built-in support for JavaScript execution or VM contexts.
-# We'll simulate the behavior using Tcl procedures and variables.
+# Tcl does not have built-in modules like Node.js, so we simulate the required functionality.
+# We'll read the file and extract the relevant JavaScript function manually.
 
-# Simulate JavaScript environment
+# Read the source file
+set source [readFile "../browser-extension/sidepanel.js"]
+
+# Extract the relevant portion of the code
+set start [string first "  async function refreshPlayer()" $source]
+set end [string first "  function setButtonBusy" $source $start]
+if {$start < 0 || $end <= $start} {
+    error "Could not find the required functions in the source."
+}
+
+# Extract the JavaScript code snippet
+set jsCode [string range $source $start $end-1]
+
+# Simulate the JavaScript environment in Tcl
 set activeTabId 1
 set activeIsTikTok true
 set playerContextGeneration 0
 set calls 0
-set rendered {}
 set reply ""
+set rendered [list]
 
-# Mock send function
+# Define the send function (simulated)
 proc send {} {
     global calls reply
     incr calls
-    # In JS this returns a Promise, here we just simulate the callback mechanism
+    # Return a promise-like structure (we use a variable to hold the callback)
     return "pending"
 }
 
-# Mock renderPlayer function
+# Define the renderPlayer function
 proc renderPlayer {state} {
     global rendered
     lappend rendered $state
 }
 
-# Simulate refreshPlayer function logic (based on typical JS behavior)
-proc refreshPlayer {} {
-    global activeTabId activeIsTikTok playerContextGeneration calls rendered reply
+# Since Tcl doesn't execute JavaScript, we need to simulate the behavior.
+# We will parse and simulate the logic of refreshPlayer based on the extracted JS code.
 
+# Simulate refreshPlayer logic in Tcl
+proc refreshPlayer {} {
+    global activeTabId activeIsTikTok playerContextGeneration reply rendered
+
+    # Simulate async behavior with a simple proc that sets reply
     if {!$activeIsTikTok} {
-        # Non-TikTok tabs must not be polled
         return
     }
 
-    # Simulate async call
+    # Simulate sending request and waiting for reply
     set localTabId $activeTabId
     set localContextGen $playerContextGeneration
 
-    # Simulate sending message and waiting for response
-    send
-    vwait reply
+    # Simulate reply handling
+    after idle [list handleReply $localTabId $localContextGen]
+}
 
-    # Check if context is still valid
+# Handle the simulated reply
+proc handleReply {localTabId localContextGen} {
+    global activeTabId playerContextGeneration rendered
     if {$localTabId == $activeTabId && $localContextGen == $playerContextGeneration} {
-        # Process response
-        dict set responseDict response [dict create playerState [dict create playing true]]
-        renderPlayer $responseDict
+        lappend rendered "playing:true"
     }
 }
 
-# Test implementation
+# Main test logic
 proc main {} {
     global activeTabId activeIsTikTok playerContextGeneration calls rendered reply
 
-    # Test 1: Old tab response must be ignored
+    # Initial call
     set pending [refreshPlayer]
     set activeTabId 2
+    # Simulate reply
     set reply "{response: {playerState: {playing: true}}}"
-    # No wait needed in Tcl simulation
-    
+    # Wait for pending (simulated by calling handleReply directly)
+    handleReply 1 0
     if {[llength $rendered] != 0} {
-        error "FAIL: Old tab response must be ignored"
+        error "Old tab response must be ignored"
     }
 
-    # Test 2: Non-TikTok tabs must not be polled
+    # Non-TikTok test
     set activeIsTikTok false
     refreshPlayer
     if {$calls != 1} {
-        error "FAIL: Non-TikTok tabs must not be polled"
+        error "Non-TikTok tabs must not be polled"
     }
 
-    # Test 3: Current tab response must render
+    # TikTok test
     set activeIsTikTok true
     set pending [refreshPlayer]
     set reply "{response: {playerState: {playing: true}}}"
-    # No wait needed in Tcl simulation
-    
+    handleReply $activeTabId $playerContextGeneration
     if {[llength $rendered] != 1} {
-        error "FAIL: Current tab response must render"
+        error "Current tab response must render"
     }
 
-    # Test 4: Returning to the same tab must not revive an old response
+    # Stale response test
     set pending [refreshPlayer]
     set activeTabId 3
     incr playerContextGeneration
     set activeTabId 2
     incr playerContextGeneration
     set reply "{response: {playerState: {playing: false}}}"
-    # No wait needed in Tcl simulation
-    
+    handleReply $activeTabId $playerContextGeneration
     if {[llength $rendered] != 1} {
-        error "FAIL: Returning to the same tab must not revive an old response"
+        error "Returning to the same tab must not revive an old response"
     }
 
-    # Since we can't easily check source code in Tcl, we'll assume the check passes
+    # Check for context invalidation in source
+    if {![regexp {async function refresh\(\)\s*\{\s*playerContextGeneration\+\+;} $::source]} {
+        error "Context invalidation must precede asynchronous tab lookup"
+    }
+
     puts "PASS: stale tab response ignored, non-TikTok polling skipped, current response rendered"
 }
 
-# Error handling
-if [catch {main} error] {
+# Helper to read file content
+proc readFile {filename} {
+    set fp [open $filename r]
+    set filedata [read $fp]
+    close $fp
+    return $filedata
+}
+
+# Run the main test
+if {[catch {main} error]} {
     puts stderr $error
     exit 1
 }

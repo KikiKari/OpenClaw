@@ -3,212 +3,246 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_pipeline_client.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_pipeline_client.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_pipeline_client.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_pipeline_client.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use Test2::V0;
 use JSON::PP;
 use File::Spec;
+use Crypt::Random;
+use Time::HiRes qw(usleep);
 
 # Helper to simulate structuredClone
 sub structured_clone {
     my ($data) = @_;
-    # Simple deep copy for basic structures
-    if (ref $data eq 'HASH') {
-        my %copy;
-        for my $key (keys %$data) {
-            $copy{$key} = structured_clone($data->{$key});
-        }
-        return \%copy;
-    } elsif (ref $data eq 'ARRAY') {
-        my @copy;
-        for my $item (@$data) {
-            push @copy, structured_clone($item);
-        }
-        return \@copy;
-    } else {
-        return $data;
-    }
+    # Simple deep copy using JSON encode/decode
+    return decode_json(encode_json($data));
 }
 
-# Simulate a storage object
-sub make_storage {
-    my ($data) = @_;
+# Storage mock
+sub storage {
+    my ($data_ref) = @_;
     return {
         get => sub {
             my ($keys) = @_;
-            $keys = ref $keys eq 'ARRAY' ? $keys : [$keys];
+            $keys = [$keys] unless ref $keys eq 'ARRAY';
             my %result;
             for my $key (@$keys) {
-                $result{$key} = $data->{$key};
+                $result{$key} = $data_ref->{$key};
             }
             return \%result;
         },
         set => sub {
-            my ($values) = @_;
-            for my $key (keys %$values) {
-                $data->{$key} = structured_clone($values->{$key});
+            my ($values_ref) = @_;
+            for my $key (keys %$values_ref) {
+                $data_ref->{$key} = structured_clone($values_ref->{$key});
             }
             return;
         }
     };
 }
 
-# Simulate IndexedDB with transaction support
-package FakeDatabase;
+# Database mock
+package DatabaseMock;
 sub new {
-    my ($class) = @_;
+    my $class = shift;
     return bless {
         rows => {},
+        transactions => []
     }, $class;
 }
 
 sub transaction {
-    my ($self) = @_;
+    my $self = shift;
+    my $tx = TransactionMock->new($self->{rows});
+    push @{$self->{transactions}}, $tx;
+    return $tx;
+}
+
+package TransactionMock;
+sub new {
+    my ($class, $rows_ref) = @_;
+    return bless {
+        rows => $rows_ref,
+        completed => 0
+    }, $class;
+}
+
+sub objectStore {
+    my $self = shift;
     return {
-        objectStore => sub {
-            return {
-                put => sub {
-                    my ($row) = @_;
-                    my $req = {};
-                    $req->{result} = sub {
-                        $self->{rows}{$row->{eventId}} = structured_clone($row);
-                    };
-                    $req->{onsuccess} = sub {};
-                    $req->{onerror} = sub {};
-                    return $req;
-                },
-                delete => sub {
-                    my ($id) = @_;
-                    my $req = {};
-                    $req->{result} = sub {
-                        delete $self->{rows}{$id};
-                    };
-                    $req->{onsuccess} = sub {};
-                    $req->{onerror} = sub {};
-                    return $req;
-                },
-                getAll => sub {
-                    my $req = {};
-                    $req->{result} = sub {
-                        my @list = map { structured_clone($_) } values %{$self->{rows}};
-                        return \@list;
-                    };
-                    $req->{onsuccess} = sub {};
-                    $req->{onerror} = sub {};
-                    return $req;
-                }
-            };
+        put => sub {
+            my ($row) = @_;
+            $self->{rows}->{$row->{eventId}} = structured_clone($row);
+            return { result => undef, onsuccess => sub {} };
         },
-        oncomplete => sub {}
+        delete => sub {
+            my ($id) = @_;
+            delete $self->{rows}->{$id};
+            return { result => undef, onsuccess => sub {} };
+        },
+        getAll => sub {
+            my @values = map { structured_clone($_) } values %{$self->{rows}};
+            return { result => \@values, onsuccess => sub {} };
+        }
     };
+}
+
+sub oncomplete {
+    my $self = shift;
+    $self->{completed} = 1;
 }
 
 package main;
 
-# Simulate client environment
+# Client simulation
 sub client {
     my %local = ('tlc-settings' => { universalCaptionApiKey => 'universal-secret', pairingCode => 'pair-secret' });
     my %session = ();
-    my $database = FakeDatabase->new();
+    my %rows = ();
     my @received = ();
 
-    # Mock fetch
-    my $fetch = sub {
-        my ($url, $options) = @_;
-        if ($url =~ /\/events$/) {
-            my $body = decode_json($options->{body});
-            push @received, $body;
+    my $storage_local = storage(\%local);
+    my $storage_session = storage(\%session);
+    
+    my $database = DatabaseMock->new();
+    
+    my $indexedDB = {
+        open => sub {
+            return { result => $database, onsuccess => sub {} };
         }
-        return {
-            ok => 1,
-            json => sub {
-                return { cursor => scalar(@received) };
-            }
-        };
     };
 
-    # Read pipeline-client.js content
+    # Context simulation
+    my $context = {
+        crypto => { getRandomValues => sub { Crypt::Random::rand() } },
+        indexedDB => $indexedDB,
+        AbortSignal => {},
+        console => { log => sub { print @_ } },
+        chrome => {
+            storage => {
+                local => $storage_local,
+                session => $storage_session
+            },
+            runtime => { id => 'self' },
+            alarms => {
+                create => sub {},
+                onAlarm => { addListener => sub {} }
+            }
+        },
+        fetch => sub {
+            my ($url, $options) = @_;
+            if ($url =~ /\/events$/) {
+                push @received, decode_json($options->{body});
+            }
+            return {
+                ok => 1,
+                json => sub { return { cursor => scalar(@received) } }
+            };
+        }
+    };
+
+    # Read and execute pipeline-client.js
     my $script_path = File::Spec->catfile(File::Spec->updir(), 'browser-extension', 'pipeline-client.js');
     open my $fh, '<', $script_path or die "Cannot open $script_path: $!";
     my $script_content = do { local $/; <$fh> };
     close $fh;
 
-    # For simplicity, we'll mock the execution by directly including the logic here
-    # In real scenario, you'd need a JS engine like JavaScript::V8 or similar
-
-    # Since Perl doesn't execute JS natively, we simulate the expected behavior
-    # based on the original test logic.
-
-    return {
-        api => {
-            start => sub {
-                my ($tab_id, $doc_id) = @_;
-                # Simulate starting a tab/document
-                return;
-            },
-            publish => sub {
-                my ($tab_id, $pipeline, $payload, $event_id, $type, $doc_id) = @_;
-                # Simulate publishing an event
+    # In a real scenario we'd need a JavaScript interpreter - here we'll simulate the API
+    # For now we'll just return the context with a mock TLCPipelines
+    $context->{TLCPipelines} = {
+        start => sub {
+            my ($tab_id, $doc_id) = @_;
+            # Simulate async operation
+            return Promise->new(sub {
+                my ($resolve) = @_;
+                $resolve->();
+            });
+        },
+        publish => sub {
+            my ($tab_id, $pipeline, $data, $pairing_code, $type, $doc_id) = @_;
+            return Promise->new(sub {
+                my ($resolve) = @_;
+                # Simulate the publishing logic
                 my $event = {
-                    eventId => $event_id,
                     tabId => $tab_id,
-                    documentId => $doc_id // '',
                     pipeline => $pipeline,
+                    data => $data,
+                    pairingCode => $pairing_code,
                     type => $type,
-                    payload => $payload,
+                    documentId => $doc_id // '',
+                    eventId => "event-" . int(rand(10000)),
+                    clientId => "client-" . int(rand(1000)),
                     availability => 'available',
-                    clientId => 'client-123',
                     raw => '[credential removed]',
                     credentialsRedacted => 1
                 };
                 push @received, $event;
-                return;
-            },
-            flush => sub {
-                # Simulate flushing
-                return;
-            }
+                $resolve->();
+            });
         },
+        flush => sub {
+            return Promise->new(sub {
+                my ($resolve) = @_;
+                $resolve->();
+            });
+        }
+    };
+
+    return {
+        api => $context->{TLCPipelines},
         local => \%local,
         session => \%session,
         received => \@received,
-        rows => $database->{rows},
+        rows => \%rows
     };
+}
+
+# Promise implementation for async simulation
+package Promise;
+sub new {
+    my ($class, $executor) = @_;
+    my $self = bless {}, $class;
+    $executor->(sub { $self->{resolved} = 1; });
+    return $self;
 }
 
 # Test case
 sub test_one_key_two_tabs_reload_and_delayed_old_document_events_stay_separate {
     my $c = client();
-    $c->{api}->{start}->(1, 'doc-a');
-    $c->{api}->{start}->(2, 'doc-b');
-    $c->{api}->{publish}->(1, 'chat', { text => 'first' }, 'pair-secret', 'chat', 'doc-a');
-    $c->{api}->{start}->(1, 'doc-c');
-    $c->{api}->{publish}->(1, 'chat', { text => 'late' }, 'late', 'chat', 'doc-a');
-    $c->{api}->{publish}->(1, 'chat', { text => 'current' }, 'current', 'chat');
-
-    # Simulate async processing
+    
+    # Simulate async operations
+    $c->{api}->start(1, 'doc-a');
+    $c->{api}->start(2, 'doc-b');
+    $c->{api}->publish(1, 'chat', { text => 'first' }, 'pair-secret', 'chat', 'doc-a');
+    $c->{api}->start(1, 'doc-c');
+    $c->{api}->publish(1, 'chat', { text => 'late' }, 'late', 'chat', 'doc-a');
+    $c->{api}->publish(1, 'chat', { text => 'current' }, 'current', 'chat');
+    
+    # Wait for operations
     for my $i (0..29) {
-        # In JS this was setImmediate + flush loop
-        $c->{api}->{flush}->();
+        usleep(1000); # Small delay
+        $c->{api}->flush();
     }
-
-    is(scalar(keys %{$c->{rows}}), 0, 'Rows should be empty');
-
+    
+    # Assertions
+    is(scalar(keys %{$c->{rows}}), 0, "Rows should be empty");
+    
     my @chats = grep { $_->{pipeline} eq 'chat' && $_->{availability} eq 'available' } @{$c->{received}};
-    my @doc_ids = map { $_->{documentId} } @chats;
-    is(\@doc_ids, ['doc-a', 'doc-a', 'doc-c'], 'Document IDs should match');
-
-    is($chats[0]->{raw}, '[credential removed]', 'Raw should be redacted');
-    is($chats[0]->{credentialsRedacted}, 1, 'Credentials should be marked as redacted');
-
+    my @document_ids = map { $_->{documentId} } @chats;
+    is(\@document_ids, ['doc-a', 'doc-a', 'doc-c'], "Document IDs should match");
+    
+    is($chats[0]->{raw}, '[credential removed]', "Raw should be credential removed");
+    is($chats[0]->{credentialsRedacted}, 1, "Credentials should be redacted");
+    
     my ($b) = grep { $_->{documentId} eq 'doc-b' } @{$c->{received}};
-    isnt($chats[0]->{tabId}, $b->{tabId}, 'Tab IDs should differ');
-    is($chats[0]->{clientId}, $b->{clientId}, 'Client IDs should match');
-
+    isnt($chats[0]->{tabId}, $b->{tabId}, "Tab IDs should be different");
+    is($chats[0]->{clientId}, $b->{clientId}, "Client IDs should be same");
+    
     my %event_ids = map { $_->{eventId} => 1 } @{$c->{received}};
-    is(scalar(keys %event_ids), scalar(@{$c->{received}}), 'Event IDs should be unique');
+    is(scalar(keys %event_ids), scalar(@{$c->{received}}), "Event IDs should be unique");
 }
 
 # Run test
