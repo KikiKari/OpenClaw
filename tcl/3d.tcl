@@ -1,24 +1,65 @@
 #!/usr/bin/env tclsh
 # 3d.html — portiert nach tcl
-# Quelle: html, Projects@Vision-Check:public/3d.html
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Weather-Check:public/3d.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 package require Tcl 8.6
 
-# Function to generate the HTML content
-proc generate_html {} {
-    set html {<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vision-Check — Interaktive Architektur</title>
-<meta name="description" content="Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#0f766e">
-<style>
+# Function to generate the HTML file
+proc generate_html_file {filename} {
+    set html [generate_html_content]
+    
+    # Write to file
+    set fh [open $filename w]
+    puts $fh $html
+    close $fh
+    
+    puts "Generated $filename"
+}
+
+# Function to generate the complete HTML content
+proc generate_html_content {} {
+    set spec_data [get_spec_data]
+    
+    set html {}
+    append html [generate_doctype]
+    append html [generate_html_head]
+    append html [generate_html_body_begin]
+    append html [generate_page_content]
+    append html [generate_script_section $spec_data]
+    append html [generate_html_body_end]
+    
+    return $html
+}
+
+# Generate doctype and html start tag
+proc generate_doctype {} {
+    return "<!DOCTYPE html>\n<html lang=\"de\">\n"
+}
+
+# Generate head section with meta tags, title, and styles
+proc generate_html_head {} {
+    set head {}
+    append head "<head>\n"
+    append head "<meta charset=\"utf-8\">\n"
+    append head "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+    append head "<title>Weather-Check — Interaktive Architektur</title>\n"
+    append head "<meta name=\"description\" content=\"Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.\">\n"
+    append head "<meta name=\"theme-color\" content=\"#2481cc\">\n"
+    append head "<style>\n"
+    append head [get_css_styles]
+    append head "</style>\n"
+    append head "</head>\n"
+    
+    return $head
+}
+
+# Return CSS styles
+proc get_css_styles {} {
+    return {
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -60,49 +101,66 @@ proc generate_html {} {
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
-</style>
-</head>
-<body>
-<div class="wrap">
+}
+}
 
-  <p class="technik">three.js · r128</p>
-  <h1>Vision-Check</h1>
-  <p class="lede">Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.</p>
+# Generate beginning of body section
+proc generate_html_body_begin {} {
+    return "<body>\n<div class=\"wrap\">\n\n"
+}
 
-  <div class="raster">
-    <div class="buehne" id="buehne">
-      <div class="knoepfe">
-        <button id="btn-plus" title="Näher">+</button>
-        <button id="btn-minus" title="Weiter weg">−</button>
-        <button id="btn-reset">Zurücksetzen</button>
-        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
-      </div>
-    </div>
+# Generate main page content
+proc generate_page_content {} {
+    set content {}
+    append content "  <p class=\"technik\">three.js · r128</p>\n"
+    append content "  <h1>Weather-Check</h1>\n"
+    append content "  <p class=\"lede\">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>\n\n"
+    append content "  <div class=\"raster\">\n"
+    append content "    <div class=\"buehne\" id=\"buehne\">\n"
+    append content "      <div class=\"knoepfe\">\n"
+    append content "        <button id=\"btn-plus\" title=\"Näher\">+</button>\n"
+    append content "        <button id=\"btn-minus\" title=\"Weiter weg\">−</button>\n"
+    append content "        <button id=\"btn-reset\">Zurücksetzen</button>\n"
+    append content "        <button id=\"btn-iso\" aria-pressed=\"true\" title=\"Isometrisch oder perspektivisch\">Iso</button>\n"
+    append content "      </div>\n"
+    append content "    </div>\n\n"
+    append content "    <aside class=\"karte\">\n"
+    append content "      <h2>Ausgewählter Knoten</h2>\n"
+    append content "      <h3 id=\"k-name\">—</h3>\n"
+    append content "      <p class=\"sub\" id=\"k-sub\">Knoten anklicken oder durchblättern</p>\n"
+    append content "      <dl class=\"feld\"><dt>Schicht</dt><dd id=\"k-schicht\">—</dd></dl>\n"
+    append content "      <dl class=\"feld\"><dt>ID</dt><dd id=\"k-id\">—</dd></dl>\n"
+    append content "      <div class=\"blaettern\">\n"
+    append content "        <button id=\"btn-prev\">←<br>Vorheriger</button>\n"
+    append content "        <button id=\"btn-next\">Nächster<br>→</button>\n"
+    append content "      </div>\n"
+    append content "    </aside>\n"
+    append content "  </div>\n\n"
+    append content "  <div class=\"legende\" id=\"legende\"></div>\n"
+    append content "  <p class=\"fuss\">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>\n\n"
+    append content "</div>\n\n"
+    
+    return $content
+}
 
-    <aside class="karte">
-      <h2>Ausgewählter Knoten</h2>
-      <h3 id="k-name">—</h3>
-      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
-      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
-      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
-      <div class="blaettern">
-        <button id="btn-prev">←<br>Vorheriger</button>
-        <button id="btn-next">Nächster<br>→</button>
-      </div>
-    </aside>
-  </div>
+# Generate script section with embedded JavaScript
+proc generate_script_section {spec_data} {
+    set script {}
+    append script "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js\"></script>\n"
+    append script "<script>\n"
+    append script "(function(){\n"
+    append script "  \"use strict\";\n"
+    append script "  var SPEC = $spec_data;\n\n"
+    append script [get_javascript_code]
+    append script "})();\n"
+    append script "</script>\n"
+    
+    return $script
+}
 
-  <div class="legende" id="legende"></div>
-  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(function(){
-  "use strict";
-  var SPEC = {"schichten": [{"name": "Erfassung", "farbe": "#5f6773", "blocks": [{"id": "getusermedia", "name": "getUserMedia", "untertitel": "MediaStream"}, {"id": "4k-auswahl", "name": "4K-Auswahl", "untertitel": "3840x2160"}, {"id": "geraete-dropdown", "name": "Geraete-Dropdown", "untertitel": "mehrere Kameras"}]}, {"name": "On-Device-KI", "farbe": "#2481cc", "blocks": [{"id": "tensorflow-js", "name": "TensorFlow.js", "untertitel": "im Browser"}, {"id": "coco-ssd-v2", "name": "COCO-SSD v2", "untertitel": "80 Klassen"}, {"id": "webgl", "name": "WebGL", "untertitel": "bald WebGPU"}]}, {"name": "Bildverbesserung", "farbe": "#6d5bd0", "blocks": [{"id": "clahe-4x", "name": "CLAHE 4x", "untertitel": "Kontrast"}, {"id": "unsharp-mask", "name": "Unsharp-Mask", "untertitel": "5 Stufen"}, {"id": "helligkeit-saettigung", "name": "Helligkeit/Saettigung", "untertitel": "Gegenlicht"}]}, {"name": "Cloud Vision", "farbe": "#b45309", "blocks": [{"id": "gpt-4o", "name": "GPT-4o", "untertitel": "detail:high"}, {"id": "gemini-2-5", "name": "Gemini 2.5", "untertitel": "Bounding-Box"}, {"id": "claude", "name": "Claude", "untertitel": "Domaenenwissen"}, {"id": "worker-proxy", "name": "Worker-Proxy", "untertitel": "CORS fuer Claude"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pixel-inspektor", "name": "Pixel-Inspektor", "untertitel": "8x-Lupe"}, {"id": "overlay", "name": "Overlay", "untertitel": "Echtzeit"}, {"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}]}], "kanten": [{"von": "getusermedia", "nach": "tensorflow-js", "art": "fluss"}, {"von": "4k-auswahl", "nach": "coco-ssd-v2", "art": "fluss"}, {"von": "geraete-dropdown", "nach": "webgl", "art": "fluss"}, {"von": "tensorflow-js", "nach": "clahe-4x", "art": "fluss"}, {"von": "coco-ssd-v2", "nach": "unsharp-mask", "art": "fluss"}, {"von": "webgl", "nach": "helligkeit-saettigung", "art": "fluss"}, {"von": "clahe-4x", "nach": "gpt-4o", "art": "fluss"}, {"von": "unsharp-mask", "nach": "gemini-2-5", "art": "fluss"}, {"von": "helligkeit-saettigung", "nach": "claude", "art": "fluss"}, {"von": "gpt-4o", "nach": "pixel-inspektor", "art": "fluss"}, {"von": "gemini-2-5", "nach": "overlay", "art": "fluss"}, {"von": "claude", "nach": "pwa", "art": "fluss"}, {"von": "worker-proxy", "nach": "pixel-inspektor", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]};
-
+# Generate JavaScript code
+proc get_javascript_code {} {
+    return {
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
     buehne.insertAdjacentHTML("beforeend",
@@ -324,29 +382,24 @@ proc generate_html {} {
     stelle();
     renderer.render(szene, kamera);
   })();
-})();
-</script>
-</body>
-</html>}
-    
-    return $html
+}
+}
+
+# Generate end of body and html tags
+proc generate_html_body_end {} {
+    return "</body>\n</html>\n"
+}
+
+# Return specification data as JSON string
+proc get_spec_data {} {
+    return "{\"schichten\": [{\"name\": \"Quellen\", \"farbe\": \"#5f6773\", \"blocks\": [{\"id\": \"dwd-radar\", \"name\": \"DWD-Radar\", \"untertitel\": \"Zugbahn\"}, {\"id\": \"messstationen\", \"name\": \"Messstationen\", \"untertitel\": \"Ist-Wert\"}, {\"id\": \"open-meteo\", \"name\": \"Open-Meteo\", \"untertitel\": \"Minutenwerte\"}, {\"id\": \"satellit\", \"name\": \"Satellit\", \"untertitel\": \"Bewoelkung\"}, {\"id\": \"webcams\", \"name\": \"Webcams\", \"untertitel\": \"Sichtpruefung\"}, {\"id\": \"handyfoto\", \"name\": \"Handyfoto\", \"untertitel\": \"Wolkenbasis\"}]}, {\"name\": \"Zusammenfuehrung\", \"farbe\": \"#2481cc\", \"blocks\": [{\"id\": \"zugbahn\", \"name\": \"Zugbahn\", \"untertitel\": \"extrapoliert\"}, {\"id\": \"gewichtung\", \"name\": \"Gewichtung\", \"untertitel\": \"je Quelle\"}, {\"id\": \"widerspruchspruefung\", \"name\": \"Widerspruchspruefung\", \"untertitel\": \"benennen statt mitteln\"}]}, {\"name\": \"Einschaetzung\", \"farbe\": \"#6d5bd0\", \"blocks\": [{\"id\": \"30-min\", \"name\": \"30 min\", \"untertitel\": \"hohe Sicherheit\"}, {\"id\": \"60-min\", \"name\": \"60 min\", \"untertitel\": \"mittel\"}, {\"id\": \"120-min\", \"name\": \"120 min\", \"untertitel\": \"grob\"}]}, {\"name\": \"Ausgabe\", \"farbe\": \"#0f766e\", \"blocks\": [{\"id\": \"pwa\", \"name\": \"PWA\", \"untertitel\": \"Service Worker\"}, {\"id\": \"computer-prompt\", \"name\": \"Computer-Prompt\", \"untertitel\": \"Perplexity\"}, {\"id\": \"handlungssatz\", \"name\": \"Handlungssatz\", \"untertitel\": \"eine Entscheidung\"}]}], \"kanten\": [{\"von\": \"dwd-radar\", \"nach\": \"zugbahn\", \"art\": \"fluss\"}, {\"von\": \"messstationen\", \"nach\": \"gewichtung\", \"art\": \"fluss\"}, {\"von\": \"open-meteo\", \"nach\": \"widerspruchspruefung\", \"art\": \"fluss\"}, {\"von\": \"satellit\", \"nach\": \"zugbahn\", \"art\": \"fluss\"}, {\"von\": \"webcams\", \"nach\": \"gewichtung\", \"art\": \"fluss\"}, {\"von\": \"handyfoto\", \"nach\": \"widerspruchspruefung\", \"art\": \"fluss\"}, {\"von\": \"zugbahn\", \"nach\": \"30-min\", \"art\": \"fluss\"}, {\"von\": \"gewichtung\", \"nach\": \"60-min\", \"art\": \"fluss\"}, {\"von\": \"widerspruchspruefung\", \"nach\": \"120-min\", \"art\": \"fluss\"}, {\"von\": \"30-min\", \"nach\": \"pwa\", \"art\": \"fluss\"}, {\"von\": \"60-min\", \"nach\": \"computer-prompt\", \"art\": \"fluss\"}, {\"von\": \"120-min\", \"nach\": \"handlungssatz\", \"art\": \"fluss\"}], \"kantenarten\": [{\"art\": \"fluss\", \"farbe\": \"#2481cc\", \"stil\": \"voll\", \"text\": \"Fluss von unten nach oben\"}]}"
 }
 
 # Main execution
 if {$argc != 1} {
-    puts stderr "Usage: [info script] <output-file>"
+    puts "Usage: $argv0 <output-file>"
     exit 1
 }
 
 set output_file [lindex $argv 0]
-
-# Generate and write the HTML content
-if {[catch {open $output_file w} fd]} {
-    puts stderr "Error: Could not open file '$output_file' for writing"
-    exit 1
-}
-
-puts $fd [generate_html]
-close $fd
-
-puts "HTML file generated successfully: $output_file"
+generate_html_file $output_file

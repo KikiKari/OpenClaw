@@ -1,47 +1,39 @@
 #!/usr/bin/perl
 # 3d.html — portiert nach perl5
-# Quelle: html, Projects@Vision-Check:public/3d.html
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@Weather-Check:public/3d.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use JSON;
 
-# Read specification from DATA section or file
-my $spec_json = do {
-    local $/;
-    <DATA>;
-};
-my $spec = decode_json($spec_json);
+# Parameter: Ausgabedatei
+my $ausgabe_datei = $ARGV[0] or die "Verwendung: $0 <ausgabedatei>\n";
 
-# Generate HTML content
-my $html_content = generate_html($spec);
+# HTML-Dokument generieren
+my $html = generiere_html();
 
-# Write to file if parameter provided
-if (@ARGV) {
-    open my $fh, '>', $ARGV[0] or die "Cannot write to file '$ARGV[0]': $!";
-    print $fh $html_content;
-    close $fh;
-} else {
-    print $html_content;
-}
+# In Datei schreiben
+open my $fh, '>', $ausgabe_datei or die "Kann '$ausgabe_datei' nicht öffnen: $!\n";
+print $fh $html;
+close $fh;
 
-sub generate_html {
-    my ($spec) = @_;
-    
-    my $html = <<'HTML_HEADER';
+print "Datei '$ausgabe_datei' wurde erstellt.\n";
+
+# Funktion zur Generierung des HTML-Inhalts
+sub generiere_html {
+    return <<'HTML';
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Vision-Check — Interaktive Architektur</title>
-<meta name="description" content="Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#0f766e">
+<title>Weather-Check — Interaktive Architektur</title>
+<meta name="description" content="Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#2481cc">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -89,8 +81,8 @@ sub generate_html {
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Vision-Check</h1>
-  <p class="lede">Von der Kamera über die On-Device-KI bis zur Cloud-Analyse — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Weather-Check</h1>
+  <p class="lede">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -124,13 +116,7 @@ sub generate_html {
 <script>
 (function(){
   "use strict";
-  var SPEC = 
-HTML_HEADER
-
-    # Add the specification data as a JavaScript object
-    $html .= encode_json($spec);
-    
-    $html .= <<'HTML_FOOTER';
+  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "dwd-radar", "name": "DWD-Radar", "untertitel": "Zugbahn"}, {"id": "messstationen", "name": "Messstationen", "untertitel": "Ist-Wert"}, {"id": "open-meteo", "name": "Open-Meteo", "untertitel": "Minutenwerte"}, {"id": "satellit", "name": "Satellit", "untertitel": "Bewoelkung"}, {"id": "webcams", "name": "Webcams", "untertitel": "Sichtpruefung"}, {"id": "handyfoto", "name": "Handyfoto", "untertitel": "Wolkenbasis"}]}, {"name": "Zusammenfuehrung", "farbe": "#2481cc", "blocks": [{"id": "zugbahn", "name": "Zugbahn", "untertitel": "extrapoliert"}, {"id": "gewichtung", "name": "Gewichtung", "untertitel": "je Quelle"}, {"id": "widerspruchspruefung", "name": "Widerspruchspruefung", "untertitel": "benennen statt mitteln"}]}, {"name": "Einschaetzung", "farbe": "#6d5bd0", "blocks": [{"id": "30-min", "name": "30 min", "untertitel": "hohe Sicherheit"}, {"id": "60-min", "name": "60 min", "untertitel": "mittel"}, {"id": "120-min", "name": "120 min", "untertitel": "grob"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}, {"id": "computer-prompt", "name": "Computer-Prompt", "untertitel": "Perplexity"}, {"id": "handlungssatz", "name": "Handlungssatz", "untertitel": "eine Entscheidung"}]}], "kanten": [{"von": "dwd-radar", "nach": "zugbahn", "art": "fluss"}, {"von": "messstationen", "nach": "gewichtung", "art": "fluss"}, {"von": "open-meteo", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "satellit", "nach": "zugbahn", "art": "fluss"}, {"von": "webcams", "nach": "gewichtung", "art": "fluss"}, {"von": "handyfoto", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "zugbahn", "nach": "30-min", "art": "fluss"}, {"von": "gewichtung", "nach": "60-min", "art": "fluss"}, {"von": "widerspruchspruefung", "nach": "120-min", "art": "fluss"}, {"von": "30-min", "nach": "pwa", "art": "fluss"}, {"von": "60-min", "nach": "computer-prompt", "art": "fluss"}, {"von": "120-min", "nach": "handlungssatz", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#2481cc", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -357,10 +343,5 @@ HTML_HEADER
 </script>
 </body>
 </html>
-HTML_FOOTER
-
-    return $html;
+HTML
 }
-
-__DATA__
-{"schichten": [{"name": "Erfassung", "farbe": "#5f6773", "blocks": [{"id": "getusermedia", "name": "getUserMedia", "untertitel": "MediaStream"}, {"id": "4k-auswahl", "name": "4K-Auswahl", "untertitel": "3840x2160"}, {"id": "geraete-dropdown", "name": "Geraete-Dropdown", "untertitel": "mehrere Kameras"}]}, {"name": "On-Device-KI", "farbe": "#2481cc", "blocks": [{"id": "tensorflow-js", "name": "TensorFlow.js", "untertitel": "im Browser"}, {"id": "coco-ssd-v2", "name": "COCO-SSD v2", "untertitel": "80 Klassen"}, {"id": "webgl", "name": "WebGL", "untertitel": "bald WebGPU"}]}, {"name": "Bildverbesserung", "farbe": "#6d5bd0", "blocks": [{"id": "clahe-4x", "name": "CLAHE 4x", "untertitel": "Kontrast"}, {"id": "unsharp-mask", "name": "Unsharp-Mask", "untertitel": "5 Stufen"}, {"id": "helligkeit-saettigung", "name": "Helligkeit/Saettigung", "untertitel": "Gegenlicht"}]}, {"name": "Cloud Vision", "farbe": "#b45309", "blocks": [{"id": "gpt-4o", "name": "GPT-4o", "untertitel": "detail:high"}, {"id": "gemini-2-5", "name": "Gemini 2.5", "untertitel": "Bounding-Box"}, {"id": "claude", "name": "Claude", "untertitel": "Domaenenwissen"}, {"id": "worker-proxy", "name": "Worker-Proxy", "untertitel": "CORS fuer Claude"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pixel-inspektor", "name": "Pixel-Inspektor", "untertitel": "8x-Lupe"}, {"id": "overlay", "name": "Overlay", "untertitel": "Echtzeit"}, {"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}]}], "kanten": [{"von": "getusermedia", "nach": "tensorflow-js", "art": "fluss"}, {"von": "4k-auswahl", "nach": "coco-ssd-v2", "art": "fluss"}, {"von": "geraete-dropdown", "nach": "webgl", "art": "fluss"}, {"von": "tensorflow-js", "nach": "clahe-4x", "art": "fluss"}, {"von": "coco-ssd-v2", "nach": "unsharp-mask", "art": "fluss"}, {"von": "webgl", "nach": "helligkeit-saettigung", "art": "fluss"}, {"von": "clahe-4x", "nach": "gpt-4o", "art": "fluss"}, {"von": "unsharp-mask", "nach": "gemini-2-5", "art": "fluss"}, {"von": "helligkeit-saettigung", "nach": "claude", "art": "fluss"}, {"von": "gpt-4o", "nach": "pixel-inspektor", "art": "fluss"}, {"von": "gemini-2-5", "nach": "overlay", "art": "fluss"}, {"von": "claude", "nach": "pwa", "art": "fluss"}, {"von": "worker-proxy", "nach": "pixel-inspektor", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]}
