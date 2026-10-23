@@ -1,19 +1,18 @@
 #!/usr/bin/env python3
 # offscreen.html — portiert nach python
-# Quelle: html, Projects@TikTok-Live-Companion:release/0.7.1/tiktok-live-companion-extension-0.7.1/offscreen.html
-# auch in: Projects@TikTok-Live-Companion:plugin-source/browser-extension/offscreen.html
-# auch in: Projects@TikTok-Live-Companion-Android:release/0.7.1/tiktok-live-companion-extension-0.7.1/offscreen.html
+# Quelle: html, Projects@TikTok-Live-Companion:plugin-source/browser-extension/offscreen.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/browser-extension/offscreen.html
-# auch in: 2 weiteren Fundstellen
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/browser-extension/offscreen.html
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/browser-extension/offscreen.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-from pathlib import Path
+import os
 
-def create_offscreen_html(output_path):
-    """Erstellt die offscreen.html Datei"""
+def create_offscreen_html(output_file):
+    """Create the offscreen.html file with proper DOCTYPE and structure"""
     
-    # HTML-Inhalt strukturiert erstellen
+    # Define the HTML content as a list of lines for better readability
     html_content = [
         '<!doctype html>',
         '<html lang="de">',
@@ -27,14 +26,37 @@ def create_offscreen_html(output_path):
         '</html>'
     ]
     
-    # Inhalt in Datei schreiben
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write('\n'.join(html_content) + '\n')
+    # Join the lines with newline characters
+    html_string = '\n'.join(html_content) + '\n'
+    
+    # Write to the specified output file
+    try:
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_string)
+        print(f"Successfully created {output_file}")
+    except IOError as e:
+        print(f"Error writing to file {output_file}: {e}", file=sys.stderr)
+        sys.exit(1)
 
-if __name__ == '__main__':
+def main():
+    # Check if output file path is provided as command line argument
     if len(sys.argv) != 2:
-        print("Usage: python script.py <output_file>", file=sys.stderr)
+        print("Usage: python3 script.py <output_file_path>", file=sys.stderr)
         sys.exit(1)
     
     output_file = sys.argv[1]
+    
+    # Create directory if it doesn't exist
+    output_dir = os.path.dirname(output_file)
+    if output_dir and not os.path.exists(output_dir):
+        try:
+            os.makedirs(output_dir)
+        except OSError as e:
+            print(f"Error creating directory {output_dir}: {e}", file=sys.stderr)
+            sys.exit(1)
+    
+    # Generate the HTML file
     create_offscreen_html(output_file)
+
+if __name__ == "__main__":
+    main()

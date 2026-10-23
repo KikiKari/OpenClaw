@@ -3,16 +3,17 @@
 # Quelle: html, Projects@TikTok-Live-Companion:plugin-source/tests/sidepanel-harness.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/tests/sidepanel-harness.html
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/tests/sidepanel-harness.html
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/tests/sidepanel-harness.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/tests/sidepanel-harness.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 import argparse
 import json
-from datetime import datetime, timedelta
-from pathlib import Path
+from datetime import datetime, timezone
 
 
-def generate_html(output_path):
+def generate_html(output_file):
+    """Generates the sidepanel test harness HTML and writes it to a file."""
+    
     html_content = '''<!doctype html>
 <html lang="de">
 <head>
@@ -40,56 +41,7 @@ def generate_html(output_path):
   </label>
   <script>
     (async () => {
-      const state = {
-        page: { url: "https://www.tiktok.com/@demo/live", title: "Demo LIVE", scannedAtUtc: new Date().toISOString() },
-        captionInfo: { present: true, open: true, supportLang: ["de", "en"], location: null, showType: 1 },
-        menuCaptionAvailable: true,
-        menuCaptionActive: false,
-        quickRecoverEnabled: false,
-        quickRecoverSeconds: 3,
-        profileInfo: {
-          present: true, nickname: "Demo Creator", uniqueId: "demo", signature: "Barrierefreier Teststream",
-          followingCount: "12", followerCount: "238800", likeCount: "1800000", live: true, source: "metadata"
-        },
-        aiSummaryInfo: { featureFlagPresent: true, featureEnabled: true, text: "", source: null, overviewCardFound: true, overviewCardHovered: true },
-        hook: { armed: true, installed: true, connected: true, lastError: null },
-        stream: { key: "demo|123", handle: "demo", roomId: "123", teamTag: "tmm", teamEvidence: {} },
-        liveStats: {
-          viewerCount: "143", totalViewers: "15842", likeCount: "430200",
-          followEvents: 7, shareEvents: 4, shareCount: "19", followerCount: "238800",
-          lastUpdatedUtc: new Date().toISOString(), recentEventIds: []
-        },
-        playerState: {
-          available: true, playing: true, muted: false, elapsedText: "1:17:42", pipActive: false, fullscreenActive: false,
-          volume: 0.72, volumePercent: 72, volumeGainDb: -2.9, peakDbfs: -8.4,
-          limiterEnabled: true, limiterThresholdDbfs: -6, limiterReductionDb: -1.2, limiterMode: "Kompressor",
-          connectedStreams: 4, multiGuest: true, updatedAtUtc: new Date().toISOString()
-        },
-        selectedQuality: "540p",
-        chatMessages: [
-          { messageId: "1", participantKey: "id:1", author: "Anna", content: "Guten Abend", contentLanguage: "de-DE", source: "websocket", receivedAtUtc: new Date().toISOString() },
-          { messageId: "2", participantKey: "id:2", author: "Ben", content: "Welche Sorte ist das?", contentLanguage: "de-DE", source: "dom", receivedAtUtc: new Date().toISOString() },
-          { messageId: "3", author: "Clara", content: "Danke für die Erklärung", contentLanguage: "de-DE", source: "websocket", receivedAtUtc: new Date().toISOString() },
-          { messageId: "4", author: "David", content: "Bitte einmal mischen", contentLanguage: "de-DE", source: "websocket", receivedAtUtc: new Date().toISOString() },
-          { messageId: "5", author: "Eva", content: "Das ist gut lesbar", contentLanguage: "de-DE", source: "websocket", receivedAtUtc: new Date().toISOString() }
-        ],
-        participants: {
-          "id:1": { key: "id:1", name: "Anna", messageCount: 12, wordCount: 48, giftEventCount: 2, giftItemCount: 24, lastSeenAtUtc: new Date().toISOString() },
-          "id:2": { key: "id:2", name: "Ben", messageCount: 8, wordCount: 39, giftEventCount: 0, giftItemCount: 0, lastSeenAtUtc: new Date().toISOString() },
-          "name:clara": { key: "name:clara", name: "Clara", messageCount: 6, wordCount: 31, giftEventCount: 1, giftItemCount: 1, lastSeenAtUtc: new Date().toISOString() }
-        },
-        streamMutes: [],
-        participantsTruncated: false,
-        media: [
-          { url: "https://pull.example.tiktokcdn.com/live/stream_hd.flv?expire=1&sign=test", protocol: "FLV", quality: "720p", sdkKey: "hd", bitrate: 1800000, codec: "h264", width: 1280, height: 720, fps: 30, audioOnly: false, hostname: "pull.example.tiktokcdn.com", source: "metadata" },
-          { url: "https://pull.example.tiktokcdn-eu.com/live/stream_720p.m3u8?sign=test", protocol: "HLS", quality: "720p", sdkKey: "hd", bitrate: 1800000, codec: "h264", width: 1280, height: 720, fps: 30, audioOnly: false, hostname: "pull.example.tiktokcdn-eu.com", source: "network" },
-          { url: "https://pull.example.tiktokcdn.com/live/stream_sd.flv?expire=1&sign=test", protocol: "FLV", quality: "540p", sdkKey: "sd", bitrate: 900000, codec: "h264", width: 960, height: 540, fps: 30, audioOnly: false, hostname: "pull.example.tiktokcdn.com", source: "metadata" }
-        ],
-        captions: [
-          { receivedAtUtc: new Date().toISOString(), sentenceId: "42", definite: true, contents: [{ lang: "de", text: "Dies ist eine Test-Caption." }] }
-        ],
-        debug: { enabled: false, entries: [{ atUtc: new Date().toISOString(), event: "scan", detail: { mediaCount: 3 } }] }
-      };
+      const state = ''' + json.dumps(generate_state(), indent=6, ensure_ascii=False) + ''';
 
       const stateListeners = [];
       globalThis.chrome = {
@@ -207,19 +159,236 @@ def generate_html(output_path):
 </body>
 </html>'''
 
-    # Write the HTML content to the specified output file
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
 
-def main():
-    parser = argparse.ArgumentParser(description='Generate Sidepanel Test Harness HTML file')
-    parser.add_argument('output', help='Output file path')
-    args = parser.parse_args()
+def generate_state():
+    """Generates the initial state object for the test harness."""
+    now_iso = datetime.now(timezone.utc).isoformat()
     
+    return {
+        "page": {
+            "url": "https://www.tiktok.com/@demo/live",
+            "title": "Demo LIVE",
+            "scannedAtUtc": now_iso
+        },
+        "captionInfo": {
+            "present": True,
+            "open": True,
+            "supportLang": ["de", "en"],
+            "location": None,
+            "showType": 1
+        },
+        "menuCaptionAvailable": True,
+        "menuCaptionActive": False,
+        "quickRecoverEnabled": False,
+        "quickRecoverSeconds": 3,
+        "profileInfo": {
+            "present": True,
+            "nickname": "Demo Creator",
+            "uniqueId": "demo",
+            "signature": "Barrierefreier Teststream",
+            "followingCount": "12",
+            "followerCount": "238800",
+            "likeCount": "1800000",
+            "live": True,
+            "source": "metadata"
+        },
+        "aiSummaryInfo": {
+            "featureFlagPresent": True,
+            "featureEnabled": True,
+            "text": "",
+            "source": None,
+            "overviewCardFound": True,
+            "overviewCardHovered": True
+        },
+        "hook": {
+            "armed": True,
+            "installed": True,
+            "connected": True,
+            "lastError": None
+        },
+        "stream": {
+            "key": "demo|123",
+            "handle": "demo",
+            "roomId": "123",
+            "teamTag": "tmm",
+            "teamEvidence": {}
+        },
+        "liveStats": {
+            "viewerCount": "143",
+            "totalViewers": "15842",
+            "likeCount": "430200",
+            "followEvents": 7,
+            "shareEvents": 4,
+            "shareCount": "19",
+            "followerCount": "238800",
+            "lastUpdatedUtc": now_iso,
+            "recentEventIds": []
+        },
+        "playerState": {
+            "available": True,
+            "playing": True,
+            "muted": False,
+            "elapsedText": "1:17:42",
+            "pipActive": False,
+            "fullscreenActive": False,
+            "volume": 0.72,
+            "volumePercent": 72,
+            "volumeGainDb": -2.9,
+            "peakDbfs": -8.4,
+            "limiterEnabled": True,
+            "limiterThresholdDbfs": -6,
+            "limiterReductionDb": -1.2,
+            "limiterMode": "Kompressor",
+            "connectedStreams": 4,
+            "multiGuest": True,
+            "updatedAtUtc": now_iso
+        },
+        "selectedQuality": "540p",
+        "chatMessages": [
+            {
+                "messageId": "1",
+                "participantKey": "id:1",
+                "author": "Anna",
+                "content": "Guten Abend",
+                "contentLanguage": "de-DE",
+                "source": "websocket",
+                "receivedAtUtc": now_iso
+            },
+            {
+                "messageId": "2",
+                "participantKey": "id:2",
+                "author": "Ben",
+                "content": "Welche Sorte ist das?",
+                "contentLanguage": "de-DE",
+                "source": "dom",
+                "receivedAtUtc": now_iso
+            },
+            {
+                "messageId": "3",
+                "author": "Clara",
+                "content": "Danke für die Erklärung",
+                "contentLanguage": "de-DE",
+                "source": "websocket",
+                "receivedAtUtc": now_iso
+            },
+            {
+                "messageId": "4",
+                "author": "David",
+                "content": "Bitte einmal mischen",
+                "contentLanguage": "de-DE",
+                "source": "websocket",
+                "receivedAtUtc": now_iso
+            },
+            {
+                "messageId": "5",
+                "author": "Eva",
+                "content": "Das ist gut lesbar",
+                "contentLanguage": "de-DE",
+                "source": "websocket",
+                "receivedAtUtc": now_iso
+            }
+        ],
+        "participants": {
+            "id:1": {
+                "key": "id:1",
+                "name": "Anna",
+                "messageCount": 12,
+                "wordCount": 48,
+                "giftEventCount": 2,
+                "giftItemCount": 24,
+                "lastSeenAtUtc": now_iso
+            },
+            "id:2": {
+                "key": "id:2",
+                "name": "Ben",
+                "messageCount": 8,
+                "wordCount": 39,
+                "giftEventCount": 0,
+                "giftItemCount": 0,
+                "lastSeenAtUtc": now_iso
+            },
+            "name:clara": {
+                "key": "name:clara",
+                "name": "Clara",
+                "messageCount": 6,
+                "wordCount": 31,
+                "giftEventCount": 1,
+                "giftItemCount": 1,
+                "lastSeenAtUtc": now_iso
+            }
+        },
+        "streamMutes": [],
+        "participantsTruncated": False,
+        "media": [
+            {
+                "url": "https://pull.example.tiktokcdn.com/live/stream_hd.flv?expire=1&sign=test",
+                "protocol": "FLV",
+                "quality": "720p",
+                "sdkKey": "hd",
+                "bitrate": 1800000,
+                "codec": "h264",
+                "width": 1280,
+                "height": 720,
+                "fps": 30,
+                "audioOnly": False,
+                "hostname": "pull.example.tiktokcdn.com",
+                "source": "metadata"
+            },
+            {
+                "url": "https://pull.example.tiktokcdn-eu.com/live/stream_720p.m3u8?sign=test",
+                "protocol": "HLS",
+                "quality": "720p",
+                "sdkKey": "hd",
+                "bitrate": 1800000,
+                "codec": "h264",
+                "width": 1280,
+                "height": 720,
+                "fps": 30,
+                "audioOnly": False,
+                "hostname": "pull.example.tiktokcdn-eu.com",
+                "source": "network"
+            },
+            {
+                "url": "https://pull.example.tiktokcdn.com/live/stream_sd.flv?expire=1&sign=test",
+                "protocol": "FLV",
+                "quality": "540p",
+                "sdkKey": "sd",
+                "bitrate": 900000,
+                "codec": "h264",
+                "width": 960,
+                "height": 540,
+                "fps": 30,
+                "audioOnly": False,
+                "hostname": "pull.example.tiktokcdn.com",
+                "source": "metadata"
+            }
+        ],
+        "captions": [
+            {
+                "receivedAtUtc": now_iso,
+                "sentenceId": "42",
+                "definite": True,
+                "contents": [{"lang": "de", "text": "Dies ist eine Test-Caption."}]
+            }
+        ],
+        "debug": {
+            "enabled": False,
+            "entries": [
+                {
+                    "atUtc": now_iso,
+                    "event": "scan",
+                    "detail": {"mediaCount": 3}
+                }
+            ]
+        }
+    }
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Generate Sidepanel Test Harness HTML")
+    parser.add_argument("output", help="Output HTML file path")
+    args = parser.parse_args()
     generate_html(args.output)
-    print(f"Generated {args.output}")
-
-
-if __name__ == '__main__':
-    main()

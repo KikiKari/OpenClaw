@@ -3,96 +3,51 @@
 # Quelle: html, Projects@TikTok-Live-Companion:plugin-source/tests/peak-limiter.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/tests/peak-limiter.html
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/tests/peak-limiter.html
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/tests/peak-limiter.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/tests/peak-limiter.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-import math
 import json
+import math
 import sys
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 
-class AudioBuffer:
-    def __init__(self, channels: int, length: int, sample_rate: int):
-        self.channels = channels
-        self.length = length
-        self.sample_rate = sample_rate
-        self.data = [[0.0 for _ in range(length)] for _ in range(channels)]
-    
-    def get_channel_data(self, channel: int) -> List[float]:
-        return self.data[channel]
 
-class OfflineAudioContext:
-    def __init__(self, channels: int, length: int, sample_rate: int):
-        self.channels = channels
-        self.length = length
-        self.sample_rate = sample_rate
-        self.nodes = []
-    
-    def create_buffer(self, channels: int, length: int, sample_rate: int) -> AudioBuffer:
-        return AudioBuffer(channels, length, sample_rate)
-    
-    def create_buffer_source(self):
-        return BufferSourceNode()
-    
-    def create_dynamics_compressor(self):
-        return DynamicsCompressorNode()
-    
-    def create_gain(self):
-        return GainNode()
+class ContentCore:
+    @staticmethod
+    def limiter_strength_to_dbfs(strength: int) -> float:
+        return -60 + (strength / 100) * 50
 
-class AudioNode:
-    def __init__(self):
-        self.connections = []
-    
-    def connect(self, destination):
-        self.connections.append(destination)
-        return destination
+    @staticmethod
+    def limiter_makeup_compensation(threshold: float, ratio: float) -> float:
+        return -threshold * (1 - 1 / ratio)
 
-class BufferSourceNode(AudioNode):
-    def __init__(self):
-        super().__init__()
-        self.buffer = None
-    
-    def start(self):
-        pass
+    @staticmethod
+    async def create_peak_limiter_node(context):
+        # Mock implementation since we can't create real Web Audio nodes in Python
+        class MockLimiterNode:
+            def __init__(self):
+                self._protection = {"enabled": False, "strength": 0}
 
-class DynamicsCompressorNode(AudioNode):
-    def __init__(self):
-        super().__init__()
-        self.threshold = Parameter()
-        self.knee = Parameter()
-        self.ratio = Parameter()
-        self.attack = Parameter()
-        self.release = Parameter()
+            def set_protection(self, protection):
+                self._protection = protection
 
-class GainNode(AudioNode):
-    def __init__(self):
-        super().__init__()
-        self.gain = Parameter()
+            def connect(self, destination):
+                return destination
 
-class Parameter:
-    def __init__(self):
-        self.value = 0
+        return MockLimiterNode()
 
-def limiter_strength_to_dbfs(strength: int) -> float:
-    """Convert limiter strength (0-100) to dBFS threshold"""
-    return -100 + (strength / 100) * 60
-
-def limiter_makeup_compensation(threshold: float, ratio: float) -> float:
-    """Calculate makeup gain compensation"""
-    # Simplified model - in reality this would be more complex
-    return pow(10, (-threshold * (1 - 1/ratio)) / 20)
 
 def peak_db(values: List[float]) -> float:
-    """Calculate peak level in dBFS"""
     max_val = max(abs(v) for v in values) if values else 1e-10
     return 20 * math.log10(max(max_val, 1e-10))
 
-def create_test_signal(kind: str, length: int, rate: int) -> AudioBuffer:
-    """Create test signal based on type"""
-    buffer = AudioBuffer(1, length, rate)
-    data = buffer.get_channel_data(0)
-    
+
+def create_buffer(length: int) -> List[float]:
+    return [0.0] * length
+
+
+def generate_signal(kind: str, length: int, rate: int) -> List[float]:
+    data = create_buffer(length)
     for i in range(length):
         if kind == 'speech-band':
             data[i] = 0.01 * math.sin(2 * math.pi * 220 * i / rate)
@@ -104,103 +59,87 @@ def create_test_signal(kind: str, length: int, rate: int) -> AudioBuffer:
     if kind == 'impulse':
         data[5000] = 0.95
     
-    return buffer
+    return data
 
-def apply_compressor(buffer: AudioBuffer, threshold: float, makeup_gain: float) -> AudioBuffer:
-    """Apply simple compressor simulation"""
-    output = AudioBuffer(buffer.channels, buffer.length, buffer.sample_rate)
-    
-    for ch in range(buffer.channels):
-        input_data = buffer.get_channel_data(ch)
-        output_data = output.get_channel_data(ch)
-        
-        # Very simplified compressor model
-        for i, sample in enumerate(input_data):
-            abs_sample = abs(sample)
-            if abs_sample > pow(10, threshold/20):
-                # Apply compression
-                compressed = abs_sample * pow(10, (threshold - 20 * math.log10(abs_sample))/20)
-                output_data[i] = math.copysign(min(compressed, 1.0), sample) * makeup_gain
-            else:
-                output_data[i] = sample * makeup_gain
-    
-    return output
 
-def simulate_rendering(kind: str, strength: Optional[int], legacy: bool) -> Dict[str, Any]:
-    """Simulate audio rendering process"""
+def apply_compressor(data: List[float], threshold: float, ratio: float, 
+                     attack: float, release: float, knee: float) -> List[float]:
+    # Simplified compressor implementation for testing purposes
+    # This is not a full implementation but sufficient for the test
+    makeup_gain = -threshold * (1 - 1/ratio)
+    gain_factor = 10**(makeup_gain/20)
+    
+    result = []
+    for sample in data:
+        # Simple hard knee compression approximation
+        abs_sample = abs(sample)
+        if abs_sample > 10**(threshold/20):
+            compressed = 10**(threshold/20) * (abs_sample / 10**(threshold/20))**(1/ratio)
+            result.append(math.copysign(compressed * gain_factor, sample))
+        else:
+            result.append(sample * gain_factor)
+    
+    return result
+
+
+async def render(kind: str, strength: Optional[int], legacy: bool, core) -> Dict[str, Any]:
     rate = 48000
     length = rate
     
-    # Create input buffer
-    input_buffer = create_test_signal(kind, length, rate)
-    input_peak = peak_db(input_buffer.get_channel_data(0))
+    # Generate input signal
+    input_data = generate_signal(kind, length, rate)
     
+    # Process through "limiter"
     if strength is None:
-        # No processing
-        output_buffer = input_buffer
-        output_peak = input_peak
+        output_data = input_data[:]  # No processing
     elif legacy:
-        # Legacy compressor simulation
-        threshold = limiter_strength_to_dbfs(strength)
-        makeup_gain = limiter_makeup_compensation(threshold, 20)
-        output_buffer = apply_compressor(input_buffer, threshold, makeup_gain)
-        output_peak = peak_db(output_buffer.get_channel_data(0))
+        # Apply dynamics compressor simulation
+        threshold = core.limiter_strength_to_dbfs(strength)
+        makeup_gain = core.limiter_makeup_compensation(threshold, 20)
+        output_data = apply_compressor(input_data, threshold, 20, 0.0015, 0.08, 0.5)
     else:
-        # Candidate lookahead limiter (simplified)
-        # In reality this would be much more complex
-        threshold = limiter_strength_to_dbfs(strength)
-        output_buffer = AudioBuffer(1, length, rate)
-        input_data = input_buffer.get_channel_data(0)
-        output_data = output_buffer.get_channel_data(0)
+        # Apply peak limiter simulation (mocked)
+        threshold = core.limiter_strength_to_dbfs(strength)
+        threshold_linear = 10**(threshold/20)
         
-        # Simple lookahead limiting simulation
-        window_size = 100
-        for i in range(len(input_data)):
-            # Look ahead in window
-            window_end = min(i + window_size, len(input_data))
-            window_max = max(abs(input_data[j]) for j in range(i, window_end)) if window_end > i else 0
-            
-            if window_max > pow(10, threshold/20):
-                # Apply limiting
-                reduction = pow(10, threshold/20) / max(window_max, 1e-10)
-                output_data[i] = input_data[i] * reduction
+        output_data = []
+        for sample in input_data:
+            if abs(sample) > threshold_linear:
+                output_data.append(math.copysign(threshold_linear, sample))
             else:
-                output_data[i] = input_data[i]
-        
-        output_peak = peak_db(output_data)
+                output_data.append(sample)
     
+    # Calculate paths
     path = 'off' if strength is None else ('0.8.2-compressor' if legacy else 'candidate-lookahead')
     
     return {
         'kind': kind,
         'strength': strength,
         'path': path,
-        'inputDbfs': input_peak,
-        'outputDbfs': output_peak
+        'inputDbfs': peak_db(input_data),
+        'outputDbfs': peak_db(output_data)
     }
 
-def run_audio_test() -> Dict[str, Any]:
-    """Run the complete audio test suite"""
-    print("Running audio test...")
-    
+
+async def run_test() -> Dict[str, Any]:
+    core = ContentCore()
     rows = []
-    test_kinds = ['impulse', 'short-high-tone', 'level-step', 'speech-band']
+    
+    kinds = ['impulse', 'short-high-tone', 'level-step', 'speech-band']
     strengths = [25, 75, 100]
     
-    for kind in test_kinds:
-        # No processing
-        rows.append(simulate_rendering(kind, None, False))
-        
-        # With processing
+    # Render all combinations
+    for kind in kinds:
+        rows.append(await render(kind, None, False, core))
         for strength in strengths:
-            rows.append(simulate_rendering(kind, strength, True))   # Legacy
-            rows.append(simulate_rendering(kind, strength, False))  # Candidate
+            rows.append(await render(kind, strength, True, core))
+            rows.append(await render(kind, strength, False, core))
     
     # Check for failures
     failures = []
     for row in rows:
         if row['path'] == 'candidate-lookahead':
-            threshold = limiter_strength_to_dbfs(row['strength']) if row['strength'] else 0
+            threshold = core.limiter_strength_to_dbfs(row['strength'])
             if row['outputDbfs'] > threshold + 0.05:
                 failures.append(row)
             elif row['kind'] == 'speech-band' and abs(row['outputDbfs'] - row['inputDbfs']) > 0.05:
@@ -212,8 +151,8 @@ def run_audio_test() -> Dict[str, Any]:
         'rows': rows
     }
 
+
 def generate_html() -> str:
-    """Generate the complete HTML document"""
     return '''<!doctype html>
 <html lang="de"><meta charset="utf-8"><title>Pegelschutz Audioprüfung</title>
 <style>body{font:16px system-ui;max-width:1000px;margin:40px auto;padding:20px}pre{white-space:pre-wrap}button{padding:12px}</style>
@@ -273,32 +212,30 @@ document.getElementById('run').onclick = async () => {
 };
 </script></html>'''
 
-def main():
-    """Main function to generate HTML file"""
+
+async def main():
     if len(sys.argv) != 2:
         print("Usage: python3 peak_limiter.py <output_file>")
         sys.exit(1)
     
     output_file = sys.argv[1]
     
-    # Generate HTML content
-    html_content = generate_html()
-    
-    # Write to file
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    
-    print(f"HTML file generated: {output_file}")
-    
-    # Run test to demonstrate functionality
-    try:
-        result = run_audio_test()
-        print("\nTest Results:")
-        print(f"Passed: {result['passed']}")
-        print(f"Total tests: {len(result['rows'])}")
-        print(f"Failures: {len(result['failures'])}")
-    except Exception as e:
-        print(f"\nError running test: {e}")
+    if output_file.endswith('.html'):
+        # Generate HTML file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(generate_html())
+    else:
+        # Run the test and save results
+        try:
+            result = await run_test()
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(result, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(f"FEHLER: {str(e)}")
+            raise
+
 
 if __name__ == "__main__":
-    main()
+    import asyncio
+    asyncio.run(main())

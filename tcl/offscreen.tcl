@@ -1,20 +1,19 @@
 #!/usr/bin/env tclsh
 # offscreen.html — portiert nach tcl
-# Quelle: html, Projects@TikTok-Live-Companion:release/0.7.1/tiktok-live-companion-extension-0.7.1/offscreen.html
-# auch in: Projects@TikTok-Live-Companion:plugin-source/browser-extension/offscreen.html
-# auch in: Projects@TikTok-Live-Companion-Android:release/0.7.1/tiktok-live-companion-extension-0.7.1/offscreen.html
+# Quelle: html, Projects@TikTok-Live-Companion:plugin-source/browser-extension/offscreen.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/browser-extension/offscreen.html
-# auch in: 2 weiteren Fundstellen
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/browser-extension/offscreen.html
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/browser-extension/offscreen.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# Tcl 8.6 Skript zur Erzeugung der HTML-Struktur fuer TikTok LIVE Companion Sprachausgabe
-# Uebernimmt die Funktion des Originals offscreen.html
+# Tcl 8.6 Script zur Erzeugung der HTML-Struktur von offscreen.html
+# Dieses Skript erzeugt dynamisch das HTML-Dokument und speichert es in eine Datei
 
-proc create_html_file {filename} {
-    # Oeffne Datei zum Schreiben
+proc generate_offscreen_html {filename} {
+    # Oeffne die Zieldatei zum Schreiben
     set fd [open $filename w]
     
-    # Schreibe HTML-Grundstruktur
+    # Schreibe die HTML-Struktur
     puts $fd "<!doctype html>"
     puts $fd "<html lang=\"de\">"
     puts $fd "<head>"
@@ -26,15 +25,16 @@ proc create_html_file {filename} {
     puts $fd "</body>"
     puts $fd "</html>"
     
-    # Schliesse Datei
+    # Schliesse die Datei
     close $fd
 }
 
-# Hauptprogramm: Pruefe Kommandozeilenargument
+# Hauptprogramm
 if {$argc != 1} {
-    puts stderr "Aufruf: [info script] <dateiname>"
+    puts "Verwendung: [info script] <ausgabedatei>"
     exit 1
 }
 
-# Erzeuge HTML-Datei mit uebergebenem Namen
-create_html_file [lindex $argv 0]
+set output_file [lindex $argv 0]
+generate_offscreen_html $output_file
+puts "HTML-Datei wurde erfolgreich erstellt: $output_file"

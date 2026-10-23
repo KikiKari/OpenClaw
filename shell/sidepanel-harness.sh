@@ -3,20 +3,21 @@
 # Quelle: html, Projects@TikTok-Live-Companion:plugin-source/tests/sidepanel-harness.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/tests/sidepanel-harness.html
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/tests/sidepanel-harness.html
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/tests/sidepanel-harness.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/tests/sidepanel-harness.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Parameter: Ausgabedatei
-if [[ $# -ne 1 ]]; then
-    echo "Verwendung: $0 <ausgabedatei>" >&2
-    exit 1
+output_file="${1:-}"
+
+if [[ -z "$output_file" ]]; then
+  echo "Verwendung: $0 <ausgabedatei>"
+  exit 1
 fi
-output_file="$1"
 
 # HTML-Dokument generieren
-cat > "$output_file" << 'HTML_END'
+cat > "$output_file" << 'EOF'
 <!doctype html>
 <html lang="de">
 <head>
@@ -210,6 +211,6 @@ cat > "$output_file" << 'HTML_END'
   </script>
 </body>
 </html>
-HTML_END
+EOF
 
 echo "HTML-Datei wurde erfolgreich erstellt: $output_file"

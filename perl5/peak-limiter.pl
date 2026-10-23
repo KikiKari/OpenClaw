@@ -3,16 +3,20 @@
 # Quelle: html, Projects@TikTok-Live-Companion:plugin-source/tests/peak-limiter.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/tests/peak-limiter.html
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/tests/peak-limiter.html
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/tests/peak-limiter.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/tests/peak-limiter.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use JSON;
 
-# Generate peak-limiter.html content
+# Generate peak-limiter.html file
 
-my $content = <<'HTML_END';
+my $filename = $ARGV[0] || 'peak-limiter.html';
+
+open my $fh, '>', $filename or die "Cannot open $filename: $!";
+
+print $fh <<'HTML_START';
 <!doctype html>
 <html lang="de"><meta charset="utf-8"><title>Pegelschutz Audioprüfung</title>
 <style>body{font:16px system-ui;max-width:1000px;margin:40px auto;padding:20px}pre{white-space:pre-wrap}button{padding:12px}</style>
@@ -71,13 +75,8 @@ document.getElementById('run').onclick = async () => {
   } catch(error) { output.textContent = 'FEHLER: ' + error.stack; }
 };
 </script></html>
-HTML_END
+HTML_START
 
-# Write to file if filename provided as argument
-if (@ARGV) {
-    open my $fh, '>', $ARGV[0] or die "Cannot write to $ARGV[0]: $!";
-    print $fh $content;
-    close $fh;
-} else {
-    print $content;
-}
+close $fh;
+
+print "Generated $filename\n";

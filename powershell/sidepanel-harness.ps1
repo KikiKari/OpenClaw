@@ -3,24 +3,36 @@
 # Quelle: html, Projects@TikTok-Live-Companion:plugin-source/tests/sidepanel-harness.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/tests/sidepanel-harness.html
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/tests/sidepanel-harness.html
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/tests/sidepanel-harness.html
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/tests/sidepanel-harness.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 <#
 .SYNOPSIS
-Generates the sidepanel test harness HTML file.
+Erzeugt eine HTML-Datei fuer den Sidepanel-Test-Harness.
+
 .DESCRIPTION
-This script generates an HTML file that serves as a test harness for a browser extension's sidepanel.
+Dieses Skript generiert dynamisch eine HTML-Datei, die als Testumgebung fuer
+ein Browser-Sidepanel dient. Es enthaelt verschiedene Szenarien zur Simulation
+von Caption- und Embed-Zustaenden sowie ein simuliertes Chrome-API-Verhalten.
+
 .PARAMETER OutputPath
-The path where the generated HTML file will be saved.
+Der Pfad zur Ausgabedatei. Standardwert ist "./sidepanel-harness.html".
+
+.EXAMPLE
+.\generate-sidepanel.ps1 -OutputPath "C:\temp\test.html"
 #>
 
 param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputPath
+    [string]$OutputPath = "./sidepanel-harness.html"
 )
 
-$htmlContent = @'
+# Hilfsfunktion zur Erstellung von ISO-Datumstrings
+function Get-IsoDate {
+    return (Get-Date).ToUniversalTime().ToString("o")
+}
+
+# Generiere den HTML-Inhalt
+$htmlContent = @"
 <!doctype html>
 <html lang="de">
 <head>
@@ -178,7 +190,7 @@ $htmlContent = @'
       css.href = "../browser-extension/sidepanel.css?v=0.7.0-1";
       document.head.append(css);
       const coreScript = document.createElement("script");
-      coreScript.src = `../browser-extension/content-core.js?v=${assetVersion}`;
+      coreScript.src = `../browser-extension/content-core.js?v=\${assetVersion}`;
       coreScript.onload = () => {
         document.getElementById("test-embed-scenario").addEventListener("change", (event) => {
           state.embedStartup = {
@@ -201,10 +213,10 @@ $htmlContent = @'
           stateListeners.forEach((listener) => listener({ type: "TLC_STATE_UPDATED", tabId: 1, state }));
         });
         const privacyScript = document.createElement("script");
-        privacyScript.src = `../browser-extension/export-privacy.js?v=${assetVersion}`;
+        privacyScript.src = `../browser-extension/export-privacy.js?v=\${assetVersion}`;
         privacyScript.onload = () => {
           const script = document.createElement("script");
-          script.src = `../browser-extension/sidepanel.js?v=${assetVersion}`;
+          script.src = `../browser-extension/sidepanel.js?v=\${assetVersion}`;
           document.body.append(script);
         };
         document.body.append(privacyScript);
@@ -214,9 +226,9 @@ $htmlContent = @'
   </script>
 </body>
 </html>
-'@
+"@
 
-# Write the HTML content to the specified output path
-$htmlContent | Out-File -FilePath $OutputPath -Encoding UTF8
+# Schreibe den Inhalt in die angegebene Datei
+$htmlContent | Out-File -FilePath $OutputPath -Encoding utf8
 
-Write-Host "HTML file generated successfully at: $OutputPath"
+Write-Host "HTML-Datei wurde erfolgreich erstellt: $OutputPath"

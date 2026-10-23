@@ -1,11 +1,10 @@
 #!/usr/bin/env pwsh
 # offscreen.html — portiert nach powershell
-# Quelle: html, Projects@TikTok-Live-Companion:release/0.7.1/tiktok-live-companion-extension-0.7.1/offscreen.html
-# auch in: Projects@TikTok-Live-Companion:plugin-source/browser-extension/offscreen.html
-# auch in: Projects@TikTok-Live-Companion-Android:release/0.7.1/tiktok-live-companion-extension-0.7.1/offscreen.html
+# Quelle: html, Projects@TikTok-Live-Companion:plugin-source/browser-extension/offscreen.html
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/browser-extension/offscreen.html
-# auch in: 2 weiteren Fundstellen
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/browser-extension/offscreen.html
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/browser-extension/offscreen.html
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 param(
     [Parameter(Mandatory=$true)]
