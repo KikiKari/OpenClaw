@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 # 1781743218784_03b8fe.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if ($args.Count -ne 1) {
@@ -9,9 +9,9 @@ if ($args.Count -ne 1) {
     exit 1
 }
 
-$output_path = $args[0]
+$outputPath = $args[0]
 
-$html_content = @'
+$htmlContent = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,4 +219,4 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
-$html_content | Out-File -FilePath $output_path -Encoding UTF8
+Set-Content -Path $outputPath -Value $htmlContent -Encoding UTF8

@@ -1,18 +1,12 @@
-#!/usr/bin/env perl
-# 1781743218784_03b8fe.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe.ps1
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_03b8fe_ce5320.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_ce5320.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :encoding(UTF-8));
 
-# 1781743218784.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
-
-# Parameter verarbeiten
+# Prüfen der Anzahl der Argumente
 if (@ARGV != 1) {
     warn "Usage: script.pl <OutputPath>\n";
     exit 1;
@@ -20,6 +14,7 @@ if (@ARGV != 1) {
 
 my $outputPath = $ARGV[0];
 
+# HTML-Inhalt als eine einzige mehrzeilige Zeichenkette
 my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -228,6 +223,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-open my $fh, '>:encoding(UTF-8)', $outputPath or die "Could not open file '$outputPath' for writing: $!";
+# Schreiben des Inhalts in die angegebene Datei
+open my $fh, '>:encoding(UTF-8)', $outputPath
+    or die "Could not open file '$outputPath': $!";
 print $fh $htmlContent;
 close $fh;
+
+exit 0;

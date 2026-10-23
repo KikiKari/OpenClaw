@@ -1,11 +1,11 @@
 #!/usr/bin/env tclsh
-# 1781743218784_03b8fe.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe.ps1
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_ce5320.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_ce5320.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe.ps1 — portiert nach javascript
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe.ps1
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if {$argc != 1} {
@@ -219,10 +219,8 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
-# Schreibe den HTML-Inhalt in die Ausgabedatei
-set fp [open $outputPath w]
-puts -nonewline $fp $htmlContent
-close $fp
+set fh [open $outputPath w]
+puts -nonewline $fh $htmlContent
+close $fh

@@ -1,15 +1,18 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0e397c_0c8080.sh — portiert nach powershell
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c_0c8080.sh
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_0c8080.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e397c.tcl — portiert nach shell
+# 1781743218784_0e397c_0c8080.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c_0c8080.pl
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.tcl — portiert nach perl5
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
 # Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-# Generate HTML content
-function generateHTML {
-    @"
+function GenerateHTML {
+    $html = @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -216,29 +219,31 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 "@
+    return $html
 }
 
-function main {
-    param(
-        [string[]]$argv = @()
-    )
-    
-    if ($argv.Count -ne 1) {
-        Write-Error "Usage: $($MyInvocation.MyCommand.Name) <output-file>"
+function Main {
+    $args = $args
+    if ($args.Count -eq 0) {
+        Write-Host "Usage: powershell script.ps1 <output-file>"
         exit 1
     }
     
-    $output_file = $argv[0]
+    $outputFile = $args[0]
     
-    # Generate HTML content and write to file
+    if ($args.Count -ne 1) {
+        Write-Host "Usage: powershell script.ps1 <output-file>"
+        exit 1
+    }
+    
     try {
-        generateHTML | Out-File -FilePath $output_file -Encoding UTF8
-        Write-Output "HTML file generated: $output_file"
-    }
-    catch {
-        Write-Error "Error generating HTML file"
+        $htmlContent = GenerateHTML
+        Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
+        Write-Host "HTML file generated: $outputFile"
+    } catch {
+        Write-Host "Error generating HTML file: $($_.Exception.Message)"
         exit 1
     }
 }
 
-main @args
+Main @args

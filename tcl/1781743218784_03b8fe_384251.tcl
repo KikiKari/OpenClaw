@@ -1,18 +1,18 @@
-#!/usr/bin/tclsh
-# 1781743218784_03b8fe.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env tclsh
+# 1781743218784_03b8fe_384251.ps1 — portiert nach tcl
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_384251.ps1
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfen der Argumente
+# Prüfe Anzahl der Argumente
 if {$argc != 1} {
     puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
 }
 
-set output_path [lindex $argv 0]
+set outputPath [lindex $argv 0]
 
-# HTML-Inhalt
-set html_content {<!DOCTYPE html>
+# HTML-Inhalt als Tcl-Variable
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -216,9 +216,16 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
+</html>
+}
 
-# Schreiben der Datei
-set fh [open $output_path w]
-puts -nonewline $fh $html_content
-close $fh
+# Schreibe HTML-Inhalt in Datei
+if {[catch {
+    set fd [open $outputPath w]
+    fconfigure $fd -encoding utf-8
+    puts -nonewline $fd $htmlContent
+    close $fd
+} error]} {
+    puts stderr "Could not write to file '$outputPath': $error"
+    exit 1
+}

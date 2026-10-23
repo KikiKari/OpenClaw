@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 // 1781743218784_0e397c.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c.pl
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 // 1781743218784_0e397c.js — portiert nach JavaScript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c.pl
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
 function generateHTML() {
-    const html = `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -215,7 +215,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>`;
-    return html;
 }
 
 function main() {
@@ -230,12 +229,16 @@ function main() {
     
     try {
         const htmlContent = generateHTML();
-        fs.writeFileSync(outputFile, htmlContent);
+        fs.writeFileSync(outputFile, htmlContent, 'utf8');
         console.log(`HTML file generated: ${outputFile}`);
     } catch (error) {
-        console.log(`Error generating HTML file: ${error.message}`);
+        console.error(`Error generating HTML file: ${error.message}`);
         process.exit(1);
     }
 }
 
-main();
+if (require.main === module) {
+    main();
+}
+
+module.exports = { generateHTML, main };

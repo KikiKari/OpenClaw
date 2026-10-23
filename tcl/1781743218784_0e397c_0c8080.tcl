@@ -1,15 +1,11 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0e397c_0c8080.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0e397c.tcl — portiert nach javascript
+# 1781743218784_0e397c.tcl — portiert nach perl5
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
 # Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-08-24 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
     set html {<!DOCTYPE html>
@@ -216,8 +212,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
     return $html
 }
 
@@ -231,14 +226,16 @@ proc main {} {
     
     set outputFile [lindex $argv 0]
     
-    if {[catch {
-        set htmlContent [generateHTML]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
-        close $fh
+    if {![catch {set htmlContent [generateHTML]} errorMsg]} {
+        if {[catch {set fd [open $outputFile w]} errorMsg]} {
+            puts "Error generating HTML file: $errorMsg"
+            exit 1
+        }
+        puts -nonewline $fd $htmlContent
+        close $fd
         puts "HTML file generated: $outputFile"
-    } error]} {
-        puts "Error generating HTML file: $error"
+    } else {
+        puts "Error generating HTML file: $errorMsg"
         exit 1
     }
 }

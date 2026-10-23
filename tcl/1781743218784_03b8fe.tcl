@@ -1,18 +1,22 @@
 #!/usr/bin/env tclsh
 # 1781743218784_03b8fe.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe Kommandozeilenargumente
+# 1781743218784_03b8fe.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# Portiert nach Tcl 8.6 am: 2024-12-01
+
+# Parameter verarbeiten
 if {$argc != 1} {
     puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
 }
 
-set output_path [lindex $argv 0]
+set outputPath [lindex $argv 0]
 
-# HTML-Inhalt als Tcl-string definieren
-set html_content {<!DOCTYPE html>
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -218,7 +222,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Schreibe den Inhalt in die Ausgabedatei
-set fd [open $output_path w]
-puts -nonewline $fd $html_content
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+set fd [open $outputPath w]
+puts -nonewline $fd $htmlContent
 close $fd

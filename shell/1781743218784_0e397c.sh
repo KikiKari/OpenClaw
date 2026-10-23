@@ -1,13 +1,12 @@
 #!/bin/bash
-# 1781743218784_0e397c.tcl — portiert nach shell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Function to generate HTML content
 generate_html() {
-    cat << 'EOF'
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -216,26 +215,26 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-# Main function
 main() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: bash script.sh <output-file>"
+    local args_count=$#
+    
+    if [[ $args_count -ne 1 ]]; then
+        echo "Usage: $0 <output-file>"
         exit 1
     fi
-
+    
     local output_file="$1"
     
     # Generate HTML content and write to file
     generate_html > "$output_file"
     
-    # Check if file was created successfully
+    # Check if file was written successfully
     if [[ $? -eq 0 && -f "$output_file" ]]; then
         echo "HTML file generated: $output_file"
     else
-        echo "Error generating HTML file"
+        echo "Error generating HTML file: Failed to write to $output_file"
         exit 1
     fi
 }
 
-# Call main function with all arguments
 main "$@"

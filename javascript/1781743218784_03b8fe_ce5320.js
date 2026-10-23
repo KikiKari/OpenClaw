@@ -1,12 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784_03b8fe.ps1 — portiert nach javascript
+// 1781743218784_03b8fe_ce5320.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_ce5320.pl
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_03b8fe.ps1 — portiert nach perl5
 // Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe.ps1
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 // Parameter verarbeiten
 if (process.argv.length !== 3) {
-  console.error("Usage: script.js <OutputPath>");
-  process.exit(1);
+    console.error("Usage: script.js <OutputPath>");
+    process.exit(1);
 }
 
 const outputPath = process.argv[2];
@@ -216,7 +220,6 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-`;
+</html>`;
 
 fs.writeFileSync(outputPath, htmlContent, 'utf8');

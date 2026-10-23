@@ -1,14 +1,22 @@
 #!/usr/bin/perl
-# 1781743218784_0e397c_0c8080.sh — portiert nach perl5
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0e397c_0c8080.sh
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_0c8080.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c_0c8080.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c_0c8080.pl
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.tcl — portiert nach perl5
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
+# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use File::Slurp qw(write_file);
 
-# Generate HTML content
 sub generateHTML {
-    return <<'EOF';
+    my $html = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -214,29 +222,28 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
+    return $html;
 }
 
 sub main {
-    my @argv = @_;
-    my $output_file;
+    my @args = @ARGV;
+    my $outputFile = shift @args;
     
-    if (@argv != 1) {
-        print STDERR "Usage: $0 <output-file>\n";
+    if (@args != 0) {
+        print "Usage: perl script.pl <output-file>\n";
         exit 1;
     }
     
-    $output_file = $argv[0];
-    
-    # Generate HTML content and write to file
-    open(my $fh, '>', $output_file) or do {
-        print STDERR "Error generating HTML file\n";
-        exit 1;
+    eval {
+        my $htmlContent = generateHTML();
+        write_file($outputFile, $htmlContent);
+        print "HTML file generated: $outputFile\n";
     };
-    print $fh generateHTML();
-    close($fh);
-    
-    print "HTML file generated: $output_file\n";
+    if ($@) {
+        print "Error generating HTML file: $@\n";
+        exit 1;
+    }
 }
 
-main(@ARGV);
+main();

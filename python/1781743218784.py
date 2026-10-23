@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# 1781743218784.ps1 — portiert nach python
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784.ps1
-# Erzeugt: 2026-10-13 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import json
 
 def generate_html():
-    html = '''<!DOCTYPE html>
+    return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -211,10 +211,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
-    
-    return html
+</html>'''
 
 def main():
     args = sys.argv[1:]
@@ -230,8 +227,8 @@ def main():
         with open(output_file, 'w', encoding='utf-8') as f:
             f.write(html_content)
         print(f"HTML file generated: {output_file}")
-    except Exception as e:
-        print(f"Error generating HTML file: {str(e)}", file=sys.stderr)
+    except Exception as error:
+        print(f"Error generating HTML file: {error}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":

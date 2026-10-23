@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // 1781743218784_03b8fe.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-// Parameter verarbeiten
+// Prüfen der Argumente
 if (process.argv.length !== 3) {
     console.error("Usage: node script.js <OutputPath>");
     process.exit(1);

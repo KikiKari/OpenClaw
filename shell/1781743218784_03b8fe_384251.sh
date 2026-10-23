@@ -1,9 +1,13 @@
-#!/bin/bash
-# 1781743218784_03b8fe.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784_03b8fe_384251.ps1 — portiert nach shell
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_384251.ps1
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
+
+# 1781743218784_03b8fe.pl — portiert nach powershell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if [[ $# -ne 1 ]]; then
@@ -11,10 +15,9 @@ if [[ $# -ne 1 ]]; then
     exit 1
 fi
 
-output_path="$1"
+outputPath="$1"
 
-# HTML-Inhalt erstellen
-read -r -d '' html_content <<'HTML_END' || true
+read -r -d '' htmlContent <<'EOF_HTMLCONTENT'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,7 +223,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF_HTMLCONTENT
 
-# HTML-Inhalt in Datei schreiben
-echo "$html_content" > "$output_path"
+# Schreibe den HTML-Inhalt in die angegebene Datei
+if ! printf '%s' "$htmlContent" > "$outputPath"; then
+    echo "Could not write to file '$outputPath'" >&2
+    exit 1
+fi

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // 1781743218784_0e397c_0c8080.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c_0c8080.pl
-// Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
@@ -215,12 +215,13 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 function main() {
   const args = process.argv.slice(2);
-  const outputFile = args[0];
   
   if (args.length !== 1) {
     console.log("Usage: node script.js <output-file>");
     process.exit(1);
   }
+  
+  const outputFile = args[0];
   
   try {
     const htmlContent = generateHTML();

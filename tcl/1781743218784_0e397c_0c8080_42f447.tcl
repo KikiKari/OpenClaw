@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0e397c_0c8080.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0e397c_0c8080.py
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_0c8080_42f447.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080_42f447.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
     set html {<!DOCTYPE html>
@@ -213,25 +213,28 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
     return $html
 }
 
-proc main {argv} {
+proc main {} {
+    global argv
+    
     if {[llength $argv] != 1} {
         puts "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
     
-    set output_file [lindex $argv 0]
+    set outputFile [lindex $argv 0]
     
     if {[catch {
-        set html_content [generateHTML]
-        set f [open $output_file w]
-        fconfigure $f -encoding utf-8
-        puts -nonewline $f $html_content
-        close $f
-        puts "HTML file generated: $output_file"
+        set htmlContent [generateHTML]
+        set fd [open $outputFile w]
+        puts -nonewline $fd $htmlContent
+        close $fd
+        puts "HTML file generated: $outputFile"
     } error]} {
         puts "Error generating HTML file: $error"
         exit 1
     }
 }
 
-main $argv
+if {[info script] eq $argv0} {
+    main
+}

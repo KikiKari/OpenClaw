@@ -1,11 +1,11 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0e397c.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0e397c.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0e397c.pl
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 proc generateHTML {} {
     return {<!DOCTYPE html>
@@ -215,11 +215,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>}
 }
 
-proc main {} {
-    global argv
-    
+proc main {argv} {
     if {[llength $argv] != 1} {
-        puts "Usage: tclsh script.tcl <output-file>"
+        puts "Usage: node script.js <output-file>"
         exit 1
     }
     
@@ -227,9 +225,9 @@ proc main {} {
     
     if {[catch {
         set htmlContent [generateHTML]
-        set fileId [open $outputFile "w"]
-        puts -nonewline $fileId $htmlContent
-        close $fileId
+        set fh [open $outputFile w]
+        puts -nonewline $fh $htmlContent
+        close $fh
         puts "HTML file generated: $outputFile"
     } error]} {
         puts "Error generating HTML file: $error"
@@ -237,6 +235,4 @@ proc main {} {
     }
 }
 
-if {[info script] eq $argv0} {
-    main
-}
+main $argv

@@ -1,15 +1,19 @@
 #!/bin/bash
-# 1781743218784_0e397c_0c8080.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c_0c8080.ps1
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0e397c_0c8080_31580e.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0e397c_0c8080_31580e.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784_0e397c.tcl — portiert nach bash
+# 1781743218784_0e397c_0c8080.ps1 — portiert nach javascript — portiert nach Bash 5
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0e397c_0c8080.ps1
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0e397c.tcl — portiert nach powershell — portiert nach JavaScript — portiert nach Bash 5
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0e397c.tcl
 # Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
 
-generate_html() {
+generateHTML() {
     cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -220,31 +224,23 @@ EOF
 }
 
 main() {
-    local output_file
+    local args_count=$#
     
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: bash script.sh <output-file>" >&2
+    if [[ $args_count -ne 1 ]]; then
+        echo "Usage: $0 <output-file>"
         exit 1
     fi
     
-    output_file="$1"
+    local output_file="$1"
     
-    # Check if output file directory exists
-    local output_dir
-    output_dir="$(dirname "$output_file")"
-    if [[ ! -d "$output_dir" ]]; then
-        echo "Error: Directory '$output_dir' does not exist" >&2
-        exit 1
-    fi
+    # Generate HTML content and write to file
+    generateHTML > "$output_file"
     
-    # Generate and write HTML content
-    generate_html > "$output_file"
-    
-    # Check if writing was successful
-    if [[ $? -eq 0 && -f "$output_file" ]]; then
+    # Check if the write was successful
+    if [[ $? -eq 0 ]]; then
         echo "HTML file generated: $output_file"
     else
-        echo "Error generating HTML file" >&2
+        echo "Error generating HTML file: Failed to write to $output_file"
         exit 1
     fi
 }
