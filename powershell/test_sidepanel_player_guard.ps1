@@ -3,83 +3,116 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_sidepanel_player_guard.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_sidepanel_player_guard.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_sidepanel_player_guard.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_sidepanel_player_guard.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_sidepanel_player_guard.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 $ErrorActionPreference = "Stop"
 
-# PowerShell does not have direct equivalents for Node.js vm module
+# PowerShell does not have direct equivalents for node:vm
 # We'll simulate the behavior using script blocks and custom objects
 
+# Read the source file
+$sourcePath = Join-Path $PSScriptRoot "../browser-extension/sidepanel.js"
+$source = Get-Content -Path $sourcePath -Raw -Encoding UTF8
+
+# Extract the relevant function code
+$start = $source.IndexOf("  async function refreshPlayer()")
+$end = $source.IndexOf("  function setButtonBusy", $start)
+if ($start -lt 0 -or $end -le $start) {
+    throw "Could not find refreshPlayer function boundaries"
+}
+
+# Define a mock context object
+$context = New-Object PSObject -Property @{
+    activeTabId = 1
+    activeIsTikTok = $true
+    playerContextGeneration = 0
+    send = $null
+    renderPlayer = $null
+}
+
+# Variables to track state
+$reply = $null
+$calls = 0
+$rendered = @()
+
+# Define the mock send function
+$context.send = {
+    $script:calls++
+    return [System.Threading.Tasks.Task]::Run({
+        param($resolve)
+        $script:reply = $resolve
+    })
+}.GetNewClosure()
+
+# Define the mock renderPlayer function
+$context.renderPlayer = {
+    param($state)
+    $script:rendered += $state
+}.GetNewClosure()
+
+# Extract and modify the function code to work in PowerShell
+$functionCode = $source.Substring($start, $end - $start)
+
+# Replace JavaScript syntax with PowerShell equivalents
+$functionCode = $functionCode -replace "async function refreshPlayer\(\)", "function refreshPlayer()"
+$functionCode = $functionCode -replace "await ", ""
+$functionCode = $functionCode -replace "send\(\)", "& `$context.send"
+$functionCode = $functionCode -replace "renderPlayer\(", "& `$context.renderPlayer ("
+
+# Create a script block from the modified code
+$scriptBlock = [ScriptBlock]::Create($functionCode)
+
 try {
-    $sourcePath = Join-Path $PSScriptRoot "..\browser-extension\sidepanel.js"
-    $source = Get-Content -Path $sourcePath -Raw -Encoding UTF8
+    # Execute the function in the context
+    $pending = & $scriptBlock
     
-    $start = $source.IndexOf("  async function refreshPlayer()")
-    $end = $source.IndexOf("  function setButtonBusy", $start)
-    
-    if ($start -lt 0 -or $end -le $start) {
-        throw "Could not find expected function boundaries in source"
-    }
-    
-    # Extract the function code
-    $functionCode = $source.Substring($start, $end - $start)
-    
-    # Create a mock context object
-    $context = New-Object PSObject -Property @{
-        activeTabId = 1
-        activeIsTikTok = $true
-        playerContextGeneration = 0
-        calls = 0
-        reply = $null
-        rendered = @()
-    }
-    
-    # Add methods to context
-    $context | Add-Member -NotePropertyName "send" -NotePropertyValue {
-        $context.calls++
-        return [System.Threading.Tasks.Task]::Run({
-            # This simulates the promise behavior
-            # In reality, we'll handle this differently in PowerShell
-        })
-    }.GetNewClosure()
-    
-    $context | Add-Member -NotePropertyName "renderPlayer" -NotePropertyValue {
-        param($state)
-        $context.rendered += $state
-    }.GetNewClosure()
-    
-    # Create the refreshPlayer function script block
-    $scriptBlock = [ScriptBlock]::Create($functionCode)
-    
-    # Bind the script block to our context
-    $boundScriptBlock = $scriptBlock.GetNewClosure()
-    
-    # Execute the function (this is a simplified simulation)
-    # Since PowerShell doesn't have direct VM context like Node.js,
-    # we're simulating the key behaviors
-    
-    # Test 1: Old tab response should be ignored
     $context.activeTabId = 2
-    # Simulate that we received a response for tab 1, but now we're on tab 2
-    # The logic should ignore this response
+    & $reply @{response = @{playerState = @{playing = $true}}}
     
-    # Test 2: Non-TikTok tabs should not be polled
+    # Wait for the task to complete
+    if ($pending -is [System.Threading.Tasks.Task]) {
+        $pending.Wait()
+    }
+    
+    if ($rendered.Count -ne 0) {
+        throw "Old tab response must be ignored"
+    }
+    
     $context.activeIsTikTok = $false
-    # Call refreshPlayer - should not increment calls
+    & $scriptBlock
     
-    # Test 3: Current tab response should render
+    if ($calls -ne 1) {
+        throw "Non-TikTok tabs must not be polled"
+    }
+    
     $context.activeIsTikTok = $true
-    # Simulate proper response handling
+    $pending = & $scriptBlock
+    & $reply @{response = @{playerState = @{playing = $true}}}
     
-    # Test 4: Returning to same tab should not revive old response
+    if ($pending -is [System.Threading.Tasks.Task]) {
+        $pending.Wait()
+    }
+    
+    if ($rendered.Count -ne 1) {
+        throw "Current tab response must render"
+    }
+    
+    $pending = & $scriptBlock
     $context.activeTabId = 3
     $context.playerContextGeneration++
     $context.activeTabId = 2
     $context.playerContextGeneration++
-    # Old response should still be ignored
+    & $reply @{response = @{playerState = @{playing = $false}}}
     
-    # Verify source contains expected pattern
+    if ($pending -is [System.Threading.Tasks.Task]) {
+        $pending.Wait()
+    }
+    
+    if ($rendered.Count -ne 1) {
+        throw "Returning to the same tab must not revive an old response"
+    }
+    
     if ($source -notmatch "async function refresh\(\)\s*\{\s*playerContextGeneration\+\+;") {
         throw "Context invalidation must precede asynchronous tab lookup"
     }

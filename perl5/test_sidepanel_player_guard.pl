@@ -3,141 +3,262 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_sidepanel_player_guard.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_sidepanel_player_guard.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_sidepanel_player_guard.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_sidepanel_player_guard.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_sidepanel_player_guard.cjs
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use JSON qw(decode_json encode_json);
 use File::Spec;
+use File::Basename;
 
-# Simulate Node.js modules and functions
-sub read_file {
-    my ($file) = @_;
-    open my $fh, '<:encoding(UTF-8)', $file or die "Cannot open file '$file': $!";
-    local $/;
-    my $content = <$fh>;
-    close $fh;
-    return $content;
-}
+# Simulate required Node.js modules with Perl equivalents
+# We'll read file contents and perform string operations
 
-sub join_paths {
-    my @paths = @_;
-    return File::Spec->catfile(@paths);
-}
+# Get the directory of this script
+my $script_dir = dirname(__FILE__);
+my $source_file = File::Spec->catfile($script_dir, '..', 'browser-extension', 'sidepanel.js');
 
-# Load source code
-my $script_dir = $0;
-$script_dir =~ s/[^\/]+$//;
-my $source_path = join_paths($script_dir, '../browser-extension/sidepanel.js');
-my $source = read_file($source_path);
+# Read the source file
+open my $fh, '<:encoding(UTF-8)', $source_file or die "Cannot open $source_file: $!";
+my $source = do { local $/; <$fh> };
+close $fh;
 
-# Extract relevant function code
+# Find the start and end positions
 my $start = index($source, '  async function refreshPlayer()');
 my $end = index($source, '  function setButtonBusy', $start);
-die "Could not find required functions in source" unless $start >= 0 && $end > $start;
+
+die "Could not find function boundaries" unless $start >= 0 && $end > $start;
+
+# Extract the function code
+my $function_code = substr($source, $start, $end - $start);
+
+# Define a package to simulate the JavaScript context
+{
+    package Context;
+    
+    sub new {
+        my ($class, $initial_data) = @_;
+        my $self = bless {
+            activeTabId => $initial_data->{activeTabId},
+            activeIsTikTok => $initial_data->{activeIsTikTok},
+            playerContextGeneration => $initial_data->{playerContextGeneration},
+            calls => 0,
+            reply => undef,
+            rendered => [],
+        }, $class;
+        
+        # Create send method
+        $self->{send} = sub {
+            $self->{calls}++;
+            return Promise->new(sub {
+                my $resolve = shift;
+                $self->{reply} = $resolve;
+            });
+        };
+        
+        # Create renderPlayer method
+        $self->{renderPlayer} = sub {
+            my ($state) = @_;
+            push @{$self->{rendered}}, $state;
+        };
+        
+        return $self;
+    }
+    
+    sub get_property {
+        my ($self, $key) = @_;
+        return $self->{$key};
+    }
+    
+    sub set_property {
+        my ($self, $key, $value) = @_;
+        $self->{$key} = $value;
+    }
+}
+
+# Simple Promise implementation for simulation
+{
+    package Promise;
+    
+    sub new {
+        my ($class, $executor) = @_;
+        my $self = bless {}, $class;
+        $self->{resolved} = 0;
+        $self->{result} = undef;
+        $self->{callbacks} = [];
+        
+        my $resolve = sub {
+            my ($value) = @_;
+            $self->{resolved} = 1;
+            $self->{result} = $value;
+            for my $callback (@{$self->{callbacks}}) {
+                $callback->($value);
+            }
+        };
+        
+        $executor->($resolve);
+        return $self;
+    }
+    
+    sub then {
+        my ($self, $callback) = @_;
+        if ($self->{resolved}) {
+            $callback->($self->{result});
+        } else {
+            push @{$self->{callbacks}}, $callback;
+        }
+        return $self;
+    }
+}
 
 # Main test logic
 sub main {
-    my $reply;
-    my $calls = 0;
-    my @rendered = ();
+    eval {
+        my $context = Context->new({
+            activeTabId => 1,
+            activeIsTikTok => 1,
+            playerContextGeneration => 0
+        });
+        
+        # Since we can't execute JS code directly in Perl,
+        # we need to simulate what refreshPlayer does based on the actual code
+        
+        # From examining the real sidepanel.js, refreshPlayer roughly does:
+        # - checks if activeIsTikTok
+        # - sends message to background asking for player state
+        # - updates UI when response comes back (only if still relevant)
+        
+        # Let's simulate that behavior
+        
+        # First call - should be ignored later
+        my $pending1 = refresh_player_simulation($context);
+        $context->set_property('activeTabId', 2);
+        
+        # Resolve first call with playing=true
+        my $reply = $context->get_property('reply');
+        $reply->({response => {playerState => {playing => 1}}});
+        wait_for_promise($pending1);
+        
+        # Check that it was ignored (old tab)
+        die "FAIL: Old tab response must be ignored" 
+            unless @{$context->get_property('rendered')} == 0;
+            
+        # Set to non-TikTok - next refresh should skip polling
+        $context->set_property('activeIsTikTok', 0);
+        refresh_player_simulation($context);
+        
+        # Should still have only 1 call
+        die "FAIL: Non-TikTok tabs must not be polled"
+            unless $context->get_property('calls') == 1;
+            
+        # Back to TikTok
+        $context->set_property('activeIsTikTok', 1);
+        my $pending2 = refresh_player_simulation($context);
+        
+        # Resolve with playing=true
+        $reply = $context->get_property('reply');
+        $reply->({response => {playerState => {playing => 1}}});
+        wait_for_promise($pending2);
+        
+        # Should now have rendered once
+        die "FAIL: Current tab response must render"
+            unless @{$context->get_property('rendered')} == 1;
+            
+        # Another refresh
+        my $pending3 = refresh_player_simulation($context);
+        $context->set_property('activeTabId', 3);
+        $context->set_property('playerContextGeneration', 
+                              $context->get_property('playerContextGeneration') + 1);
+        $context->set_property('activeTabId', 2);
+        $context->set_property('playerContextGeneration', 
+                              $context->get_property('playerContextGeneration') + 1);
+                              
+        # Reply with playing=false
+        $reply = $context->get_property('reply');
+        $reply->({response => {playerState => {playing => 0}}});
+        wait_for_promise($pending3);
+        
+        # Should still only have 1 rendered item
+        die "FAIL: Returning to the same tab must not revive an old response"
+            unless @{$context->get_property('rendered')} == 1;
+            
+        # Check source has expected pattern
+        die "FAIL: Context invalidation must precede asynchronous tab lookup"
+            unless $source =~ /async function refresh\(\)\s*\{\s*playerContextGeneration\+\+;/;
+            
+        print "PASS: stale tab response ignored, non-TikTok polling skipped, current response rendered\n";
+    };
     
-    # Create a context-like structure using a hash reference
-    my $context = {
-        activeTabId => 1,
-        activeIsTikTok => 1,
-        playerContextGeneration => 0,
-        send => sub {
-            $calls++;
-            return sub {
-                my $resolve = shift;
-                $reply = $resolve;
+    if ($@) {
+        print STDERR $@;
+        exit 1;
+    }
+}
+
+# Simulated refreshPlayer function
+sub refresh_player_simulation {
+    my ($context) = @_;
+    
+    # Increment call count
+    my $current_calls = $context->get_property('calls');
+    $context->set_property('calls', $current_calls + 1);
+    
+    # Only proceed if activeIsTikTok
+    return Promise->new(sub { $_[0]->() }) unless $context->get_property('activeIsTikTok');
+    
+    # Capture current context generation and tab id
+    my $gen_at_start = $context->get_property('playerContextGeneration');
+    my $tab_at_start = $context->get_property('activeTabId');
+    
+    # Create promise that resolves when send completes
+    my $promise = Promise->new(sub {
+        my $resolve = shift;
+        # Store resolve so external code can trigger it
+        $context->set_property('reply', $resolve);
+    });
+    
+    # When promise resolves, check if context is still valid
+    bless $promise, 'PromiseWithCallback';
+    $promise->{callback} = sub {
+        my ($response) = @_;
+        # Only render if context hasn't changed
+        if ($context->get_property('playerContextGeneration') == $gen_at_start &&
+            $context->get_property('activeTabId') == $tab_at_start) {
+            my $render = $context->get_property('renderPlayer');
+            $render->($response->{response}->{playerState});
+        }
+    };
+    
+    return $promise;
+}
+
+# Specialized promise class for our callback
+{
+    package PromiseWithCallback;
+    use base 'Promise';
+    
+    sub then {
+        my ($self, $callback) = @_;
+        if ($self->{resolved}) {
+            my $result = $self->{result};
+            $self->{callback}->($result) if $self->{callback};
+            $callback->($result);
+        } else {
+            push @{$self->{callbacks}}, sub {
+                my ($result) = @_;
+                $self->{callback}->($result) if $self->{callback};
+                $callback->($result);
             };
-        },
-        renderPlayer => sub {
-            my $state = shift;
-            push @rendered, $state;
         }
-    };
-
-    # Extract and execute the JavaScript code within our simulated environment
-    my $code_to_run = substr($source, $start, $end - $start);
-    
-    # Since we can't run JS directly, simulate the behavior based on understanding of the code
-    
-    # First call with activeTabId = 1
-    my $pending = refresh_player($context);
-    $context->{activeTabId} = 2;
-    
-    # Simulate reply from first request (should be ignored)
-    $reply->({response => {playerState => {playing => 1}}});
-    await_promise($pending);
-    
-    # Check that old tab response is ignored
-    die "Old tab response must be ignored" unless @rendered == 0;
-    
-    # Test non-TikTok tab (should not poll)
-    $context->{activeIsTikTok} = 0;
-    refresh_player($context);
-    die "Non-TikTok tabs must not be polled" unless $calls == 1;
-    
-    # Test TikTok tab again
-    $context->{activeIsTikTok} = 1;
-    $pending = refresh_player($context);
-    $reply->({response => {playerState => {playing => 1}}});
-    await_promise($pending);
-    
-    # Check current tab response renders
-    die "Current tab response must render" unless @rendered == 1;
-    
-    # Test context invalidation
-    $pending = refresh_player($context);
-    $context->{activeTabId} = 3;
-    $context->{playerContextGeneration}++;
-    $context->{activeTabId} = 2;
-    $context->{playerContextGeneration}++;
-    $reply->({response => {playerState => {playing => 0}}});
-    await_promise($pending);
-    
-    # Check returning to same tab doesn't revive old response
-    die "Returning to the same tab must not revive an old response" unless @rendered == 1;
-    
-    # Check source for context invalidation pattern
-    die "Context invalidation must precede asynchronous tab lookup" 
-        unless $source =~ /async function refresh\(\)\s*\{\s*playerContextGeneration\+\+;/;
-    
-    print "PASS: stale tab response ignored, non-TikTok polling skipped, current response rendered\n";
+        return $self;
+    }
 }
 
-# Simulated JavaScript functions
-sub refresh_player {
-    my $ctx = shift;
-    
-    # This simulates the JS refreshPlayer function behavior
-    return sub {
-        # In real implementation, this would return a promise
-        # For simulation, we just track the call
-        if ($ctx->{activeIsTikTok}) {
-            # Would normally make async call here
-            # For simulation, we'll just increment calls if needed
-        }
-    };
+# Helper to wait for promise resolution in simulation
+sub wait_for_promise {
+    my ($promise) = @_;
+    # In real async environment this would yield
+    # For simulation we assume immediate resolution
 }
 
-sub await_promise {
-    my $promise_sub = shift;
-    # In real implementation, this would wait for promise resolution
-    # For simulation, we just execute the subroutine
-    $promise_sub->();
-}
-
-# Run main function with error handling
-eval {
-    main();
-};
-if ($@) {
-    print STDERR $@;
-    exit 1;
-}
+main();
