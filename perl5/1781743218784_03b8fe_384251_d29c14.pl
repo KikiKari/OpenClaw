@@ -1,20 +1,21 @@
 #!/usr/bin/perl
-# 1781743218784_03b8fe_384251.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_03b8fe_384251.py
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_384251_d29c14.tcl — portiert nach perl5
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe_384251_d29c14.tcl
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
-# Parameter verarbeiten
+# Prüfe Anzahl Argumente
 if (@ARGV != 1) {
-    print STDERR "Usage: perl script.pl <OutputPath>\n";
+    warn "Usage: perl script.pl <OutputPath>\n";
     exit 1;
 }
 
 my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML_END';
+# HTML-Inhalt
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,15 +221,13 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
-eval {
-    open my $fh, '>:encoding(UTF-8)', $output_path or die "Could not open file '$output_path': $!";
-    print $fh $html_content;
-    close $fh;
-    1;
-} or do {
-    my $e = $@;
-    print STDERR "Could not write to file '$output_path': $e\n";
+# Schreibe HTML-Inhalt in Datei
+open(my $fh, '>', $output_path) or do {
+    warn "Could not open file '$output_path': $!\n";
     exit 1;
 };
+
+print $fh $html_content;
+close $fh;

@@ -1,26 +1,23 @@
 #!/usr/bin/perl
 # 1781743218784_03b8fe_3fdce6.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_3fdce6.js
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use open qw(:std :utf8);
+use Encode qw(decode_utf8);
+use File::Slurper qw(write_text);
 
-# 1781743218784_03b8fe.tcl — portiert nach javascript
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe.tcl
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-
-# Parameter verarbeiten
+# Prüfen der Argumente
 if (@ARGV != 1) {
-    print STDERR "Usage: perl script.pl <OutputPath>\n";
+    print STDERR "Aufruf: perl script.pl <Ausgabepfad>\n";
     exit 1;
 }
 
 my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -44,7 +41,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -226,8 +223,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
-open my $fh, '>:encoding(UTF-8)', $output_path or die "Could not open file '$output_path' $!";
-print $fh $html_content;
-close $fh;
+write_text($output_path, $html_content, 'UTF-8');

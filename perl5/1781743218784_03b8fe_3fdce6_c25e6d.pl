@@ -1,20 +1,27 @@
-#!/usr/bin/env perl
-# 1781743218784_03b8fe_3fdce6.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_3fdce6.ps1
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_03b8fe_3fdce6_c25e6d.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_3fdce6_c25e6d.js
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use File::Slurper qw(write_text);
+
+# 1781743218784_03b8fe_3fdce6.ps1 — portiert nach javascript
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_3fdce6.ps1
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if (@ARGV != 1) {
-    warn "Usage: perl script.pl <OutputPath>\n";
+    print STDERR "Usage: perl script.pl <OutputPath>\n";
     exit 1;
 }
 
 my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,9 +227,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
 # Schreibe den Inhalt in die Ausgabedatei mit UTF-8-Encoding
-open my $fh, '>:encoding(UTF-8)', $output_path or die "Could not open file '$output_path': $!";
-print $fh $html_content;
-close $fh;
+write_text($output_path, $html_content, 'utf8');

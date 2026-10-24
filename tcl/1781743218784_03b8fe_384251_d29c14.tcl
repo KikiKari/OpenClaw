@@ -1,17 +1,18 @@
-#!/usr/bin/env tclsh
-# 1781743218784_03b8fe_384251.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_03b8fe_384251.py
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/tclsh
+# 1781743218784_03b8fe_384251_d29c14.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_384251_d29c14.pl
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe Anzahl Argumente
+# Prüfe Anzahl der Argumente
 if {$argc != 1} {
     puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
 }
 
+# Hole das Ausgabepfad-Argument
 set output_path [lindex $argv 0]
 
-# HTML-Inhalt
+# Definiere den HTML-Inhalt
 set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -218,11 +219,14 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Schreibe HTML-Inhalt in Datei
-if {[catch {set fh [open $output_path w]}]} {
+# Öffne die Ausgabedatei zum Schreiben
+if {[catch {open $output_path w} fh]} {
     puts stderr "Could not open file '$output_path': $fh"
     exit 1
 }
 
-puts $fh $html_content
+# Schreibe den HTML-Inhalt in die Datei
+puts -nonewline $fh $html_content
+
+# Schließe die Datei
 close $fh

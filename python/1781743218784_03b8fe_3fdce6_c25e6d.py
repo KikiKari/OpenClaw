@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-# 1781743218784_03b8fe_3fdce6.ps1 — portiert nach python
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_3fdce6.ps1
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_3fdce6_c25e6d.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_3fdce6_c25e6d.js
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
 
-# Parameter verarbeiten
+# Prüfe die Anzahl der Argumente
 if len(sys.argv) != 2:
     print("Usage: python script.py <OutputPath>", file=sys.stderr)
     sys.exit(1)
@@ -217,8 +216,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
 # Schreibe den Inhalt in die Ausgabedatei mit UTF-8-Encoding
 with open(output_path, 'w', encoding='utf-8') as f:

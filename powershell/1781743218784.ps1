@@ -1,10 +1,20 @@
 #!/usr/bin/env pwsh
 # 1781743218784.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
 # Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-function Generate-Html {
-    return @"
+# Prüfe Aufrufparameter
+if ($args.Count -ne 1) {
+    Write-Error "Aufruf: $($MyInvocation.MyCommand.Name) <Ausgabedatei>"
+    exit 1
+}
+$output_path = $args[0]
+
+$html_content = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -103,7 +113,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -210,27 +220,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-"@
-}
+'@
 
-function Main {
-    $args = $args
-    
-    if ($args.Count -ne 1) {
-        Write-Error "Usage: pwsh script.ps1 <output-file>"
-        exit 1
-    }
-    
-    $output_file = $args[0]
-    
-    try {
-        $html_content = Generate-Html
-        Set-Content -Path $output_file -Value $html_content -Encoding UTF8
-        Write-Output "HTML file generated: $output_file"
-    } catch {
-        Write-Error "Error generating HTML file: $($_.Exception.Message)"
-        exit 1
-    }
-}
-
-Main
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+[System.IO.File]::WriteAllText($output_path, $html_content, [System.Text.Encoding]::UTF8)

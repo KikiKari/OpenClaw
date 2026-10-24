@@ -1,14 +1,9 @@
 #!/usr/bin/env tclsh
 # 1781743218784_03b8fe.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_03b8fe.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-# Portiert nach Tcl 8.6 am: 2024-12-01
-
-# Parameter verarbeiten
+# Prüfen der Argumente
 if {$argc != 1} {
     puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
@@ -16,6 +11,7 @@ if {$argc != 1} {
 
 set outputPath [lindex $argv 0]
 
+# HTML-Inhalt als Tcl-Variable definieren
 set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,7 +218,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Schreibe die HTML-Inhalte in die Ausgabedatei
+# Schreiben der Datei
 set fd [open $outputPath w]
 puts -nonewline $fd $htmlContent
 close $fd

@@ -1,13 +1,20 @@
-#!/usr/bin/env perl
-# 1781743218784_03b8fe_384251.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_384251.ps1
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_03b8fe_384251.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_384251.js
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(encode);
-use File::Slurper qw(write_text);
+use open qw(:std :utf8);
+
+# 1781743218784_03b8fe_384251.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe_384251.tcl
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_03b8fe.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if (@ARGV != 1) {
@@ -17,7 +24,7 @@ if (@ARGV != 1) {
 
 my $outputPath = $ARGV[0];
 
-my $htmlContent = <<'HTML';
+my $html_content = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -146,8 +153,7 @@ title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("tit
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
-blob.placeholder=tr("blob");
-openBtn.textContent=tr("open"); newBtn.textContent=tr("neu");
+blob.placeholder=tr("blob"); openBtn.textContent=tr("open"); newBtn.textContent=tr("neu");
 document.getElementById("h-edit").textContent=tr("hEdit");
 newProv.placeholder=tr("newProv"); addProvBtn.textContent=tr("addProv");
 document.getElementById("h-save").textContent=tr("hSave");
@@ -223,13 +229,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 
-eval {
-    write_text($outputPath, $htmlContent, "UTF-8");
-    1;
-} or do {
-    my $error = $@ || 'Unknown error';
-    warn "Could not write to file '$outputPath': $error\n";
-    exit 1;
-};
+# Schreibe den HTML-Inhalt in die Ausgabedatei
+open my $fh, '>:encoding(UTF-8)', $outputPath or die "Could not open file '$outputPath' $!";
+print $fh $html_content;
+close $fh;

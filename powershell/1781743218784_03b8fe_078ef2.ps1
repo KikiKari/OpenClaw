@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
-# 1781743218784_03b8fe.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_078ef2.py — portiert nach powershell
+# Quelle: python, Projects@abstractions:python/1781743218784_03b8fe_078ef2.py
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfen der Argumente
 if ($args.Count -ne 1) {
@@ -220,8 +220,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '@
 
 try {
-    [System.IO.File]::WriteAllText($outputPath, $htmlContent, [System.Text.Encoding]::UTF8)
+    Set-Content -Path $outputPath -Value $htmlContent -Encoding UTF8
 } catch {
-    Write-Error "Could not write to '$outputPath': $_"
+    Write-Error "Could not open '$outputPath' for writing: $_"
     exit 1
 }

@@ -1,20 +1,24 @@
 #!/bin/bash
-# 1781743218784_03b8fe_3fdce6.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_3fdce6.ps1
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_3fdce6.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_3fdce6.js
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
+# 1781743218784_03b8fe_3fdce6.pl — portiert nach bash
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_3fdce6.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
 # Parameter verarbeiten
 if [[ $# -ne 1 ]]; then
-    echo "Usage: bash script.sh <OutputPath>" >&2
+    echo "Usage: $0 <OutputPath>" >&2
     exit 1
 fi
 
 output_path="$1"
 
-# HTML-Inhalt
-read -r -d '' html_content <<'HTML_END'
+# HTML-Inhalt erstellen
+cat > "$output_path" << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,7 +224,4 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
-
-# Schreibe den Inhalt in die Ausgabedatei mit UTF-8-Encoding
-echo "$html_content" > "$output_path"
+EOF

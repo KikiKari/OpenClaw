@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// 1781743218784_03b8fe_3fdce6.ps1 — portiert nach javascript
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_3fdce6.ps1
-// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_03b8fe_3fdce6_c25e6d.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_3fdce6_c25e6d.pl
+// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 // Parameter verarbeiten
 if (process.argv.length !== 3) {
@@ -9,9 +9,9 @@ if (process.argv.length !== 3) {
   process.exit(1);
 }
 
-const output_path = process.argv[2];
+const outputPath = process.argv[2];
 
-const html_content = `<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -218,4 +218,5 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 
 // Schreibe den Inhalt in die Ausgabedatei mit UTF-8-Encoding
-require('fs').writeFileSync(output_path, html_content, 'utf8');
+import { writeFileSync } from 'fs';
+writeFileSync(outputPath, htmlContent, 'utf8');

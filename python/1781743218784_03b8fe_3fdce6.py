@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # 1781743218784_03b8fe_3fdce6.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_3fdce6.js
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 
@@ -216,7 +216,8 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>'''
+</html>
+'''
 
 with open(output_path, 'w', encoding='utf-8') as f:
     f.write(html_content)

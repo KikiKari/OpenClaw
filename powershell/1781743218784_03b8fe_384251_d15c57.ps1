@@ -1,17 +1,17 @@
 #!/usr/bin/env pwsh
-# 1781743218784_03b8fe_384251.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe_384251.tcl
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_384251_d15c57.pl — portiert nach powershell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_384251_d15c57.pl
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_03b8fe.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# Parameter verarbeiten
+if ($args.Count -ne 1) {
+    Write-Error "Usage: pwsh script.ps1 <OutputPath>"
+    exit 1
+}
 
-param(
-    [Parameter(Mandatory=$true)][string]$OutputPath
-)
+$outputPath = $args[0]
 
-$html_content = @'
+$htmlContent = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,4 +220,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '@
 
 # Schreibe den HTML-Inhalt in die Ausgabedatei
-$html_content | Out-File -FilePath $OutputPath -Encoding utf8
+try {
+    [System.IO.File]::WriteAllText($outputPath, $htmlContent)
+} catch {
+    Write-Error "Konnte Datei '$outputPath' nicht öffnen: $_"
+    exit 1
+}
