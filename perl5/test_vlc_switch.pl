@@ -3,410 +3,279 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_vlc_switch.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_vlc_switch.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_vlc_switch.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_vlc_switch.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_vlc_switch.cjs
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use File::Spec;
-use JSON::PP;
+use JSON;
 
-# Helper functions to simulate Node.js behavior
-sub read_file {
-    my ($file_path) = @_;
-    open my $fh, '<:encoding(UTF-8)', $file_path or die "Could not open file '$file_path': $!";
-    local $/;
-    my $content = <$fh>;
-    close $fh;
-    return $content;
-}
-
-sub join_paths {
-    my @parts = @_;
-    return File::Spec->catfile(@parts);
-}
-
-# Assertion functions
-sub assert_equal {
-    my ($actual, $expected, $message) = @_;
-    $message //= '';
-    die "Assertion failed: expected '$expected', got '$actual'. $message" unless $actual eq $expected;
-}
-
-sub assert_match {
-    my ($string, $pattern, $message) = @_;
-    $message //= '';
-    die "Assertion failed: pattern '$pattern' not found in string. $message" unless $string =~ /$pattern/;
-}
-
-sub assert_does_not_match {
-    my ($string, $pattern, $message) = @_;
-    $message //= '';
-    die "Assertion failed: pattern '$pattern' found in string. $message" if $string =~ /$pattern/;
-}
-
-# Simulate JavaScript objects and methods
-package NativeObject {
-    sub new {
-        my ($class, $paused, $muted) = @_;
-        $paused //= 0;
-        $muted //= 0;
-        return bless {
-            paused => $paused,
-            muted => $muted,
-        }, $class;
-    }
-
-    sub pause {
-        my $self = shift;
-        $self->{paused} = 1;
-    }
-
-    sub play {
-        my $self = shift;
-        $self->{paused} = 0;
-        # Return a promise-like structure
-        return { then => sub { return shift; } };
-    }
-}
-
-package FallbackObject {
-    sub new {
-        my ($class, $surface) = @_;
-        my $self = NativeObject->new(0, 0);
-        $self->{closest} = sub { return { parentElement => $surface }; };
-        return bless $self, $class;
-    }
-}
-
-package SurfaceObject {
-    sub new {
-        my ($class, $media) = @_;
-        return bless {
-            querySelectorAll => sub {
-                my ($selector) = @_;
-                assert_equal($selector, 'video');
-                return $media;
-            }
-        }, $class;
-    }
-}
-
-package GainObject {
-    sub new {
-        my ($class, $value) = @_;
-        return bless { value => $value // 0.7 }, $class;
-    }
-}
-
-package Context {
-    sub new {
-        my ($class, $audio_pipeline, $document, $mutation_observer_class) = @_;
-        return bless {
-            audioPipeline => $audio_pipeline,
-            document => $document,
-            MutationObserver => $mutation_observer_class,
-        }, $class;
-    }
-}
-
-package DocumentObject {
-    sub new {
-        my ($class, $listeners_ref) = @_;
-        return bless {
-            querySelectorAll => sub {
-                die 'Must not globally suppress page media';
-            },
-            documentElement => {},
-            addEventListener => sub {
-                my ($name, $fn) = @_;
-                $listeners_ref->{$name} = $fn;
-            },
-            removeEventListener => sub {
-                my ($name) = @_;
-                delete $listeners_ref->{$name};
-            }
-        }, $class;
-    }
-}
-
-package MutationObserverClass {
-    sub new {
-        my ($class, $fn, $changed_ref) = @_;
-        $$changed_ref = $fn;
-        return bless {
-            observe => sub {},
-            disconnect => sub {},
-        }, $class;
-    }
-}
-
-# Main script logic
-my $script_dir = __FILE__;
-$script_dir =~ s/[\/\\][^\/\\]+$//;
-
-my $source_path = join_paths($script_dir, '..', 'browser-extension', 'content.js');
-my $source = read_file($source_path);
-
-my %listeners;
-my $native = NativeObject->new(0, 0);
-my $fallback = FallbackObject->new(undef);
+# Simulate JavaScript objects and functions using hashes and subroutines
+my $listeners = {};
+my $native = {
+    muted => 0,
+    paused => 0,
+    pause => sub { $_[0]->{paused} = 1; },
+    play => sub { $_[0]->{paused} = 0; return {}; } # Return a dummy promise-like object
+};
+my $fallback = { muted => 0, paused => 0 };
 my @media = ($native, $fallback);
-my $unrelated_video = NativeObject->new($native->{paused}, $native->{muted});
-my $speech_audio = NativeObject->new($native->{paused}, $native->{muted});
-my $surface = SurfaceObject->new(\@media);
-$fallback = FallbackObject->new($surface);
-$media[1] = $fallback;
-my $gain = GainObject->new(0.7);
+my $unrelatedVideo = { %$native };
+my $speechAudio = { %$native };
+my $surface = {
+    querySelectorAll => sub {
+        my $selector = shift;
+        die "Selector mismatch" unless $selector eq 'video';
+        return \@media;
+    }
+};
+$fallback->{closest} = sub { return { parentElement => $surface }; };
+my $gain = { value => 0.7 };
 my $changed;
 
-my $document = DocumentObject->new(\%listeners);
-my $mutation_observer_class = sub {
-    my ($fn) = @_;
-    $changed = $fn;
-    return MutationObserverClass->new($fn, \$changed);
+# Mock DOM environment
+my $document = {
+    querySelectorAll => sub { die 'Must not globally suppress page media'; },
+    documentElement => {},
+    addEventListener => sub { my ($name, $fn) = @_; $listeners->{$name} = $fn; },
+    removeEventListener => sub { my $name = shift; delete $listeners->{$name}; }
 };
 
-my $context = Context->new(
-    { video => $native, outputGain => { gain => $gain } },
-    $document,
-    $mutation_observer_class
-);
+# Mock MutationObserver
+package MutationObserver;
+sub new {
+    my ($class, $fn) = @_;
+    $changed = $fn;
+    return bless {}, $class;
+}
+sub observe {}
+sub disconnect {}
 
-# Extract and run relevant parts of the source code
+# Read content.js file
+my $script_dir = __FILE__;
+$script_dir =~ s/test_vlc_switch\.pl$//;
+my $content_js_path = File::Spec->catfile($script_dir, '..', 'browser-extension', 'content.js');
+open my $fh, '<:encoding(UTF-8)', $content_js_path or die "Cannot read $content_js_path: $!";
+my $source = do { local $/; <$fh> };
+close $fh;
+
+# Extract relevant code snippets
 my $start_pos = index($source, '  function suppressNativeAudio(');
 my $end_pos = index($source, '  async function playMediaFallback(');
-my $relevant_source = substr($source, $start_pos, $end_pos - $start_pos);
+my $snippet = substr($source, $start_pos, $end_pos - $start_pos);
 
-# Evaluate the JavaScript-like code in Perl context
-eval "
-    sub suppressNativeAudio {
-        my (\$fallback) = \@_;
-        \$native->{muted} = 1;
-        \$native->{paused} = 1;
-        \$gain->{value} = 0;
-        \$fallback->{muted} = 0;
-        \$fallback->{paused} = 0;
-        return sub {
-            \$native->{muted} = 0;
-            \$native->{paused} = 0;
-            \$gain->{value} = 0.7;
-        };
-    }
-";
+# Create context with necessary variables
+our $audioPipeline = { video => $native, outputGain => { gain => $gain } };
+our $document_ref = $document;
+our $MutationObserver_class = 'MutationObserver';
 
+# Execute the snippet in context
+eval $snippet;
+die "Error executing content.js snippet: $@" if $@;
+
+# Call suppressNativeAudio function
 my $release = suppressNativeAudio($fallback);
-assert_equal($native->{muted}, 1);
-assert_equal($native->{paused}, 1);
-assert_equal($gain->{value}, 0);
-assert_equal($fallback->{muted}, 0);
-assert_equal($fallback->{paused}, 0);
+
+# Assertions
+die "native.muted should be true" unless $native->{muted};
+die "native.paused should be true" unless $native->{paused};
+die "gain.value should be 0" unless $gain->{value} == 0;
+die "fallback.muted should be false" if $fallback->{muted};
+die "fallback.paused should be false" if $fallback->{paused};
 
 $native->{paused} = 0;
-&{$listeners{'play'}}();
-assert_equal($native->{paused}, 1);
+&{$listeners->{play}}() if exists $listeners->{play};
+die "native.paused should be true after play event" unless $native->{paused};
 
-my $replacement = NativeObject->new(0, 0);
+my $replacement = { %$native, muted => 0, paused => 0 };
 push @media, $replacement;
-$changed->();
-assert_equal($replacement->{muted}, 1);
-assert_equal($replacement->{paused}, 1);
+$changed->() if defined $changed;
+die "replacement.muted should be true" unless $replacement->{muted};
+die "replacement.paused should be true" unless $replacement->{paused};
 
 $release->();
-assert_equal($native->{muted}, 0);
-assert_equal($native->{paused}, 0);
-assert_equal($gain->{value}, 0.7);
-assert_equal(scalar keys %listeners, 0);
-assert_equal($unrelated_video->{paused}, 0);
-assert_equal($speech_audio->{paused}, 0);
+die "native.muted should be false after release" if $native->{muted};
+die "native.paused should be false after release" if $native->{paused};
+die "gain.value should be 0.7 after release" unless $gain->{value} == 0.7;
+die "listeners should be empty" if keys %$listeners;
+die "unrelatedVideo.paused should be false" if $unrelatedVideo->{paused};
+die "speechAudio.paused should be false" if $speechAudio->{paused};
 
-$context->{audioPipeline}->{video} = $unrelated_video;
-my $release_unrelated = suppressNativeAudio($fallback);
-assert_equal($gain->{value}, 0.7, 'Unrelated audio pipeline must remain unchanged');
-$release_unrelated->();
+$audioPipeline->{video} = $unrelatedVideo;
+my $releaseUnrelated = suppressNativeAudio($fallback);
+die "gain.value should remain unchanged for unrelated audio pipeline" unless $gain->{value} == 0.7;
+$releaseUnrelated->();
 
-my $background_path = join_paths($script_dir, '..', 'browser-extension', 'background.js');
-my $background = read_file($background_path);
+# Read background.js file
+my $background_js_path = File::Spec->catfile($script_dir, '..', 'browser-extension', 'background.js');
+open $fh, '<:encoding(UTF-8)', $background_js_path or die "Cannot read $background_js_path: $!";
+my $background = do { local $/; <$fh> };
+close $fh;
 
-my $normal_start = index($background, 'async function openNormalLive(');
-my $normal_end = index($background, 'chrome.sidePanel.setPanelBehavior');
-my $normal = substr($background, $normal_start, $normal_end - $normal_start);
+# Extract normal live handling code
+$start_pos = index($background, 'async function openNormalLive(');
+$end_pos = index($background, 'chrome.sidePanel.setPanelBehavior');
+my $normal = substr($background, $start_pos, $end_pos - $start_pos);
 
-assert_match($normal, qr/await chrome\.tabs\.update\(tabId, \{ url: normalLiveUrl\(handle\) \}/);
-assert_does_not_match($normal, qr/if \(reloading\)/);
-assert_match($source, qr/if \(holder\?\.isConnected\) return holder\.querySelector\("video"\)/);
+# Assertions on extracted code
+die "Normal should navigate to updated URL" unless $normal =~ /await chrome\.tabs\.update\(tabId, \{ url: normalLiveUrl\(handle\) \}\)/;
+die "Normal should not check reloading condition" if $normal =~ /if \(reloading\)/;
+die "Content script should handle connected holders" unless $source =~ /if \(holder\?\.isConnected\) return holder\.querySelector\("video"\)/;
 
 print "PASS: VLC isolates native audio, suppresses restarted/replaced media, restores on failure; Normal navigates even at same URL; existing fallback reused\n";
 
 # Exercise switch functionality
 sub exerciseSwitch {
-    my $panel_path = join_paths($script_dir, '..', 'browser-extension', 'sidepanel.js');
-    my $panel = read_file($panel_path);
+    # Read sidepanel.js file
+    my $sidepanel_js_path = File::Spec->catfile($script_dir, '..', 'browser-extension', 'sidepanel.js');
+    open $fh, '<:encoding(UTF-8)', $sidepanel_js_path or die "Cannot read $sidepanel_js_path: $!";
+    my $panel = do { local $/; <$fh> };
+    close $fh;
 
-    my $click_start = index($panel, '  elements["player-vlc-frame"].addEventListener("click"');
-    my $click_end = index($panel, '  elements["player-volume"].addEventListener', $click_start);
-    my $click_source = substr($panel, $click_start, $click_end - $click_start);
+    # Find click handler section
+    $start_pos = index($panel, '  elements["player-vlc-frame"].addEventListener("click"');
+    $end_pos = index($panel, '  elements["player-volume"].addEventListener', $start_pos);
+    my $clickSnippet = substr($panel, $start_pos, $end_pos - $start_pos);
 
-    my $click;
+    # Setup mock elements
     my $starts = 0;
     my $button = {
         addEventListener => sub {
             my ($event, $fn) = @_;
-            $click = $fn;
+            die "Event type mismatch" unless $event eq 'click';
+            # Store click handler
+            $button->{_clickHandler} = $fn;
         }
     };
 
-    my $panel_context = {
-        elements => { 'player-vlc-frame' => $button },
-        installVlcIfNeeded => sub {
-            die 'Internal replacement must not wait for desktop installation';
-        },
-        runPlayer => sub {
-            my ($action, $target) = @_;
-            assert_equal($action, 'play-vlc-source');
-            assert_equal($target, $button);
-            $starts++;
-        }
+    our $elements = { 'player-vlc-frame' => $button };
+    our $installVlcIfNeeded = sub { die 'Internal replacement must not wait for desktop installation'; };
+    our $runPlayer = sub {
+        my ($action, $target) = @_;
+        die "Action mismatch" unless $action eq 'play-vlc-source';
+        die "Target mismatch" unless $target eq $button;
+        $starts++;
     };
 
-    # Evaluate panel click handler
-    eval $click_source;
-    die "Error in panel click handler evaluation: $@" if $@;
+    # Execute click handler snippet
+    eval $clickSnippet;
+    die "Error executing click snippet: $@" if $@;
 
-    # Simulate click
-    $click->();
-    assert_equal($starts, 1, 'VLC click dispatches internal player immediately');
+    # Trigger click event
+    if (defined $button->{_clickHandler}) {
+        &{$button->{_clickHandler}}();
+    }
 
-    # Video selection logic
-    my $large_native = {
+    die "VLC click should dispatch internal player immediately" unless $starts == 1;
+
+    # Test primaryVideo selection logic
+    my $largeNative = {
         closest => sub { return undef; },
         getBoundingClientRect => sub { return { width => 1000, height => 1000 }; }
     };
-
-    my $small_replacement = {
+    my $smallReplacement = {
         closest => sub { return {}; },
         getBoundingClientRect => sub { return { width => 100, height => 100 }; }
     };
 
-    my $selection = {
-        activeMediaFallbackItem => {},
-        mediaFallbackRunning => 0,
-        document => {
-            querySelector => sub { return $small_replacement; },
-            querySelectorAll => sub { return [$large_native, $small_replacement]; }
-        }
+    our $activeMediaFallbackItem = {};
+    our $mediaFallbackRunning = 0;
+    our $document_selection = {
+        querySelector => sub { return $smallReplacement; },
+        querySelectorAll => sub { return [$largeNative, $smallReplacement]; }
     };
 
-    # Evaluate primary video selection logic
-    eval "
-        sub primaryVideo {
-            if (\$selection->{activeMediaFallbackItem}) {
-                my \$replacement = \$selection->{document}->querySelector();
-                return \$replacement if \$replacement && \$replacement->{closest}->();
-            }
-            my \$videos = \$selection->{document}->querySelectorAll();
-            my \$largest;
-            for my \$video (\@{\$videos}) {
-                next unless \$video->{getBoundingClientRect};
-                my \$rect = \$video->{getBoundingClientRect}->();
-                my \$area = \$rect->{width} * \$rect->{height};
-                \$largest = \$video if !\$largest || \$area > (\$largest->{getBoundingClientRect}->()->{width} * \$largest->{getBoundingClientRect}->()->{height});
-            }
-            return \$largest;
-        }
-    ";
+    # Extract primaryVideo function
+    $start_pos = index($source, '  function primaryVideo(');
+    $end_pos = index($source, '  function playerToggleControl(');
+    my $primaryVideoSnippet = substr($source, $start_pos, $end_pos - $start_pos);
 
-    assert_equal(primaryVideo(), $small_replacement, 'Active replacement wins regardless of video size');
+    # Execute primaryVideo snippet
+    eval $primaryVideoSnippet;
+    die "Error executing primaryVideo snippet: $@" if $@;
 
-    $selection->{activeMediaFallbackItem} = undef;
-    $selection->{mediaFallbackRunning} = 1;
-    assert_equal(primaryVideo(), $small_replacement, 'Starting replacement owns player controls');
+    # Check primaryVideo behavior
+    my $result = primaryVideo();
+    die "Active replacement should win regardless of video size" unless $result == $smallReplacement;
 
-    $selection->{mediaFallbackRunning} = 0;
-    assert_equal(primaryVideo(), $large_native, 'Inactive replacement excluded from native selection');
+    $activeMediaFallbackItem = undef;
+    $mediaFallbackRunning = 1;
+    $result = primaryVideo();
+    die "Starting replacement should own player controls" unless $result == $smallReplacement;
 
-    # Navigation test
+    $mediaFallbackRunning = 0;
+    $result = primaryVideo();
+    die "Inactive replacement should be excluded from native selection" unless $result == $largeNative;
+
+    # Test navigation behavior
     my $navigated = 0;
-    my $ctx = {
-        chrome => {
-            tabs => {
-                get => sub { return { url => 'https://www.tiktok.com/@test/live' }; },
-                update => sub { $navigated++; }
-            }
-        },
-        getState => sub { return {}; },
-        pageHandle => sub { return 'test'; },
-        cancelEmbedSession => sub {},
-        cancelRecoveryForModeChange => sub {},
-        closeEmbedChatSource => sub {},
-        armLiveTab => sub {},
-        normalLiveUrl => sub { return 'https://www.tiktok.com/@test/live'; }
-    };
-
-    # Evaluate normal live function
-    eval "
-        sub openNormalLive {
-            my (\$tabId) = \@_;
-            my \$url = \$ctx->{normalLiveUrl}->();
-            \$ctx->{chrome}->{tabs}->{update}->(\$tabId, { url => \$url });
+    our $chrome = {
+        tabs => {
+            get => sub { return { url => 'https://www.tiktok.com/@test/live' }; },
+            update => sub { $navigated++; }
         }
-    ";
+    };
+    our $getState = sub { return {}; };
+    our $pageHandle = sub { return 'test'; };
+    our $cancelEmbedSession = sub {};
+    our $cancelRecoveryForModeChange = sub {};
+    our $closeEmbedChatSource = sub {};
+    our $armLiveTab = sub {};
+    our $normalLiveUrl = sub { return 'https://www.tiktok.com/@test/live'; };
+
+    # Execute normal live function
+    eval $normal;
+    die "Error executing normal live snippet: $@" if $@;
 
     openNormalLive(1);
-    assert_equal($navigated, 1, 'Normal must navigate even from the same LIVE URL');
+    die "Normal must navigate even from the same LIVE URL" unless $navigated == 1;
 
-    # Player creation and release tests
+    # Test media fallback failure handling
     my $released = 0;
     my $removed = 0;
     my $created = 0;
-
     my $video = {
         pause => sub {},
         removeAttribute => sub {},
         load => sub {}
     };
 
-    my $player = {
-        mediaFallbackRunning => 0,
-        mediaFallbackPageUrl => 'live',
-        location => { href => 'live' },
-        attemptedMediaFallbackUrls => {},
-        activeMediaFallbackItem => undef,
-        releaseNativeAudio => undef,
-        mediaFallbackCandidates => sub { return @_; },
-        mediaFallbackKey => sub { return \$_[0]->{url}; },
-        ensureMediaFallbackVideo => sub { $created++; return $video; },
-        suppressNativeAudio => sub { return sub { $released++; }; },
-        setMediaFallbackStatus => sub {},
-        destroyMediaFallbackPlayer => sub {},
-        tryMediaUrl => sub { return { ok => 0, reason => 'test failure' }; },
-        getPlayerState => sub { return {}; },
-        document => { getElementById => sub { return { remove => sub { $removed++; } }; } }
-    };
+    our $mediaFallbackRunning_var = 0;
+    our $mediaFallbackPageUrl = 'live';
+    our $location = { href => 'live' };
+    our $attemptedMediaFallbackUrls = {};
+    our $activeMediaFallbackItem_var = undef;
+    our $releaseNativeAudio = undef;
+    our $mediaFallbackCandidates = sub { return $_[0]; };
+    our $mediaFallbackKey = sub { return $_[0]->{url}; };
+    our $ensureMediaFallbackVideo = sub { $created++; return $video; };
+    our $suppressNativeAudio_var = sub { return sub { $released++; }; };
+    our $setMediaFallbackStatus = sub {};
+    our $destroyMediaFallbackPlayer = sub {};
+    our $tryMediaUrl = sub { return { ok => 0, reason => 'test failure' }; };
+    our $getPlayerState = sub { return {}; };
+    our $document_player = { getElementById => sub { return { remove => sub { $removed++; } }; } };
 
-    # Evaluate playMediaFallback function
-    eval "
-        sub playMediaFallback {
-            my (\@sources) = \@_;
-            return { activated => 0 } if \@sources == 0;
-            my \$result = \$player->{tryMediaUrl}->(\@sources);
-            if (!\$result->{ok}) {
-                &{\$player->{releaseNativeAudio}}() if \$player->{releaseNativeAudio};
-                \$player->{document}->{getElementById}->()->{remove}->();
-                \$player->{mediaFallbackRunning} = 0;
-            }
-            return \$result;
-        }
-    ";
+    # Extract playMediaFallback function
+    $start_pos = index($source, '  async function playMediaFallback(');
+    $end_pos = index($source, '  async function configureLimiter(');
+    my $playMediaFallbackSnippet = substr($source, $start_pos, $end_pos - $start_pos);
 
-    my $result = playMediaFallback();
-    assert_equal($created, 0, 'No sources must not cover the native player');
+    # Execute playMediaFallback snippet
+    eval $playMediaFallbackSnippet;
+    die "Error executing playMediaFallback snippet: $@" if $@;
 
-    $result = playMediaFallback({ url => 'test', quality => 'test' });
-    assert_equal($result->{activated}, 0);
-    assert_equal($released, 1, 'Failed startup restores native audio');
-    assert_equal($removed, 1, 'Failed startup removes replacement');
-    assert_equal($player->{mediaFallbackRunning}, 0);
+    # Test empty sources case
+    playMediaFallback([]);
+    die "No sources should not cover the native player" unless $created == 0;
+
+    # Test failed startup case
+    my $result_obj = playMediaFallback([{ url => 'test', quality => 'test' }]);
+    die "Should indicate activation failure" unless !$result_obj->{activated};
+    die "Failed startup should restore native audio" unless $released == 1;
+    die "Failed startup should remove replacement" unless $removed == 1;
+    die "mediaFallbackRunning should be false after failure" if $mediaFallbackRunning_var;
 
     print "PASS: actual Normal handler navigates same URL; failed VLC startup restores native player; empty sources create no overlay\n";
 }
@@ -416,6 +285,6 @@ eval {
     exerciseSwitch();
 };
 if ($@) {
-    print STDERR $@;
+    warn $@;
     exit 1;
 }

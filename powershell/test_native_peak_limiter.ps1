@@ -3,167 +3,157 @@
 # Quelle: javascript, Projects@TikTok-Live-Companion:plugin-source/scripts/test_native_peak_limiter.cjs
 # auch in: Projects@TikTok-Live-Companion-Android:plugin-source/scripts/test_native_peak_limiter.cjs
 # auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/scripts/test_native_peak_limiter.cjs
-# auch in: Projects@codex/0pe-177-peak-protection:plugin-source/scripts/test_native_peak_limiter.cjs
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/scripts/test_native_peak_limiter.cjs
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
 $ErrorActionPreference = "Stop"
 
-# Helper function to mimic Node.js assert.ok
-function Assert-Ok {
-    param (
-        [bool]$Condition,
-        [string]$Message
-    )
-    if (-not $Condition) {
-        throw $Message
-    }
+# Prüfe, ob das Executable übergeben wurde
+if ($args.Count -lt 1) {
+    Write-Error "Pass compiled mobile/shared/native/limiter_trace.c executable"
+    exit 1
 }
 
-# Helper function to mimic Node.js assert.equal
-function Assert-Equal {
-    param (
-        $Actual,
-        $Expected,
-        [string]$Message
-    )
-    if ($Actual -ne $Expected) {
-        throw "$Message`: Expected '$Expected', but got '$Actual'"
-    }
-}
-
-# Load the JavaScript module content-core.js and evaluate it
-$scriptPath = Join-Path $PSScriptRoot "../browser-extension/content-core.js"
-$jsContent = Get-Content -Path $scriptPath -Raw
-$jsEngine = New-Object -ComObject ScriptControl
-$jsEngine.Language = "JScript"
-$jsEngine.AddCode($jsContent)
-
-# Define a wrapper to call the JS function from PowerShell
-function Create-PeakLimiter {
-    param (
-        [int]$Rate
-    )
-    # Assuming createPeakLimiter returns an object with delaySamples and process method
-    # This is a simplified assumption; real interop may require more work
-    $kernel = $jsEngine.Run("createPeakLimiter", $Rate)
-    return $kernel
-}
-
-# Main script logic starts here
 $executable = $args[0]
-Assert-Ok -Condition ($null -ne $executable) -Message "Pass compiled mobile/shared/native/limiter_trace.c executable"
+
+# Lade das JavaScript-Modul und führe createPeakLimiter-Funktion aus
+Add-Type -AssemblyName System.Runtime.InteropServices.JavaScript
+try {
+    $scriptPath = Join-Path $PSScriptRoot "../browser-extension/content-core.js"
+    $jsCode = Get-Content -Raw -Path $scriptPath
+    $jsEngine = New-Object -ComObject ScriptControl
+    $jsEngine.Language = "JScript"
+    $jsEngine.AddCode($jsCode)
+    $createPeakLimiterFunc = $jsEngine.CodeObject.createPeakLimiter
+} catch {
+    Write-Error "Failed to load content-core.js or find createPeakLimiter function."
+    exit 1
+}
 
 $cases = 0
 
 foreach ($rate in @(44100, 48000, 96000)) {
     foreach ($channels in @(1, 2, 6)) {
-        foreach ($setting in @(@($false, 100), @($true, 25), @($true, 75), @($true, 100))) {
-            $enabled = $setting[0]
-            $strength = $setting[1]
+        foreach ($config in @(@($false, 100), @($true, 25), @($true, 75), @($true, 100))) {
+            $enabled = $config[0]
+            $strength = $config[1]
             $frames = [Math]::Round($rate * 0.25)
 
-            # Generate input signal
+            # Erzeuge Eingangsdaten
             $input = @()
             for ($c = 0; $c -lt $channels; $c++) {
-                $channelData = @()
+                $channelData = New-Object float[] $frames
                 for ($i = 0; $i -lt $frames; $i++) {
                     if ($i -eq 5 -or $i -eq 129) {
-                        $val = if (($c % 2) -eq 1) { -0.95 } else { 0.95 }
-                        $channelData += $val
+                        $channelData[$i] = if ($c % 2 -eq 1) { -0.95 } else { 0.95 }
                     } elseif ($i -eq 300) {
-                        $channelData += [double]::NaN
+                        $channelData[$i] = [Double]::NaN
                     } elseif ($i -eq 301) {
-                        $channelData += [double]::PositiveInfinity
+                        $channelData[$i] = [Double]::PositiveInfinity
                     } else {
                         $freq = if ($i -lt 2000) { 8000 } else { 220 }
                         $amp = if ($i -lt 2000) { 0.9 } else { 0.01 }
-                        $val = (($c + 1) / $channels) * [Math]::Sin($i * 2 * [Math]::PI * $freq / $rate) * $amp
-                        $channelData += $val
+                        $channelData[$i] = (($c + 1) / $channels) * [Math]::Sin($i * 2 * [Math]::PI * $freq / $rate) * $amp
                     }
                 }
-                $input += ,([System.Single[]]$channelData)
+                $input += , $channelData
             }
 
-            # Create limiter kernel
-            $kernel = Create-PeakLimiter -Rate $rate
-            $count = $frames + $kernel.delaySamples
+            # Erzeuge Kernel
+            try {
+                $kernelObj = & $createPeakLimiterFunc.Invoke($rate)
+                $kernel = @{
+                    delaySamples = $kernelObj.delaySamples
+                    process      = $kernelObj.process
+                }
+            } catch {
+                Write-Error "Failed to create peak limiter for rate $rate"
+                exit 1
+            }
 
-            # Prepare interleaved buffer
+            $count = $frames + $kernel.delaySamples
             $wireSize = $count * $channels * 4
             $wire = New-Object byte[] $wireSize
+
+            # Fülle Wire-Puffer
             for ($i = 0; $i -lt $count; $i++) {
                 for ($c = 0; $c -lt $channels; $c++) {
-                    $index = ($i * $channels + $c) * 4
                     $value = if ($i -lt $input[$c].Length) { $input[$c][$i] } else { 0 }
                     $bytes = [BitConverter]::GetBytes([float]$value)
-                    [Array]::Copy($bytes, 0, $wire, $index, 4)
+                    $offset = ($i * $channels + $c) * 4
+                    for ($j = 0; $j -lt 4; $j++) {
+                        $wire[$offset + $j] = $bytes[$j]
+                    }
                 }
             }
 
-            # Run native executable
+            # Starte externes Programm
             $psi = New-Object System.Diagnostics.ProcessStartInfo
             $psi.FileName = $executable
-            $psi.Arguments = @($rate, $channels, [int]$enabled, $strength) | ForEach-Object { $_.ToString() }
+            $psi.Arguments = "$rate $channels $(if ($enabled) { 1 } else { 0 }) $strength"
             $psi.UseShellExecute = $false
             $psi.RedirectStandardInput = $true
             $psi.RedirectStandardOutput = $true
             $psi.RedirectStandardError = $true
 
             $process = [System.Diagnostics.Process]::Start($psi)
-            $writer = $process.StandardInput.BaseStream
-            $reader = $process.StandardOutput.BaseStream
-            $errorReader = $process.StandardError.ReadToEnd()
-
-            $writer.Write($wire, 0, $wire.Length)
-            $writer.Close()
+            $process.StandardInput.BaseStream.Write($wire, 0, $wire.Length)
+            $process.StandardInput.Close()
+            $outputBytes = New-Object byte[] $wireSize
+            $read = 0
+            while ($read -lt $wireSize) {
+                $readNow = $process.StandardOutput.BaseStream.Read($outputBytes, $read, $wireSize - $read)
+                if ($readNow -eq 0) { break }
+                $read += $readNow
+            }
             $process.WaitForExit()
 
-            Assert-Equal -Actual $process.ExitCode -Expected 0 -Message "Process exited with error: $errorReader"
-            
-            # Read output
-            $outputBytes = New-Object byte[] $wireSize
-            $read = $reader.Read($outputBytes, 0, $wireSize)
-            Assert-Equal -Actual $read -Expected $wireSize -Message "Unexpected stdout length"
+            if ($process.ExitCode -ne 0) {
+                $stderr = [System.Text.Encoding]::UTF8.GetString($process.StandardError.BaseStream.ReadToEnd())
+                Write-Error "Process exited with code $($process.ExitCode): $stderr"
+                exit $process.ExitCode
+            }
 
-            # Compare results
-            $maxError = 0
+            if ($outputBytes.Length -ne $wire.Length) {
+                Write-Error "Output length mismatch: expected $($wire.Length), got $($outputBytes.Length)"
+                exit 1
+            }
+
+            $maxError = 0.0
             for ($start = 0; $start -lt $count; $start += 127) {
                 $size = [Math]::Min(127, $count - $start)
-
-                # Build block input/output arrays
                 $block = @()
-                $outputBlock = @()
+                $expectedOutput = @()
                 for ($c = 0; $c -lt $channels; $c++) {
-                    $channelIn = @()
+                    $channelBlock = New-Object float[] $size
+                    $channelExpected = New-Object float[] $size
                     for ($i = 0; $i -lt $size; $i++) {
-                        $idx = $start + $i
-                        $val = if ($idx -lt $input[$c].Length) { $input[$c][$idx] } else { 0 }
-                        $channelIn += $val
+                        $index = $start + $i
+                        $channelBlock[$i] = if ($index -lt $input[$c].Length) { $input[$c][$index] } else { 0 }
+                        $channelExpected[$i] = 0.0
                     }
-                    $block += ,([System.Single[]]$channelIn)
-                    $outputBlock += ,([System.Single[]]@(0) * $size)
+                    $block += , $channelBlock
+                    $expectedOutput += , $channelExpected
                 }
 
-                # Call kernel.process (this assumes we can invoke JS methods properly)
-                # Since direct JS interop is limited in PowerShell, this part would need adaptation
-                # For now, we'll simulate that it works correctly
-                
-                # In real scenario, you'd have to implement or interface with the actual kernel.process method
-                # which might involve writing a small C++/C# bridge or using node.exe to run JS code
-                
-                # As placeholder, assume perfect match
+                # Process block with kernel
+                try {
+                    & $kernel.process.Invoke($block, $expectedOutput, $enabled, $strength)
+                } catch {
+                    Write-Error "Kernel processing failed at start=$start"
+                    exit 1
+                }
+
                 for ($i = 0; $i -lt $size; $i++) {
                     for ($c = 0; $c -lt $channels; $c++) {
                         $offset = (($start + $i) * $channels + $c) * 4
                         $actualBytes = $outputBytes[$offset..($offset+3)]
                         $actual = [BitConverter]::ToSingle($actualBytes, 0)
-                        if ([double]::IsNaN($actual) -or [double]::IsInfinity($actual)) {
-                            throw "Invalid float value detected in output"
+                        if (-not [float]::IsFinite($actual)) {
+                            Write-Error "Non-finite value detected in output at index $((($start+$i)*$channels+$c))"
+                            exit 1
                         }
-                        # Simulate expected output as same as input for simplicity
-                        # Replace with actual kernel.process result when available
-                        $expected = $block[$c][$i]
-                        $diff = [Math]::Abs($actual - $expected)
+                        $diff = [Math]::Abs($actual - $expectedOutput[$c][$i])
                         if ($diff -gt $maxError) {
                             $maxError = $diff
                         }
@@ -171,7 +161,11 @@ foreach ($rate in @(44100, 48000, 96000)) {
                 }
             }
 
-            Assert-Ok -Condition ($maxError -le 1e-7) -Message "$rate/$channels/$enabled/$strength`: Error too large: $maxError"
+            if ($maxError -gt 1e-7) {
+                Write-Error "$rate/$channels/$enabled/$strength`: $maxError"
+                exit 1
+            }
+
             $cases++
         }
     }
