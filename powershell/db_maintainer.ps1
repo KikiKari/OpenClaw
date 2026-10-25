@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 # db_maintainer.py — portiert nach powershell
-# Quelle: python, OpenClaw@gateway2:scripts/db_maintainer.py
-# Erzeugt: 2026-08-19 durch ABSTRACTIONS_MANAGER.py
+# Quelle: python, OpenClaw@gateway1:skills/db-maintainer/scripts/db_maintainer.py
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 <#
 .SYNOPSIS
@@ -11,63 +11,49 @@ Automated database maintenance with 30min checks, hourly backups (3 days retenti
 band tree command execution for important/openclaw-tree.txt
 #>
 
-param()
+$WORKSPACE = [System.IO.Path]::Combine($env:HOME, ".openclaw", "workspace")
+$DB_DIR = [System.IO.Path]::Combine($WORKSPACE, "db")
+$BACKUP_DIR = [System.IO.Path]::Combine($DB_DIR, "backups")
+$LOG_DIR = [System.IO.Path]::Combine($WORKSPACE, "logs", "db-maintainer")
+$IMPORTANT_DIR = [System.IO.Path]::Combine($WORKSPACE, "important")
 
-$ErrorActionPreference = "Stop"
-
-# Determine workspace path
-$scriptPath = $MyInvocation.MyCommand.Path
-$workspace = if ($env:OPENCLAW_WORKSPACE) { 
-    [System.IO.Path]::GetFullPath($env:OPENCLAW_WORKSPACE) 
-} else { 
-    [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..")) 
-}
-
-$dbDir = $workspace
-$backupDir = [System.IO.Path]::Combine($workspace, "db", "backups")
-$logDir = [System.IO.Path]::Combine($workspace, "logs", "db-maintainer")
-$importantDir = [System.IO.Path]::Combine($workspace, "important")
-
-# Create directories
-@($backupDir, $logDir, $importantDir) | ForEach-Object {
-    if (-not (Test-Path $_)) {
-        New-Item -ItemType Directory -Path $_ -Force | Out-Null
-    }
-}
+# Verzeichnisse erstellen
+if (!(Test-Path $BACKUP_DIR)) { New-Item -ItemType Directory -Path $BACKUP_DIR -Force | Out-Null }
+if (!(Test-Path $LOG_DIR)) { New-Item -ItemType Directory -Path $LOG_DIR -Force | Out-Null }
 
 class Logger {
-    [string]$LogFile
+    [string]$logFile
     
     Logger() {
         $today = Get-Date -Format "yyyy-MM-dd"
-        $this.LogFile = [System.IO.Path]::Combine($script:logDir, "$today.log")
+        $this.logFile = [System.IO.Path]::Combine($script:LOG_DIR, "$today.log")
     }
     
-    [void]Log([string]$Level, [string]$Message) {
+    [void]Log([string]$level, [string]$message) {
         $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-        $line = "[${timestamp}] [${Level}] ${Message}"
+        $line = "[$timestamp] [$level] $message"
         Write-Host $line
-        Add-Content -Path $this.LogFile -Value $line
+        Add-Content -Path $this.logFile -Value $line
     }
     
-    [void]Info([string]$Msg) { $this.Log('INFO', $Msg) }
-    [void]Warn([string]$Msg) { $this.Log('WARN', $Msg) }
-    [void]Error([string]$Msg) { $this.Log('ERROR', $Msg) }
+    [void]Info([string]$msg) { $this.Log("INFO", $msg) }
+    [void]Warn([string]$msg) { $this.Log("WARN", $msg) }
+    [void]Error([string]$msg) { $this.Log("ERROR", $msg) }
 }
 
 class DatabaseMaintainer {
-    [Logger]$Logger
-    [string]$StateFile
-    [int]$RetentionDays = 3
+    [Logger]$logger
+    [string]$stateFile
+    [int]$retentionDays = 3
     
     DatabaseMaintainer() {
-        $this.Logger = [Logger]::new()
-        $this.StateFile = [System.IO.Path]::Combine($script:dbDir, "maintainer_state.json")
+        $this.logger = [Logger]::new()
+        $this.stateFile = [System.IO.Path]::Combine($script:DB_DIR, "maintainer_state.json")
     }
     
     [hashtable]LoadState() {
-        if (Test-Path $this.StateFile) {
-            $content = Get-Content -Path $this.StateFile -Raw
+        if (Test-Path $this.stateFile) {
+            $content = Get-Content -Path $this.stateFile -Raw
             if ($content) {
                 return $content | ConvertFrom-Json -AsHashtable
             }
@@ -80,92 +66,51 @@ class DatabaseMaintainer {
         }
     }
     
-    [void]SaveState([hashtable]$State) {
-        $State | ConvertTo-Json -Depth 10 | Set-Content -Path $this.StateFile
+    [void]SaveState([hashtable]$state) {
+        $state | ConvertTo-Json -Depth 10 | Set-Content -Path $this.stateFile
     }
     
-    [string]GetFileHash([string]$FilePath) {
+    [string]GetFileHash([string]$filepath) {
         try {
-            $bytes = [System.IO.File]::ReadAllBytes($FilePath)
-            $hash = [System.Security.Cryptography.MD5]::Create().ComputeHash($bytes)
-            return -join ($hash | ForEach-Object { "{0:x2}" -f $_ })
+            $hash = Get-FileHash -Path $filepath -Algorithm MD5
+            return $hash.Hash.ToLower()
         } catch {
             return $null
         }
-    }
-    
-    [string]_PythonTreeFallback([int]$MaxDepth = 8) {
-        $root = $script:workspace
-        $lines = @($root)
-        
-        function Walk([string]$dirpath, [string]$prefix, [int]$depth) {
-            if ($depth -gt $MaxDepth) { return }
-            try {
-                $entries = Get-ChildItem -Path $dirpath | Sort-Object { if ($_.PSIsContainer) { 0 } else { 1 } }, Name
-            } catch {
-                return
-            }
-            
-            for ($i = 0; $i -lt $entries.Count; $i++) {
-                $entry = $entries[$i]
-                $connector = if ($i -eq $entries.Count - 1) { "└── " } else { "├── " }
-                $lines.Add("$prefix$connector$($entry.Name)")
-                
-                if ($entry.PSIsContainer -and -not $entry.LinkType) {
-                    $extension = if ($i -eq $entries.Count - 1) { "    " } else { "│   " }
-                    Walk $entry.FullName "$prefix$extension" ($depth + 1)
-                }
-            }
-        }
-        
-        $linesList = [System.Collections.Generic.List[string]]::new()
-        $linesList.AddRange($lines)
-        Walk $root "" 1
-        return ($linesList -join "`n") + "`n"
     }
     
     [string]RunTreeCommand() {
         try {
-            $result = Start-Process -FilePath "tree" -ArgumentList "-a", "-L", "8", $script:workspace -NoNewWindow -PassThru -Wait -RedirectStandardOutput "$env:TEMP\tree_output.txt" -RedirectStandardError "$env:TEMP\tree_error.txt"
-            if ($result.ExitCode -eq 0) {
-                $output = Get-Content "$env:TEMP\tree_output.txt" -Raw
-                $this.Logger.Info("tree -a -L 8 erfolgreich ausgeführt")
-                return $output
+            $result = & tree "-a" "-L" "8" $script:WORKSPACE 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                $this.logger.Info("tree -a -L 8 erfolgreich ausgeführt")
+                return $result -join "`n"
             } else {
-                $stderr = Get-Content "$env:TEMP\tree_error.txt" -Raw
-                $this.Logger.Warn("tree command fehlgeschlagen: $($stderr.Trim()) – nutze Python-Fallback")
-                return $this._PythonTreeFallback()
+                $this.logger.Error("tree command fehlgeschlagen: $result")
+                return $null
             }
-        } catch [System.Management.Automation.CommandNotFoundException] {
-            $this.Logger.Warn("tree-Binary nicht installiert – nutze Python-Fallback")
-            return $this._PythonTreeFallback()
         } catch {
-            $this.Logger.Error("tree command Exception: $_")
+            $this.logger.Error("tree command Exception: $_")
             return $null
         }
     }
     
-    [bool]UpdateTreeFile([string]$TreeOutput) {
-        if (-not $TreeOutput) {
+    [bool]UpdateTreeFile([string]$treeOutput) {
+        if (-not $treeOutput) {
             return $false
         }
         
-        $treeFile = [System.IO.Path]::Combine($script:importantDir, "openclaw-tree.txt")
+        $treeFile = [System.IO.Path]::Combine($script:IMPORTANT_DIR, "openclaw-tree.txt")
         
-        $header = @"
-# OpenClaw Workspace Tree
-# Generiert: $(Get-Date -Format s)
-# Befehl: tree -a -L 8 $script:workspace
-# Diese Datei wird automatisch von db-maintainer aktualisiert
-
-"@
+        # Header mit Timestamp
+        $header = "# OpenClaw Workspace Tree`n# Generiert: $(Get-Date -Format o)`n# Befehl: tree -a -L 8 $script:WORKSPACE`n# Diese Datei wird automatisch von db-maintainer aktualisiert`n`n"
         
         try {
-            $header + $TreeOutput | Set-Content -Path $treeFile -Encoding UTF8
-            $this.Logger.Info("openclaw-tree.txt aktualisiert: $treeFile")
+            $header + $treeOutput | Set-Content -Path $treeFile -Encoding UTF8
+            $this.logger.Info("openclaw-tree.txt aktualisiert: $treeFile")
             return $true
         } catch {
-            $this.Logger.Error("Fehler beim Schreiben von openclaw-tree.txt: $_")
+            $this.logger.Error("Fehler beim Schreiben von openclaw-tree.txt: $_")
             return $false
         }
     }
@@ -173,23 +118,26 @@ class DatabaseMaintainer {
     [array]ScanDocumentations() {
         $docs = @()
         
-        Get-ChildItem -Path $script:workspace -Include "*.md" -Recurse -File | Where-Object {
-            $_.FullName -notlike "*db/backups*" -and 
-            $_.FullName -notlike "*node_modules*" -and
-            -not $_.LinkType
-        } | ForEach-Object {
-            $relativePath = $_.FullName.Substring($script:workspace.Length + 1)
-            $docs += @{
-                path = $relativePath
-                hash = $this.GetFileHash($_.FullName)
-                mtime = $_.LastWriteTimeUtc.Ticks
+        $patterns = @("*.md", "**/*.md")
+        foreach ($pattern in $patterns) {
+            $files = Get-ChildItem -Path $script:WORKSPACE -Filter "*.md" -Recurse -File -ErrorAction SilentlyContinue
+            
+            foreach ($file in $files) {
+                $relativePath = $file.FullName.Replace($script:WORKSPACE, "").TrimStart("\")
+                if ($relativePath -notlike "*db\backups*" -and $relativePath -notlike "*node_modules*") {
+                    $docs += @{
+                        path = $relativePath
+                        hash = $this.GetFileHash($file.FullName)
+                        mtime = $file.LastWriteTime.ToFileTime()
+                    }
+                }
             }
         }
         
         return $docs
     }
     
-    [object]CheckForChanges() {
+    [hashtable]CheckForChanges() {
         $state = $this.LoadState()
         $currentDocs = $this.ScanDocumentations()
         
@@ -207,50 +155,52 @@ class DatabaseMaintainer {
             }
         }
         
-        # Check for deleted files
+        # Prüfe auf gelöschte Dateien
         foreach ($oldPath in $state.file_hashes.Keys) {
             if (-not $currentHashes.ContainsKey($oldPath)) {
                 $changes += "DELETED: $oldPath"
             }
         }
         
-        return @{ changes = $changes; hashes = $currentHashes }
+        return @{
+            Changes = $changes
+            Hashes = $currentHashes
+        }
     }
     
     [bool]UpdateDatabases() {
         try {
-            $scriptPath = [System.IO.Path]::Combine($script:workspace, "scripts", "update_docs_db.py")
-            $result = Start-Process -FilePath "python3" -ArgumentList $scriptPath -NoNewWindow -PassThru -Wait -RedirectStandardOutput "$env:TEMP\db_update_out.txt" -RedirectStandardError "$env:TEMP\db_update_err.txt"
+            # Update docs.db
+            $scriptPath = [System.IO.Path]::Combine($script:WORKSPACE, "scripts", "update_docs_db.py")
+            $result = & python3 $scriptPath 2>&1
             
-            if ($result.ExitCode -eq 0) {
-                $this.Logger.Info("docs.db aktualisiert")
+            if ($LASTEXITCODE -eq 0) {
+                $this.logger.Info("docs.db aktualisiert")
                 return $true
             } else {
-                $stderr = Get-Content "$env:TEMP\db_update_err.txt" -Raw
-                $this.Logger.Error("DB-Update fehlgeschlagen: $stderr")
+                $this.logger.Error("DB-Update fehlgeschlagen: $result")
                 return $false
             }
         } catch {
-            $this.Logger.Error("DB-Update Exception: $_")
+            $this.logger.Error("DB-Update Exception: $_")
             return $false
         }
     }
     
     [bool]UpdateTreeDbV2() {
         try {
-            $scriptPath = [System.IO.Path]::Combine($script:workspace, "scripts", "tree_indexer_v2.py")
-            $result = Start-Process -FilePath "python3" -ArgumentList $scriptPath -NoNewWindow -PassThru -Wait -RedirectStandardOutput "$env:TEMP\tree_db_out.txt" -RedirectStandardError "$env:TEMP\tree_db_err.txt"
+            $scriptPath = [System.IO.Path]::Combine($script:WORKSPACE, "scripts", "tree_indexer_v2.py")
+            $result = & python3 $scriptPath 2>&1
             
-            if ($result.ExitCode -eq 0) {
-                $this.Logger.Info("tree.db v2 aktualisiert")
+            if ($LASTEXITCODE -eq 0) {
+                $this.logger.Info("tree.db v2 aktualisiert")
                 return $true
             } else {
-                $stderr = Get-Content "$env:TEMP\tree_db_err.txt" -Raw
-                $this.Logger.Error("Tree-DB v2 fehlgeschlagen: $stderr")
+                $this.logger.Error("Tree-DB v2 fehlgeschlagen: $result")
                 return $false
             }
         } catch {
-            $this.Logger.Error("Tree-DB v2 Exception: $_")
+            $this.logger.Error("Tree-DB v2 Exception: $_")
             return $false
         }
     }
@@ -258,14 +208,13 @@ class DatabaseMaintainer {
     [string]CreateBackup() {
         $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm"
         
-        @("docs.db", "tree.db") | ForEach-Object {
-            $dbName = $_
-            $source = [System.IO.Path]::Combine($script:dbDir, $dbName)
+        foreach ($dbName in @("docs.db", "tree.db")) {
+            $source = [System.IO.Path]::Combine($script:DB_DIR, $dbName)
             if (Test-Path $source) {
                 $backupName = "${timestamp}_${dbName}.bak"
-                $backupPath = [System.IO.Path]::Combine($script:backupDir, $backupName)
-                Copy-Item -Path $source -Destination $backupPath -Force
-                $this.Logger.Info("Backup erstellt: $backupName")
+                $backupPath = [System.IO.Path]::Combine($script:BACKUP_DIR, $backupName)
+                Copy-Item -Path $source -Destination $backupPath
+                $this.logger.Info("Backup erstellt: $backupName")
             }
         }
         
@@ -273,111 +222,110 @@ class DatabaseMaintainer {
     }
     
     [void]CleanupOldBackups() {
-        $cutoff = (Get-Date).AddDays(-$this.RetentionDays)
+        $cutoff = (Get-Date).AddDays(-$this.retentionDays)
         $deleted = 0
         
-        @("docs.db", "tree.db") | ForEach-Object {
-            $dbName = $_
-            $backups = Get-ChildItem -Path $script:backupDir -Filter "*_${dbName}.bak"
+        foreach ($dbName in @("docs.db", "tree.db")) {
+            $backups = Get-ChildItem -Path $script:BACKUP_DIR -Filter "*_${dbName}.bak" -File
             
             foreach ($backup in $backups) {
+                # Extrahiere Datum aus Filename (Format: YYYY-MM-DD_HH-MM)
                 try {
-                    # Extract date from filename (Format: YYYY-MM-DD_HH-MM)
-                    $parts = $backup.Name.Split('_')
-                    $dateStr = $parts[0]
-                    $timeStr = $parts[1]
-                    $backupTime = [DateTime]::ParseExact("${dateStr}_${timeStr}", 'yyyy-MM-dd_HH-mm', $null)
-                    
-                    if ($backupTime -lt $cutoff) {
-                        Remove-Item -Path $backup.FullName -Force
-                        $deleted++
-                        $this.Logger.Info("Altes Backup gelöscht: $($backup.Name)")
+                    $parts = $backup.Name.Split("_")
+                    if ($parts.Count -ge 2) {
+                        $dateStr = $parts[0]
+                        $timeStr = $parts[1].Split(".")[0]
+                        $backupTime = [DateTime]::ParseExact("${dateStr}_${timeStr}", "yyyy-MM-dd_HH-mm", $null)
+                        
+                        if ($backupTime -lt $cutoff) {
+                            Remove-Item -Path $backup.FullName -Force
+                            $deleted++
+                            $this.logger.Info("Altes Backup gelöscht: $($backup.Name)")
+                        }
                     }
                 } catch {
-                    $this.Logger.Warn("Konnte Backup-Datum nicht parsen: $($backup.Name)")
+                    $this.logger.Warn("Konnte Backup-Datum nicht parsen: $($backup.Name)")
                 }
             }
         }
         
         if ($deleted -eq 0) {
-            $this.Logger.Info("Keine alten Backups zum Löschen")
+            $this.logger.Info("Keine alten Backups zum Löschen")
         } else {
-            $this.Logger.Info("${deleted} alte Backups gelöscht (< 3 Tage)")
+            $this.logger.Info("$deleted alte Backups gelöscht (< 3 Tage)")
         }
     }
     
     [void]RunCycle() {
-        $this.Logger.Info("=" * 60)
-        $this.Logger.Info("DB MAINTAINER CYCLE START")
-        $this.Logger.Info("=" * 60)
+        $this.logger.Info("=" * 60)
+        $this.logger.Info("DB MAINTAINER CYCLE START")
+        $this.logger.Info("=" * 60)
         
         $state = $this.LoadState()
         
-        # 1. Run tree command and write to openclaw-tree.txt
-        $this.Logger.Info("Führe tree -a -L 8 aus...")
+        # 1. Tree-Befehl ausführen und in openclaw-tree.txt schreiben
+        $this.logger.Info("Führe tree -a -L 8 aus...")
         $treeOutput = $this.RunTreeCommand()
         if ($treeOutput) {
             $this.UpdateTreeFile($treeOutput)
             $state.last_tree_update = (Get-Date).ToString("o")
         }
         
-        # 2. Update tree.db (internal v2)
-        $this.Logger.Info("Aktualisiere tree.db v2...")
+        # 2. tree.db aktualisieren (intern v2)
+        $this.logger.Info("Aktualisiere tree.db v2...")
         $this.UpdateTreeDbV2()
         
-        # 3. Check for changes
-        $this.Logger.Info("Prüfe auf Dokumentations-Änderungen...")
-        $changeResult = $this.CheckForChanges()
-        $changes = $changeResult.changes
-        $currentHashes = $changeResult.hashes
+        # 3. Änderungen prüfen
+        $this.logger.Info("Prüfe auf Dokumentations-Änderungen...")
+        $checkResult = $this.CheckForChanges()
+        $changes = $checkResult.Changes
+        $currentHashes = $checkResult.Hashes
         
         if ($changes.Count -gt 0) {
-            $this.Logger.Info("$($changes.Count) Änderungen gefunden:")
-            $displayCount = [Math]::Min(10, $changes.Count)
-            for ($i = 0; $i -lt $displayCount; $i++) {
-                $this.Logger.Info("  - $($changes[$i])")
+            $this.logger.Info("$($changes.Count) Änderungen gefunden:")
+            for ($i = 0; $i -lt [Math]::Min($changes.Count, 10); $i++) {
+                $this.logger.Info("  - $($changes[$i])")
             }
             if ($changes.Count -gt 10) {
-                $this.Logger.Info("  ... und $($changes.Count - 10) weitere")
+                $this.logger.Info("  ... und $($($changes.Count - 10)) weitere")
             }
             
-            # 4. Update docs.db
-            $this.Logger.Info("Aktualisiere docs.db...")
+            # 4. docs.db aktualisieren
+            $this.logger.Info("Aktualisiere docs.db...")
             if ($this.UpdateDatabases()) {
                 $state.last_check = (Get-Date).ToString("o")
                 $state.file_hashes = $currentHashes
             }
         } else {
-            $this.Logger.Info("Keine Dokumentations-Änderungen gefunden")
+            $this.logger.Info("Keine Dokumentations-Änderungen gefunden")
         }
         
-        # 5. Check if backup is due (hourly)
+        # 5. Prüfe ob Backup fällig (stündlich)
         $lastBackup = $state.last_backup
+        $doBackup = $true
         
         if ($lastBackup) {
             $lastBackupTime = [DateTime]::Parse($lastBackup)
-            $doBackup = (Get-Date) - $lastBackupTime -ge (New-TimeSpan -Hours 1)
-        } else {
-            $doBackup = $true
+            $doBackup = (Get-Date) - $lastBackupTime -ge [TimeSpan]::FromHours(1)
         }
         
         if ($doBackup) {
-            $this.Logger.Info("Erstelle stündliches Backup...")
+            $this.logger.Info("Erstelle stündliches Backup...")
             $timestamp = $this.CreateBackup()
             $state.last_backup = (Get-Date).ToString("o")
             
-            # 6. Clean up old backups (3 days retention)
-            $this.Logger.Info("Räume alte Backups auf (3 Tage Retention)...")
+            # 6. Alte Backups aufräumen (3 Tage Retention)
+            $this.logger.Info("Räume alte Backups auf (3 Tage Retention)...")
             $this.CleanupOldBackups()
         } else {
-            $this.Logger.Info("Backup nicht nötig (letztes < 1h)")
+            $this.logger.Info("Backup nicht nötig (letztes < 1h)")
         }
         
         $this.SaveState($state)
         
-        $this.Logger.Info("=" * 60)
-        $this.Logger.Info("DB MAINTAINER CYCLE END")
-        $this.Logger.Info("=" * 60)
+        $this.logger.Info("=" * 60)
+        $this.logger.Info("DB MAINTAINER CYCLE END")
+        $this.logger.Info("=" * 60)
     }
 }
 
@@ -387,7 +335,7 @@ function Main() {
     try {
         $maintainer.RunCycle()
     } catch {
-        $maintainer.Logger.Error("CRITICAL ERROR: $_")
+        $maintainer.logger.Error("CRITICAL ERROR: $_")
         exit 1
     }
 }
