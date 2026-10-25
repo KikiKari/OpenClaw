@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // 1781743218784_03b8fe.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
-// Parameter verarbeiten
+// Prüfen der Argumente
 if (process.argv.length !== 3) {
-  console.error("Usage: node script.js <OutputPath>");
-  process.exit(1);
+    console.error("Usage: node script.js <OutputPath>");
+    process.exit(1);
 }
 
 const outputPath = process.argv[2];
@@ -218,4 +218,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>`;
 
-fs.writeFileSync(outputPath, htmlContent, 'utf8');
+try {
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
+} catch (err) {
+    console.error(`Could not open file '${outputPath}' for writing: ${err.message}`);
+    process.exit(1);
+}

@@ -1,28 +1,18 @@
 #!/usr/bin/env node
-// 1781743218784_03b8fe_078ef2.py — portiert nach javascript
-// Quelle: python, Projects@abstractions:python/1781743218784_03b8fe_078ef2.py
-// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_03b8fe.pl — portiert nach python
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_03b8fe.js — portiert nach perl5
-// Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
-// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-
-import { writeFileSync } from 'fs';
-import { exit } from 'process';
+// 1781743218784_03b8fe_078ef2.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_078ef2.pl
+// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 // Prüfen der Argumente
 if (process.argv.length !== 3) {
-    process.stderr.write("Usage: node script.js <OutputPath>\n");
-    exit(1);
+  console.error("Usage: node script.js <OutputPath>");
+  process.exit(1);
 }
 
-const output_path = process.argv[2];
+const outputPath = process.argv[2];
+const fs = require('fs');
 
-const html_content = `<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -226,12 +216,11 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-`;
+</html>`;
 
 try {
-    writeFileSync(output_path, html_content, { encoding: 'utf-8' });
-} catch (e) {
-    process.stderr.write(`Could not open '${output_path}' for writing: ${e.message}\n`);
-    exit(1);
+  fs.writeFileSync(outputPath, htmlContent, 'utf8');
+} catch (error) {
+  console.error(`Could not write to '${outputPath}': ${error.message}`);
+  process.exit(1);
 }

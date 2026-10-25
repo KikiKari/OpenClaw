@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
-# 1781743218784_03b8fe_078ef2.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe_078ef2.tcl
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_078ef2_7cdd34.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_078ef2_7cdd34.js
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
 
 # Prüfen der Argumente
 if len(sys.argv) != 2:
-    print("Usage: python3 script.py <OutputPath>", file=sys.stderr)
+    print("Usage: python script.py <OutputPath>", file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -220,5 +219,5 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '''
 
-with open(output_path, 'w', encoding='utf-8') as fh:
-    fh.write(html_content)
+with open(output_path, 'w', encoding='utf-8') as f:
+    f.write(html_content)

@@ -1,5 +1,12 @@
-#!/usr/bin/perl
-# 1781743218784_03b8fe_078ef2.py — portiert nach perl5
+#!/usr/bin/env perl
+# 1781743218784_03b8fe_078ef2_256c1f.tcl — portiert nach perl5
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe_078ef2_256c1f.tcl
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+
+use strict;
+use warnings;
+
+# 1781743218784_03b8fe_078ef2.py — portiert nach tcl
 # Quelle: python, Projects@abstractions:python/1781743218784_03b8fe_078ef2.py
 # Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
@@ -11,18 +18,14 @@
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
 # Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
-use strict;
-use warnings;
-
-# Prüfen der Argumente
 if (@ARGV != 1) {
-    print STDERR "Usage: python script.py <OutputPath>\n";
+    print STDERR "Usage: perl script.pl <OutputPath>\n";
     exit 1;
 }
 
 my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML_CONTENT';
+my $html_content = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -228,14 +231,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_CONTENT
+HTML_END
 
-eval {
-    open my $fh, '>:encoding(UTF-8)', $output_path or die "Could not open '$output_path' for writing: $!";
-    print $fh $html_content;
-    close $fh;
-};
-if ($@) {
-    print STDERR "Could not open '$output_path' for writing: $@\n";
+open my $fh, '>', $output_path or do {
+    print STDERR "Could not open '$output_path' for writing: $!\n";
     exit 1;
-}
+};
+
+print $fh $html_content;
+close $fh;

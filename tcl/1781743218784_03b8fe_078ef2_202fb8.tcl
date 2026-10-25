@@ -1,7 +1,7 @@
-#!/usr/bin/env tclsh
-# 1781743218784_03b8fe_078ef2.sh — portiert nach tcl
-# Quelle: shell, Projects@abstractions:shell/1781743218784_03b8fe_078ef2.sh
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/tclsh
+# 1781743218784_03b8fe_078ef2_202fb8.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_078ef2_202fb8.pl
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfen der Argumente
 if {$argc != 1} {
@@ -220,6 +220,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 # Schreiben des HTML-Inhalts in die Ausgabedatei
-set fd [open $output_path w]
-puts -nonewline $fd $html_content
-close $fd
+set fh [open $output_path w]
+puts -nonewline $fh $html_content
+close $fh

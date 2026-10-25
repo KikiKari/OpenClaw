@@ -1,22 +1,23 @@
 #!/usr/bin/perl
 # 1781743218784_03b8fe.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use open qw(:std :utf8);
+use Encode qw(decode_utf8);
+use File::Slurper qw(write_text);
 
-# Prüfen der Argumente
+# Prüfe Anzahl Argumente
 if (@ARGV != 1) {
-    print STDERR "Usage: perl script.pl <OutputPath>\n";
+    print STDERR "Aufruf: perl script.pl <Ausgabepfad>\n";
     exit 1;
 }
 
-my $outputPath = $ARGV[0];
+my $output_path = $ARGV[0];
 
-my $htmlContent = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,8 +223,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
-open my $fh, '>:encoding(UTF-8)', $outputPath or die "Could not open file '$outputPath': $!";
-print $fh $htmlContent;
-close $fh;
+write_text($output_path, decode_utf8($html_content));

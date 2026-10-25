@@ -1,19 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784_03b8fe_078ef2.sh — portiert nach javascript
-// Quelle: shell, Projects@abstractions:shell/1781743218784_03b8fe_078ef2.sh
-// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_03b8fe.pl — portiert nach shell
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_03b8fe_078ef2_202fb8.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_078ef2_202fb8.pl
+// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 // Prüfen der Argumente
 if (process.argv.length !== 3) {
-    console.error("Usage: node script.js <OutputPath>");
+    process.stderr.write("Usage: node script.js <OutputPath>\n");
     process.exit(1);
 }
 
 const outputPath = process.argv[2];
+const fs = require('fs');
 
 // HTML-Inhalt in Variable speichern
 const htmlContent = `<!DOCTYPE html>
@@ -223,4 +220,4 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 
 // Schreiben des HTML-Inhalts in die Ausgabedatei
-require('fs').writeFileSync(outputPath, htmlContent);
+fs.writeFileSync(outputPath, htmlContent);

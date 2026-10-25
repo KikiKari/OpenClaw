@@ -1,14 +1,10 @@
 #!/usr/bin/env pwsh
-# 1781743218784.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 function Generate-Html {
-    return @'
+    return @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -214,14 +210,14 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 }
 
 function Main {
     $args = $args
     
     if ($args.Count -ne 1) {
-        Write-Error "Usage: powershell script.ps1 <output-file>"
+        Write-Error "Usage: pwsh script.ps1 <output-file>"
         exit 1
     }
     
@@ -231,11 +227,10 @@ function Main {
         $htmlContent = Generate-Html
         Set-Content -Path $outputFile -Value $htmlContent -Encoding UTF8
         Write-Host "HTML file generated: $outputFile"
-    }
-    catch {
-        Write-Error "Error generating HTML file: $_"
+    } catch {
+        Write-Error "Error generating HTML file: $($_.Exception.Message)"
         exit 1
     }
 }
 
-Main @args
+Main

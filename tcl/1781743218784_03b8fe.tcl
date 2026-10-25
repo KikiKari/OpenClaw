@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 # 1781743218784_03b8fe.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfen der Argumente
 if {$argc != 1} {
@@ -218,7 +218,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Schreiben der Datei
-set fd [open $outputPath w]
-puts -nonewline $fd $htmlContent
-close $fd
+# Schreiben der HTML-Datei
+set fileId [open $outputPath "w"]
+puts -nonewline $fileId $htmlContent
+close $fileId

@@ -1,18 +1,25 @@
 #!/usr/bin/env tclsh
 # 1781743218784_03b8fe_384251.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_384251.js
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_03b8fe_384251.pl — portiert nach javascript — portiert nach Tcl 8.6
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe_384251.pl
 # Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe Kommandozeilenargumente
-if {$argc != 1} {
+# 1781743218784_03b8fe_384251.ps1 — portiert nach perl5 — portiert nach JavaScript — portiert nach Tcl 8.6
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_384251.ps1
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# Parameter verarbeiten
+if {[llength $argv] != 1} {
     puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
 }
 
 set outputPath [lindex $argv 0]
 
-# HTML-Inhalt definieren
-set html_content {<!DOCTYPE html>
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -218,7 +225,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Schreibe den HTML-Inhalt in die Ausgabedatei
-set fh [open $outputPath w]
-puts -nonewline $fh $html_content
+if {[catch {set fh [open $outputPath w]} err]} {
+    puts stderr "Could not write to file '$outputPath': $err"
+    exit 1
+}
+
+puts -nonewline $fh $htmlContent
 close $fh
