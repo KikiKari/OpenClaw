@@ -1,39 +1,96 @@
 #!/usr/bin/perl
 # 3d.html — portiert nach perl5
-# Quelle: html, Projects@Weather-Check:public/3d.html
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@abstractions:public/3d.html
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 # Parameter: Ausgabedatei
-my $ausgabe_datei = $ARGV[0] or die "Verwendung: $0 <ausgabedatei>\n";
+my $ausgabe_datei = $ARGV[0] or die "Aufruf: $0 [ausgabedatei]\n";
 
-# HTML-Dokument generieren
-my $html = generiere_html();
+# Spezifikation der Architekturdaten
+my $SPEC = {
+  "schichten" => [
+    {
+      "name" => "Eingaben",
+      "farbe" => "#5f6773",
+      "blocks" => [
+        {"id" => "openclaw-scripts", "name" => "OpenClaw-Scripts", "untertitel" => "Quellen"},
+        {"id" => "env", "name" => ".env", "untertitel" => "Umgebung"},
+        {"id" => "repo-init", "name" => "Repo-Init", "untertitel" => "Erstinstallation"}
+      ]
+    },
+    {
+      "name" => "Portierung",
+      "farbe" => "#2481cc",
+      "blocks" => [
+        {"id" => "create-abstraction-py", "name" => "create_abstraction.py", "untertitel" => "Portierung"},
+        {"id" => "10-zielsprachen", "name" => "10 Zielsprachen", "untertitel" => "je Lauf"},
+        {"id" => "json-processor-js", "name" => "json_processor.js", "untertitel" => "Node-Teil"}
+      ]
+    },
+    {
+      "name" => "Verwaltung",
+      "farbe" => "#6d5bd0",
+      "blocks" => [
+        {"id" => "db-manager-py", "name" => "db_manager.py", "untertitel" => "Zustand"},
+        {"id" => "logger-py", "name" => "logger.py", "untertitel" => "Protokoll"},
+        {"id" => "exceptions-py", "name" => "exceptions.py", "untertitel" => "Fehlerklassen"}
+      ]
+    },
+    {
+      "name" => "Pruefung",
+      "farbe" => "#b45309",
+      "blocks" => [
+        {"id" => "check-live-js", "name" => "check-live.js", "untertitel" => "Live-Pruefung"},
+        {"id" => "code-review-full", "name" => "CODE_REVIEW_FULL", "untertitel" => "Durchsicht"},
+        {"id" => "python-hardener", "name" => "python-hardener", "untertitel" => "Haertung"}
+      ]
+    },
+    {
+      "name" => "Ausgabe",
+      "farbe" => "#0f766e",
+      "blocks" => [
+        {"id" => "status-report", "name" => "Status-Report", "untertitel" => "was ist wo"},
+        {"id" => "doku-db", "name" => "Doku-DB", "untertitel" => "Datenbanken"},
+        {"id" => "cron-alle-6-h", "name" => "Cron alle 6 h", "untertitel" => "Takt"}
+      ]
+    }
+  ],
+  "kanten" => [
+    {"von" => "openclaw-scripts", "nach" => "create-abstraction-py", "art" => "fluss"},
+    {"von" => "env", "nach" => "10-zielsprachen", "art" => "fluss"},
+    {"von" => "repo-init", "nach" => "json-processor-js", "art" => "fluss"},
+    {"von" => "create-abstraction-py", "nach" => "db-manager-py", "art" => "fluss"},
+    {"von" => "10-zielsprachen", "nach" => "logger-py", "art" => "fluss"},
+    {"von" => "json-processor-js", "nach" => "exceptions-py", "art" => "fluss"},
+    {"von" => "db-manager-py", "nach" => "check-live-js", "art" => "fluss"},
+    {"von" => "logger-py", "nach" => "code-review-full", "art" => "fluss"},
+    {"von" => "exceptions-py", "nach" => "python-hardener", "art" => "fluss"},
+    {"von" => "check-live-js", "nach" => "status-report", "art" => "fluss"},
+    {"von" => "code-review-full", "nach" => "doku-db", "art" => "fluss"},
+    {"von" => "python-hardener", "nach" => "cron-alle-6-h", "art" => "fluss"}
+  ],
+  "kantenarten" => [
+    {"art" => "fluss", "farbe" => "#0f766e", "stil" => "voll", "text" => "Fluss von unten nach oben"}
+  ]
+};
 
-# In Datei schreiben
-open my $fh, '>', $ausgabe_datei or die "Kann '$ausgabe_datei' nicht öffnen: $!\n";
-print $fh $html;
-close $fh;
-
-print "Datei '$ausgabe_datei' wurde erstellt.\n";
-
-# Funktion zur Generierung des HTML-Inhalts
-sub generiere_html {
-    return <<'HTML';
+# HTML-Dokument erzeugen
+my $html = <<'HTML_HEAD';
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Weather-Check — Interaktive Architektur</title>
-<meta name="description" content="Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#2481cc">
+<title>Abstractions Manager — Interaktive Architektur</title>
+<meta name="description" content="Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#0f766e">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -81,8 +138,8 @@ sub generiere_html {
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Weather-Check</h1>
-  <p class="lede">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Abstractions Manager</h1>
+  <p class="lede">Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -116,8 +173,14 @@ sub generiere_html {
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "dwd-radar", "name": "DWD-Radar", "untertitel": "Zugbahn"}, {"id": "messstationen", "name": "Messstationen", "untertitel": "Ist-Wert"}, {"id": "open-meteo", "name": "Open-Meteo", "untertitel": "Minutenwerte"}, {"id": "satellit", "name": "Satellit", "untertitel": "Bewoelkung"}, {"id": "webcams", "name": "Webcams", "untertitel": "Sichtpruefung"}, {"id": "handyfoto", "name": "Handyfoto", "untertitel": "Wolkenbasis"}]}, {"name": "Zusammenfuehrung", "farbe": "#2481cc", "blocks": [{"id": "zugbahn", "name": "Zugbahn", "untertitel": "extrapoliert"}, {"id": "gewichtung", "name": "Gewichtung", "untertitel": "je Quelle"}, {"id": "widerspruchspruefung", "name": "Widerspruchspruefung", "untertitel": "benennen statt mitteln"}]}, {"name": "Einschaetzung", "farbe": "#6d5bd0", "blocks": [{"id": "30-min", "name": "30 min", "untertitel": "hohe Sicherheit"}, {"id": "60-min", "name": "60 min", "untertitel": "mittel"}, {"id": "120-min", "name": "120 min", "untertitel": "grob"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}, {"id": "computer-prompt", "name": "Computer-Prompt", "untertitel": "Perplexity"}, {"id": "handlungssatz", "name": "Handlungssatz", "untertitel": "eine Entscheidung"}]}], "kanten": [{"von": "dwd-radar", "nach": "zugbahn", "art": "fluss"}, {"von": "messstationen", "nach": "gewichtung", "art": "fluss"}, {"von": "open-meteo", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "satellit", "nach": "zugbahn", "art": "fluss"}, {"von": "webcams", "nach": "gewichtung", "art": "fluss"}, {"von": "handyfoto", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "zugbahn", "nach": "30-min", "art": "fluss"}, {"von": "gewichtung", "nach": "60-min", "art": "fluss"}, {"von": "widerspruchspruefung", "nach": "120-min", "art": "fluss"}, {"von": "30-min", "nach": "pwa", "art": "fluss"}, {"von": "60-min", "nach": "computer-prompt", "art": "fluss"}, {"von": "120-min", "nach": "handlungssatz", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#2481cc", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+HTML_HEAD
 
+# JavaScript-Code generieren
+$html .= "(function(){\n";
+$html .= "  \"use strict\";\n";
+$html .= "  var SPEC = " . to_json($SPEC) . ";\n\n";
+
+$html .= <<'JS_CODE';
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
     buehne.insertAdjacentHTML("beforeend",
@@ -343,5 +406,43 @@ sub generiere_html {
 </script>
 </body>
 </html>
-HTML
+JS_CODE
+
+# In Datei schreiben
+open my $fh, '>', $ausgabe_datei or die "Kann $ausgabe_datei nicht öffnen: $!\n";
+print $fh $html;
+close $fh;
+
+# Hilfsfunktion zur JSON-Konvertierung
+sub to_json {
+    my ($data) = @_;
+    if (ref $data eq 'HASH') {
+        my @pairs;
+        for my $key (sort keys %$data) {
+            push @pairs, '"' . escape_json($key) . '":' . to_json($data->{$key});
+        }
+        return '{' . join(',', @pairs) . '}';
+    } elsif (ref $data eq 'ARRAY') {
+        my @items = map { to_json($_) } @$data;
+        return '[' . join(',', @items) . ']';
+    } elsif (!defined $data) {
+        return 'null';
+    } elsif ($data =~ /^[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/) {
+        return $data;
+    } else {
+        return '"' . escape_json($data) . '"';
+    }
+}
+
+sub escape_json {
+    my ($str) = @_;
+    $str =~ s/\\/\\\\/g;
+    $str =~ s/"/\\"/g;
+    $str =~ s/\//\\\//g;
+    $str =~ s/\x08/\\b/g;
+    $str =~ s/\x0c/\\f/g;
+    $str =~ s/\n/\\n/g;
+    $str =~ s/\r/\\r/g;
+    $str =~ s/\t/\\t/g;
+    return $str;
 }

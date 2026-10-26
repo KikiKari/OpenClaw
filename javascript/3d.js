@@ -1,24 +1,105 @@
 #!/usr/bin/env node
 // 3d.html — portiert nach javascript
-// Quelle: html, Projects@Weather-Check:public/3d.html
-// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+// Quelle: html, Projects@abstractions:public/3d.html
+// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 const path = require('path');
 
+// Specification data
+const SPEC = {
+  "schichten": [
+    {
+      "name": "Eingaben",
+      "farbe": "#5f6773",
+      "blocks": [
+        {"id": "openclaw-scripts", "name": "OpenClaw-Scripts", "untertitel": "Quellen"},
+        {"id": "env", "name": ".env", "untertitel": "Umgebung"},
+        {"id": "repo-init", "name": "Repo-Init", "untertitel": "Erstinstallation"}
+      ]
+    },
+    {
+      "name": "Portierung",
+      "farbe": "#2481cc",
+      "blocks": [
+        {"id": "create-abstraction-py", "name": "create_abstraction.py", "untertitel": "Portierung"},
+        {"id": "10-zielsprachen", "name": "10 Zielsprachen", "untertitel": "je Lauf"},
+        {"id": "json-processor-js", "name": "json_processor.js", "untertitel": "Node-Teil"}
+      ]
+    },
+    {
+      "name": "Verwaltung",
+      "farbe": "#6d5bd0",
+      "blocks": [
+        {"id": "db-manager-py", "name": "db_manager.py", "untertitel": "Zustand"},
+        {"id": "logger-py", "name": "logger.py", "untertitel": "Protokoll"},
+        {"id": "exceptions-py", "name": "exceptions.py", "untertitel": "Fehlerklassen"}
+      ]
+    },
+    {
+      "name": "Pruefung",
+      "farbe": "#b45309",
+      "blocks": [
+        {"id": "check-live-js", "name": "check-live.js", "untertitel": "Live-Pruefung"},
+        {"id": "code-review-full", "name": "CODE_REVIEW_FULL", "untertitel": "Durchsicht"},
+        {"id": "python-hardener", "name": "python-hardener", "untertitel": "Haertung"}
+      ]
+    },
+    {
+      "name": "Ausgabe",
+      "farbe": "#0f766e",
+      "blocks": [
+        {"id": "status-report", "name": "Status-Report", "untertitel": "was ist wo"},
+        {"id": "doku-db", "name": "Doku-DB", "untertitel": "Datenbanken"},
+        {"id": "cron-alle-6-h", "name": "Cron alle 6 h", "untertitel": "Takt"}
+      ]
+    }
+  ],
+  "kanten": [
+    {"von": "openclaw-scripts", "nach": "create-abstraction-py", "art": "fluss"},
+    {"von": "env", "nach": "10-zielsprachen", "art": "fluss"},
+    {"von": "repo-init", "nach": "json-processor-js", "art": "fluss"},
+    {"von": "create-abstraction-py", "nach": "db-manager-py", "art": "fluss"},
+    {"von": "10-zielsprachen", "nach": "logger-py", "art": "fluss"},
+    {"von": "json-processor-js", "nach": "exceptions-py", "art": "fluss"},
+    {"von": "db-manager-py", "nach": "check-live-js", "art": "fluss"},
+    {"von": "logger-py", "nach": "code-review-full", "art": "fluss"},
+    {"von": "exceptions-py", "nach": "python-hardener", "art": "fluss"},
+    {"von": "check-live-js", "nach": "status-report", "art": "fluss"},
+    {"von": "code-review-full", "nach": "doku-db", "art": "fluss"},
+    {"von": "python-hardener", "nach": "cron-alle-6-h", "art": "fluss"}
+  ],
+  "kantenarten": [
+    {"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}
+  ]
+};
+
 function generateHTML() {
-  const html = `<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Weather-Check — Interaktive Architektur</title>
-<meta name="description" content="Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#2481cc">
-<style>
+  // Create the HTML document structure
+  const docType = '<!DOCTYPE html>';
+  
+  // Create root element
+  const html = {
+    tag: 'html',
+    attrs: { lang: 'de' },
+    children: []
+  };
+  
+  // Build head section
+  const head = {
+    tag: 'head',
+    children: [
+      { tag: 'meta', attrs: { charset: 'utf-8' } },
+      { tag: 'meta', attrs: { name: 'viewport', content: 'width=device-width, initial-scale=1' } },
+      { tag: 'title', children: ['Abstractions Manager — Interaktive Architektur'] },
+      { tag: 'meta', attrs: { name: 'description', content: 'Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.' } },
+      { tag: 'meta', attrs: { name: 'theme-color', content: '#0f766e' } },
+      {
+        tag: 'style',
+        children: [`
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#2481cc; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -60,48 +141,92 @@ function generateHTML() {
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <p class="technik">three.js · r128</p>
-  <h1>Weather-Check</h1>
-  <p class="lede">Sechs Quellen, eine Einschätzung: der Weg vom Radarbild zum Handlungssatz — drehen, zoomen, Knoten auswählen.</p>
-
-  <div class="raster">
-    <div class="buehne" id="buehne">
-      <div class="knoepfe">
-        <button id="btn-plus" title="Näher">+</button>
-        <button id="btn-minus" title="Weiter weg">−</button>
-        <button id="btn-reset">Zurücksetzen</button>
-        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
-      </div>
-    </div>
-
-    <aside class="karte">
-      <h2>Ausgewählter Knoten</h2>
-      <h3 id="k-name">—</h3>
-      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
-      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
-      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
-      <div class="blaettern">
-        <button id="btn-prev">←<br>Vorheriger</button>
-        <button id="btn-next">Nächster<br>→</button>
-      </div>
-    </aside>
-  </div>
-
-  <div class="legende" id="legende"></div>
-  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
-
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
+`]
+      }
+    ]
+  };
+  
+  // Build body section
+  const body = {
+    tag: 'body',
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'wrap' },
+        children: [
+          { tag: 'p', attrs: { class: 'technik' }, children: ['three.js · r128'] },
+          { tag: 'h1', children: ['Abstractions Manager'] },
+          { tag: 'p', class: 'lede', children: ['Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.'] },
+          {
+            tag: 'div',
+            attrs: { class: 'raster' },
+            children: [
+              {
+                tag: 'div',
+                attrs: { class: 'buehne', id: 'buehne' },
+                children: [
+                  {
+                    tag: 'div',
+                    attrs: { class: 'knoepfe' },
+                    children: [
+                      { tag: 'button', attrs: { id: 'btn-plus', title: 'Näher' }, children: ['+'] },
+                      { tag: 'button', attrs: { id: 'btn-minus', title: 'Weiter weg' }, children: ['−'] },
+                      { tag: 'button', attrs: { id: 'btn-reset' }, children: ['Zurücksetzen'] },
+                      { tag: 'button', attrs: { id: 'btn-iso', 'aria-pressed': 'true', title: 'Isometrisch oder perspektivisch' }, children: ['Iso'] }
+                    ]
+                  }
+                ]
+              },
+              {
+                tag: 'aside',
+                attrs: { class: 'karte' },
+                children: [
+                  { tag: 'h2', children: ['Ausgewählter Knoten'] },
+                  { tag: 'h3', attrs: { id: 'k-name' }, children: ['—'] },
+                  { tag: 'p', attrs: { class: 'sub', id: 'k-sub' }, children: ['Knoten anklicken oder durchblättern'] },
+                  {
+                    tag: 'dl',
+                    attrs: { class: 'feld' },
+                    children: [
+                      { tag: 'dt', children: ['Schicht'] },
+                      { tag: 'dd', attrs: { id: 'k-schicht' }, children: ['—'] }
+                    ]
+                  },
+                  {
+                    tag: 'dl',
+                    attrs: { class: 'feld' },
+                    children: [
+                      { tag: 'dt', children: ['ID'] },
+                      { tag: 'dd', attrs: { id: 'k-id' }, children: ['—'] }
+                    ]
+                  },
+                  {
+                    tag: 'div',
+                    attrs: { class: 'blaettern' },
+                    children: [
+                      { tag: 'button', attrs: { id: 'btn-prev' }, children: ['←<br>Vorheriger'] },
+                      { tag: 'button', attrs: { id: 'btn-next' }, children: ['Nächster<br>→'] }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          { tag: 'div', attrs: { class: 'legende', id: 'legende' }, children: [] },
+          { tag: 'p', attrs: { class: 'fuss' }, children: ['Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.'] }
+        ]
+      }
+    ]
+  };
+  
+  // Add script tags
+  head.children.push({ tag: 'script', attrs: { src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' } });
+  
+  // Add main script
+  const scriptContent = `
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "dwd-radar", "name": "DWD-Radar", "untertitel": "Zugbahn"}, {"id": "messstationen", "name": "Messstationen", "untertitel": "Ist-Wert"}, {"id": "open-meteo", "name": "Open-Meteo", "untertitel": "Minutenwerte"}, {"id": "satellit", "name": "Satellit", "untertitel": "Bewoelkung"}, {"id": "webcams", "name": "Webcams", "untertitel": "Sichtpruefung"}, {"id": "handyfoto", "name": "Handyfoto", "untertitel": "Wolkenbasis"}]}, {"name": "Zusammenfuehrung", "farbe": "#2481cc", "blocks": [{"id": "zugbahn", "name": "Zugbahn", "untertitel": "extrapoliert"}, {"id": "gewichtung", "name": "Gewichtung", "untertitel": "je Quelle"}, {"id": "widerspruchspruefung", "name": "Widerspruchspruefung", "untertitel": "benennen statt mitteln"}]}, {"name": "Einschaetzung", "farbe": "#6d5bd0", "blocks": [{"id": "30-min", "name": "30 min", "untertitel": "hohe Sicherheit"}, {"id": "60-min", "name": "60 min", "untertitel": "mittel"}, {"id": "120-min", "name": "120 min", "untertitel": "grob"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "pwa", "name": "PWA", "untertitel": "Service Worker"}, {"id": "computer-prompt", "name": "Computer-Prompt", "untertitel": "Perplexity"}, {"id": "handlungssatz", "name": "Handlungssatz", "untertitel": "eine Entscheidung"}]}], "kanten": [{"von": "dwd-radar", "nach": "zugbahn", "art": "fluss"}, {"von": "messstationen", "nach": "gewichtung", "art": "fluss"}, {"von": "open-meteo", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "satellit", "nach": "zugbahn", "art": "fluss"}, {"von": "webcams", "nach": "gewichtung", "art": "fluss"}, {"von": "handyfoto", "nach": "widerspruchspruefung", "art": "fluss"}, {"von": "zugbahn", "nach": "30-min", "art": "fluss"}, {"von": "gewichtung", "nach": "60-min", "art": "fluss"}, {"von": "widerspruchspruefung", "nach": "120-min", "art": "fluss"}, {"von": "30-min", "nach": "pwa", "art": "fluss"}, {"von": "60-min", "nach": "computer-prompt", "art": "fluss"}, {"von": "120-min", "nach": "handlungssatz", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#2481cc", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = ${JSON.stringify(SPEC)};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -325,32 +450,52 @@ function generateHTML() {
     renderer.render(szene, kamera);
   })();
 })();
-</script>
-</body>
-</html>`;
-
-  return html;
+`;
+  
+  const script = { tag: 'script', children: [scriptContent.trim()] };
+  body.children.push(script);
+  
+  // Assemble the complete document
+  html.children.push(head);
+  html.children.push(body);
+  
+  // Render to HTML string
+  function renderElement(element) {
+    if (typeof element === 'string') {
+      return element;
+    }
+    
+    const tag = element.tag;
+    const attrs = element.attrs || {};
+    const children = element.children || [];
+    
+    let attrString = '';
+    for (const [key, value] of Object.entries(attrs)) {
+      attrString += ` ${key}="${value}"`;
+    }
+    
+    if (children.length === 0) {
+      return `<${tag}${attrString}>`;
+    }
+    
+    const childrenHtml = children.map(renderElement).join('');
+    return `<${tag}${attrString}>${childrenHtml}</${tag}>`;
+  }
+  
+  return docType + '\n' + renderElement(html);
 }
 
-// Hauptfunktion
-function main() {
-  const args = process.argv.slice(2);
+// Main execution
+if (require.main === module) {
+  const outputFile = process.argv[2];
   
-  if (args.length !== 1) {
-    console.error('Verwendung: node script.js <ausgabedatei>');
+  if (!outputFile) {
+    console.error('Usage: node script.js <output-file>');
     process.exit(1);
   }
   
-  const outputFile = args[0];
+  const htmlContent = generateHTML();
   
-  try {
-    const htmlContent = generateHTML();
-    fs.writeFileSync(outputFile, htmlContent, 'utf8');
-    console.log(`HTML-Datei erfolgreich erstellt: ${outputFile}`);
-  } catch (error) {
-    console.error('Fehler beim Erstellen der HTML-Datei:', error.message);
-    process.exit(1);
-  }
+  fs.writeFileSync(outputFile, htmlContent, 'utf8');
+  console.log(`HTML file generated: ${outputFile}`);
 }
-
-main();
