@@ -5,6 +5,7 @@
 **Kreatur:** Artificial Intelligence  
 **Emoji:** ⭐  
 - Name: Assistant
+- Emoji: 🦞
 **Zeitzone:** Europe/Berlin
 
 ## Agent Skills
