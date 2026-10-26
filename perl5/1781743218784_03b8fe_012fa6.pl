@@ -1,24 +1,23 @@
-#!/usr/bin/env perl
-# 1781743218784_03b8fe_012fa6.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_012fa6.ps1
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_03b8fe_012fa6.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_012fa6.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use open qw(:std :utf8);
-use File::Spec;
-use Encode;
+use Encode qw(encode decode);
+use File::Slurper qw(write_text);
 
-# Parameter verarbeiten
+# Prüfe Anzahl Argumente
 if (@ARGV != 1) {
-    print STDERR "Usage: perl script.pl <OutputPath>\n";
+    print STDERR "Aufruf: perl skript.pl <Ausgabepfad>\n";
     exit 1;
 }
 
-my $outputPath = $ARGV[0];
+my $output_path = $ARGV[0];
 
-my $htmlContent = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -117,7 +116,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -224,15 +223,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
-eval {
-    open(my $fh, '>:encoding(UTF-8)', $outputPath) or die "Could not open file '$outputPath' for writing: $!";
-    print $fh $htmlContent;
-    close $fh;
-    1;
-} or do {
-    my $error = $@ || 'Unknown error';
-    print STDERR "Could not write to file '$outputPath': $error\n";
-    exit 1;
-};
+write_text($output_path, $html_content, {encoding => 'UTF-8'});

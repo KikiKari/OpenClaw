@@ -1,10 +1,17 @@
 #!/usr/bin/perl
-# 1781743218784_015abd.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_87c85e.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_87c85e.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(encode decode);
+use File::Slurp;
+
+# 1781743218784_015abd.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784.py — portiert nach tcl
 # Quelle: python, Projects@abstractions:python/1781743218784.py
@@ -15,8 +22,7 @@ use warnings;
 # Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 sub generate_html {
-    return <<'HTML_END';
-<!DOCTYPE html>
+    return q(<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -220,8 +226,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-HTML_END
+</html>);
 }
 
 sub main {
@@ -236,9 +241,7 @@ sub main {
     
     eval {
         my $html_content = generate_html();
-        open my $fh, '>:encoding(UTF-8)', $output_file or die "Cannot open $output_file: $!";
-        print $fh $html_content;
-        close $fh;
+        write_file($output_file, $html_content);
         print "HTML file generated: $output_file\n";
     };
     if ($@) {

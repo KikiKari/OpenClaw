@@ -1,9 +1,13 @@
-#!/usr/bin/env bash
-# 1781743218784_015abd.tcl — portiert nach shell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 1781743218784_015abd_87c85e.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_87c85e.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
+
+# 1781743218784_015abd.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784.py — portiert nach tcl
 # Quelle: python, Projects@abstractions:python/1781743218784.py
@@ -224,21 +228,28 @@ EOF
 }
 
 main() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: bash script.sh <output-file>" >&2
+    local args=("$@")
+    
+    if [[ ${#args[@]} -ne 1 ]]; then
+        echo "Usage: $0 <output-file>" >&2
         exit 1
     fi
     
-    local output_file="$1"
+    local output_file="${args[0]}"
     
-    if ! generate_html > "$output_file"; then
+    # Generate the HTML content and write to file
+    generate_html > "$output_file"
+    
+    # Check if the operation was successful
+    if [[ $? -eq 0 ]]; then
+        echo "HTML file generated: $output_file"
+    else
         echo "Error generating HTML file" >&2
         exit 1
     fi
-    
-    echo "HTML file generated: $output_file"
 }
 
+# Only run main if script is executed directly (not sourced)
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

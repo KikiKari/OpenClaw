@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 // 1781743218784_03b8fe.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
+// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_03b8fe.js — portiert nach perl5
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe.js
 // Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
-// Prüfen der Argumente
+// Parameter verarbeiten
 if (process.argv.length !== 3) {
-    console.error("Usage: node script.js <OutputPath>");
-    process.exit(1);
+  process.stderr.write("Usage: node script.js <OutputPath>\n");
+  process.exit(1);
 }
 
 const outputPath = process.argv[2];
+
 const fs = require('fs');
 
 const htmlContent = `<!DOCTYPE html>
@@ -136,7 +141,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -218,9 +223,4 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>`;
 
-try {
-    fs.writeFileSync(outputPath, htmlContent, 'utf8');
-} catch (err) {
-    console.error(`Could not open file '${outputPath}' for writing: ${err.message}`);
-    process.exit(1);
-}
+fs.writeFileSync(outputPath, htmlContent, 'utf8');

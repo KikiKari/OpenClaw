@@ -1,13 +1,12 @@
 #!/bin/bash
-# 1781743218784_015abd.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd.pl
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_f1756b.py — portiert nach shell
+# Quelle: python, Projects@abstractions:python/1781743218784_015abd_f1756b.py
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Funktion zur Generierung des HTML-Inhalts
 generate_html() {
-    cat <<'HTML_END'
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -213,30 +212,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF
 }
 
-# Hauptfunktion
 main() {
-    local args_count=$#
+    local args=("$@")
     
-    if [[ $args_count -ne 1 ]]; then
+    if [[ ${#args[@]} -ne 1 ]]; then
         echo "Usage: bash script.sh <output-file>" >&2
         exit 1
     fi
     
-    local output_file="$1"
+    local output_file="${args[0]}"
     
-    # Fehlerbehandlung mit try-catch-ähnlicher Struktur
-    if ! generate_html > "$output_file"; then
+    # Write HTML content to file
+    generate_html > "$output_file"
+    
+    # Check if write was successful
+    if [[ $? -eq 0 ]]; then
+        echo "HTML file generated: $output_file"
+    else
         echo "Error generating HTML file" >&2
         exit 1
     fi
-    
-    echo "HTML file generated: $output_file"
 }
 
-# Skript nur ausführen wenn nicht sourced
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+main "$@"

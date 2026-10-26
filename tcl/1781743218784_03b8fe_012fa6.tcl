@@ -1,11 +1,11 @@
 #!/usr/bin/env tclsh
-# 1781743218784_03b8fe_012fa6.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_03b8fe_012fa6.ps1
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_012fa6.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_03b8fe_012fa6.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_03b8fe.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_03b8fe.pl
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_03b8fe_012fa6.tcl — portiert nach javascript
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_03b8fe_012fa6.tcl
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if {$argc != 1} {
@@ -113,7 +113,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -222,11 +222,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-# Schreibe den HTML-Inhalt in die Ausgabedatei
-if {[catch {set fd [open $outputPath w]}]} {
-    puts stderr "Could not open file '$outputPath' for writing: $fd"
-    exit 1
-}
-
+# Schreibe HTML-Inhalt in Datei
+set fd [open $outputPath w]
 puts -nonewline $fd $htmlContent
 close $fd

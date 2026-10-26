@@ -1,23 +1,19 @@
 #!/usr/bin/env node
-// 1781743218784_015abd.sh — portiert nach javascript
-// Quelle: shell, Projects@abstractions:shell/1781743218784_015abd.sh
-// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784.js — portiert nach python — portiert nach bash — portiert nach javascript
-// Quelle: bash, Projects@abstractions:bash/1781743218784_015abd.sh
-// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_015abd_1e58ef.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_1e58ef.pl
+// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 // Prüfe Anzahl Argumente
 if (process.argv.length !== 3) {
-    console.error("Usage: node script.js <output-file>");
+    console.error("Usage: " + process.argv[1] + " <output-file>");
     process.exit(1);
 }
 
 const fs = require('fs');
-const outputFile = process.argv[2];
+const output_file = process.argv[2];
 
 // Funktion zur Generierung des HTML-Inhalts
-function generateHtml() {
+function generate_html() {
     return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -226,6 +222,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 // Hauptlogik
-const htmlContent = generateHtml();
-fs.writeFileSync(outputFile, htmlContent);
-console.log(`HTML file generated: ${outputFile}`);
+try {
+    fs.writeFileSync(output_file, generate_html());
+    console.log("HTML file generated: " + output_file);
+} catch (err) {
+    console.error("Could not write to file '" + output_file + "': " + err.message);
+    process.exit(1);
+}

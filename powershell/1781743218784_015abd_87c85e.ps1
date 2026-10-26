@@ -1,5 +1,9 @@
 #!/usr/bin/env pwsh
-# 1781743218784_015abd.tcl — portiert nach powershell
+# 1781743218784_015abd_87c85e.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_87c85e.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
 # Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
@@ -221,28 +225,25 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 "@
 }
 
-function Main {
-    param(
-        [string[]]$Args
-    )
-    
-    if ($Args.Count -ne 1) {
+function Main($args) {
+    if ($args.Count -ne 1) {
         Write-Error "Usage: pwsh script.ps1 <output-file>"
         exit 1
     }
     
-    $outputFile = $Args[0]
+    $output_file = $args[0]
     
     try {
-        $htmlContent = Generate-Html
-        $htmlContent | Out-File -FilePath $outputFile -Encoding UTF8
-        Write-Host "HTML file generated: $outputFile"
+        $html_content = Generate-Html
+        [System.IO.File]::WriteAllText($output_file, $html_content, [System.Text.Encoding]::UTF8)
+        Write-Host "HTML file generated: $output_file"
     } catch {
-        Write-Error "Error generating HTML file: $_"
+        Write-Error "Error generating HTML file: $($_.Exception.Message)"
         exit 1
     }
 }
 
-if ($MyInvocation.InvocationName -eq '&') {
-    Main -Args $args
+# Prüfe ob das Skript direkt ausgeführt wird
+if ($MyInvocation.InvocationName -eq '&' -and $MyInvocation.MyCommand.Name -eq $PSCommandPath) {
+    Main $args
 }

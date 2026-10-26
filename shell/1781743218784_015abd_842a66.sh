@@ -1,12 +1,21 @@
 #!/usr/bin/env bash
-# 1781743218784_015abd.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_015abd.ps1
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_842a66.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_842a66.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
+# Prüfe Anzahl der Argumente
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <output-file>" >&2
+    exit 1
+fi
+
+output_file="$1"
+
+# HTML-Inhalt generieren
 generate_html() {
-    cat << 'EOF'
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -215,27 +224,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-main() {
-    local args=("$@")
-    
-    if [[ ${#args[@]} -ne 1 ]]; then
-        echo "Usage: bash script.sh <output-file>" >&2
-        exit 1
-    fi
-    
-    local output_file="${args[0]}"
-    
-    # Create temporary file to hold the HTML content
-    local temp_html
-    temp_html=$(mktemp)
-    
-    # Generate HTML content to temporary file
-    generate_html > "$temp_html"
-    
-    # Move to final destination
-    mv "$temp_html" "$output_file"
-    
-    echo "HTML file generated: $output_file"
-}
+# Schreibe HTML-Inhalt in Ausgabedatei
+generate_html > "$output_file"
 
-main "$@"
+echo "HTML file generated: $output_file"

@@ -1,11 +1,22 @@
 #!/usr/bin/env tclsh
-# 1781743218784_015abd.ps1 — portiert nach tcl
+# 1781743218784_015abd_842a66.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_842a66.js
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd.ps1 — portiert nach javascript
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_015abd.ps1
 # Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
-proc generate_html {} {
-    return {
-<!DOCTYPE html>
+# 1781743218784.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.py — portiert nach powershell
+# Quelle: python, Projects@abstractions:python/1781743218784.py
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+
+proc generateHtml {} {
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -209,20 +220,19 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 }
 
-proc main {argv} {
-    if {[llength $argv] != 1} {
+proc main {args} {
+    if {[llength $args] != 1} {
         puts stderr "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
-    
-    set outputFile [lindex $argv 0]
+
+    set outputFile [lindex $args 0]
     
     if {[catch {
-        set htmlContent [generate_html]
+        set htmlContent [generateHtml]
         set fh [open $outputFile w]
         puts -nonewline $fh $htmlContent
         close $fh
@@ -233,4 +243,6 @@ proc main {argv} {
     }
 }
 
-main $argv
+# Get command line arguments
+set args [lassign $argv script_name]
+main {*}$argv
