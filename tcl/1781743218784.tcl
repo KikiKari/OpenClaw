@@ -1,14 +1,18 @@
 #!/usr/bin/env tclsh
-# 1781743218784.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-10-22 durch ABSTRACTIONS_MANAGER.py
-
 # 1781743218784.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-12 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.js — portiert nach JavaScript für Node 20
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 proc generate_html {} {
-    set html {<!DOCTYPE html>
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -213,8 +217,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>}
-    
-    return $html
 }
 
 proc main {} {
