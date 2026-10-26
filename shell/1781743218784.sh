@@ -1,29 +1,19 @@
 #!/bin/bash
-# 1781743218784.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# 1781743218784.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
 # Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach JavaScript für Node 20
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
-
-# Prüfe Anzahl der Argumente
+# Prüfe Aufrufparameter
 if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <output-file>" >&2
+    echo "Aufruf: $0 <Ausgabedatei>" >&2
     exit 1
 fi
+output_path="$1"
 
-output_file="$1"
-
-# Funktion zur Generierung des HTML-Inhalts
-generate_html() {
-    cat <<'EOF'
+# HTML-Inhalt
+read -r -d '' html_content <<'HTML_END' || true
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -173,7 +163,7 @@ async function deriveKey(pw,salt){
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pw,salt);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2)));
   const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
@@ -229,19 +219,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
-}
+HTML_END
 
-# Hauptprogramm
-main() {
-    local html_content
-    html_content=$(generate_html)
-    
-    # Schreibe den HTML-Inhalt in die Ausgabedatei
-    echo "$html_content" > "$output_file"
-    
-    echo "HTML file generated: $output_file"
-}
-
-# Führe das Hauptprogramm aus
-main "$@"
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if ! printf "%s" "$html_content" > "$output_path"; then
+    echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
+    exit 1
+fi
