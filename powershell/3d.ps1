@@ -1,9 +1,9 @@
 #!/usr/bin/env pwsh
 # 3d.html — portiert nach powershell
-# Quelle: html, Projects@abstractions:public/3d.html
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@clawhub:public/3d.html
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
-param(
+param (
     [Parameter(Mandatory=$true)]
     [string]$OutputPath
 )
@@ -14,13 +14,13 @@ $htmlContent = @"
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Abstractions Manager — Interaktive Architektur</title>
-<meta name="description" content="Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#0f766e">
+<title>ClawHub-Git-Sync — Interaktive Architektur</title>
+<meta name="description" content="Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#f5654a">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#f5654a; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -68,8 +68,8 @@ $htmlContent = @"
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Abstractions Manager</h1>
-  <p class="lede">Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.</p>
+  <h1>ClawHub-Git-Sync</h1>
+  <p class="lede">Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -103,7 +103,7 @@ $htmlContent = @"
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "openclaw-scripts", "name": "OpenClaw-Scripts", "untertitel": "Quellen"}, {"id": "env", "name": ".env", "untertitel": "Umgebung"}, {"id": "repo-init", "name": "Repo-Init", "untertitel": "Erstinstallation"}]}, {"name": "Portierung", "farbe": "#2481cc", "blocks": [{"id": "create-abstraction-py", "name": "create_abstraction.py", "untertitel": "Portierung"}, {"id": "10-zielsprachen", "name": "10 Zielsprachen", "untertitel": "je Lauf"}, {"id": "json-processor-js", "name": "json_processor.js", "untertitel": "Node-Teil"}]}, {"name": "Verwaltung", "farbe": "#6d5bd0", "blocks": [{"id": "db-manager-py", "name": "db_manager.py", "untertitel": "Zustand"}, {"id": "logger-py", "name": "logger.py", "untertitel": "Protokoll"}, {"id": "exceptions-py", "name": "exceptions.py", "untertitel": "Fehlerklassen"}]}, {"name": "Pruefung", "farbe": "#b45309", "blocks": [{"id": "check-live-js", "name": "check-live.js", "untertitel": "Live-Pruefung"}, {"id": "code-review-full", "name": "CODE_REVIEW_FULL", "untertitel": "Durchsicht"}, {"id": "python-hardener", "name": "python-hardener", "untertitel": "Haertung"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "status-report", "name": "Status-Report", "untertitel": "was ist wo"}, {"id": "doku-db", "name": "Doku-DB", "untertitel": "Datenbanken"}, {"id": "cron-alle-6-h", "name": "Cron alle 6 h", "untertitel": "Takt"}]}], "kanten": [{"von": "openclaw-scripts", "nach": "create-abstraction-py", "art": "fluss"}, {"von": "env", "nach": "10-zielsprachen", "art": "fluss"}, {"von": "repo-init", "nach": "json-processor-js", "art": "fluss"}, {"von": "create-abstraction-py", "nach": "db-manager-py", "art": "fluss"}, {"von": "10-zielsprachen", "nach": "logger-py", "art": "fluss"}, {"von": "json-processor-js", "nach": "exceptions-py", "art": "fluss"}, {"von": "db-manager-py", "nach": "check-live-js", "art": "fluss"}, {"von": "logger-py", "nach": "code-review-full", "art": "fluss"}, {"von": "exceptions-py", "nach": "python-hardener", "art": "fluss"}, {"von": "check-live-js", "nach": "status-report", "art": "fluss"}, {"von": "code-review-full", "nach": "doku-db", "art": "fluss"}, {"von": "python-hardener", "nach": "cron-alle-6-h", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Seiten", "farbe": "#5f6773", "blocks": [{"id": "workspace-skills", "name": "workspace/skills", "untertitel": "ClawHub-Seite"}, {"id": "workspace-git-skills", "name": "workspace/git/skills", "untertitel": "Git-Seite"}]}, {"name": "Vergleich", "farbe": "#2481cc", "blocks": [{"id": "zeitstempel", "name": "Zeitstempel", "untertitel": "welche Seite neuer"}, {"id": "hash", "name": "Hash", "untertitel": "ob geaendert"}, {"id": "konfliktfall", "name": "Konfliktfall", "untertitel": "melden statt raten"}]}, {"name": "Absicherung", "farbe": "#6d5bd0", "blocks": [{"id": "backup", "name": "Backup", "untertitel": "vor jeder Aenderung"}, {"id": "dry-run", "name": "Dry-Run", "untertitel": "Plan zeigen"}, {"id": "freigabe", "name": "Freigabe", "untertitel": "manuell"}]}, {"name": "Uebertragung", "farbe": "#b45309", "blocks": [{"id": "sync-agent-py", "name": "sync_agent.py", "untertitel": "der Abgleich"}, {"id": "git-commit", "name": "git commit", "untertitel": "Historie"}, {"id": "clawhub-publish", "name": "clawhub publish", "untertitel": "Veroeffentlichung"}]}, {"name": "Takt", "farbe": "#f5654a", "blocks": [{"id": "cron-alle-12-h", "name": "Cron alle 12 h", "untertitel": "unbeaufsichtigt"}, {"id": "gateway-skripte", "name": "Gateway-Skripte", "untertitel": "mit Sperre"}]}], "kanten": [{"von": "workspace-skills", "nach": "zeitstempel", "art": "fluss"}, {"von": "workspace-git-skills", "nach": "hash", "art": "fluss"}, {"von": "zeitstempel", "nach": "backup", "art": "fluss"}, {"von": "hash", "nach": "dry-run", "art": "fluss"}, {"von": "konfliktfall", "nach": "freigabe", "art": "fluss"}, {"von": "backup", "nach": "sync-agent-py", "art": "fluss"}, {"von": "dry-run", "nach": "git-commit", "art": "fluss"}, {"von": "freigabe", "nach": "clawhub-publish", "art": "fluss"}, {"von": "sync-agent-py", "nach": "cron-alle-12-h", "art": "fluss"}, {"von": "git-commit", "nach": "gateway-skripte", "art": "fluss"}, {"von": "clawhub-publish", "nach": "cron-alle-12-h", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#f5654a", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -332,6 +332,5 @@ $htmlContent = @"
 </html>
 "@
 
-$htmlContent | Out-File -FilePath $OutputPath -Encoding UTF8
-
-Write-Host "HTML file generated at: $OutputPath"
+Set-Content -Path $OutputPath -Value $htmlContent -Encoding UTF8
+Write-Host "HTML file created at: $OutputPath"

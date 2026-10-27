@@ -1,105 +1,24 @@
 #!/usr/bin/env node
 // 3d.html — portiert nach javascript
-// Quelle: html, Projects@abstractions:public/3d.html
-// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+// Quelle: html, Projects@clawhub:public/3d.html
+// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 const path = require('path');
 
-// Specification data
-const SPEC = {
-  "schichten": [
-    {
-      "name": "Eingaben",
-      "farbe": "#5f6773",
-      "blocks": [
-        {"id": "openclaw-scripts", "name": "OpenClaw-Scripts", "untertitel": "Quellen"},
-        {"id": "env", "name": ".env", "untertitel": "Umgebung"},
-        {"id": "repo-init", "name": "Repo-Init", "untertitel": "Erstinstallation"}
-      ]
-    },
-    {
-      "name": "Portierung",
-      "farbe": "#2481cc",
-      "blocks": [
-        {"id": "create-abstraction-py", "name": "create_abstraction.py", "untertitel": "Portierung"},
-        {"id": "10-zielsprachen", "name": "10 Zielsprachen", "untertitel": "je Lauf"},
-        {"id": "json-processor-js", "name": "json_processor.js", "untertitel": "Node-Teil"}
-      ]
-    },
-    {
-      "name": "Verwaltung",
-      "farbe": "#6d5bd0",
-      "blocks": [
-        {"id": "db-manager-py", "name": "db_manager.py", "untertitel": "Zustand"},
-        {"id": "logger-py", "name": "logger.py", "untertitel": "Protokoll"},
-        {"id": "exceptions-py", "name": "exceptions.py", "untertitel": "Fehlerklassen"}
-      ]
-    },
-    {
-      "name": "Pruefung",
-      "farbe": "#b45309",
-      "blocks": [
-        {"id": "check-live-js", "name": "check-live.js", "untertitel": "Live-Pruefung"},
-        {"id": "code-review-full", "name": "CODE_REVIEW_FULL", "untertitel": "Durchsicht"},
-        {"id": "python-hardener", "name": "python-hardener", "untertitel": "Haertung"}
-      ]
-    },
-    {
-      "name": "Ausgabe",
-      "farbe": "#0f766e",
-      "blocks": [
-        {"id": "status-report", "name": "Status-Report", "untertitel": "was ist wo"},
-        {"id": "doku-db", "name": "Doku-DB", "untertitel": "Datenbanken"},
-        {"id": "cron-alle-6-h", "name": "Cron alle 6 h", "untertitel": "Takt"}
-      ]
-    }
-  ],
-  "kanten": [
-    {"von": "openclaw-scripts", "nach": "create-abstraction-py", "art": "fluss"},
-    {"von": "env", "nach": "10-zielsprachen", "art": "fluss"},
-    {"von": "repo-init", "nach": "json-processor-js", "art": "fluss"},
-    {"von": "create-abstraction-py", "nach": "db-manager-py", "art": "fluss"},
-    {"von": "10-zielsprachen", "nach": "logger-py", "art": "fluss"},
-    {"von": "json-processor-js", "nach": "exceptions-py", "art": "fluss"},
-    {"von": "db-manager-py", "nach": "check-live-js", "art": "fluss"},
-    {"von": "logger-py", "nach": "code-review-full", "art": "fluss"},
-    {"von": "exceptions-py", "nach": "python-hardener", "art": "fluss"},
-    {"von": "check-live-js", "nach": "status-report", "art": "fluss"},
-    {"von": "code-review-full", "nach": "doku-db", "art": "fluss"},
-    {"von": "python-hardener", "nach": "cron-alle-6-h", "art": "fluss"}
-  ],
-  "kantenarten": [
-    {"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}
-  ]
-};
-
 function generateHTML() {
-  // Create the HTML document structure
-  const docType = '<!DOCTYPE html>';
-  
-  // Create root element
-  const html = {
-    tag: 'html',
-    attrs: { lang: 'de' },
-    children: []
-  };
-  
-  // Build head section
-  const head = {
-    tag: 'head',
-    children: [
-      { tag: 'meta', attrs: { charset: 'utf-8' } },
-      { tag: 'meta', attrs: { name: 'viewport', content: 'width=device-width, initial-scale=1' } },
-      { tag: 'title', children: ['Abstractions Manager — Interaktive Architektur'] },
-      { tag: 'meta', attrs: { name: 'description', content: 'Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.' } },
-      { tag: 'meta', attrs: { name: 'theme-color', content: '#0f766e' } },
-      {
-        tag: 'style',
-        children: [`
+  const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClawHub-Git-Sync — Interaktive Architektur</title>
+<meta name="description" content="Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#f5654a">
+<style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#f5654a; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -141,92 +60,48 @@ function generateHTML() {
   .fuss{margin:14px 0 0;font-size:13px;color:var(--muted);max-width:80ch}
   .fehler{padding:40px;text-align:center;color:var(--muted)}
   a{color:var(--ac)}
-`]
-      }
-    ]
-  };
-  
-  // Build body section
-  const body = {
-    tag: 'body',
-    children: [
-      {
-        tag: 'div',
-        attrs: { class: 'wrap' },
-        children: [
-          { tag: 'p', attrs: { class: 'technik' }, children: ['three.js · r128'] },
-          { tag: 'h1', children: ['Abstractions Manager'] },
-          { tag: 'p', class: 'lede', children: ['Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.'] },
-          {
-            tag: 'div',
-            attrs: { class: 'raster' },
-            children: [
-              {
-                tag: 'div',
-                attrs: { class: 'buehne', id: 'buehne' },
-                children: [
-                  {
-                    tag: 'div',
-                    attrs: { class: 'knoepfe' },
-                    children: [
-                      { tag: 'button', attrs: { id: 'btn-plus', title: 'Näher' }, children: ['+'] },
-                      { tag: 'button', attrs: { id: 'btn-minus', title: 'Weiter weg' }, children: ['−'] },
-                      { tag: 'button', attrs: { id: 'btn-reset' }, children: ['Zurücksetzen'] },
-                      { tag: 'button', attrs: { id: 'btn-iso', 'aria-pressed': 'true', title: 'Isometrisch oder perspektivisch' }, children: ['Iso'] }
-                    ]
-                  }
-                ]
-              },
-              {
-                tag: 'aside',
-                attrs: { class: 'karte' },
-                children: [
-                  { tag: 'h2', children: ['Ausgewählter Knoten'] },
-                  { tag: 'h3', attrs: { id: 'k-name' }, children: ['—'] },
-                  { tag: 'p', attrs: { class: 'sub', id: 'k-sub' }, children: ['Knoten anklicken oder durchblättern'] },
-                  {
-                    tag: 'dl',
-                    attrs: { class: 'feld' },
-                    children: [
-                      { tag: 'dt', children: ['Schicht'] },
-                      { tag: 'dd', attrs: { id: 'k-schicht' }, children: ['—'] }
-                    ]
-                  },
-                  {
-                    tag: 'dl',
-                    attrs: { class: 'feld' },
-                    children: [
-                      { tag: 'dt', children: ['ID'] },
-                      { tag: 'dd', attrs: { id: 'k-id' }, children: ['—'] }
-                    ]
-                  },
-                  {
-                    tag: 'div',
-                    attrs: { class: 'blaettern' },
-                    children: [
-                      { tag: 'button', attrs: { id: 'btn-prev' }, children: ['←<br>Vorheriger'] },
-                      { tag: 'button', attrs: { id: 'btn-next' }, children: ['Nächster<br>→'] }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          { tag: 'div', attrs: { class: 'legende', id: 'legende' }, children: [] },
-          { tag: 'p', attrs: { class: 'fuss' }, children: ['Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.'] }
-        ]
-      }
-    ]
-  };
-  
-  // Add script tags
-  head.children.push({ tag: 'script', attrs: { src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' } });
-  
-  // Add main script
-  const scriptContent = `
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="technik">three.js · r128</p>
+  <h1>ClawHub-Git-Sync</h1>
+  <p class="lede">Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.</p>
+
+  <div class="raster">
+    <div class="buehne" id="buehne">
+      <div class="knoepfe">
+        <button id="btn-plus" title="Näher">+</button>
+        <button id="btn-minus" title="Weiter weg">−</button>
+        <button id="btn-reset">Zurücksetzen</button>
+        <button id="btn-iso" aria-pressed="true" title="Isometrisch oder perspektivisch">Iso</button>
+      </div>
+    </div>
+
+    <aside class="karte">
+      <h2>Ausgewählter Knoten</h2>
+      <h3 id="k-name">—</h3>
+      <p class="sub" id="k-sub">Knoten anklicken oder durchblättern</p>
+      <dl class="feld"><dt>Schicht</dt><dd id="k-schicht">—</dd></dl>
+      <dl class="feld"><dt>ID</dt><dd id="k-id">—</dd></dl>
+      <div class="blaettern">
+        <button id="btn-prev">←<br>Vorheriger</button>
+        <button id="btn-next">Nächster<br>→</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="legende" id="legende"></div>
+  <p class="fuss">Schematische Dokumentationsansicht — Blockgrößen messen weder Datenmenge noch Leistung. Keine Telemetrie, keine Fernabfragen: Die Seite lädt einmalig three.js vom CDN und rechnet danach ausschließlich lokal.</p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
 (function(){
   "use strict";
-  var SPEC = ${JSON.stringify(SPEC)};
+  var SPEC = {"schichten": [{"name": "Seiten", "farbe": "#5f6773", "blocks": [{"id": "workspace-skills", "name": "workspace/skills", "untertitel": "ClawHub-Seite"}, {"id": "workspace-git-skills", "name": "workspace/git/skills", "untertitel": "Git-Seite"}]}, {"name": "Vergleich", "farbe": "#2481cc", "blocks": [{"id": "zeitstempel", "name": "Zeitstempel", "untertitel": "welche Seite neuer"}, {"id": "hash", "name": "Hash", "untertitel": "ob geaendert"}, {"id": "konfliktfall", "name": "Konfliktfall", "untertitel": "melden statt raten"}]}, {"name": "Absicherung", "farbe": "#6d5bd0", "blocks": [{"id": "backup", "name": "Backup", "untertitel": "vor jeder Aenderung"}, {"id": "dry-run", "name": "Dry-Run", "untertitel": "Plan zeigen"}, {"id": "freigabe", "name": "Freigabe", "untertitel": "manuell"}]}, {"name": "Uebertragung", "farbe": "#b45309", "blocks": [{"id": "sync-agent-py", "name": "sync_agent.py", "untertitel": "der Abgleich"}, {"id": "git-commit", "name": "git commit", "untertitel": "Historie"}, {"id": "clawhub-publish", "name": "clawhub publish", "untertitel": "Veroeffentlichung"}]}, {"name": "Takt", "farbe": "#f5654a", "blocks": [{"id": "cron-alle-12-h", "name": "Cron alle 12 h", "untertitel": "unbeaufsichtigt"}, {"id": "gateway-skripte", "name": "Gateway-Skripte", "untertitel": "mit Sperre"}]}], "kanten": [{"von": "workspace-skills", "nach": "zeitstempel", "art": "fluss"}, {"von": "workspace-git-skills", "nach": "hash", "art": "fluss"}, {"von": "zeitstempel", "nach": "backup", "art": "fluss"}, {"von": "hash", "nach": "dry-run", "art": "fluss"}, {"von": "konfliktfall", "nach": "freigabe", "art": "fluss"}, {"von": "backup", "nach": "sync-agent-py", "art": "fluss"}, {"von": "dry-run", "nach": "git-commit", "art": "fluss"}, {"von": "freigabe", "nach": "clawhub-publish", "art": "fluss"}, {"von": "sync-agent-py", "nach": "cron-alle-12-h", "art": "fluss"}, {"von": "git-commit", "nach": "gateway-skripte", "art": "fluss"}, {"von": "clawhub-publish", "nach": "cron-alle-12-h", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#f5654a", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -450,52 +325,33 @@ function generateHTML() {
     renderer.render(szene, kamera);
   })();
 })();
-`;
-  
-  const script = { tag: 'script', children: [scriptContent.trim()] };
-  body.children.push(script);
-  
-  // Assemble the complete document
-  html.children.push(head);
-  html.children.push(body);
-  
-  // Render to HTML string
-  function renderElement(element) {
-    if (typeof element === 'string') {
-      return element;
-    }
-    
-    const tag = element.tag;
-    const attrs = element.attrs || {};
-    const children = element.children || [];
-    
-    let attrString = '';
-    for (const [key, value] of Object.entries(attrs)) {
-      attrString += ` ${key}="${value}"`;
-    }
-    
-    if (children.length === 0) {
-      return `<${tag}${attrString}>`;
-    }
-    
-    const childrenHtml = children.map(renderElement).join('');
-    return `<${tag}${attrString}>${childrenHtml}</${tag}>`;
-  }
-  
-  return docType + '\n' + renderElement(html);
+</script>
+</body>
+</html>`;
+
+  return html;
 }
 
-// Main execution
-if (require.main === module) {
-  const outputFile = process.argv[2];
+function main() {
+  const args = process.argv.slice(2);
   
-  if (!outputFile) {
-    console.error('Usage: node script.js <output-file>');
+  if (args.length !== 1) {
+    console.error('Verwendung: node 3d.js <ausgabedatei>');
     process.exit(1);
   }
   
-  const htmlContent = generateHTML();
+  const outputFile = args[0];
   
-  fs.writeFileSync(outputFile, htmlContent, 'utf8');
-  console.log(`HTML file generated: ${outputFile}`);
+  try {
+    const htmlContent = generateHTML();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML-Datei erfolgreich erstellt: ${outputFile}`);
+  } catch (error) {
+    console.error('Fehler beim Erstellen der HTML-Datei:', error.message);
+    process.exit(1);
+  }
+}
+
+if (require.main === module) {
+  main();
 }

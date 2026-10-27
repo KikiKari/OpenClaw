@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # 3d.html — portiert nach python
-# Quelle: html, Projects@abstractions:public/3d.html
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@clawhub:public/3d.html
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import json
+from pathlib import Path
 
 def generate_html(output_file):
     html_content = '''<!DOCTYPE html>
@@ -12,13 +13,13 @@ def generate_html(output_file):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Abstractions Manager — Interaktive Architektur</title>
-<meta name="description" content="Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#0f766e">
+<title>ClawHub-Git-Sync — Interaktive Architektur</title>
+<meta name="description" content="Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#f5654a">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#f5654a; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -66,8 +67,8 @@ def generate_html(output_file):
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Abstractions Manager</h1>
-  <p class="lede">Von OpenClaw-Scripts in zehn Zielsprachen — drehen, zoomen, Knoten auswählen.</p>
+  <h1>ClawHub-Git-Sync</h1>
+  <p class="lede">Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -101,7 +102,7 @@ def generate_html(output_file):
 <script>
 (function(){
   "use strict";
-  var SPEC = ''' + json.dumps(SPEC, ensure_ascii=False) + ''';
+  var SPEC = ''' + json.dumps(SPEC, indent=2) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -332,78 +333,76 @@ def generate_html(output_file):
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-# Specification data embedded directly
+# Specification data structure
 SPEC = {
     "schichten": [
         {
-            "name": "Eingaben",
+            "name": "Seiten",
             "farbe": "#5f6773",
             "blocks": [
-                {"id": "openclaw-scripts", "name": "OpenClaw-Scripts", "untertitel": "Quellen"},
-                {"id": "env", "name": ".env", "untertitel": "Umgebung"},
-                {"id": "repo-init", "name": "Repo-Init", "untertitel": "Erstinstallation"}
+                {"id": "workspace-skills", "name": "workspace/skills", "untertitel": "ClawHub-Seite"},
+                {"id": "workspace-git-skills", "name": "workspace/git/skills", "untertitel": "Git-Seite"}
             ]
         },
         {
-            "name": "Portierung",
+            "name": "Vergleich",
             "farbe": "#2481cc",
             "blocks": [
-                {"id": "create-abstraction-py", "name": "create_abstraction.py", "untertitel": "Portierung"},
-                {"id": "10-zielsprachen", "name": "10 Zielsprachen", "untertitel": "je Lauf"},
-                {"id": "json-processor-js", "name": "json_processor.js", "untertitel": "Node-Teil"}
+                {"id": "zeitstempel", "name": "Zeitstempel", "untertitel": "welche Seite neuer"},
+                {"id": "hash", "name": "Hash", "untertitel": "ob geaendert"},
+                {"id": "konfliktfall", "name": "Konfliktfall", "untertitel": "melden statt raten"}
             ]
         },
         {
-            "name": "Verwaltung",
+            "name": "Absicherung",
             "farbe": "#6d5bd0",
             "blocks": [
-                {"id": "db-manager-py", "name": "db_manager.py", "untertitel": "Zustand"},
-                {"id": "logger-py", "name": "logger.py", "untertitel": "Protokoll"},
-                {"id": "exceptions-py", "name": "exceptions.py", "untertitel": "Fehlerklassen"}
+                {"id": "backup", "name": "Backup", "untertitel": "vor jeder Aenderung"},
+                {"id": "dry-run", "name": "Dry-Run", "untertitel": "Plan zeigen"},
+                {"id": "freigabe", "name": "Freigabe", "untertitel": "manuell"}
             ]
         },
         {
-            "name": "Pruefung",
+            "name": "Uebertragung",
             "farbe": "#b45309",
             "blocks": [
-                {"id": "check-live-js", "name": "check-live.js", "untertitel": "Live-Pruefung"},
-                {"id": "code-review-full", "name": "CODE_REVIEW_FULL", "untertitel": "Durchsicht"},
-                {"id": "python-hardener", "name": "python-hardener", "untertitel": "Haertung"}
+                {"id": "sync-agent-py", "name": "sync_agent.py", "untertitel": "der Abgleich"},
+                {"id": "git-commit", "name": "git commit", "untertitel": "Historie"},
+                {"id": "clawhub-publish", "name": "clawhub publish", "untertitel": "Veroeffentlichung"}
             ]
         },
         {
-            "name": "Ausgabe",
-            "farbe": "#0f766e",
+            "name": "Takt",
+            "farbe": "#f5654a",
             "blocks": [
-                {"id": "status-report", "name": "Status-Report", "untertitel": "was ist wo"},
-                {"id": "doku-db", "name": "Doku-DB", "untertitel": "Datenbanken"},
-                {"id": "cron-alle-6-h", "name": "Cron alle 6 h", "untertitel": "Takt"}
+                {"id": "cron-alle-12-h", "name": "Cron alle 12 h", "untertitel": "unbeaufsichtigt"},
+                {"id": "gateway-skripte", "name": "Gateway-Skripte", "untertitel": "mit Sperre"}
             ]
         }
     ],
     "kanten": [
-        {"von": "openclaw-scripts", "nach": "create-abstraction-py", "art": "fluss"},
-        {"von": "env", "nach": "10-zielsprachen", "art": "fluss"},
-        {"von": "repo-init", "nach": "json-processor-js", "art": "fluss"},
-        {"von": "create-abstraction-py", "nach": "db-manager-py", "art": "fluss"},
-        {"von": "10-zielsprachen", "nach": "logger-py", "art": "fluss"},
-        {"von": "json-processor-js", "nach": "exceptions-py", "art": "fluss"},
-        {"von": "db-manager-py", "nach": "check-live-js", "art": "fluss"},
-        {"von": "logger-py", "nach": "code-review-full", "art": "fluss"},
-        {"von": "exceptions-py", "nach": "python-hardener", "art": "fluss"},
-        {"von": "check-live-js", "nach": "status-report", "art": "fluss"},
-        {"von": "code-review-full", "nach": "doku-db", "art": "fluss"},
-        {"von": "python-hardener", "nach": "cron-alle-6-h", "art": "fluss"}
+        {"von": "workspace-skills", "nach": "zeitstempel", "art": "fluss"},
+        {"von": "workspace-git-skills", "nach": "hash", "art": "fluss"},
+        {"von": "zeitstempel", "nach": "backup", "art": "fluss"},
+        {"von": "hash", "nach": "dry-run", "art": "fluss"},
+        {"von": "konfliktfall", "nach": "freigabe", "art": "fluss"},
+        {"von": "backup", "nach": "sync-agent-py", "art": "fluss"},
+        {"von": "dry-run", "nach": "git-commit", "art": "fluss"},
+        {"von": "freigabe", "nach": "clawhub-publish", "art": "fluss"},
+        {"von": "sync-agent-py", "nach": "cron-alle-12-h", "art": "fluss"},
+        {"von": "git-commit", "nach": "gateway-skripte", "art": "fluss"},
+        {"von": "clawhub-publish", "nach": "cron-alle-12-h", "art": "fluss"}
     ],
     "kantenarten": [
-        {"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}
+        {"art": "fluss", "farbe": "#f5654a", "stil": "voll", "text": "Fluss von unten nach oben"}
     ]
 }
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python script.py <output_file>")
+        print("Usage: python3 script.py <output_file>")
         sys.exit(1)
     
     output_file = sys.argv[1]
     generate_html(output_file)
+    print(f"HTML file generated: {output_file}")
