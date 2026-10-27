@@ -1,23 +1,27 @@
 #!/usr/bin/env tclsh
-# 1781743218784_015abd_1e58ef.py — portiert nach tcl
+# 1781743218784_015abd_1e58ef_e969dc.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_e969dc.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd_1e58ef.py — portiert nach javascript
 # Quelle: python, Projects@abstractions:python/1781743218784_015abd_1e58ef.py
 # Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
-# Import necessary packages
-package require Tcl 8.6
+# 1781743218784_015abd.sh — portiert nach python
+# Quelle: shell, Projects@abstractions:shell/1781743218784_015abd.sh
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
-# Main procedure
-proc main {argv} {
-    # Check number of arguments
-    if {[llength $argv] != 1} {
-        puts stderr "Usage: [lindex $argv 0] <output-file>"
+proc main {} {
+    # Prüfe Anzahl Argumente
+    if {$::argc != 1} {
+        puts stderr "Usage: [info script] <output-file>"
         exit 1
     }
 
-    set output_file [lindex $argv 0]
+    set outputFile [lindex $::argv 0]
 
-    # Function to generate HTML content
-    proc generate_html {} {
+    # Funktion zur Generierung des HTML-Inhalts
+    proc generateHtml {} {
         return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -225,24 +229,22 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>}
     }
 
-    # Main logic
-    set html_content [generate_html]
+    # Hauptlogik
+    set htmlContent [generateHtml]
     
-    # Ensure directory exists
-    set dir [file dirname $output_file]
+    # Stelle sicher, dass das Verzeichnis existiert
+    set dir [file dirname $outputFile]
     if {$dir eq ""} {
         set dir "."
     }
     file mkdir $dir
     
-    # Write to file
-    set f [open $output_file w]
-    fconfigure $f -encoding utf-8
-    puts -nonewline $f $html_content
-    close $f
+    # Schreibe die Datei
+    set fh [open $outputFile w]
+    puts -nonewline $fh $htmlContent
+    close $fh
 
-    puts "HTML file generated: $output_file"
+    puts "HTML file generated: $outputFile"
 }
 
-# Call main with command line arguments
-main $argv
+main

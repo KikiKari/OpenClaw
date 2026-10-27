@@ -1,12 +1,36 @@
 #!/usr/bin/env python3
-# 1781743218784_015abd_1e58ef.ps1 — portiert nach python
+# 1781743218784_015abd_1e58ef_405102.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_405102.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd_1e58ef.ps1 — portiert nach javascript
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_015abd_1e58ef.ps1
 # Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd.sh — portiert nach powershell
+# Quelle: shell, Projects@abstractions:shell/1781743218784_015abd.sh
+# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.py — portiert nach shell
+# Quelle: python, Projects@abstractions:python/1781743218784.py
+# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.js — portiert nach python — portiert nach bash
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
-def generate_html():
+# Prüfe Anzahl Argumente
+if len(sys.argv) != 3:
+    print(f"Usage: {sys.argv[0]} <output-file>", file=sys.stderr)
+    sys.exit(1)
+
+outputFile = sys.argv[2]
+
+# Funktion zur Generierung des HTML-Inhalts
+def generateHtml():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -211,25 +235,11 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
-def main():
-    # Prüfe Anzahl Argumente
-    if len(sys.argv) != 2:
-        print("Usage: {} <output-file>".format(os.path.basename(sys.argv[0])), file=sys.stderr)
-        sys.exit(1)
+# Hauptlogik
+htmlContent = generateHtml()
+with open(outputFile, 'w', encoding='utf-8') as f:
+    f.write(htmlContent)
 
-    output_file = sys.argv[1]
-    
-    # Hauptlogik
-    html_content = generate_html()
-    
-    # Schreibe in Datei mit UTF-8 Kodierung
-    with open(output_file, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-    
-    print("HTML file generated: {}".format(output_file))
-
-if __name__ == "__main__":
-    main()
+print(f"HTML file generated: {outputFile}")

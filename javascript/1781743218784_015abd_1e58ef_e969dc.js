@@ -1,23 +1,24 @@
 #!/usr/bin/env node
-// 1781743218784_015abd_1e58ef.py — portiert nach javascript
-// Quelle: python, Projects@abstractions:python/1781743218784_015abd_1e58ef.py
-// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_015abd_1e58ef_e969dc.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_1e58ef_e969dc.pl
+// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 const path = require('path');
 
 function main() {
-  // Prüfe Anzahl Argumente
-  if (process.argv.length !== 3) {
-    console.error(`Usage: ${process.argv[1]} <output-file>`);
-    process.exit(1);
-  }
+    // Prüfe Anzahl Argumente
+    if (process.argv.length !== 3) {
+        const progname = process.argv[1];
+        console.error(`Usage: ${progname} <output-file>`);
+        process.exit(1);
+    }
 
-  const outputFile = process.argv[2];
+    const output_file = process.argv[2];
 
-  // Funktion zur Generierung des HTML-Inhalts
-  function generateHtml() {
-    return `<!DOCTYPE html>
+    // Funktion zur Generierung des HTML-Inhalts
+    function generate_html() {
+        return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -221,21 +222,22 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>`;
-  }
+</html>
+`;
+    }
 
-  // Hauptlogik
-  const htmlContent = generateHtml();
+    // Hauptlogik
+    const html_content = generate_html();
+    
+    // Stelle sicher, dass das Verzeichnis existiert
+    const dir = path.dirname(output_file);
+    if (dir !== '.' && dir !== '') {
+        fs.mkdirSync(dir, { recursive: true });
+    }
 
-  // Stelle sicher, dass das Verzeichnis existiert
-  const dir = path.dirname(outputFile) || '.';
-  if (dir !== '.') {
-    fs.mkdirSync(dir, { recursive: true });
-  }
+    fs.writeFileSync(output_file, html_content, 'utf8');
 
-  fs.writeFileSync(outputFile, htmlContent, 'utf-8');
-
-  console.log(`HTML file generated: ${outputFile}`);
+    console.log(`HTML file generated: ${output_file}`);
 }
 
 main();

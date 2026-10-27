@@ -1,25 +1,17 @@
-#!/usr/bin/env perl
-# 1781743218784_015abd.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_015abd_08077d.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(decode encode);
+use JSON::PP;
 
-# 1781743218784_015abd.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.py — portiert nach javascript
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-
-sub generateHtml {
-    return q{<!DOCTYPE html>
+sub generate_html {
+    return <<'HTML_END';
+<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -223,29 +215,29 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>};
+</html>
+HTML_END
 }
 
 sub main {
-    my @argv = @ARGV;
+    my @args = @ARGV;
     
-    if (@argv != 1) {
+    if (@args != 1) {
         print STDERR "Usage: perl script.pl <output-file>\n";
         exit 1;
     }
     
-    my $outputFile = $argv[0];
+    my $output_file = $args[0];
     
     eval {
-        my $htmlContent = generateHtml();
-        open(my $fd, '>', $outputFile) or die "Could not open file '$outputFile' for writing: $!";
-        print $fd $htmlContent;
-        close($fd);
-        print "HTML file generated: $outputFile\n";
+        my $html_content = generate_html();
+        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
+        print $fh $html_content;
+        close($fh);
+        print "HTML file generated: $output_file\n";
     };
     if ($@) {
-        my $error = $@;
-        print STDERR "Error generating HTML file: $error";
+        print STDERR "Error generating HTML file: $@\n";
         exit 1;
     }
 }

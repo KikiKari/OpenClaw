@@ -1,27 +1,20 @@
 #!/usr/bin/env python3
 # 1781743218784_015abd_1e58ef.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef.js
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_015abd.sh — portiert nach javascript
-# Quelle: shell, Projects@abstractions:shell/1781743218784_015abd.sh
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach python — portiert nach bash — portiert nach javascript
-# Quelle: bash, Projects@abstractions:bash/1781743218784_015abd.sh
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import json
 
 # Prüfe Anzahl Argumente
 if len(sys.argv) != 2:
-    print("Usage: python3 " + sys.argv[0] + " <output-file>", file=sys.stderr)
+    print(f"Usage: {sys.argv[0]} <output-file>", file=sys.stderr)
     sys.exit(1)
 
-outputFile = sys.argv[1]
+output_file = sys.argv[1]
 
 # Funktion zur Generierung des HTML-Inhalts
-def generateHtml():
+def generate_html():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -230,10 +223,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 # Hauptlogik
 try:
-    htmlContent = generateHtml()
-    with open(outputFile, 'w', encoding='utf-8') as f:
-        f.write(htmlContent)
-    print("HTML file generated: " + outputFile)
-except Exception as error:
-    print("Error generating HTML file:", str(error), file=sys.stderr)
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(generate_html())
+    print(f"HTML file generated: {output_file}")
+except Exception as err:
+    print(f"Could not write to file '{output_file}': {err}", file=sys.stderr)
     sys.exit(1)

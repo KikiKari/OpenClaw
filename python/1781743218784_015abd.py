@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 # 1781743218784_015abd.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_015abd.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd.pl
+# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
 # Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
+
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -34,7 +38,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 4px;font-weight:700;}
+h1{font-size:21px;margin:0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -217,6 +221,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
+
 def main():
     args = sys.argv[1:]
     
@@ -234,6 +239,7 @@ def main():
     except Exception as error:
         print(f"Error generating HTML file: {error}", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

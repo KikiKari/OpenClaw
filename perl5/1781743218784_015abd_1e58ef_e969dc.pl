@@ -1,28 +1,26 @@
-#!/usr/bin/env perl
-# 1781743218784_015abd_1e58ef.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_015abd_1e58ef.py
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_015abd_1e58ef_e969dc.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_e969dc.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
 use File::Basename qw(dirname);
 use File::Path qw(make_path);
+use utf8;
 
 sub main {
     # Prüfe Anzahl Argumente
     if (@ARGV != 1) {
-        my $prog = $0;
-        print STDERR "Usage: $prog <output-file>\n";
+        print STDERR "Usage: $0 <output-file>\n";
         exit 1;
     }
 
-    my $output_file = $ARGV[0];
+    my $outputFile = $ARGV[0];
 
     # Funktion zur Generierung des HTML-Inhalts
     sub generate_html {
-        return <<'HTML_END';
+        return <<'EOF';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -228,21 +226,23 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF
     }
 
     # Hauptlogik
     my $html_content = generate_html();
-
+    
     # Stelle sicher, dass das Verzeichnis existiert
-    my $dir = dirname($output_file) || '.';
-    make_path($dir) unless $dir eq '.';
-
-    open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
+    my $dir = dirname($outputFile);
+    if ($dir && !-d $dir) {
+        make_path($dir) or die "Failed to create directory '$dir': $!";
+    }
+    
+    open(my $fh, '>:encoding(UTF-8)', $outputFile) or die "Could not open file '$outputFile' for writing: $!";
     print $fh $html_content;
-    close $fh;
+    close($fh);
 
-    print "HTML file generated: $output_file\n";
+    print "HTML file generated: $outputFile\n";
 }
 
-main() unless caller;
+main();

@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 # 1781743218784_015abd_1e58ef.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef.js
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 # Prüfe Anzahl Argumente
 if (@ARGV != 1) {
-    print STDERR "Usage: perl $0 <output-file>\n";
+    print STDERR "Usage: $0 <output-file>\n";
     exit 1;
 }
 
@@ -227,13 +227,14 @@ HTML_END
 
 # Hauptlogik
 eval {
-    my $htmlContent = generateHtml();
-    open(my $fh, '>', $outputFile) or die "Cannot write to $outputFile: $!";
-    print $fh $htmlContent;
+    open(my $fh, '>', $outputFile) or die "Could not open file '$outputFile' for writing: $!";
+    print $fh generateHtml();
     close($fh);
     print "HTML file generated: $outputFile\n";
-};
-if ($@) {
-    print STDERR "Error generating HTML file: $@\n";
+    1;
+} or do {
+    my $error = $@ || 'Unknown error';
+    print STDERR "Could not write to file '$outputFile': $error\n";
     exit 1;
-}
+};
+1;

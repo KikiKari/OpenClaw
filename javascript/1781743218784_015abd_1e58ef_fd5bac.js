@@ -1,19 +1,11 @@
 #!/usr/bin/env node
-// 1781743218784_015abd_1e58ef.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd_1e58ef.tcl
-// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_015abd.sh — portiert nach tcl
-// Quelle: shell, Projects@abstractions:shell/1781743218784_015abd.sh
-// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784.py — portiert nach shell — portiert nach Tcl
-// Quelle: python, Projects@abstractions:python/1781743218784.py
-// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_015abd_1e58ef_fd5bac.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_1e58ef_fd5bac.pl
+// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 // Prüfe Anzahl Argumente
 if (process.argv.length !== 3) {
-    console.error(`Usage: ${process.argv[1]} <output-file>`);
+    console.error("Usage: " + process.argv[1] + " <output-file>");
     process.exit(1);
 }
 
@@ -230,7 +222,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 // Hauptlogik
-const htmlContent = generate_html();
-fs.writeFileSync(output_file, htmlContent);
-
-console.log(`HTML file generated: ${output_file}`);
+try {
+    fs.writeFileSync(output_file, generate_html());
+    console.log("HTML file generated: " + output_file);
+} catch (err) {
+    console.error("Could not write to file '" + output_file + "': " + err.message);
+    process.exit(1);
+}

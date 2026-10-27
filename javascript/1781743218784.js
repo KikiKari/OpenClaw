@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 // 1781743218784.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784.js — portiert nach JavaScript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+// Prüfe Aufrufparameter
+if (process.argv.length !== 3) {
+    console.error("Aufruf: node " + process.argv[1] + " <Ausgabedatei>");
+    process.exit(1);
+}
+const outputPath = process.argv[2];
 
 const fs = require('fs');
 
-function generate_html() {
-    return `<!DOCTYPE html>
+const html_content = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -178,7 +180,7 @@ function renderEditor(){
   Object.keys(P).forEach(name=>{
     const d=document.createElement("div"); d.className="prov";
     let rows="";
-    Object.keys(P[name]).forEach(k=>{ rows+=\`<div class="kv"><span class=\\"k\\">\${esc(k)}</span><input data-p="\${esc(name)}" data-k="\${esc(k)}" value="\${esc(P[name][k])}"><button class="btn sm" data-del="\${esc(name)}|\${esc(k)}">\${tr("del")}</button></div>\`; });
+    Object.keys(P[name]).forEach(k=>{ rows+=\`<div class="kv"><span class="k">\${esc(k)}</span><input data-p="\${esc(name)}" data-k="\${esc(k)}" value="\${esc(P[name][k])}"><button class="btn sm" data-del="\${esc(name)}|\${esc(k)}">\${tr("del")}</button></div>\`; });
     d.innerHTML=\`<h3>\${esc(name)} <button class="btn sm" data-delp="\${esc(name)}">\${tr("del")}</button></h3>\${rows}
       <div class="row" style="margin-top:6px"><input class="nf" data-np="\${esc(name)}" placeholder="\${tr("newField")}" style="max-width:180px"><input class="nv" data-np="\${esc(name)}" placeholder="\${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="\${esc(name)}">\${tr("addField")}</button></div>\`;
     root.appendChild(d);
@@ -215,26 +217,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>`;
-}
 
-function main() {
-    const args = process.argv.slice(2);
-    
-    if (args.length !== 1) {
-        console.error("Usage: node script.js <output-file>");
-        process.exit(1);
-    }
-    
-    const output_file = args[0];
-    
-    try {
-        const html_content = generate_html();
-        fs.writeFileSync(output_file, html_content, 'utf8');
-        console.log(`HTML file generated: ${output_file}`);
-    } catch (error) {
-        console.error(`Error generating HTML file: ${error.message}`);
-        process.exit(1);
-    }
+try {
+    fs.writeFileSync(outputPath, html_content, { encoding: 'utf8' });
+} catch (err) {
+    console.error("Konnte Datei '" + outputPath + "' nicht öffnen: " + err.message);
+    process.exit(1);
 }
-
-main();

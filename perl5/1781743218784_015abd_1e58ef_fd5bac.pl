@@ -1,7 +1,7 @@
-#!/usr/bin/env perl
-# 1781743218784_015abd_1e58ef.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd_1e58ef.tcl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_015abd_1e58ef_fd5bac.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_fd5bac.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
@@ -229,6 +229,4 @@ HTML_END
 open my $fh, '>', $output_file or die "Could not open file '$output_file': $!";
 print $fh generate_html();
 close $fh;
-
 print "HTML file generated: $output_file\n";
-1;

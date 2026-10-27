@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-# 1781743218784_015abd.tcl — portiert nach python
+# 1781743218784_015abd_08077d.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
 # Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
@@ -14,8 +18,6 @@
 # 1781743218784.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
 # Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-
-import sys
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -225,6 +227,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>'''
 
 def main():
+    import sys
+    import os
+    
     if len(sys.argv) != 2:
         print("Usage: python3 script.py <output-file>", file=sys.stderr)
         sys.exit(1)
@@ -233,8 +238,8 @@ def main():
     
     try:
         html_content = generate_html()
-        with open(output_file, 'w', encoding='utf-8') as fd:
-            fd.write(html_content)
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
         print(f"HTML file generated: {output_file}")
     except Exception as error:
         print(f"Error generating HTML file: {error}", file=sys.stderr)

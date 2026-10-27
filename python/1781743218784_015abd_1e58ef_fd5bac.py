@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
-# 1781743218784_015abd_1e58ef.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd_1e58ef.tcl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_1e58ef_fd5bac.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_fd5bac.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
+# Prüfe Anzahl Argumente
+if len(sys.argv) != 2:
+    print(f"Usage: {sys.argv[0]} <output-file>", file=sys.stderr)
+    sys.exit(1)
+
+output_file = sys.argv[1]
+
+# Funktion zur Generierung des HTML-Inhalts
 def generate_html():
     return '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -212,14 +221,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: {} <output-file>".format(sys.argv[0]), file=sys.stderr)
-        sys.exit(1)
-    
-    output_file = sys.argv[1]
-    
-    with open(output_file, 'w') as fh:
-        fh.write(generate_html())
-    
-    print("HTML file generated: {}".format(output_file))
+# Hauptlogik
+with open(output_file, 'w', encoding='utf-8') as f:
+    f.write(generate_html())
+print(f"HTML file generated: {output_file}")

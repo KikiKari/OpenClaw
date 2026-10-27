@@ -1,5 +1,9 @@
-#!/usr/bin/env tclsh
-# 1781743218784_015abd_1e58ef.ps1 — portiert nach tcl
+#!/usr/bin/env tclsh8.6
+# 1781743218784_015abd_1e58ef_405102.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_405102.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd_1e58ef.ps1 — portiert nach javascript
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_015abd_1e58ef.ps1
 # Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
@@ -24,7 +28,7 @@ if {$argc != 1} {
 set outputFile [lindex $argv 0]
 
 # Funktion zur Generierung des HTML-Inhalts
-proc Generate-Html {} {
+proc generateHtml {} {
     return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -233,9 +237,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 # Hauptlogik
-set htmlContent [Generate-Html]
+set htmlContent [generateHtml]
 set fh [open $outputFile w]
-puts $fh $htmlContent
+puts -nonewline $fh $htmlContent
 close $fh
 
 puts "HTML file generated: $outputFile"

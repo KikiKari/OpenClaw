@@ -1,15 +1,7 @@
 #!/usr/bin/env pwsh
-# 1781743218784_015abd_1e58ef.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd_1e58ef.tcl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_015abd.sh — portiert nach tcl
-# Quelle: shell, Projects@abstractions:shell/1781743218784_015abd.sh
-# Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.py — portiert nach shell — portiert nach Tcl
-# Quelle: python, Projects@abstractions:python/1781743218784.py
-# Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_1e58ef_fd5bac.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_1e58ef_fd5bac.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Anzahl Argumente
 if ($args.Count -ne 1) {
@@ -232,6 +224,5 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 # Hauptlogik
 $htmlContent = generate_html
-$htmlContent | Out-File -FilePath $output_file -Encoding UTF8
-
-Write-Output "HTML file generated: $output_file"
+Set-Content -Path $output_file -Value $htmlContent -Encoding UTF8
+Write-Host "HTML file generated: $output_file"
