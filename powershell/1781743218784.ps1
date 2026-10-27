@@ -1,16 +1,24 @@
 #!/usr/bin/env pwsh
-# 1781743218784.pl — portiert nach powershell
+# 1781743218784.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
 # Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if ($args.Count -ne 1) {
-    Write-Error "Aufruf: $($MyInvocation.MyCommand.Name) <Ausgabedatei>"
+    [Console]::Error.WriteLine("Aufruf: $($MyInvocation.MyCommand.Name) <Ausgabedatei>")
     exit 1
 }
-$outputPath = $args[0]
+$output_path = $args[0]
 
-$htmlContent = @'
+$html_content = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -34,7 +42,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -218,9 +226,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
+# Schreibe die HTML-Inhalte in die Ausgabedatei
 try {
-    [System.IO.File]::WriteAllText($outputPath, $htmlContent, [System.Text.Encoding]::UTF8)
+    [System.IO.File]::WriteAllText($output_path, $html_content, [System.Text.Encoding]::UTF8)
 } catch {
-    Write-Error "Konnte Datei '$outputPath' nicht öffnen: $_"
+    [Console]::Error.WriteLine("Konnte Datei '$output_path' nicht öffnen: $($_.Exception.Message)")
     exit 1
 }
