@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # 3d.html — portiert nach python
-# Quelle: html, Projects@clawhub:public/3d.html
+# Quelle: html, Projects@python-hardener:public/3d.html
 # Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import json
-from pathlib import Path
 
 def generate_html(output_file):
     html_content = '''<!DOCTYPE html>
@@ -13,13 +12,13 @@ def generate_html(output_file):
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ClawHub-Git-Sync — Interaktive Architektur</title>
-<meta name="description" content="Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#f5654a">
+<title>Python Hardener — Interaktive Architektur</title>
+<meta name="description" content="Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#b45309">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#f5654a; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#b45309; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -67,8 +66,8 @@ def generate_html(output_file):
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>ClawHub-Git-Sync</h1>
-  <p class="lede">Zwei Seiten, ein Abgleich: Vergleich, Absicherung, Übertragung — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Python Hardener</h1>
+  <p class="lede">Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -102,7 +101,7 @@ def generate_html(output_file):
 <script>
 (function(){
   "use strict";
-  var SPEC = ''' + json.dumps(SPEC, indent=2) + ''';
+  var SPEC = ''' + json.dumps(SPEC, ensure_ascii=False) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -333,68 +332,55 @@ def generate_html(output_file):
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
-# Specification data structure
+# Specification data
 SPEC = {
     "schichten": [
         {
-            "name": "Seiten",
+            "name": "Eingaben",
             "farbe": "#5f6773",
             "blocks": [
-                {"id": "workspace-skills", "name": "workspace/skills", "untertitel": "ClawHub-Seite"},
-                {"id": "workspace-git-skills", "name": "workspace/git/skills", "untertitel": "Git-Seite"}
+                {"id": "job-runner-py", "name": "job_runner.py", "untertitel": "Cronjob"},
+                {"id": "report-db-py", "name": "report_db.py", "untertitel": "SQL"}
             ]
         },
         {
-            "name": "Vergleich",
+            "name": "Laeufe",
             "farbe": "#2481cc",
             "blocks": [
-                {"id": "zeitstempel", "name": "Zeitstempel", "untertitel": "welche Seite neuer"},
-                {"id": "hash", "name": "Hash", "untertitel": "ob geaendert"},
-                {"id": "konfliktfall", "name": "Konfliktfall", "untertitel": "melden statt raten"}
+                {"id": "with-skill", "name": "with_skill", "untertitel": "mit Skill"},
+                {"id": "without-skill", "name": "without_skill", "untertitel": "Gegenprobe"}
             ]
         },
         {
-            "name": "Absicherung",
+            "name": "Pruefung",
             "farbe": "#6d5bd0",
             "blocks": [
-                {"id": "backup", "name": "Backup", "untertitel": "vor jeder Aenderung"},
-                {"id": "dry-run", "name": "Dry-Run", "untertitel": "Plan zeigen"},
-                {"id": "freigabe", "name": "Freigabe", "untertitel": "manuell"}
+                {"id": "ast-assertions", "name": "AST-Assertions", "untertitel": "Syntaxbaum"},
+                {"id": "not-contains", "name": "not_contains", "untertitel": "Textregel"},
+                {"id": "grading", "name": "Grading", "untertitel": "je Behauptung"}
             ]
         },
         {
-            "name": "Uebertragung",
+            "name": "Ergebnis",
             "farbe": "#b45309",
             "blocks": [
-                {"id": "sync-agent-py", "name": "sync_agent.py", "untertitel": "der Abgleich"},
-                {"id": "git-commit", "name": "git commit", "untertitel": "Historie"},
-                {"id": "clawhub-publish", "name": "clawhub publish", "untertitel": "Veroeffentlichung"}
-            ]
-        },
-        {
-            "name": "Takt",
-            "farbe": "#f5654a",
-            "blocks": [
-                {"id": "cron-alle-12-h", "name": "Cron alle 12 h", "untertitel": "unbeaufsichtigt"},
-                {"id": "gateway-skripte", "name": "Gateway-Skripte", "untertitel": "mit Sperre"}
+                {"id": "benchmark-json", "name": "benchmark.json", "untertitel": "pass_rate"},
+                {"id": "timing-json", "name": "timing.json", "untertitel": "Laufzeit"},
+                {"id": "eval-review-html", "name": "eval-review.html", "untertitel": "Gegenueberstellung"}
             ]
         }
     ],
     "kanten": [
-        {"von": "workspace-skills", "nach": "zeitstempel", "art": "fluss"},
-        {"von": "workspace-git-skills", "nach": "hash", "art": "fluss"},
-        {"von": "zeitstempel", "nach": "backup", "art": "fluss"},
-        {"von": "hash", "nach": "dry-run", "art": "fluss"},
-        {"von": "konfliktfall", "nach": "freigabe", "art": "fluss"},
-        {"von": "backup", "nach": "sync-agent-py", "art": "fluss"},
-        {"von": "dry-run", "nach": "git-commit", "art": "fluss"},
-        {"von": "freigabe", "nach": "clawhub-publish", "art": "fluss"},
-        {"von": "sync-agent-py", "nach": "cron-alle-12-h", "art": "fluss"},
-        {"von": "git-commit", "nach": "gateway-skripte", "art": "fluss"},
-        {"von": "clawhub-publish", "nach": "cron-alle-12-h", "art": "fluss"}
+        {"von": "job-runner-py", "nach": "with-skill", "art": "fluss"},
+        {"von": "report-db-py", "nach": "without-skill", "art": "fluss"},
+        {"von": "with-skill", "nach": "ast-assertions", "art": "fluss"},
+        {"von": "without-skill", "nach": "not-contains", "art": "fluss"},
+        {"von": "ast-assertions", "nach": "benchmark-json", "art": "fluss"},
+        {"von": "not-contains", "nach": "timing-json", "art": "fluss"},
+        {"von": "grading", "nach": "eval-review-html", "art": "fluss"}
     ],
     "kantenarten": [
-        {"art": "fluss", "farbe": "#f5654a", "stil": "voll", "text": "Fluss von unten nach oben"}
+        {"art": "fluss", "farbe": "#b45309", "stil": "voll", "text": "Fluss von unten nach oben"}
     ]
 }
 
@@ -405,4 +391,3 @@ if __name__ == "__main__":
     
     output_file = sys.argv[1]
     generate_html(output_file)
-    print(f"HTML file generated: {output_file}")
