@@ -1,21 +1,17 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # 1781743218784_015abd_08077d.js — portiert nach shell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
 # Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Argumente
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <output-file>" >&2
-    exit 1
-fi
+# 1781743218784_015abd_08077d.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d.pl
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# Portiert nach Bash 5 mit set -euo pipefail
 
-output_file="$1"
-
-# Generiere den HTML-Inhalt
 generate_html() {
-    cat <<'EOF'
+  cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -114,7 +110,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -224,7 +220,27 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 EOF
 }
 
-# Schreibe den HTML-Inhalt in die Ausgabedatei
-generate_html > "$output_file"
+main() {
+  local args=("$@")
+  
+  if [[ ${#args[@]} -ne 1 ]]; then
+    echo "Usage: $0 <output-file>" >&2
+    exit 1
+  fi
+  
+  local output_file="${args[0]}"
+  
+  # Write the HTML content to the specified file
+  generate_html > "$output_file"
+  
+  # Check if the write was successful
+  if [[ $? -eq 0 ]]; then
+    echo "HTML file generated: $output_file"
+  else
+    echo "Error generating HTML file" >&2
+    exit 1
+  fi
+}
 
-echo "HTML file generated: $output_file"
+# Call main with all arguments
+main "$@"

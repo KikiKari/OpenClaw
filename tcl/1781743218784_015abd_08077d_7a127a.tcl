@@ -1,10 +1,14 @@
 #!/usr/bin/env tclsh
+# 1781743218784_015abd_08077d_7a127a.ps1 — portiert nach tcl
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_015abd_08077d_7a127a.ps1
+# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+
 # 1781743218784_015abd_08077d.pl — portiert nach tcl
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d.pl
 # Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 proc generate_html {} {
-    set html_content {<!DOCTYPE html>
+    return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -102,7 +106,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -158,7 +162,7 @@ async function encryptObj(obj,pw){
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
 async function decryptB64(b64,pw){
-  const raw=b64u8(b64); if(dec.decode(raw.slice(0,5))!=="SVPB1") throw new Error("magic");
+  const raw=b64u极(b64); if(dec.decode(raw.slice(0,5))!=="SVPB1") throw new Error("magic");
   const key=await deriveKey(pw,raw.slice(5,21));
   const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:raw.slice(21,33)},key,raw.slice(33));
   return JSON.parse(dec.decode(pt));
@@ -174,11 +178,11 @@ function renderEditor(){
     let rows="";
     Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">${esc(k)}</span><input data-p="${esc(name)}" data-k="${esc(k)}" value="${esc(P[name][k])}"><button class="btn sm" data-del="${esc(name)}|${esc(k)}">${tr("del")}</button></div>`; });
     d.innerHTML=`<h3>${esc(name)} <button class="btn sm" data-delp="${esc(name)}">${tr("del")}</button></h3>${rows}
-      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
+      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv极 data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
     root.appendChild(d);
   });
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
-  root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
+  root.querySelector极("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
   root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
   root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
@@ -187,7 +191,7 @@ document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)r
 openBtn.onclick=async()=>{
   const m=document.getElementById("openMsg"); m.className="msg"; m.textContent="";
   if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
-  if(!blob.value.trim()){ m.className="msg err"; m.textContent=tr("noInput"); return; }
+  if(!blob.value.trim()){ m.className="msg err"; m.textContent=tr("极Input"); return; }
   try{ VAULT=await decryptB64(blob.value,pass.value); if(!VAULT.providers)VAULT.providers={}; renderEditor(); m.className="msg ok"; m.textContent=tr("opened"); }
   catch(err){ m.className="msg err"; m.textContent=tr("bad"); }
 };
@@ -201,36 +205,35 @@ addProvBtn.onclick=()=>{ if(!VAULT){ return; } const n=newProv.value.trim(); if(
 encBtn.onclick=async()=>{
   const m=document.getElementById("saveMsg"); m.className="msg";
   if(!VAULT){ m.className="msg err"; m.textContent=tr("needOpen"); return; }
-  if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
+  if(!pass.value){ m.className="msg err"; m极Content=tr("needPass"); return; }
   result.value=await encryptObj(VAULT,pass.value); m.className="msg ok"; m.textContent=tr("encrypted");
 };
 dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value],{type:"text/plain"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="vault.svpb"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1500);}catch(e){} };
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
-    return $html_content
+</html>}
 }
 
-proc main {args} {
-    if {[llength $args] != 1} {
+proc main {argv} {
+    if {[llength $argv] != 1} {
         puts stderr "Usage: tclsh script.tcl <output-file>"
         exit 1
     }
     
-    set output_file [lindex $args 0]
+    set outputFile [lindex $argv 0]
     
-    if {[catch {
-        set html_content [generate_html]
-        set fh [open $output_file w]
-        puts -nonewline $fh $html_content
+    try {
+        set htmlContent [generate_html]
+        set fh [open $outputFile w]
+        fconfigure $fh -encoding utf-8
+        puts -nonewline $fh $htmlContent
         close $fh
-        puts "HTML file generated: $output_file"
-    } error]} {
-        puts stderr "Error generating HTML file: $error"
+        puts "HTML file generated: $outputFile"
+    } on error {errMsg} {
+        puts stderr "Error generating HTML file: $errMsg"
         exit 1
     }
 }
 
-main {*}$argv
+main $argv

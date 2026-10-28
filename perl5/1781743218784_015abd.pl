@@ -1,14 +1,16 @@
 #!/usr/bin/perl
 # 1781743218784_015abd.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(decode encode);
+use File::Slurper qw(write_text);
 
 sub generate_html {
-    return <<'HTML_END';
-<!DOCTYPE html>
+    return q(<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -31,7 +33,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 4px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -212,8 +214,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-HTML_END
+</html>);
 }
 
 sub main {
@@ -228,9 +229,7 @@ sub main {
     
     eval {
         my $html_content = generate_html();
-        open(my $fh, '>:encoding(UTF-8)', $output_file) or die "Could not open file '$output_file': $!";
-        print $fh $html_content;
-        close($fh);
+        write_text($output_file, $html_content);
         print "HTML file generated: $output_file\n";
     };
     if ($@) {
@@ -239,4 +238,4 @@ sub main {
     }
 }
 
-main();
+main() unless caller;

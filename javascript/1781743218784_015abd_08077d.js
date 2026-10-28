@@ -3,8 +3,6 @@
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d.pl
 // Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
-
 function generate_html() {
     return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -104,7 +102,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -221,12 +219,12 @@ function main() {
         process.exit(1);
     }
     
-    const output_file = args[0];
+    const outputFile = args[0];
     
     try {
-        const html_content = generate_html();
-        fs.writeFileSync(output_file, html_content);
-        console.log(`HTML file generated: ${output_file}`);
+        const htmlContent = generate_html();
+        require('fs').writeFileSync(outputFile, htmlContent, 'utf8');
+        console.log(`HTML file generated: ${outputFile}`);
     } catch (error) {
         console.error(`Error generating HTML file: ${error.message}`);
         process.exit(1);

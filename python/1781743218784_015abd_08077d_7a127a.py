@@ -1,14 +1,9 @@
 #!/usr/bin/env python3
-# 1781743218784_015abd_08077d.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d.pl
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_015abd.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_08077d_7a127a.ps1 — portiert nach python
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_015abd_08077d_7a127a.ps1
+# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -34,7 +29,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -109,7 +104,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -218,10 +213,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '''
 
-
-def main():
-    args = sys.argv[1:]
-    
+def main(args):
     if len(args) != 1:
         print("Usage: python3 script.py <output-file>", file=sys.stderr)
         sys.exit(1)
@@ -230,13 +222,12 @@ def main():
     
     try:
         html_content = generate_html()
-        with open(output_file, 'w', encoding='utf-8') as fh:
-            fh.write(html_content)
+        with open(output_file, 'w', encoding='utf-8') as f:
+            f.write(html_content)
         print(f"HTML file generated: {output_file}")
     except Exception as e:
         print(f"Error generating HTML file: {e}", file=sys.stderr)
         sys.exit(1)
 
-
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
