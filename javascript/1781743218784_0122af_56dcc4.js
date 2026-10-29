@@ -1,18 +1,24 @@
 #!/usr/bin/env node
 // 1781743218784_0122af_56dcc4.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4.pl
+// Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0122af_56dcc4.js — portiert nach JavaScript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4.pl
 // Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+
+const fs = require('fs');
+const path = require('path');
 
 // Prüfe Aufrufparameter
 if (process.argv.length !== 3) {
-    console.error("Aufruf: " + process.argv[1] + " <Ausgabedatei>");
+    const script_name = path.basename(process.argv[1]);
+    console.error(`Aufruf: ${script_name} <Ausgabedatei>`);
     process.exit(1);
 }
-const output_path = process.argv[2];
+const outputPath = process.argv[2];
 
-const fs = require('fs');
-
-const html_content = `<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -220,8 +226,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 // Schreibe die HTML-Inhalte in die Ausgabedatei
 try {
-    fs.writeFileSync(output_path, html_content);
-} catch (err) {
-    console.error("Konnte Datei '" + output_path + "' nicht öffnen: " + err.message);
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
+} catch (error) {
+    const errmsg = error.message.replace(/\n$/, '');
+    console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${errmsg}`);
     process.exit(1);
 }

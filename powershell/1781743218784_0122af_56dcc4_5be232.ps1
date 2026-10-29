@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_56dcc4.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_56dcc4.py
+# 1781743218784_0122af_56dcc4_5be232.pl — portiert nach powershell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4_5be232.pl
 # Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter

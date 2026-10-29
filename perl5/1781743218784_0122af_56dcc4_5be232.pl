@@ -1,12 +1,13 @@
-#!/usr/bin/perl
-# 1781743218784_0122af_56dcc4.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_56dcc4.py
+#!/usr/bin/env perl
+# 1781743218784_0122af_56dcc4_5be232.ps1 — portiert nach perl5
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_56dcc4_5be232.ps1
 # Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(decode_utf8);
+use open qw(:std :utf8);
+use File::Slurper qw(write_text);
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
@@ -226,11 +227,11 @@ HTML
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
 eval {
-    open my $fd, '>:encoding(UTF-8)', $output_path or die "Konnte Datei '$output_path' nicht öffnen: $!";
-    print $fd $html_content;
-    close $fd;
-};
-if ($@) {
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $@\n";
+    write_text($output_path, $html_content);
+    1;
+} or do {
+    my $error = $@ || 'Unknown error';
+    print STDERR "Konnte Datei '$output_path' nicht öffnen: $error\n";
     exit 1;
-}
+};
+1;

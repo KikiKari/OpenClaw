@@ -1,6 +1,6 @@
-#!/usr/bin/env tclsh8.6
-# 1781743218784_0122af_56dcc4.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_56dcc4.py
+#!/usr/bin/env tclsh
+# 1781743218784_0122af_56dcc4_5be232.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4_5be232.pl
 # Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
@@ -215,13 +215,13 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
-
-# Schreibe die HTML-Inhalte in die Ausgabedatei
-if {[catch {set fd [open $output_path w]} errmsg]} {
-    puts stderr "Konnte Datei '$output_path' nicht öffnen: $errmsg"
-    exit 1
+</html>
 }
 
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if {[catch {open $output_path w} fd]} {
+    puts stderr "Konnte Datei '$output_path' nicht öffnen: $fd"
+    exit 1
+}
 puts -nonewline $fd $html_content
 close $fd

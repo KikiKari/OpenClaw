@@ -1,18 +1,14 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_56dcc4.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_56dcc4.ps1
+# 1781743218784_0122af_56dcc4_ff4780.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_56dcc4_ff4780.js
 # Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af.tcl
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if {$argc != 1} {
     puts stderr "Aufruf: [info script] <Ausgabedatei>"
     exit 1
 }
-lassign $argv outputPath
+set outputPath [lindex $argv 0]
 
 set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -218,8 +214,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
 if {[catch {set fd [open $outputPath w]}]} {

@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 // 1781743218784_0122af.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-// Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
-// Prüfe Aufrufparameter
-if (process.argv.length !== 3) {
-    console.error("Aufruf: " + process.argv[1] + " <Ausgabedatei>");
-    process.exit(1);
-}
-const outputPath = process.argv[2];
+'use strict';
 
 const fs = require('fs');
+const path = require('path');
+
+if (process.argv.length !== 3) {
+    const scriptName = path.basename(process.argv[1]);
+    console.error(`Aufruf: ${scriptName} <Ausgabedatei>`);
+    process.exit(1);
+}
+
+const outputPath = process.argv[2];
 
 const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -216,11 +220,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>`;
+</html>
+`;
 
 try {
     fs.writeFileSync(outputPath, htmlContent, 'utf8');
 } catch (error) {
-    console.error("Konnte Datei '" + outputPath + "' nicht öffnen: " + (error.message || 'Unknown error'));
+    console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${error.message}`);
     process.exit(1);
 }

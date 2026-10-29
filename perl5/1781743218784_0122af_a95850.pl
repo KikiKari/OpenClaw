@@ -1,14 +1,15 @@
-#!/usr/bin/env perl
-# 1781743218784_0122af.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af.tcl
-# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0122af_a95850.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_a95850.js
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
-    print STDERR "Aufruf: $0 <Ausgabedatei>\n";
+    my $script_name = $0;
+    print STDERR "Aufruf: $script_name <Ausgabedatei>\n";
     exit 1;
 }
 my $outputPath = $ARGV[0];
@@ -222,9 +223,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 HTML_END
 
 # Schreibe HTML-Inhalt in Ausgabedatei
-open my $fh, '>', $outputPath or do {
-    print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
-    exit 1;
-};
+open(my $fh, '>:encoding(UTF-8)', $outputPath)
+    or die "Konnte Datei '$outputPath' nicht öffnen: $!";
 print $fh $htmlContent;
 close $fh;
