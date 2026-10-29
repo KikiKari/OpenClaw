@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 // 3d.html — portiert nach javascript
-// Quelle: html, Projects@python-hardener:public/3d.html
-// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+// Quelle: html, Projects@secret-vault-public:public/3d.html
+// Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 const path = require('path');
 
-function generateHTML(outputFile) {
+function generateHTML() {
   const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Python Hardener — Interaktive Architektur</title>
-<meta name="description" content="Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#b45309">
+<title>Secret-Vault Public — Interaktive Architektur</title>
+<meta name="description" content="Vom Passwort zur verschlüsselten Datei — jede Schicht bleibt im Browser. Drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#5b5bd6">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#b45309; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#5b5bd6; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -66,8 +66,8 @@ function generateHTML(outputFile) {
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Python Hardener</h1>
-  <p class="lede">Der Messplatz: zwei Läufe, dieselben Behauptungen, ein Ergebnis — drehen, zoomen, Knoten auswählen.</p>
+  <h1>Secret-Vault Public</h1>
+  <p class="lede">Vom Passwort zur verschlüsselten Datei — jede Schicht bleibt im Browser. Drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -101,7 +101,7 @@ function generateHTML(outputFile) {
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "job-runner-py", "name": "job_runner.py", "untertitel": "Cronjob"}, {"id": "report-db-py", "name": "report_db.py", "untertitel": "SQL"}]}, {"name": "Laeufe", "farbe": "#2481cc", "blocks": [{"id": "with-skill", "name": "with_skill", "untertitel": "mit Skill"}, {"id": "without-skill", "name": "without_skill", "untertitel": "Gegenprobe"}]}, {"name": "Pruefung", "farbe": "#6d5bd0", "blocks": [{"id": "ast-assertions", "name": "AST-Assertions", "untertitel": "Syntaxbaum"}, {"id": "not-contains", "name": "not_contains", "untertitel": "Textregel"}, {"id": "grading", "name": "Grading", "untertitel": "je Behauptung"}]}, {"name": "Ergebnis", "farbe": "#b45309", "blocks": [{"id": "benchmark-json", "name": "benchmark.json", "untertitel": "pass_rate"}, {"id": "timing-json", "name": "timing.json", "untertitel": "Laufzeit"}, {"id": "eval-review-html", "name": "eval-review.html", "untertitel": "Gegenueberstellung"}]}], "kanten": [{"von": "job-runner-py", "nach": "with-skill", "art": "fluss"}, {"von": "report-db-py", "nach": "without-skill", "art": "fluss"}, {"von": "with-skill", "nach": "ast-assertions", "art": "fluss"}, {"von": "without-skill", "nach": "not-contains", "art": "fluss"}, {"von": "ast-assertions", "nach": "benchmark-json", "art": "fluss"}, {"von": "not-contains", "nach": "timing-json", "art": "fluss"}, {"von": "grading", "nach": "eval-review-html", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#b45309", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Eingaben", "farbe": "#5f6773", "blocks": [{"id": "passphrase", "name": "Passphrase", "untertitel": "nie gespeichert"}, {"id": "vault-datei", "name": "Vault-Datei", "untertitel": "Ciphertext"}, {"id": "neue-felder", "name": "neue Felder", "untertitel": "Formular"}]}, {"name": "Schluesselableitung", "farbe": "#2481cc", "blocks": [{"id": "pbkdf2-210k", "name": "PBKDF2 210k", "untertitel": "Iterationen"}, {"id": "salt-16-b", "name": "Salt 16 B", "untertitel": "zufaellig"}, {"id": "sha-256", "name": "SHA-256", "untertitel": "HMAC"}]}, {"name": "Verschluesselung", "farbe": "#5b5bd6", "blocks": [{"id": "aes-256-gcm", "name": "AES-256-GCM", "untertitel": "authentisiert"}, {"id": "iv-12-b", "name": "IV 12 B", "untertitel": "nie doppelt"}, {"id": "crypto-subtle", "name": "crypto.subtle", "untertitel": "WebCrypto"}]}, {"name": "Verwaltung", "farbe": "#b45309", "blocks": [{"id": "anbieter", "name": "Anbieter", "untertitel": "Gruppen"}, {"id": "felder", "name": "Felder", "untertitel": "Schluessel/Wert"}, {"id": "rotation", "name": "Rotation", "untertitel": "neuer Wert"}]}, {"name": "Ausgabe", "farbe": "#22a06b", "blocks": [{"id": "download", "name": "Download", "untertitel": "Blob-URL"}, {"id": "export", "name": "Export", "untertitel": "JSON"}, {"id": "zwischenablage", "name": "Zwischenablage", "untertitel": "nur auf Klick"}]}], "kanten": [{"von": "passphrase", "nach": "pbkdf2-210k", "art": "fluss"}, {"von": "vault-datei", "nach": "salt-16-b", "art": "fluss"}, {"von": "neue-felder", "nach": "sha-256", "art": "fluss"}, {"von": "pbkdf2-210k", "nach": "aes-256-gcm", "art": "fluss"}, {"von": "salt-16-b", "nach": "iv-12-b", "art": "fluss"}, {"von": "sha-256", "nach": "crypto-subtle", "art": "fluss"}, {"von": "aes-256-gcm", "nach": "anbieter", "art": "fluss"}, {"von": "iv-12-b", "nach": "felder", "art": "fluss"}, {"von": "crypto-subtle", "nach": "rotation", "art": "fluss"}, {"von": "anbieter", "nach": "download", "art": "fluss"}, {"von": "felder", "nach": "export", "art": "fluss"}, {"von": "rotation", "nach": "zwischenablage", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#5b5bd6", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -329,15 +329,27 @@ function generateHTML(outputFile) {
 </body>
 </html>`;
 
-  fs.writeFileSync(outputFile, html, 'utf8');
+  return html;
 }
 
-// Hauptprogramm
-if (process.argv.length !== 3) {
-  console.error('Verwendung: node ' + path.basename(__filename) + ' <ausgabedatei>');
-  process.exit(1);
+function main() {
+  const args = process.argv.slice(2);
+  
+  if (args.length !== 1) {
+    console.error('Usage: node script.js <output-file>');
+    process.exit(1);
+  }
+  
+  const outputFile = args[0];
+  
+  try {
+    const htmlContent = generateHTML();
+    fs.writeFileSync(outputFile, htmlContent, 'utf8');
+    console.log(`HTML file generated successfully: ${outputFile}`);
+  } catch (error) {
+    console.error('Error generating HTML file:', error.message);
+    process.exit(1);
+  }
 }
 
-const outputFile = process.argv[2];
-generateHTML(outputFile);
-console.log('HTML-Datei wurde erfolgreich erstellt: ' + outputFile);
+main();
