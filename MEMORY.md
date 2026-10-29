@@ -1,10 +1,15 @@
 # MEMORY.md - System-Konfiguration & Wichtige Einstellungen
 
-**Letzte Aktualisierung:** 2026-10-27 (07:00 CEST)
+**Letzte Aktualisierung:** 2026-10-29 (07:00 CET)
 
 ---
 
 ## 📓 Letzte Änderungen
+
+### 2026-10-29 - Daily Memory-Maintenance
+- `memory/2026-10-28.md` und `memory/2026-10-29.md` geprüft: nur Dreaming-Reflexionen und kurzlebige Status-/Reset-Kandidaten; keine neuen dauerhaften Entscheidungen, Projekte oder ToDos.
+- Archivprüfung: keine direkt unter `memory/` liegende datierte Markdown-Datei älter als 30 Tage; keine Archivierung notwendig.
+- Keine kritischen neuen Erkenntnisse.
 
 ### 2026-10-27 - Daily Memory-Maintenance & Erkenntnisse vom 26./27.10.
 - ✅ Memory-Maintenance heute geprüft (07:00 CEST).
