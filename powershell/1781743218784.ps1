@@ -1,19 +1,11 @@
 #!/usr/bin/env pwsh
 # 1781743218784.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if ($args.Count -ne 1) {
-    [Console]::Error.WriteLine("Aufruf: $($MyInvocation.MyCommand.Name) <Ausgabedatei>")
+    Write-Error "Aufruf: $($MyInvocation.MyCommand.Name) <Ausgabedatei>"
     exit 1
 }
 $output_path = $args[0]
@@ -230,6 +222,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 try {
     [System.IO.File]::WriteAllText($output_path, $html_content, [System.Text.Encoding]::UTF8)
 } catch {
-    [Console]::Error.WriteLine("Konnte Datei '$output_path' nicht öffnen: $($_.Exception.Message)")
+    Write-Error "Konnte Datei '$output_path' nicht öffnen: $($_.Exception.Message)"
     exit 1
 }

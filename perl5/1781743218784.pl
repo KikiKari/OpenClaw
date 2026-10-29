@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 1781743218784.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
@@ -182,9 +182,9 @@ function renderEditor(){
   Object.keys(P).forEach(name=>{
     const d=document.createElement("div"); d.className="prov";
     let rows="";
-    Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">${esc(k)}</span><input data-p="${esc(name)}" data-k="${esc(k)}" value="${esc(P[name][k])}"><button class="btn sm" data-del="${esc(name)}|${esc(k)}">${tr("del")}</button></div>`; });
-    d.innerHTML=`<h3>${esc(name)} <button class="btn sm" data-delp="${esc(name)}">${tr("del")}</button></h3>${rows}
-      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
+    Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">'+esc(k)+'</span><input data-p="'+esc(name)+'" data-k="'+esc(k)+'" value="'+esc(P[name][k])+'"><button class="btn sm" data-del="'+esc(name)+'|'+esc(k)+'">'+tr("del")+'</button></div>'; });
+    d.innerHTML=`<h3>'+esc(name)+' <button class="btn sm" data-delp="'+esc(name)+'">'+tr("del")+'</button></h3>'+rows+'
+      <div class="row" style="margin-top:6px"><input class="nf" data-np="'+esc(name)+'" placeholder="'+tr("newField")+'" style="max-width:180px"><input class="nv" data-np="'+esc(name)+'" placeholder="'+tr("newValue")+'" style="max-width:260px"><button class="btn sm" data-addf="'+esc(name)+'">'+tr("addField")+'</button></div>`;
     root.appendChild(d);
   });
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
@@ -227,4 +227,4 @@ open(my $fh, '>:encoding(UTF-8)', $output_path) or do {
     exit 1;
 };
 print $fh $html_content;
-close($fh);
+close $fh;

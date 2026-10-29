@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # 1781743218784.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 
 # Prüfe Aufrufparameter
 if len(sys.argv) != 2:
-    sys.stderr.write("Aufruf: " + sys.argv[0] + " <Ausgabedatei>\n")
+    print("Aufruf: " + sys.argv[0] + " <Ausgabedatei>", file=sys.stderr)
     sys.exit(1)
+
 output_path = sys.argv[1]
 
 html_content = '''<!DOCTYPE html>
@@ -215,13 +216,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
-except Exception as error:
-    sys.stderr.write("Konnte Datei '" + output_path + "' nicht öffnen: " + str(error) + "\n")
+except Exception as err:
+    print("Konnte Datei '" + output_path + "' nicht öffnen: " + str(err), file=sys.stderr)
     sys.exit(1)
