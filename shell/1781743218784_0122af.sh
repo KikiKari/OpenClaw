@@ -1,20 +1,20 @@
 #!/bin/bash
-# 1781743218784_0122af.py — portiert nach shell
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af.py
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
+# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Prüfe Aufrufparameter
-if [ "$#" -ne 1 ]; then
+if [[ $# -ne 1 ]]; then
     echo "Aufruf: $0 <Ausgabedatei>" >&2
     exit 1
 fi
 
-output_path="$1"
+outputPath="$1"
 
-# HTML-Inhalt
-read -r -d '' html_content <<'HTML_END'
+# HTML-Inhalt als HERE-Document-Variable
+htmlContent=$(cat <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -221,9 +221,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 HTML_END
+)
 
-# Schreibe die HTML-Inhalte in die Ausgabedatei
-echo "$html_content" > "$output_path" || {
-    echo "Konnte Datei '$output_path' nicht öffnen." >&2
+# Schreibe den HTML-Inhalt in die Ausgabedatei
+echo "$htmlContent" > "$outputPath" || {
+    echo "Konnte Datei '$outputPath' nicht öffnen: $?" >&2
     exit 1
 }

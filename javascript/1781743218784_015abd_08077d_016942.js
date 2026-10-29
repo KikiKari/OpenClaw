@@ -1,13 +1,30 @@
 #!/usr/bin/env node
-// 1781743218784_015abd_08077d.sh — portiert nach javascript
-// Quelle: shell, Projects@abstractions:shell/1781743218784_015abd_08077d.sh
-// Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_015abd_08077d_016942.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d_016942.pl
+// Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
-const path = require('path');
+// 1781743218784_015abd_08077d.js — portiert nach shell
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
+// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
-function generateHtml() {
-  return `<!DOCTYPE html>
+// 1781743218784_015abd.tcl — portiert nach javascript
+// Quelle: tcl, Projects@abstractions:tcl/1781743218784_015abd.tcl
+// Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_015abd.js — portiert nach tcl
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
+// Erzeugt: 2026-10-25 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784.py — portiert nach javascript
+// Quelle: python, Projects@abstractions:python/1781743218784.py
+// Erzeugt: 2026-10-24 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784.js — portiert nach python
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
+
+function generate_html() {
+    return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -214,24 +231,30 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 }
 
-function main() {
-  const args = process.argv.slice(2);
-  
-  if (args.length !== 1) {
-    console.error("Usage: node " + path.basename(process.argv[1]) + " <output-file>");
-    process.exit(1);
-  }
-  
-  const outputFile = args[0];
-  
-  try {
-    const htmlContent = generateHtml();
-    fs.writeFileSync(outputFile, htmlContent, 'utf8');
-    console.log("HTML file generated: " + outputFile);
-  } catch (error) {
-    console.error("Error generating HTML file:", error.message);
-    process.exit(1);
-  }
+function main(args) {
+    if (args.length !== 1) {
+        console.error("Usage: " + process.argv[1] + " <output-file>");
+        process.exit(1);
+    }
+    
+    const fs = require('fs');
+    const output_file = args[0];
+    
+    // Generate HTML content and write to file
+    try {
+        fs.writeFileSync(output_file, generate_html());
+    } catch (err) {
+        console.error("Error generating HTML file");
+        process.exit(1);
+    }
+    
+    // Check if write was successful
+    if (fs.existsSync(output_file)) {
+        console.log("HTML file generated: " + output_file);
+    } else {
+        console.error("Error generating HTML file");
+        process.exit(1);
+    }
 }
 
-main();
+main(process.argv.slice(2));

@@ -1,13 +1,9 @@
 #!/usr/bin/env tclsh
 # 1781743218784_015abd_08077d.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_015abd_08077d.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d.pl
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
-
-proc generateHtml {} {
+proc generate_html {} {
     return {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -106,7 +102,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -223,19 +219,16 @@ proc main {} {
         exit 1
     }
     
-    set outputFile [lindex $argv 0]
+    set output_file [lindex $argv 0]
     
     try {
-        set htmlContent [generateHtml]
-        set fh [open $outputFile w]
-        puts -nonewline $fh $htmlContent
+        set html_content [generate_html]
+        set fh [open $output_file w]
+        puts -nonewline $fh $html_content
         close $fh
-        puts "HTML file generated: $outputFile"
-    } trap {POSIX EACCES} {} {
-        puts stderr "Error generating HTML file: Permission denied"
-        exit 1
-    } on error {error} {
-        puts stderr "Error generating HTML file: $error"
+        puts "HTML file generated: $output_file"
+    } trap error {error_message options} {
+        puts stderr "Error generating HTML file: $error_message"
         exit 1
     }
 }

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-// 1781743218784_015abd_08077d.py — portiert nach javascript
-// Quelle: python, Projects@abstractions:python/1781743218784_015abd_08077d.py
-// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_015abd_08077d_139564.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd_08077d_139564.pl
+// Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
-const fs = require('fs');
+const fs = require('fs').promises;
+const process = require('process');
 
-function generateHtml() {
+async function generateHtml() {
   return `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -213,7 +214,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   
   if (args.length !== 1) {
@@ -224,8 +225,8 @@ function main() {
   const outputFile = args[0];
   
   try {
-    const htmlContent = generateHtml();
-    fs.writeFileSync(outputFile, htmlContent, 'utf-8');
+    const htmlContent = await generateHtml();
+    await fs.writeFile(outputFile, htmlContent, 'utf8');
     console.log(`HTML file generated: ${outputFile}`);
   } catch (error) {
     console.log(`Error generating HTML file: ${error.message}`);
@@ -233,4 +234,8 @@ function main() {
   }
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = { generateHtml, main };

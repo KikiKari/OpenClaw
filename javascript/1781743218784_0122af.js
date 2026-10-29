@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// 1781743218784_0122af.ps1 — portiert nach javascript
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-// Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
+// Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
 
 // Prüfe Aufrufparameter
 if (process.argv.length !== 3) {
-  console.error(`Aufruf: ${process.argv[1]} <Ausgabedatei>`);
-  process.exit(1);
+    console.error("Aufruf: " + process.argv[1] + " <Ausgabedatei>");
+    process.exit(1);
 }
 const outputPath = process.argv[2];
 
@@ -219,8 +219,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>`;
 
 try {
-  fs.writeFileSync(outputPath, htmlContent, 'utf8');
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
 } catch (error) {
-  console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${error.message}`);
-  process.exit(1);
+    console.error("Konnte Datei '" + outputPath + "' nicht öffnen: " + (error.message || 'Unknown error'));
+    process.exit(1);
 }

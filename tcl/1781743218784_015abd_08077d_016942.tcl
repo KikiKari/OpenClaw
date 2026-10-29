@@ -1,14 +1,14 @@
 #!/usr/bin/env tclsh
-# 1781743218784_015abd_08077d.sh — portiert nach tcl
+# 1781743218784_015abd_08077d_016942.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d_016942.js
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_015abd_08077d.sh — portiert nach javascript
 # Quelle: shell, Projects@abstractions:shell/1781743218784_015abd_08077d.sh
-# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_015abd.tcl -- ported to Tcl
-# Source: shell, Projects@abstractions:shell/1781743218784_015abd_08077d.sh
-# Generated: 2026-10-28 by ABSTRACTIONS_MANAGER.py
-
-proc generate_html {} {
-    return {<!DOCTYPE html>
+proc generateHtml {} {
+    set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -213,35 +213,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>}
+    return $htmlContent
 }
 
-proc main {args} {
-    if {[llength $args] != 1} {
-        puts stderr "Usage: [info script] <output-file>"
+proc main {} {
+    global argv
+    
+    if {[llength $argv] != 1} {
+        puts stderr "Usage: tclsh [file tail [info script]] <output-file>"
         exit 1
     }
     
-    set output_file [lindex $args 0]
+    set outputFile [lindex $argv 0]
     
-    # Generate HTML content and write to file
-    if {[catch {set fd [open $output_file w]} error]} {
-        puts stderr "Error opening file for writing: $error"
-        exit 1
-    }
-    
-    puts -nonewline $fd [generate_html]
-    close $fd
-    
-    # Check if write was successful
-    if {[file exists $output_file] && [file size $output_file] > 0} {
-        puts "HTML file generated: $output_file"
-    } else {
-        puts stderr "Error generating HTML file"
+    if {[catch {
+        set htmlContent [generateHtml]
+        set fh [open $outputFile w]
+        puts -nonewline $fh $htmlContent
+        close $fh
+        puts "HTML file generated: $outputFile"
+    } error]} {
+        puts stderr "Error generating HTML file: $error"
         exit 1
     }
 }
 
-# Call main with command line arguments
-if {[info script] eq $argv0} {
-    main {*}$argv
-}
+main

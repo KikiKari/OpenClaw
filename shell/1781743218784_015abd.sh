@@ -1,12 +1,21 @@
 #!/bin/bash
-# 1781743218784_015abd.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_015abd.pl
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
+# Usage check
+if [ $# -ne 1 ]; then
+    echo "Usage: bash script.sh <output-file>" >&2
+    exit 1
+fi
+
+output_file="$1"
+
+# Generate HTML content
 generate_html() {
-    cat <<'EOF'
+    cat <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -212,29 +221,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
 }
 
-main() {
-    local args_count=$#
-    
-    if [[ $args_count -ne 1 ]]; then
-        echo "Usage: $0 <output-file>" >&2
-        exit 1
-    fi
-    
-    local output_file="$1"
-    
-    # Generate HTML content and write to file
-    generate_html > "$output_file"
-    
-    # Check if file was written successfully
-    if [[ $? -eq 0 ]] && [[ -f "$output_file" ]]; then
-        echo "HTML file generated: $output_file"
-    else
-        echo "Error generating HTML file: Failed to write to $output_file" >&2
-        exit 1
-    fi
-}
+# Write HTML to output file
+generate_html > "$output_file"
 
-main "$@"
+echo "HTML file generated: $output_file"

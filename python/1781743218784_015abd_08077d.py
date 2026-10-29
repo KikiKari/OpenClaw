@@ -1,18 +1,10 @@
 #!/usr/bin/env python3
 # 1781743218784_015abd_08077d.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import json
-import base64
-import hashlib
 import os
-from datetime import datetime
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes, padding
-from cryptography.hazmat.backends import default_backend
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -113,7 +105,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -220,50 +212,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>'''
-
-def derive_key(password, salt):
-    kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(),
-        length=32,
-        salt=salt,
-        iterations=210000,
-        backend=default_backend()
-    )
-    key = kdf.derive(password.encode())
-    return key
-
-def encrypt_obj(obj, password):
-    salt = os.urandom(16)
-    iv = os.urandom(12)
-    key = derive_key(password, salt)
-    
-    plaintext = json.dumps(obj, indent=2).encode('utf-8')
-    
-    cipher = Cipher(algorithms.AES(key), modes.GCM(iv), backend=default_backend())
-    encryptor = cipher.encryptor()
-    ciphertext = encryptor.update(plaintext) + encryptor.finalize()
-    
-    magic = b"SVPB1"
-    result = magic + salt + iv + encryptor.tag + ciphertext
-    return base64.b64encode(result).decode('utf-8')
-
-def decrypt_b64(b64_data, password):
-    raw = base64.b64decode(b64_data.strip())
-    if raw[:5].decode('utf-8') != "SVPB1":
-        raise Exception("magic")
-        
-    salt = raw[5:21]
-    iv = raw[21:33]
-    tag = raw[33:49]
-    ciphertext = raw[49:]
-    
-    key = derive_key(password, salt)
-    
-    cipher = Cipher(algorithms.AES(key), modes.GCM(iv, tag), backend=default_backend())
-    decryptor = cipher.decryptor()
-    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
-    
-    return json.loads(plaintext.decode('utf-8'))
 
 def main():
     args = sys.argv[1:]

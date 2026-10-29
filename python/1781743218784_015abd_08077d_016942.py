@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-# 1781743218784_015abd_08077d.sh — portiert nach python
-# Quelle: shell, Projects@abstractions:shell/1781743218784_015abd_08077d.sh
-# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_015abd_08077d.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d.js
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_015abd_08077d_016942.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_015abd_08077d_016942.js
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-
+import os
+import json
+import base64
+import hashlib
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import hashes, kdf
+from cryptography.hazmat.backends import default_backend
+import secrets
 
 def generate_html():
     return '''<!DOCTYPE html>
@@ -109,7 +112,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -217,25 +220,23 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>'''
 
-
 def main():
     args = sys.argv[1:]
     
     if len(args) != 1:
-        print("Usage: {} <output-file>".format(sys.argv[0]), file=sys.stderr)
+        print("Usage: python3 " + os.path.basename(sys.argv[0]) + " <output-file>", file=sys.stderr)
         sys.exit(1)
     
     output_file = args[0]
     
-    # Generate HTML content and write to file
     try:
+        html_content = generate_html()
         with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(generate_html())
-        print("HTML file generated: {}".format(output_file))
+            f.write(html_content)
+        print("HTML file generated: " + output_file)
     except Exception as e:
-        print("Error generating HTML file: {}".format(str(e)), file=sys.stderr)
+        print("Error generating HTML file:", str(e), file=sys.stderr)
         sys.exit(1)
-
 
 if __name__ == "__main__":
     main()
