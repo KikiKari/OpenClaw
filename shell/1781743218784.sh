@@ -1,19 +1,20 @@
-#!/bin/bash
-# 1781743218784.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-10-26 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Aufrufparameter
-if [[ $# -ne 1 ]]; then
-    echo "Aufruf: $0 <Ausgabedatei>" >&2
-    exit 1
-fi
-output_path="$1"
+# 1781743218784.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
+# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
 
-# HTML-Inhalt
-read -r -d '' html_content <<'HTML_END' || true
+# 1781743218784.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+
+generate_html() {
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -37,7 +38,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 4px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -163,7 +164,7 @@ async function deriveKey(pw,salt){
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pw,salt);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2)));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
   const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
@@ -219,10 +220,29 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF
+}
 
-# Schreibe die HTML-Inhalte in die Ausgabedatei
-if ! printf "%s" "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
-    exit 1
-fi
+main() {
+    local args=("$@")
+    
+    if [[ ${#args[@]} -ne 1 ]]; then
+        echo "Usage: $0 <output-file>" >&2
+        exit 1
+    fi
+    
+    local output_file="${args[0]}"
+    
+    # Generate HTML content and write to file
+    generate_html > "$output_file"
+    
+    # Check if file was written successfully
+    if [[ $? -eq 0 && -f "$output_file" ]]; then
+        echo "HTML file generated: $output_file"
+    else
+        echo "Error generating HTML file" >&2
+        exit 1
+    fi
+}
+
+main "$@"
