@@ -1,27 +1,27 @@
 #!/usr/bin/env python3
 # 3d.html — portiert nach python
-# Quelle: html, Projects@secret-vault-public:public/3d.html
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+# Quelle: html, Projects@tagesstatus-live-public:public/3d.html
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import json
 from pathlib import Path
 
 def generate_html(output_file):
-    """Generates the complete HTML document and writes it to the specified file."""
+    """Generates the 3D visualization HTML page"""
     
     html_content = '''<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Secret-Vault Public — Interaktive Architektur</title>
-<meta name="description" content="Vom Passwort zur verschlüsselten Datei — jede Schicht bleibt im Browser. Drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#5b5bd6">
+<title>Tagesstatus Live Public — Interaktive Architektur</title>
+<meta name="description" content="Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#0f766e">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#5b5bd6; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -69,8 +69,8 @@ def generate_html(output_file):
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Secret-Vault Public</h1>
-  <p class="lede">Vom Passwort zur verschlüsselten Datei — jede Schicht bleibt im Browser. Drehen, zoomen, Knoten auswählen.</p>
+  <h1>Tagesstatus Live Public</h1>
+  <p class="lede">Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -104,7 +104,7 @@ def generate_html(output_file):
 <script>
 (function(){
   "use strict";
-  var SPEC = ''' + json.dumps(get_spec_data()) + ''';
+  var SPEC = ''' + json.dumps(get_spec_data(), ensure_ascii=False) + ''';
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -331,84 +331,83 @@ def generate_html(output_file):
 </script>
 </body>
 </html>'''
-
+    
+    # Write to file
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(html_content)
 
 def get_spec_data():
-    """Returns the specification data structure as a Python dictionary."""
+    """Returns the specification data structure"""
     return {
         "schichten": [
             {
-                "name": "Eingaben",
+                "name": "Tokens",
                 "farbe": "#5f6773",
                 "blocks": [
-                    {"id": "passphrase", "name": "Passphrase", "untertitel": "nie gespeichert"},
-                    {"id": "vault-datei", "name": "Vault-Datei", "untertitel": "Ciphertext"},
-                    {"id": "neue-felder", "name": "neue Felder", "untertitel": "Formular"}
+                    {"id": "abfrage-beim-oeffnen", "name": "Abfrage beim Oeffnen", "untertitel": "kein Vorbelegen"},
+                    {"id": "localstorage", "name": "localStorage", "untertitel": "nur lokal"},
+                    {"id": "keine-vorbelegung", "name": "keine Vorbelegung", "untertitel": "leer geliefert"}
                 ]
             },
             {
-                "name": "Schluesselableitung",
+                "name": "Quellen",
                 "farbe": "#2481cc",
                 "blocks": [
-                    {"id": "pbkdf2-210k", "name": "PBKDF2 210k", "untertitel": "Iterationen"},
-                    {"id": "salt-16-b", "name": "Salt 16 B", "untertitel": "zufaellig"},
-                    {"id": "sha-256", "name": "SHA-256", "untertitel": "HMAC"}
+                    {"id": "github", "name": "GitHub", "untertitel": "Repos, Kontingent"},
+                    {"id": "vercel", "name": "Vercel", "untertitel": "Deployments"},
+                    {"id": "docker-hub", "name": "Docker Hub", "untertitel": "Abbilder"},
+                    {"id": "openrouter", "name": "OpenRouter", "untertitel": "Guthaben"},
+                    {"id": "openai", "name": "OpenAI", "untertitel": "Admin-Key"},
+                    {"id": "anthropic", "name": "Anthropic", "untertitel": "Admin-Key"},
+                    {"id": "tailscale", "name": "Tailscale", "untertitel": "Geraete"},
+                    {"id": "clawhub", "name": "ClawHub", "untertitel": "Skills"}
                 ]
             },
             {
-                "name": "Verschluesselung",
-                "farbe": "#5b5bd6",
+                "name": "Abruf",
+                "farbe": "#6d5bd0",
                 "blocks": [
-                    {"id": "aes-256-gcm", "name": "AES-256-GCM", "untertitel": "authentisiert"},
-                    {"id": "iv-12-b", "name": "IV 12 B", "untertitel": "nie doppelt"},
-                    {"id": "crypto-subtle", "name": "crypto.subtle", "untertitel": "WebCrypto"}
-                ]
-            },
-            {
-                "name": "Verwaltung",
-                "farbe": "#b45309",
-                "blocks": [
-                    {"id": "anbieter", "name": "Anbieter", "untertitel": "Gruppen"},
-                    {"id": "felder", "name": "Felder", "untertitel": "Schluessel/Wert"},
-                    {"id": "rotation", "name": "Rotation", "untertitel": "neuer Wert"}
+                    {"id": "fetch-je-quelle", "name": "fetch je Quelle", "untertitel": "direkt"},
+                    {"id": "cors-pruefung", "name": "CORS-Pruefung", "untertitel": "entscheidet"},
+                    {"id": "fehler-isolieren", "name": "Fehler isolieren", "untertitel": "je Kachel"}
                 ]
             },
             {
                 "name": "Ausgabe",
-                "farbe": "#22a06b",
+                "farbe": "#0f766e",
                 "blocks": [
-                    {"id": "download", "name": "Download", "untertitel": "Blob-URL"},
-                    {"id": "export", "name": "Export", "untertitel": "JSON"},
-                    {"id": "zwischenablage", "name": "Zwischenablage", "untertitel": "nur auf Klick"}
+                    {"id": "kacheln", "name": "Kacheln", "untertitel": "ein Blick"},
+                    {"id": "verbrauch", "name": "Verbrauch", "untertitel": "Zahlen"},
+                    {"id": "keine-daten-hinweis", "name": "keine Daten = Hinweis", "untertitel": "mit Grund"}
                 ]
             }
         ],
         "kanten": [
-            {"von": "passphrase", "nach": "pbkdf2-210k", "art": "fluss"},
-            {"von": "vault-datei", "nach": "salt-16-b", "art": "fluss"},
-            {"von": "neue-felder", "nach": "sha-256", "art": "fluss"},
-            {"von": "pbkdf2-210k", "nach": "aes-256-gcm", "art": "fluss"},
-            {"von": "salt-16-b", "nach": "iv-12-b", "art": "fluss"},
-            {"von": "sha-256", "nach": "crypto-subtle", "art": "fluss"},
-            {"von": "aes-256-gcm", "nach": "anbieter", "art": "fluss"},
-            {"von": "iv-12-b", "nach": "felder", "art": "fluss"},
-            {"von": "crypto-subtle", "nach": "rotation", "art": "fluss"},
-            {"von": "anbieter", "nach": "download", "art": "fluss"},
-            {"von": "felder", "nach": "export", "art": "fluss"},
-            {"von": "rotation", "nach": "zwischenablage", "art": "fluss"}
+            {"von": "abfrage-beim-oeffnen", "nach": "github", "art": "fluss"},
+            {"von": "localstorage", "nach": "vercel", "art": "fluss"},
+            {"von": "keine-vorbelegung", "nach": "docker-hub", "art": "fluss"},
+            {"von": "github", "nach": "fetch-je-quelle", "art": "fluss"},
+            {"von": "vercel", "nach": "cors-pruefung", "art": "fluss"},
+            {"von": "docker-hub", "nach": "fehler-isolieren", "art": "fluss"},
+            {"von": "openrouter", "nach": "fetch-je-quelle", "art": "fluss"},
+            {"von": "openai", "nach": "cors-pruefung", "art": "fluss"},
+            {"von": "anthropic", "nach": "fehler-isolieren", "art": "fluss"},
+            {"von": "tailscale", "nach": "fetch-je-quelle", "art": "fluss"},
+            {"von": "clawhub", "nach": "cors-pruefung", "art": "fluss"},
+            {"von": "fetch-je-quelle", "nach": "kacheln", "art": "fluss"},
+            {"von": "cors-pruefung", "nach": "verbrauch", "art": "fluss"},
+            {"von": "fehler-isolieren", "nach": "keine-daten-hinweis", "art": "fluss"}
         ],
         "kantenarten": [
-            {"art": "fluss", "farbe": "#5b5bd6", "stil": "voll", "text": "Fluss von unten nach oben"}
+            {"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}
         ]
     }
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 script.py <output_file>")
+        print("Usage: python3 script.py <output-file>")
         sys.exit(1)
     
-    output_path = Path(sys.argv[1])
-    generate_html(output_path)
-    print(f"HTML file generated: {output_path}")
+    output_file = sys.argv[1]
+    generate_html(output_file)
+    print(f"Generated {output_file}")
