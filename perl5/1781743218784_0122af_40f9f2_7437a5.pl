@@ -1,12 +1,10 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_40f9f2.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2.py
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_7437a5.tcl — portiert nach perl5
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2_7437a5.tcl
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
@@ -224,10 +222,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Versuche die Datei zu öffnen und zu schreiben
-open(my $fh, '>:encoding(UTF-8)', $output_path) or do {
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
-    exit 1;
-};
+# Schreibe HTML-Inhalt in Ausgabedatei
+open(my $fh, '>', $output_path) or die "Konnte Datei '$output_path' nicht öffnen: $!";
 print $fh $html_content;
 close $fh;

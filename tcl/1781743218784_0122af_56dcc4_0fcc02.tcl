@@ -1,22 +1,16 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_56dcc4.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_56dcc4.py
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_56dcc4_0fcc02.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4_0fcc02.pl
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_56dcc4.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_56dcc4.js
-# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.tcl — portiert nach javascript
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af.tcl
-# Erzeugt: 2026-10-27 durch ABSTRACTIONS_MANAGER.py
-
+# Prüfe Aufrufparameter
 if {$argc != 1} {
     puts stderr "Aufruf: [info script] <Ausgabedatei>"
     exit 1
 }
 set output_path [lindex $argv 0]
 
+# HTML-Inhalt als String-Konstante
 set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -221,12 +215,11 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
+</html>
+}
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
-if {[catch {set f [open $output_path w]} errmsg]} {
-    puts stderr "Konnte Datei '$output_path' nicht öffnen: $errmsg"
-    exit 1
-}
-puts -nonewline $f $html_content
-close $f
+set fh [open $output_path w]
+fconfigure $fh -encoding utf-8
+puts -nonewline $fh $html_content
+close $fh

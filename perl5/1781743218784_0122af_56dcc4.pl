@@ -1,26 +1,22 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # 1781743218784_0122af_56dcc4.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_56dcc4.js
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af_56dcc4.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4.pl
-# Erzeugt: 2026-10-28 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
+use open qw(:std :utf8);
 
-# Prüfe Aufrufparameter
-if (@ARGV != 1) {
+my $output_path = shift @ARGV;
+
+if (!defined $output_path) {
     my $script_name = $0;
-    $script_name =~ s|.*/||;
-    print STDERR "Aufruf: $script_name <Ausgabedatei>\n";
+    warn "Aufruf: $script_name <Ausgabedatei>\n";
     exit 1;
 }
-my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -226,12 +222,14 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
-# Schreibe die HTML-Inhalte in die Ausgabedatei
-open(my $fh, '>', $output_path) or do {
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
+open(my $fh, '>:encoding(UTF-8)', $output_path) or do {
+    my $errmsg = $!;
+    chomp $errmsg;
+    warn "Konnte Datei '$output_path' nicht öffnen: $errmsg\n";
     exit 1;
 };
+
 print $fh $html_content;
-close($fh);
+close $fh;

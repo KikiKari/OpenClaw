@@ -1,11 +1,11 @@
-#!/bin/bash
-# 1781743218784.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Anzahl der Argumente
+# Prüfe Argumente
 if [[ $# -ne 1 ]]; then
     echo "Usage: $0 <output-file>" >&2
     exit 1
@@ -13,8 +13,9 @@ fi
 
 output_file="$1"
 
-# HTML-Inhalt generieren und in Datei schreiben
-cat > "$output_file" << 'HTML_END'
+# Generiere HTML-Inhalt
+generate_html() {
+    cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,6 +221,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF
+}
 
+# Schreibe HTML-Inhalt in Ausgabedatei
+generate_html > "$output_file"
 echo "HTML file generated: $output_file"

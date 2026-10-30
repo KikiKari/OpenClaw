@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_56dcc4.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_56dcc4.tcl
-// Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_56dcc4_006357.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_56dcc4_006357.pl
+// Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 // Prüfe Aufrufparameter
 if (process.argv.length !== 3) {
-    console.error(`Aufruf: ${process.argv[1]} <Ausgabedatei>`);
+    process.stderr.write(`Aufruf: ${process.argv[1]} <Ausgabedatei>\n`);
     process.exit(1);
 }
 const outputPath = process.argv[2];
+
+const fs = require('fs');
 
 const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -214,13 +216,7 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}`;
+</html>`;
 
 // Schreibe die HTML-Inhalte in die Ausgabedatei
-import { writeFileSync } from 'fs';
-try {
-    writeFileSync(outputPath, htmlContent);
-} catch (error) {
-    console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${error.message}`);
-    process.exit(1);
-}
+fs.writeFileSync(outputPath, htmlContent);

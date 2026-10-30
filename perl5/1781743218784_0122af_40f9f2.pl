@@ -1,18 +1,19 @@
-#!/usr/bin/env perl
-# 1781743218784_0122af_40f9f2.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2.ps1
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0122af_40f9f2.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2.js
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
 use open qw(:std :utf8);
-use File::Spec;
-use Encode;
+use File::Basename;
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
-    die "Aufruf: $0 <Ausgabedatei>\n";
+    my $script_name = basename($0);
+    print STDERR "Aufruf: $script_name <Ausgabedatei>\n";
+    exit 1;
 }
 my $output_path = $ARGV[0];
 
@@ -224,12 +225,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-eval {
-    open(my $fh, '>:encoding(UTF-8)', $output_path) or die "Konnte Datei '$output_path' nicht öffnen: $!";
-    print $fh $html_content;
-    close($fh);
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+open(my $fh, '>:encoding(UTF-8)', $output_path) or do {
+    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
+    exit 1;
 };
-if ($@) {
-    die "Konnte Datei '$output_path' nicht öffnen: $@\n";
-}
+print $fh $html_content;
+close $fh;

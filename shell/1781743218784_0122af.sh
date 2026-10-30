@@ -1,20 +1,19 @@
-#!/usr/bin/env bash
-# 1781743218784_0122af.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
-# Erzeugt: 2026-10-29 durch ABSTRACTIONS_MANAGER.py
+#!/bin/bash
+# 1781743218784_0122af.ps1 — portiert nach shell
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Prüfe Aufrufparameter
-if [[ $# -ne 1 ]]; then
-    echo "Aufruf: $0 <Ausgabedatei>" >&2
+if [ $# -ne 1 ]; then
+    echo "Aufruf: $(basename "$0") <Ausgabedatei>" >&2
     exit 1
 fi
-
-output_path="$1"
+outputPath="$1"
 
 # HTML-Inhalt
-read -r -d '' html_content <<'EOF_HTML'
+read -r -d '' htmlContent <<'EOF_HTML_CONTENT'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,17 +219,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF_HTML
+EOF_HTML_CONTENT
 
 # Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen: Unknown error" >&2
-    exit 1
-fi
-EOF_HTML
-
-# Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen: Unknown error" >&2
+if ! printf "%s" "$htmlContent" > "$outputPath"; then
+    echo "Konnte Datei '$outputPath' nicht öffnen: $(printf "%s" "$htmlContent" > "$outputPath" 2>&1)" >&2
     exit 1
 fi
