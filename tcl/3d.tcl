@@ -1,52 +1,27 @@
 #!/usr/bin/env tclsh
 # 3d.html — portiert nach tcl
-# Quelle: html, Projects@tagesstatus-live-public:public/3d.html
+# Quelle: html, Projects@tiktok-monitor:public/3d.html
 # Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
-# Tcl/Tk port of the 3D visualization HTML page using Tk canvas and 3D rendering logic
+# Portierung von 3d.html zu Tcl 8.6
+# Erzeugt das HTML-Dokument dynamisch und schreibt es in eine Datei
 
-package require Tk
+proc generate_html {filename} {
+    set html ""
 
-proc main {args} {
-    global argv
-    set output_file ""
-    
-    # Parse command line arguments
-    if {[llength $argv] == 2 && [lindex $argv 0] eq "-o"} {
-        set output_file [lindex $argv 1]
-    } elseif {[llength $argv] == 1} {
-        set output_file [lindex $argv 0]
-    } else {
-        puts stderr "Usage: $argv0 \[-o\] <output_file>"
-        exit 1
-    }
-    
-    # Create the HTML content
-    set html_content [generate_html]
-    
-    # Write to file
-    set fd [open $output_file w]
-    puts -nonewline $fd $html_content
-    close $fd
-    
-    puts "Generated $output_file"
-}
-
-proc generate_html {} {
-    set html {}
-    
+    # HTML-Kopf und Metadaten
     append html {<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tagesstatus Live Public — Interaktive Architektur</title>
-<meta name="description" content="Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#0f766e">
+<title>tt-live — Interaktive Architektur</title>
+<meta name="description" content="Vom @handle zum Ereignis: Auflösung, Prüfung, Daemon — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#fe2c55">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#fe2c55; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -94,8 +69,8 @@ proc generate_html {} {
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Tagesstatus Live Public</h1>
-  <p class="lede">Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.</p>
+  <h1>tt-live</h1>
+  <p class="lede">Vom @handle zum Ereignis: Auflösung, Prüfung, Daemon — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -129,7 +104,7 @@ proc generate_html {} {
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Tokens", "farbe": "#5f6773", "blocks": [{"id": "abfrage-beim-oeffnen", "name": "Abfrage beim Oeffnen", "untertitel": "kein Vorbelegen"}, {"id": "localstorage", "name": "localStorage", "untertitel": "nur lokal"}, {"id": "keine-vorbelegung", "name": "keine Vorbelegung", "untertitel": "leer geliefert"}]}, {"name": "Quellen", "farbe": "#2481cc", "blocks": [{"id": "github", "name": "GitHub", "untertitel": "Repos, Kontingent"}, {"id": "vercel", "name": "Vercel", "untertitel": "Deployments"}, {"id": "docker-hub", "name": "Docker Hub", "untertitel": "Abbilder"}, {"id": "openrouter", "name": "OpenRouter", "untertitel": "Guthaben"}, {"id": "openai", "name": "OpenAI", "untertitel": "Admin-Key"}, {"id": "anthropic", "name": "Anthropic", "untertitel": "Admin-Key"}, {"id": "tailscale", "name": "Tailscale", "untertitel": "Geraete"}, {"id": "clawhub", "name": "ClawHub", "untertitel": "Skills"}]}, {"name": "Abruf", "farbe": "#6d5bd0", "blocks": [{"id": "fetch-je-quelle", "name": "fetch je Quelle", "untertitel": "direkt"}, {"id": "cors-pruefung", "name": "CORS-Pruefung", "untertitel": "entscheidet"}, {"id": "fehler-isolieren", "name": "Fehler isolieren", "untertitel": "je Kachel"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "kacheln", "name": "Kacheln", "untertitel": "ein Blick"}, {"id": "verbrauch", "name": "Verbrauch", "untertitel": "Zahlen"}, {"id": "keine-daten-hinweis", "name": "keine Daten = Hinweis", "untertitel": "mit Grund"}]}], "kanten": [{"von": "abfrage-beim-oeffnen", "nach": "github", "art": "fluss"}, {"von": "localstorage", "nach": "vercel", "art": "fluss"}, {"von": "keine-vorbelegung", "nach": "docker-hub", "art": "fluss"}, {"von": "github", "nach": "fetch-je-quelle", "art": "fluss"}, {"von": "vercel", "nach": "cors-pruefung", "art": "fluss"}, {"von": "docker-hub", "nach": "fehler-isolieren", "art": "fluss"}, {"von": "openrouter", "nach": "fetch-je-quelle", "art": "fluss"}, {"von": "openai", "nach": "cors-pruefung", "art": "fluss"}, {"von": "anthropic", "nach": "fehler-isolieren", "art": "fluss"}, {"von": "tailscale", "nach": "fetch-je-quelle", "art": "fluss"}, {"von": "clawhub", "nach": "cors-pruefung", "art": "fluss"}, {"von": "fetch-je-quelle", "nach": "kacheln", "art": "fluss"}, {"von": "cors-pruefung", "nach": "verbrauch", "art": "fluss"}, {"von": "fehler-isolieren", "nach": "keine-daten-hinweis", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = } {[generate_spec]}{;
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -356,8 +331,22 @@ proc generate_html {} {
 </script>
 </body>
 </html>}
-    
-    return $html
+
+    # Schreibe in Datei
+    set fd [open $filename w]
+    puts $fd $html
+    close $fd
 }
 
-main {*}$argv
+proc generate_spec {} {
+    return {{"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "tiktok-com-user", "name": "tiktok.com/@user", "untertitel": "oeffentlich"}, {"id": "room-id", "name": "room_id", "untertitel": "aufgeloest"}, {"id": "m3u8", "name": "m3u8", "untertitel": "Stream-URL"}]}, {"name": "Werkzeuge", "farbe": "#2481cc", "blocks": [{"id": "get-room-id-py", "name": "get_room_id.py", "untertitel": "handle -> id"}, {"id": "check-alive-py", "name": "check_alive.py", "untertitel": "live ja/nein"}, {"id": "tt-live-py", "name": "tt_live.py", "untertitel": "alles plus Daemon"}]}, {"name": "Einstieg", "farbe": "#6d5bd0", "blocks": [{"id": "tt-live-sh", "name": "tt-live.sh", "untertitel": "Einstieg"}, {"id": "tt-live-json", "name": "tt-live.json", "untertitel": "Aufrufe"}]}, {"name": "Daemon", "farbe": "#b45309", "blocks": [{"id": "zeitfenster", "name": "Zeitfenster", "untertitel": "Dauer + Abstand"}, {"id": "zustandsspeicher", "name": "Zustandsspeicher", "untertitel": "letzter Stand"}, {"id": "abstand", "name": "Abstand", "untertitel": "Takt"}]}, {"name": "Ereignisse", "farbe": "#fe2c55", "blocks": [{"id": "go-live", "name": "go_live", "untertitel": "Wechsel"}, {"id": "go-offline", "name": "go_offline", "untertitel": "Wechsel"}, {"id": "rename-detected", "name": "rename_detected", "untertitel": "Namenswechsel"}]}], "kanten": [{"von": "tiktok-com-user", "nach": "get-room-id-py", "art": "fluss"}, {"von": "room-id", "nach": "check-alive-py", "art": "fluss"}, {"von": "m3u8", "nach": "tt-live-py", "art": "fluss"}, {"von": "get-room-id-py", "nach": "tt-live-sh", "art": "fluss"}, {"von": "check-alive-py", "nach": "tt-live-json", "art": "fluss"}, {"von": "tt-live-py", "nach": "tt-live-sh", "art": "fluss"}, {"von": "tt-live-sh", "nach": "zeitfenster", "art": "fluss"}, {"von": "tt-live-json", "nach": "zustandsspeicher", "art": "fluss"}, {"von": "zeitfenster", "nach": "go-live", "art": "fluss"}, {"von": "zustandsspeicher", "nach": "go-offline", "art": "fluss"}, {"von": "abstand", "nach": "rename-detected", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]}}
+}
+
+# Hauptprogramm
+if {$argc != 1} {
+    puts stderr "Verwendung: $argv0 <ausgabedatei>"
+    exit 1
+}
+
+set output_file [lindex $argv 0]
+generate_html $output_file

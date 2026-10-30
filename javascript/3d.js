@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 // 3d.html — portiert nach javascript
-// Quelle: html, Projects@tagesstatus-live-public:public/3d.html
+// Quelle: html, Projects@tiktok-monitor:public/3d.html
 // Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 const path = require('path');
 
-function create3DVisualization(outputFile) {
-  const htmlContent = `<!DOCTYPE html>
+function generateHTML(outputFile) {
+  const html = `<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tagesstatus Live Public — Interaktive Architektur</title>
-<meta name="description" content="Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.">
-<meta name="theme-color" content="#0f766e">
+<title>tt-live — Interaktive Architektur</title>
+<meta name="description" content="Vom @handle zum Ereignis: Auflösung, Prüfung, Daemon — drehen, zoomen, Knoten auswählen.">
+<meta name="theme-color" content="#fe2c55">
 <style>
   :root{
     --bg:#fbfaf7; --panel:#fff; --line:#e6e3dc; --text:#16191d; --muted:#5f6773;
-    --ac:#0f766e; --buehne:#0e1420; --buehne-line:#1d2739;
+    --ac:#fe2c55; --buehne:#0e1420; --buehne-line:#1d2739;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark){
@@ -66,8 +66,8 @@ function create3DVisualization(outputFile) {
 <div class="wrap">
 
   <p class="technik">three.js · r128</p>
-  <h1>Tagesstatus Live Public</h1>
-  <p class="lede">Acht Dienste, ein Blick: Tokens, Abruf, Kacheln — drehen, zoomen, Knoten auswählen.</p>
+  <h1>tt-live</h1>
+  <p class="lede">Vom @handle zum Ereignis: Auflösung, Prüfung, Daemon — drehen, zoomen, Knoten auswählen.</p>
 
   <div class="raster">
     <div class="buehne" id="buehne">
@@ -101,7 +101,7 @@ function create3DVisualization(outputFile) {
 <script>
 (function(){
   "use strict";
-  var SPEC = {"schichten": [{"name": "Tokens", "farbe": "#5f6773", "blocks": [{"id": "abfrage-beim-oeffnen", "name": "Abfrage beim Oeffnen", "untertitel": "kein Vorbelegen"}, {"id": "localstorage", "name": "localStorage", "untertitel": "nur lokal"}, {"id": "keine-vorbelegung", "name": "keine Vorbelegung", "untertitel": "leer geliefert"}]}, {"name": "Quellen", "farbe": "#2481cc", "blocks": [{"id": "github", "name": "GitHub", "untertitel": "Repos, Kontingent"}, {"id": "vercel", "name": "Vercel", "untertitel": "Deployments"}, {"id": "docker-hub", "name": "Docker Hub", "untertitel": "Abbilder"}, {"id": "openrouter", "name": "OpenRouter", "untertitel": "Guthaben"}, {"id": "openai", "name": "OpenAI", "untertitel": "Admin-Key"}, {"id": "anthropic", "name": "Anthropic", "untertitel": "Admin-Key"}, {"id": "tailscale", "name": "Tailscale", "untertitel": "Geraete"}, {"id": "clawhub", "name": "ClawHub", "untertitel": "Skills"}]}, {"name": "Abruf", "farbe": "#6d5bd0", "blocks": [{"id": "fetch-je-quelle", "name": "fetch je Quelle", "untertitel": "direkt"}, {"id": "cors-pruefung", "name": "CORS-Pruefung", "untertitel": "entscheidet"}, {"id": "fehler-isolieren", "name": "Fehler isolieren", "untertitel": "je Kachel"}]}, {"name": "Ausgabe", "farbe": "#0f766e", "blocks": [{"id": "kacheln", "name": "Kacheln", "untertitel": "ein Blick"}, {"id": "verbrauch", "name": "Verbrauch", "untertitel": "Zahlen"}, {"id": "keine-daten-hinweis", "name": "keine Daten = Hinweis", "untertitel": "mit Grund"}]}], "kanten": [{"von": "abfrage-beim-oeffnen", "nach": "github", "art": "fluss"}, {"von": "localstorage", "nach": "vercel", "art": "fluss"}, {"von": "keine-vorbelegung", "nach": "docker-hub", "art": "fluss"}, {"von": "github", "nach": "fetch-je-quelle", "art": "fluss"}, {"von": "vercel", "nach": "cors-pruefung", "art": "fluss"}, {"von": "docker-hub", "nach": "fehler-isolieren", "art": "fluss"}, {"von": "openrouter", "nach": "fetch-je-quelle", "art": "fluss"}, {"von": "openai", "nach": "cors-pruefung", "art": "fluss"}, {"von": "anthropic", "nach": "fehler-isolieren", "art": "fluss"}, {"von": "tailscale", "nach": "fetch-je-quelle", "art": "fluss"}, {"von": "clawhub", "nach": "cors-pruefung", "art": "fluss"}, {"von": "fetch-je-quelle", "nach": "kacheln", "art": "fluss"}, {"von": "cors-pruefung", "nach": "verbrauch", "art": "fluss"}, {"von": "fehler-isolieren", "nach": "keine-daten-hinweis", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#0f766e", "stil": "voll", "text": "Fluss von unten nach oben"}]};
+  var SPEC = {"schichten": [{"name": "Quellen", "farbe": "#5f6773", "blocks": [{"id": "tiktok-com-user", "name": "tiktok.com/@user", "untertitel": "oeffentlich"}, {"id": "room-id", "name": "room_id", "untertitel": "aufgeloest"}, {"id": "m3u8", "name": "m3u8", "untertitel": "Stream-URL"}]}, {"name": "Werkzeuge", "farbe": "#2481cc", "blocks": [{"id": "get-room-id-py", "name": "get_room_id.py", "untertitel": "handle -> id"}, {"id": "check-alive-py", "name": "check_alive.py", "untertitel": "live ja/nein"}, {"id": "tt-live-py", "name": "tt_live.py", "untertitel": "alles plus Daemon"}]}, {"name": "Einstieg", "farbe": "#6d5bd0", "blocks": [{"id": "tt-live-sh", "name": "tt-live.sh", "untertitel": "Einstieg"}, {"id": "tt-live-json", "name": "tt-live.json", "untertitel": "Aufrufe"}]}, {"name": "Daemon", "farbe": "#b45309", "blocks": [{"id": "zeitfenster", "name": "Zeitfenster", "untertitel": "Dauer + Abstand"}, {"id": "zustandsspeicher", "name": "Zustandsspeicher", "untertitel": "letzter Stand"}, {"id": "abstand", "name": "Abstand", "untertitel": "Takt"}]}, {"name": "Ereignisse", "farbe": "#fe2c55", "blocks": [{"id": "go-live", "name": "go_live", "untertitel": "Wechsel"}, {"id": "go-offline", "name": "go_offline", "untertitel": "Wechsel"}, {"id": "rename-detected", "name": "rename_detected", "untertitel": "Namenswechsel"}]}], "kanten": [{"von": "tiktok-com-user", "nach": "get-room-id-py", "art": "fluss"}, {"von": "room-id", "nach": "check-alive-py", "art": "fluss"}, {"von": "m3u8", "nach": "tt-live-py", "art": "fluss"}, {"von": "get-room-id-py", "nach": "tt-live-sh", "art": "fluss"}, {"von": "check-alive-py", "nach": "tt-live-json", "art": "fluss"}, {"von": "tt-live-py", "nach": "tt-live-sh", "art": "fluss"}, {"von": "tt-live-sh", "nach": "zeitfenster", "art": "fluss"}, {"von": "tt-live-json", "nach": "zustandsspeicher", "art": "fluss"}, {"von": "zeitfenster", "nach": "go-live", "art": "fluss"}, {"von": "zustandsspeicher", "nach": "go-offline", "art": "fluss"}, {"von": "abstand", "nach": "rename-detected", "art": "fluss"}], "kantenarten": [{"art": "fluss", "farbe": "#fe2c55", "stil": "voll", "text": "Fluss von unten nach oben"}]};
 
   var buehne = document.getElementById("buehne");
   if (typeof THREE === "undefined"){
@@ -329,14 +329,14 @@ function create3DVisualization(outputFile) {
 </body>
 </html>`;
 
-  fs.writeFileSync(outputFile, htmlContent, 'utf8');
-  console.log(`3D visualization HTML file created: ${outputFile}`);
+  fs.writeFileSync(outputFile, html, 'utf8');
+  console.log(`HTML file generated: ${outputFile}`);
 }
 
 // Main execution
 if (require.main === module) {
-  const outputFile = process.argv[2] || '3d-visualization.html';
-  create3DVisualization(outputFile);
+  const outputFile = process.argv[2] || '3d.html';
+  generateHTML(outputFile);
 }
 
-module.exports = { create3DVisualization };
+module.exports = { generateHTML };
