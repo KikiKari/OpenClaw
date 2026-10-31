@@ -1,16 +1,17 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0122af_40f9f2.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2.js
-# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if {$argc != 1} {
-    puts stderr "Aufruf: [info script] <Ausgabedatei>"
+    set script_name [file tail $argv0]
+    puts stderr "Aufruf: $script_name <Ausgabedatei>"
     exit 1
 }
-set outputPath [lindex $argv 0]
+set output_path [lindex $argv 0]
 
-set htmlContent {<!DOCTYPE html>
+set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -134,7 +135,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -218,9 +219,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 # Schreibe HTML-Inhalt in Ausgabedatei
-if {[catch {set fd [open $outputPath w]} errorMsg]} {
-    puts stderr "Konnte Datei '$outputPath' nicht öffnen: $errorMsg"
+if {[catch {set fd [open $output_path w]} errmsg]} {
+    puts stderr "Konnte Datei '$output_path' nicht öffnen: $errmsg"
     exit 1
 }
-puts -nonewline $fd $htmlContent
+puts -nonewline $fd $html_content
 close $fd
+
+exit 0

@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_40f9f2.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2.tcl
-# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_7059d6.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_7059d6.js
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import json
+import base64
+import hashlib
 import os
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+import secrets
 
 # Prüfe Aufrufparameter
 if len(sys.argv) != 2:
-    print("Aufruf: {} <Ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
+    print(f"Aufruf: {sys.argv[0]} <Ausgabedatei>", file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -35,7 +43,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .wrap{max-width:820px;margin:0 auto;padding:24px 18px 70px;}
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
-.mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
+.mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,225,.92);}
 h1{font-size:21px;margin:0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
@@ -137,7 +145,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -222,8 +230,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 # Schreibe HTML-Inhalt in Ausgabedatei
 try:
-    with open(output_path, 'w') as fd:
-        fd.write(html_content)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
 except Exception as e:
-    print("Konnte Datei '{}' nicht öffnen: {}".format(output_path, str(e)), file=sys.stderr)
+    print(f"Konnte Datei '{output_path}' nicht öffnen: {str(e)}", file=sys.stderr)
     sys.exit(1)

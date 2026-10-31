@@ -1,19 +1,21 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_40f9f2.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2.py
-# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab.js
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(decode_utf8);
-use JSON qw(encode_json);
+use open qw(:std :utf8);
+use File::Spec;
+use Encode qw(encode decode);
 
 sub main {
     # Prüfe Aufrufparameter
     if (@ARGV != 1) {
-        my $prog = $0;
-        print STDERR "Aufruf: $prog <Ausgabedatei>\n";
+        my $script_name = $0;
+        $script_name =~ s|.*/||;
+        print STDERR "Aufruf: $script_name <Ausgabedatei>\n";
         exit 1;
     }
 
@@ -227,17 +229,17 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
+    # Schreibe die HTML-Datei
     eval {
         open(my $fh, '>:encoding(UTF-8)', $output_path) or die "Konnte Datei '$output_path' nicht öffnen: $!";
         print $fh $html_content;
         close($fh);
-        1;
-    } or do {
-        my $error = $@ || 'Unknown error';
-        print STDERR "Konnte Datei '$output_path' nicht öffnen: $error\n";
-        exit 1;
     };
-
+    if ($@) {
+        chomp $@;
+        print STDERR "$@\n";
+        exit 1;
+    }
 }
 
-main() unless caller;
+main();

@@ -1,5 +1,9 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_40f9f2.py — portiert nach powershell
+# 1781743218784_0122af_40f9f2_083cab.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab.js
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_40f9f2.py — portiert nach javascript
 # Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2.py
 # Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
@@ -9,9 +13,9 @@ if ($args.Count -ne 1) {
     exit 1
 }
 
-$outputPath = $args[0]
+$output_path = $args[0]
 
-$htmlContent = @'
+$html_content = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,8 +224,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '@
 
 try {
-    Set-Content -Path $outputPath -Value $htmlContent -Encoding Utf8
+    Set-Content -Path $output_path -Value $html_content -Encoding UTF8
 } catch {
-    Write-Error "Konnte Datei '$outputPath' nicht öffnen: $($_.Exception.Message)"
+    Write-Error "Konnte Datei '$output_path' nicht öffnen: $($_.Exception.Message)"
     exit 1
 }

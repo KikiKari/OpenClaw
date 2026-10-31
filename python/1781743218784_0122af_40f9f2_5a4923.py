@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_40f9f2.ps1 — portiert nach python
+# 1781743218784_0122af_40f9f2_5a4923.pl — portiert nach python
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_5a4923.pl
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_40f9f2.ps1 — portiert nach python3
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2.ps1
 # Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
 
@@ -8,7 +12,7 @@ import os
 
 # Prüfe Aufrufparameter
 if len(sys.argv) != 2:
-    print(f"Aufruf: {os.path.basename(sys.argv[0])} <Ausgabedatei>", file=sys.stderr)
+    print("Aufruf: {} <Ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -217,11 +221,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>'''
+</html>
+'''
 
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
 except Exception as e:
-    print(f"Konnte Datei '{output_path}' nicht öffnen: {e}", file=sys.stderr)
+    print("Konnte Datei '{}' nicht öffnen: {}".format(output_path, str(e)), file=sys.stderr)
     sys.exit(1)

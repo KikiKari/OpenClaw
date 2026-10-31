@@ -1,7 +1,7 @@
-#!/bin/bash
-# 1781743218784_0122af_40f9f2_7437a5.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_7437a5.pl
-# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784_0122af_40f9f2_7437a5.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_7437a5.js
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
@@ -13,8 +13,8 @@ fi
 
 output_path="$1"
 
-# HTML-Inhalt
-read -r -d '' html_content <<'HTML_CONTENT' || true
+# HTML-Inhalt als Here Document in eine Variable speichern
+html_content=$(cat << 'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,10 +220,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_CONTENT
+EOF
+)
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen: Unknown error" >&2
+# Schreibe den HTML-Inhalt in die Ausgabedatei
+if ! echo "$html_content" > "$output_path"; then
+    echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
     exit 1
 fi
