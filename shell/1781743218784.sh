@@ -1,13 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # 1781743218784.js — portiert nach shell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
 # Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Funktion zur Generierung des HTML-Inhalts
-generate_html() {
-    cat <<'EOF'
+# Prüfe Aufrufparameter
+if [[ $# -ne 1 ]]; then
+  echo "Aufruf: $0 <Ausgabedatei>" >&2
+  exit 1
+fi
+
+output_path="$1"
+
+# HTML-Inhalt
+read -r -d '' html_content <<'EOF_HTML'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -31,7 +38,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 4px;font-weight:700;}
+h1{font-size:21px;margin:0 0 0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -213,31 +220,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
-}
+EOF_HTML
 
-# Hauptfunktion
-main() {
-    local args=("$@")
-    
-    if [[ ${#args[@]} -ne 1 ]]; then
-        echo "Usage: $0 <output-file>" >&2
-        exit 1
-    fi
-    
-    local output_file="${args[0]}"
-    
-    # Generiere den HTML-Inhalt und schreibe ihn in die Datei
-    generate_html > "$output_file"
-    
-    # Überprüfe, ob das Schreiben erfolgreich war
-    if [[ $? -eq 0 ]]; then
-        echo "HTML file generated: $output_file"
-    else
-        echo "Error generating HTML file" >&2
-        exit 1
-    fi
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+{
+  printf '%s' "$html_content"
+} > "$output_path" || {
+  echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
+  exit 1
 }
-
-# Skript ausführen
-main "$@"
