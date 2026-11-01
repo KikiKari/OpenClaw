@@ -1,19 +1,21 @@
-#!/usr/bin/env perl
-# 1781743218784_0122af.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
+#!/usr/bin/perl
+# 1781743218784_0122af_0edddb.py — portiert nach perl5
+# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
 # Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use Encode qw(encode);
-use File::Spec;
+use Getopt::Long;
+use Pod::Usage;
 
-# Parameter verarbeiten
-my $output_path = $ARGV[0] // do {
-    print STDERR "Fehler: Kein Ausgabepfad angegeben.\n";
-    exit 1;
-};
+my $output_path;
+
+GetOptions(
+    'help|?' => sub { pod2usage(1); }
+) or pod2usage(2);
+
+pod2usage(2) unless @ARGV == 1;
+$output_path = $ARGV[0];
 
 my $html_content = <<'HTML_END';
 <!DOCTYPE html>
@@ -223,14 +225,39 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-eval {
-    open my $fh, '>:encoding(UTF-8)', $output_path
-        or die "Konnte Datei '$output_path' nicht öffnen: $!";
-    print $fh $html_content;
-    close $fh;
-    1;
-} or do {
-    my $error = $@ || 'Unknown error';
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $error\n";
-    exit 1;
-};
+open(my $fh, '>:encoding(UTF-8)', $output_path)
+    or die "Konnte Datei '$output_path' nicht öffnen: $!";
+print $fh $html_content;
+close $fh;
+
+__END__
+
+=head1 NAME
+
+1781743218784_0122af_0edddb.pl - Erzeugt eine HTML-Datei für Secret-Vault Public
+
+=head1 SYNOPSIS
+
+1781743218784_0122af_0edddb.pl [Optionen] output_path
+
+=head1 ARGUMENTE
+
+=over 4
+
+=item B<output_path>
+
+Pfad zur Ausgabedatei
+
+=back
+
+=head1 OPTIONEN
+
+=over 4
+
+=item B<-?>, B<--help>
+
+Zeigt diese Hilfe an und beendet das Programm.
+
+=back
+
+=cut

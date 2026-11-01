@@ -1,7 +1,7 @@
 #!/bin/bash
-# 1781743218784_0122af_40f9f2.tcl — portiert nach shell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2.tcl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_0f7ee1.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_0f7ee1.pl
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
@@ -10,11 +10,10 @@ if [[ $# -ne 1 ]]; then
     echo "Aufruf: $0 <Ausgabedatei>" >&2
     exit 1
 fi
-
 outputPath="$1"
 
 # HTML-Inhalt
-read -r -d '' htmlContent <<'EOF_HTML_CONTENT'
+read -r -d '' htmlContent <<'HTML_CONTENT' || true
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,10 +219,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF_HTML_CONTENT
+HTML_CONTENT
 
 # Schreibe HTML-Inhalt in Ausgabedatei
 if ! echo "$htmlContent" > "$outputPath"; then
-    echo "Konnte Datei '$outputPath' nicht öffnen." >&2
+    echo "Konnte Datei '$outputPath' nicht öffnen: $!" >&2
     exit 1
 fi

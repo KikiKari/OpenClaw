@@ -8,14 +8,22 @@ use warnings;
 use utf8;
 use open qw(:std :utf8);
 use File::Spec;
-use Encode qw(encode decode);
+use Encode qw(encode);
+
+# 1781743218784_0122af_40f9f2_083cab.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
+# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_40f9f2.js — portiert nach JavaScript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2.pl
+# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.pl
 
 sub main {
     # Prüfe Aufrufparameter
     if (@ARGV != 1) {
-        my $script_name = $0;
-        $script_name =~ s|.*/||;
-        print STDERR "Aufruf: $script_name <Ausgabedatei>\n";
+        my $prog = $0;
+        $prog =~ s|.*/||;
+        print STDERR "Aufruf: $prog <Ausgabedatei>\n";
         exit 1;
     }
 
@@ -229,17 +237,16 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-    # Schreibe die HTML-Datei
     eval {
-        open(my $fh, '>:encoding(UTF-8)', $output_path) or die "Konnte Datei '$output_path' nicht öffnen: $!";
+        open my $fh, '>:encoding(UTF-8)', $output_path
+            or die "Konnte Datei '$output_path' nicht öffnen: $!";
         print $fh $html_content;
-        close($fh);
+        close $fh;
     };
     if ($@) {
-        chomp $@;
-        print STDERR "$@\n";
+        print STDERR $@;
         exit 1;
     }
 }
 
-main();
+main() unless caller;

@@ -1,10 +1,13 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_40f9f2.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2.tcl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_0f7ee1.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_0f7ee1.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use utf8;
+use Encode qw(decode encode);
+use File::Slurp qw(write_file);
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
@@ -13,7 +16,7 @@ if (@ARGV != 1) {
 }
 my $outputPath = $ARGV[0];
 
-my $htmlContent = <<'HTML_CONTENT';
+my $htmlContent = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,12 +222,13 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_CONTENT
+HTML
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-open my $fh, '>', $outputPath or do {
-    print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
+eval {
+    write_file($outputPath, $htmlContent);
+    1;
+} or do {
+    my $error = $@ || 'Unknown error';
+    print STDERR "Konnte Datei '$outputPath' nicht öffnen: $error\n";
     exit 1;
 };
-print $fh $htmlContent;
-close $fh;

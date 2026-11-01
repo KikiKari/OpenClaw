@@ -1,20 +1,21 @@
 #!/bin/bash
-# 1781743218784_0122af_40f9f2_083cab.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab.ps1
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Prüfe Aufrufparameter
 if [ $# -ne 1 ]; then
-    echo "Aufruf: $(basename "$0") <Ausgabedatei>" >&2
+    script_name=$(basename "$0")
+    echo "Aufruf: $script_name <Ausgabedatei>" >&2
     exit 1
 fi
 
-outputPath="$1"
+output_path="$1"
 
-# HTML-Inhalt
-read -r -d '' htmlContent || true << 'EOF'
+# HTML-Inhalte in Variable speichern
+html_content=$(cat <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,10 +221,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
+)
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$htmlContent" > "$outputPath"; then
-    echo "Konnte Datei '$outputPath' nicht öffnen." >&2
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if ! echo "$html_content" > "$output_path"; then
+    echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
     exit 1
 fi

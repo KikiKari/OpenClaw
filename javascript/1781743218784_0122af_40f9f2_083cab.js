@@ -1,19 +1,18 @@
 #!/usr/bin/env node
 // 1781743218784_0122af_40f9f2_083cab.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af_40f9f2.py — portiert nach perl5
-// Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2.py
-// Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.py
+'use strict';
 
 const fs = require('fs');
+const path = require('path');
 
 function main() {
     // Prüfe Aufrufparameter
     if (process.argv.length !== 3) {
-        const prog = process.argv[1];
-        console.error(`Aufruf: ${prog} <Ausgabedatei>`);
+        const script_name = path.basename(process.argv[1]);
+        console.error(`Aufruf: ${script_name} <Ausgabedatei>`);
         process.exit(1);
     }
 
@@ -226,14 +225,13 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
+    // Schreibe die HTML-Inhalte in die Ausgabedatei
     try {
         fs.writeFileSync(output_path, html_content, 'utf8');
-    } catch (error) {
-        console.error(`Konnte Datei '${output_path}' nicht öffnen: ${error.message}`);
+    } catch (err) {
+        console.error(`Konnte Datei '${output_path}' nicht öffnen: ${err.message}`);
         process.exit(1);
     }
 }
 
-if (require.main === module) {
-    main();
-}
+main();

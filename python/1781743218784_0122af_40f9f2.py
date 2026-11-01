@@ -138,7 +138,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -218,14 +218,13 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
+# Schreibe die HTML-Inhalte in die Ausgabedatei
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
+    print(f"Datei erfolgreich geschrieben: {output_path}")
 except Exception as error:
-    print(f"Konnte Datei '{output_path}' nicht öffnen: {error}", file=sys.stderr)
+    print(f"Konnte Datei '{output_path}' nicht schreiben: {error}", file=sys.stderr)
     sys.exit(1)
-
-sys.exit(0)

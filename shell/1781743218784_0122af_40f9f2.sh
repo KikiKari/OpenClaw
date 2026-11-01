@@ -11,6 +11,7 @@ if [[ $# -ne 1 ]]; then
     echo "Aufruf: $script_name <Ausgabedatei>" >&2
     exit 1
 fi
+
 output_path="$1"
 
 # HTML-Inhalt
@@ -139,7 +140,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -222,10 +223,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 EOF_HTML_CONTENT
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen." >&2
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if printf '%s' "$html_content" >"$output_path"; then
+    echo "Datei erfolgreich geschrieben: $output_path"
+else
+    echo "Konnte Datei '$output_path' nicht schreiben." >&2
     exit 1
 fi
-
-exit 0

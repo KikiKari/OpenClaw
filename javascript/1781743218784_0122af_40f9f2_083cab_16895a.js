@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_40f9f2_083cab.tcl — portiert nach javascript
+// 1781743218784_0122af_40f9f2_083cab_16895a.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab_16895a.pl
+// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0122af_40f9f2_083cab.tcl — portiert nach perl5
 // Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2_083cab.tcl
 // Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
@@ -219,9 +223,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
+// Datei öffnen und schreiben
 try {
     fs.writeFileSync(output_path, html_content);
-} catch (error) {
-    console.error(`Konnte Datei '${output_path}' nicht öffnen: ${error.message}`);
+} catch (err) {
+    console.error(`Konnte Datei '${output_path}' nicht öffnen: ${err.message}`);
     process.exit(1);
 }

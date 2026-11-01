@@ -5,13 +5,13 @@
 
 # Prüfe Aufrufparameter
 if {$argc != 1} {
-    set script_name [file tail $argv0]
-    puts stderr "Aufruf: $script_name <Ausgabedatei>"
+    set scriptName [file tail $argv0]
+    puts stderr "Aufruf: $scriptName <Ausgabedatei>"
     exit 1
 }
-set output_path [lindex $argv 0]
+set outputPath [lindex $argv 0]
 
-set html_content {<!DOCTYPE html>
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -135,7 +135,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -215,15 +215,16 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-if {[catch {set fd [open $output_path w]} errmsg]} {
-    puts stderr "Konnte Datei '$output_path' nicht öffnen: $errmsg"
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if {[catch {set fd [open $outputPath w]} err]} {
+    puts stderr "Konnte Datei '$outputPath' nicht öffnen: $err"
     exit 1
 }
-puts -nonewline $fd $html_content
-close $fd
-
-exit 0
+puts -nonewline $fd $htmlContent
+if {[catch {close $fd} err]} {
+    puts stderr "Konnte Datei '$outputPath' nicht schreiben: $err"
+    exit 1
+}
+puts "Datei erfolgreich geschrieben: $outputPath"
