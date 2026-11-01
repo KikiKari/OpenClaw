@@ -1,19 +1,32 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # 1781743218784_0122af_0edddb.pl — portiert nach shell
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Parameter verarbeiten
-output_path="${1:-}"
+# Verarbeitet Kommandozeilenargumente
+output_path=""
+for arg in "$@"; do
+    case "$arg" in
+        --output_path=*)
+            output_path="${arg#*=}"
+            ;;
+        *)
+            echo "Ungültige Option: $arg" >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Prüft ob output_path gesetzt wurde
 if [[ -z "$output_path" ]]; then
-    echo "Verwendung: $0 <Ausgabedatei>" >&2
+    echo "output_path ist erforderlich" >&2
     exit 1
 fi
 
-# HTML-Inhalt
-read -r -d '' html_content <<'HTML'
+# Schreibt HTML-Inhalt in die angegebene Datei
+cat > "$output_path" << 'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,10 +232,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 
-# Datei schreiben
-echo "$html_content" > "$output_path" || {
-    echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
+# Prüfung auf erfolgreiche Dateierstellung
+if [[ ! -f "$output_path" ]]; then
+    echo "Konnte Datei '$output_path' nicht erstellen." >&2
     exit 1
-}
+fi

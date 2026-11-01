@@ -1,11 +1,7 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_0edddb.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.ps1 — portiert nach python
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_c3e146.tcl — portiert nach powershell
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb_c3e146.tcl
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 param(
     [Parameter(Mandatory=$true)]
@@ -162,7 +158,7 @@ async function deriveKey(pw,salt){
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pw,salt);
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2)));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
   const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
@@ -221,7 +217,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '@
 
 try {
-    $htmlContent | Out-File -FilePath $OutputPath -Encoding utf8
+    Set-Content -Path $OutputPath -Value $htmlContent -Encoding UTF8
 } catch {
     Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $_"
     exit 1

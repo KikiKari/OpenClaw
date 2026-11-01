@@ -1,27 +1,20 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_0edddb.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_c3e146.ps1 — portiert nach tcl
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb_c3e146.ps1
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-package require cmdline
+# 1781743218784_0122af_0edddb_c3e146.tcl -- portiert von powershell nach tcl
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb_c3e146.ps1
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-proc main {} {
-    # Define command line arguments
-    set options [list [list output_path.arg "" "Pfad zur Ausgabedatei"]]
-    set usage ": [info script] output_path"
-    
-    if {[catch {array set argv [cmdline::getoptions argv $options $usage]}]} {
-        puts stderr [cmdline::usage $options $usage]
-        exit 1
-    }
-    
-    if {$argv(output_path) eq ""} {
-        puts stderr "Fehler: output_path ist erforderlich"
-        puts stderr [cmdline::usage $options $usage]
-        exit 1
-    }
+if {$argc != 1} {
+    puts stderr "Verwendung: [info script] <Ausgabepfad>"
+    exit 1
+}
 
-    set html_content {<!DOCTYPE html>
+set OutputPath [lindex $argv 0]
+
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -225,16 +218,13 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>}
-
-    if {[catch {set f [open $argv(output_path) w]} errmsg]} {
-        puts stderr "Konnte Datei '$argv(output_path)' nicht öffnen: $errmsg"
-        exit 1
-    }
-    
-    fconfigure $f -encoding utf-8
-    puts -nonewline $f $html_content
-    close $f
+</html>
 }
 
-main
+if {[catch {set fh [open $OutputPath w]} error]} {
+    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $error"
+    exit 1
+}
+
+puts -nonewline $fh $htmlContent
+close $fh

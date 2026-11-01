@@ -3,27 +3,16 @@
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab.js
 # Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_40f9f2_083cab.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# Prüfe Aufrufparameter
+if {$argc != 1} {
+    set script_name [file tail $argv0]
+    puts stderr "Aufruf: $script_name <Ausgabedatei>"
+    exit 1
+}
 
-# 1781743218784_0122af_40f9f2.js — portiert nach Tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2.js
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.pl
+set output_path [lindex $argv 0]
 
-proc main {} {
-    global argv
-    
-    # Prüfe Aufrufparameter
-    if {[llength $argv] != 1} {
-        set prog [file tail $argv0]
-        puts stderr "Aufruf: $prog <Ausgabedatei>"
-        exit 1
-    }
-    
-    set output_path [lindex $argv 0]
-    
-    set html_content {<!DOCTYPE html>
+set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -229,18 +218,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 }
-    
-    # Schreibe die HTML-Inhalte in die Ausgabedatei
-    if {[catch {set fh [open $output_path w]} error]} {
-        puts stderr "Konnte Datei '$output_path' nicht öffnen: $error"
-        exit 1
-    }
-    
-    puts -nonewline $fh $html_content
-    close $fh
-}
 
-# Wenn dieses Skript direkt aufgerufen wird, führe main aus
-if {[info script] eq $argv0} {
-    main
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if {[catch {set fd [open $output_path w]} error]} {
+    puts stderr "Konnte Datei '$output_path' nicht öffnen: $error"
+    exit 1
 }
+puts -nonewline $fd $html_content
+close $fd

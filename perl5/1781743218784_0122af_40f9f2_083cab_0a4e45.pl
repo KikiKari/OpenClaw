@@ -1,23 +1,23 @@
-#!/usr/bin/env perl
-# 1781743218784_0122af_40f9f2_083cab.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab.ps1
+#!/usr/bin/perl
+# 1781743218784_0122af_40f9f2_083cab_0a4e45.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_0a4e45.js
 # Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(encode decode);
+use open qw(:std :utf8);
 use File::Slurper qw(write_text);
 
-# 1781743218784_0122af_40f9f2_083cab.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab.js
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+binmode STDOUT, ':encoding(UTF-8)';
+binmode STDERR, ':encoding(UTF-8)';
 
-# Parameterverarbeitung
-my $output_path = shift @ARGV;
-if (!$output_path) {
-    die "Fehler: Kein Ausgabepfad angegeben.\n";
+if (@ARGV != 1) {
+    print STDERR "Usage: perl script.pl <OutputPath>\n";
+    exit 1;
 }
+
+my $OutputPath = $ARGV[0];
 
 my $html_content = <<'HTML';
 <!DOCTYPE html>
@@ -228,9 +228,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 HTML
 
 eval {
-    write_text($output_path, $html_content, 'utf8');
+    write_text($OutputPath, $html_content);
     1;
 } or do {
     my $error = $@ || 'Unknown error';
-    die "Konnte Datei '$output_path' nicht öffnen: $error\n";
+    chomp $error;
+    print STDERR "Konnte Datei '$OutputPath' nicht öffnen: $error\n";
+    exit 1;
 };

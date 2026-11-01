@@ -1,7 +1,7 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_0edddb.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
@@ -221,11 +221,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Datei schreiben
-open my $fh, '>', $OutputPath or do {
-    print STDERR "Konnte Datei '$OutputPath' nicht öffnen: $!\n";
-    exit 1;
-};
-
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+open(my $fh, '>:encoding(UTF-8)', $OutputPath)
+    or die "Konnte Datei '$OutputPath' nicht öffnen: $!";
 print $fh $htmlContent;
 close $fh;

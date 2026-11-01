@@ -1,7 +1,11 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_0edddb.pl — portiert nach tcl
+# 1781743218784_0122af_0edddb.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_0edddb.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if {$argc != 1} {
@@ -9,10 +13,9 @@ if {$argc != 1} {
     exit 1
 }
 
-set output_path [lindex $argv 0]
+set outputPath [lindex $argv 0]
 
-# HTML-Inhalt
-set html_content {<!DOCTYPE html>
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -219,9 +222,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>}
 
 # Datei schreiben
-if {[catch {open $output_path w} fh]} {
-    puts stderr "Konnte Datei '$output_path' nicht öffnen: $fh"
+if {[catch {set fd [open $outputPath w]}]} {
+    puts stderr "Konnte Datei '$outputPath' nicht öffnen: $fd"
     exit 1
 }
-puts -nonewline $fh $html_content
-close $fh
+
+puts -nonewline $fd $htmlContent
+close $fd

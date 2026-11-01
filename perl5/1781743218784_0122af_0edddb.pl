@@ -1,23 +1,21 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_0edddb.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use Getopt::Long;
-use Pod::Usage;
+use utf8;
+use open qw(:std :utf8);
 
-my $output_path;
+# Parameter verarbeiten
+my $outputPath = $ARGV[0];
+if (!$outputPath) {
+    print STDERR "Verwendung: $0 <Ausgabedatei>\n";
+    exit 1;
+}
 
-GetOptions(
-    'help|?' => sub { pod2usage(1); }
-) or pod2usage(2);
-
-pod2usage(2) unless @ARGV == 1;
-$output_path = $ARGV[0];
-
-my $html_content = <<'HTML_END';
+my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -225,39 +223,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-open(my $fh, '>:encoding(UTF-8)', $output_path)
-    or die "Konnte Datei '$output_path' nicht öffnen: $!";
-print $fh $html_content;
-close $fh;
-
-__END__
-
-=head1 NAME
-
-1781743218784_0122af_0edddb.pl - Erzeugt eine HTML-Datei für Secret-Vault Public
-
-=head1 SYNOPSIS
-
-1781743218784_0122af_0edddb.pl [Optionen] output_path
-
-=head1 ARGUMENTE
-
-=over 4
-
-=item B<output_path>
-
-Pfad zur Ausgabedatei
-
-=back
-
-=head1 OPTIONEN
-
-=over 4
-
-=item B<-?>, B<--help>
-
-Zeigt diese Hilfe an und beendet das Programm.
-
-=back
-
-=cut
+# Datei schreiben
+open(my $fh, '>:encoding(UTF-8)', $outputPath) or do {
+    print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
+    exit 1;
+};
+print $fh $htmlContent;
+close($fh);

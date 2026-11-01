@@ -1,18 +1,16 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_0edddb.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# Parameter verarbeiten
+if ($args.Count -ne 1) {
+    Write-Error "Verwendung: $($MyInvocation.MyCommand.Name) <Ausgabedatei>"
+    exit 1
+}
+$OutputPath = $args[0]
 
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputPath
-)
-
-$htmlContent = @"
+$HtmlContent = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -218,11 +216,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-"@
+'@
 
 try {
-    $htmlContent | Set-Content -Path $OutputPath -Encoding UTF8
+    Set-Content -Path $OutputPath -Value $HtmlContent -Encoding UTF8
 } catch {
-    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $_"
+    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $($_.Exception.Message)"
     exit 1
 }

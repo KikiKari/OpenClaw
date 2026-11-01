@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_0edddb.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
+import json
 
 # Parameter verarbeiten
 if len(sys.argv) != 2:
-    print("Verwendung: {} <Ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
+    print(f"Verwendung: {sys.argv[0]} <Ausgabedatei>", file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -221,8 +221,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '''
 
 try:
-    with open(output_path, 'w') as fd:
-        fd.write(html_content)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
 except Exception as err:
-    print("Konnte Datei '{}' nicht öffnen: {}".format(output_path, err), file=sys.stderr)
+    print(f"Konnte Datei '{output_path}' nicht öffnen: {err}", file=sys.stderr)
     sys.exit(1)

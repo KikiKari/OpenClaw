@@ -6,13 +6,12 @@
 'use strict';
 
 const fs = require('fs');
-const path = require('path');
 
 function main() {
     // Prüfe Aufrufparameter
     if (process.argv.length !== 3) {
-        const script_name = path.basename(process.argv[1]);
-        console.error(`Aufruf: ${script_name} <Ausgabedatei>`);
+        const prog = process.argv[1];
+        console.error(`Aufruf: ${prog} <Ausgabedatei>`);
         process.exit(1);
     }
 
@@ -225,13 +224,14 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
-    // Schreibe die HTML-Inhalte in die Ausgabedatei
     try {
-        fs.writeFileSync(output_path, html_content, 'utf8');
+        fs.writeFileSync(output_path, html_content);
     } catch (err) {
         console.error(`Konnte Datei '${output_path}' nicht öffnen: ${err.message}`);
         process.exit(1);
     }
 }
 
-main();
+if (require.main === module) {
+    main();
+}

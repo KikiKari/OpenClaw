@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // 1781743218784_0122af_40f9f2.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2.pl
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 // 1781743218784_0122af_40f9f2.js — portiert nach JavaScript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2.pl
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 'use strict';
 
@@ -144,7 +144,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -224,14 +224,14 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>`;
+</html>
+`;
 
 // Schreibe die HTML-Inhalte in die Ausgabedatei
 try {
-    fs.writeFileSync(outputPath, htmlContent, { encoding: 'utf8' });
-} catch (err) {
-    console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${err.message}`);
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
+    console.log(`Datei erfolgreich geschrieben: ${outputPath}`);
+} catch (error) {
+    console.error(`Konnte Datei '${outputPath}' nicht schreiben: ${error.message}`);
     process.exit(1);
 }
-
-process.exit(0);

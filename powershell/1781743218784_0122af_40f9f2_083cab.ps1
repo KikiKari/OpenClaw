@@ -5,23 +5,23 @@
 
 # 1781743218784_0122af_40f9f2_083cab.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_40f9f2.js — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2.pl
-# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.pl
+# Portiert nach PowerShell 7
+
+param(
+    [string]$OutputPath
+)
 
 function Main {
     # Prüfe Aufrufparameter
-    if ($args.Count -ne 1) {
-        $prog = Split-Path -Leaf $MyInvocation.MyCommand.Path
-        Write-Error "Aufruf: $prog <Ausgabedatei>"
+    if (-not $OutputPath) {
+        $scriptName = Split-Path -Leaf $MyInvocation.MyCommand.Path
+        Write-Error "Aufruf: $scriptName <Ausgabedatei>" -ErrorAction Stop
         exit 1
     }
 
-    $output_path = $args[0]
-
-    $html_content = @'
+    $htmlContent = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -229,12 +229,13 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
+    # Schreibe die HTML-Inhalte in die Ausgabedatei
     try {
-        [System.IO.File]::WriteAllText($output_path, $html_content, [System.Text.Encoding]::UTF8)
+        Set-Content -Path $OutputPath -Value $htmlContent -Encoding UTF8
     } catch {
-        Write-Error "Konnte Datei '$output_path' nicht öffnen: $($_.Exception.Message)"
+        Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $($_.Exception.Message)" -ErrorAction Stop
         exit 1
     }
 }
 
-Main @args
+Main

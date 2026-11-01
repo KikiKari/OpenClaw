@@ -1,15 +1,18 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_40f9f2_083cab.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab.ps1
+# 1781743218784_0122af_40f9f2_083cab_0a4e45.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_0a4e45.js
 # Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-# Parameterverarbeitung
+# Prüfe die Anzahl der Argumente
 if {$argc != 1} {
-    puts stderr "Fehler: OutputPath ist erforderlich"
+    puts stderr "Usage: tclsh script.tcl <OutputPath>"
     exit 1
 }
-set OutputPath [lindex $argv 0]
 
+# Hole das Ausgabepfad-Argument
+lassign $argv OutputPath
+
+# HTML-Inhalt als Tcl-Variable
 set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -214,13 +217,13 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
-# Datei schreiben
-if {[catch {set fh [open $OutputPath w]}]} {
-    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $fh"
+# Schreibe den Inhalt in die angegebene Datei
+if {[catch {set fh [open $OutputPath w]} err]} {
+    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $err"
     exit 1
 }
+
 puts -nonewline $fh $html_content
 close $fh

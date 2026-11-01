@@ -1,26 +1,29 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_0edddb.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_0edddb.py — portiert nach javascript
+// Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
+// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af.ps1 — portiert nach JavaScript für Node 20
+// 1781743218784_0122af_0edddb.pl — portiert nach python
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
+// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0122af.ps1 — portiert nach perl5
 // Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
 // Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
 
 import { writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { exit } from 'process';
 
-// Parameter verarbeiten
-const args = process.argv.slice(2);
-const output_path = args[0];
-
-if (!output_path) {
-    console.error("Verwendung: node script.js <Ausgabedatei>");
-    process.exit(1);
-}
-
-const html_content = `<!DOCTYPE html>
+function main() {
+    // Parameter verarbeiten
+    if (process.argv.length < 3) {
+        console.error(`Verwendung: ${process.argv[1]} <Ausgabedatei>`);
+        exit(1);
+    }
+    
+    const outputPath = process.argv[2];
+    
+    const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -227,10 +230,13 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
-// Datei schreiben
-try {
-    writeFileSync(output_path, html_content, 'utf8');
-} catch (err) {
-    console.error(\`Konnte Datei '\${output_path}' nicht öffnen: \${err.message}\`);
-    process.exit(1);
+    // Datei schreiben
+    try {
+        writeFileSync(outputPath, htmlContent, { encoding: 'utf-8' });
+    } catch (e) {
+        console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${e.message}`);
+        exit(1);
+    }
 }
+
+main();

@@ -1,29 +1,18 @@
 #!/usr/bin/perl
 # 1781743218784_0122af_40f9f2_083cab.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab.js
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
-use File::Spec;
+use File::Basename;
 use Encode qw(encode);
-
-# 1781743218784_0122af_40f9f2_083cab.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af_40f9f2.js — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2.pl
-# Erzeugt: 2026-10-30 durch ABSTRACTIONS_MANAGER.pl
 
 sub main {
     # Prüfe Aufrufparameter
     if (@ARGV != 1) {
-        my $prog = $0;
-        $prog =~ s|.*/||;
-        print STDERR "Aufruf: $prog <Ausgabedatei>\n";
+        my $script_name = basename($0);
+        print STDERR "Aufruf: $script_name <Ausgabedatei>\n";
         exit 1;
     }
 
@@ -237,9 +226,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
+    # Schreibe die HTML-Inhalte in die Ausgabedatei
     eval {
-        open my $fh, '>:encoding(UTF-8)', $output_path
-            or die "Konnte Datei '$output_path' nicht öffnen: $!";
+        open(my $fh, '>:encoding(UTF-8)', $output_path) or die "Konnte Datei '$output_path' nicht öffnen: $!";
         print $fh $html_content;
         close $fh;
     };
@@ -249,4 +238,4 @@ HTML_END
     }
 }
 
-main() unless caller;
+main();

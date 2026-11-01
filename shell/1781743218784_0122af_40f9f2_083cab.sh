@@ -1,12 +1,12 @@
 #!/bin/bash
-# 1781743218784_0122af_40f9f2_083cab.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
+# 1781743218784_0122af_40f9f2_083cab.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab.js
 # Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Prüfe Aufrufparameter
-if [ $# -ne 1 ]; then
+if [[ $# -ne 1 ]]; then
     script_name=$(basename "$0")
     echo "Aufruf: $script_name <Ausgabedatei>" >&2
     exit 1
@@ -14,8 +14,8 @@ fi
 
 output_path="$1"
 
-# HTML-Inhalte in Variable speichern
-html_content=$(cat <<'HTML_END'
+# HTML-Inhalt
+read -r -d '' html_content <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,10 +222,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>
 HTML_END
-)
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
-if ! echo "$html_content" > "$output_path"; then
+if ! printf '%s' "$html_content" >"$output_path"; then
     echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
     exit 1
 fi
