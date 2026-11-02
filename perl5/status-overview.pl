@@ -1,61 +1,29 @@
 #!/usr/bin/perl
-# status-overview.html — portiert nach perl5
-# Quelle: html, Projects@TikTok-Live-Companion:plugin-source/browser-extension/status-overview.html
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# status-overview.css — portiert nach perl5
+# Quelle: css, Projects@TikTok-Live-Companion:plugin-source/browser-extension/status-overview.css
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
-# Parameter prüfen
-my $output_file = $ARGV[0] or die "Usage: $0 <output-file>\n";
-
-# HTML-Struktur erstellen
-my $html = create_html_document();
-
-# In Datei schreiben
-open my $fh, '>', $output_file or die "Kann Datei '$output_file' nicht öffnen: $!\n";
-print $fh $html;
-close $fh;
-
-sub create_html_document {
-    # DOCTYPE
-    my $doctype = '<!doctype html>';
-    
-    # HTML-Element
-    my $html_start = '<html lang="de">';
-    my $html_end = '</html>';
-    
-    # HEAD-Bereich
-    my $head = create_head();
-    
-    # BODY-Bereich
-    my $body = create_body();
-    
-    # Komplettes Dokument zusammenfügen
-    return join('', $doctype, $html_start, $head, $body, $html_end);
+# Check if filename argument is provided
+if (@ARGV != 1) {
+    print STDERR "Usage: $0 <output_filename>\n";
+    exit 1;
 }
 
-sub create_head {
-    my @head_elements = (
-        '<head>',
-        '<meta charset="utf-8">',
-        '<meta name="viewport" content="width=device-width,initial-scale=1">',
-        '<title>STATUS-Overview</title>',
-        '<link rel="stylesheet" href="status-overview.css">',
-        '</head>'
-    );
-    
-    return join('', @head_elements);
-}
+my $filename = $ARGV[0];
 
-sub create_body {
-    my @body_elements = (
-        '<body>',
-        '<main id="grid" aria-label="LIVE-Übersicht"></main>',
-        '<script src="vendor-mpegts.js"></script>',
-        '<script src="status-overview-player.js"></script>',
-        '</body>'
-    );
-    
-    return join('', @body_elements);
-}
+# Open file for writing
+open(my $fh, '>', $filename) or die "Could not open file '$filename' for writing: $!";
+
+# Write the CSS content
+print $fh <<'EOF';
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#101015;color:#fff;font:14px system-ui,sans-serif}body{display:flex;flex-direction:column;height:100vh}header{display:flex;gap:1em;align-items:baseline;padding:0 12px}h1{font-size:17px;margin:8px 0}header p{font-size:12px;color:#bbb;margin:0}main{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));gap:4px;padding:0}.tile{min-width:0;min-height:0;display:flex;flex-direction:column;background:#202026;border:1px solid #393940}.tile h2{font-size:13px;margin:3px 8px}.tile video{min-height:0;width:100%;flex:1;object-fit:contain;background:#000}.tile p{font-size:11px;margin:3px 8px;color:#ddd}
+
+main.grid2{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}.tile[hidden]{display:none}
+EOF
+
+close($fh);
+
+print "CSS file '$filename' created successfully.\n";
