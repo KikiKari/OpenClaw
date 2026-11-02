@@ -1,18 +1,22 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_40f9f2_083cab_0a4e45.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_0a4e45.js
+# 1781743218784_0122af_40f9f2_083cab_0a4e45.sh — portiert nach powershell
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_40f9f2_083cab_0a4e45.sh
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_40f9f2_083cab.ps1 — portiert nach PowerShell 7
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_40f9f2_083cab.sh
 # Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_40f9f2_083cab.ps1 — portiert nach javascript
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab.ps1
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# Prüfe ob Output-Pfad übergeben wurde
+if ($args.Count -eq 0) {
+    Write-Error "FEHLER: Es wird ein Ausgabepfad benötigt."
+    exit 1
+}
 
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputPath
-)
+$OUTPUT_PATH = $args[0]
 
-$html_content = @'
+# HTML-Inhalt als Here-String definieren
+$HTML_CONTENT = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,9 +224,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
+# Schreibe HTML-Inhalt in die angegebene Datei
 try {
-    $html_content | Out-File -FilePath $OutputPath -Encoding UTF8 -ErrorAction Stop
+    $HTML_CONTENT | Out-File -FilePath $OUTPUT_PATH -Encoding UTF8 -NoNewline
 } catch {
-    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $($_.Exception.Message)"
+    Write-Error "Konnte Datei '$OUTPUT_PATH' nicht öffnen: Unbekannter Fehler beim Schreiben"
     exit 1
 }

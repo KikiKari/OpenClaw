@@ -1,12 +1,10 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 # 1781743218784_0122af_40f9f2_083cab_16895a.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_16895a.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
@@ -224,8 +222,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Schreibe die HTML-Datei
-open(my $fh, '>:encoding(UTF-8)', $output_path) or do {
+# Datei öffnen und schreiben
+open(my $fh, '>', $output_path) or do {
     print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
     exit 1;
 };

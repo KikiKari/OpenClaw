@@ -1,20 +1,20 @@
-#!/bin/bash
-# 1781743218784_0122af_40f9f2.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784_0122af_40f9f2.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2.js
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Prüfe Aufrufparameter
 if [[ $# -ne 1 ]]; then
-    scriptName=$(basename "$0")
-    echo "Aufruf: $scriptName <Ausgabedatei>" >&2
+    script_name=$(basename "$0")
+    echo "Aufruf: $script_name <Ausgabedatei>" >&2
     exit 1
 fi
-outputPath="$1"
+output_path="$1"
 
 # HTML-Inhalt
-read -r -d '' htmlContent <<'HTML' || true
+read -r -d '' html_content <<'EOF_HTML_CONTENT'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -38,7 +38,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 0;font-weight:700;}
+h1{font-size:21px;margin:0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -139,7 +139,7 @@ const T = {
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("title"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -220,13 +220,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+EOF_HTML_CONTENT
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
-{
-    echo "$htmlContent" > "$outputPath"
-    echo "Datei erfolgreich geschrieben: $outputPath"
-} || {
-    echo "Konnte Datei '$outputPath' nicht schreiben: $?" >&2
+if ! printf '%s' "$html_content" >"$output_path"; then
+    echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
     exit 1
-}
+fi
+
+exit 0

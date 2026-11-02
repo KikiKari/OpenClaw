@@ -1,17 +1,18 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_40f9f2_083cab_16895a.py — portiert nach powershell
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2_083cab_16895a.py
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab_16895a_725c88.pl — portiert nach powershell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab_16895a_725c88.pl
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if ($args.Count -ne 1) {
-    Write-Error "Aufruf: $($MyInvocation.MyCommand.Name) <Ausgabedatei>"
+    $script_name = (Get-Item $MyInvocation.MyCommand.Path).Name
+    Write-Error "Aufruf: $script_name <Ausgabedatei>"
     exit 1
 }
 
-$outputPath = $args[0]
+$output_path = $args[0]
 
-$htmlContent = @'
+$html_content = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,9 +220,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
+# Versuche, die HTML-Datei zu schreiben
 try {
-    Set-Content -Path $outputPath -Value $htmlContent -Encoding UTF8
+    [System.IO.File]::WriteAllText($output_path, $html_content)
 } catch {
-    Write-Error "Konnte Datei '$outputPath' nicht öffnen: $_"
+    $error_msg = $_.Exception.Message
+    $script_name = (Get-Item $MyInvocation.MyCommand.Path).Name
+    Write-Error "Konnte Datei '$output_path' nicht öffnen: $error_msg"
     exit 1
 }

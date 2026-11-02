@@ -1,25 +1,20 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_40f9f2_083cab_0a4e45.js — portiert nach perl5
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_0a4e45.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab_0a4e45.sh — portiert nach perl5
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_40f9f2_083cab_0a4e45.sh
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
-use utf8;
-use open qw(:std :utf8);
-use File::Slurper qw(write_text);
 
-binmode STDOUT, ':encoding(UTF-8)';
-binmode STDERR, ':encoding(UTF-8)';
-
-if (@ARGV != 1) {
-    print STDERR "Usage: perl script.pl <OutputPath>\n";
+# Prüfe ob Output-Pfad übergeben wurde
+if (@ARGV == 0) {
+    print STDERR "FEHLER: Es wird ein Ausgabepfad benötigt.\n";
     exit 1;
 }
 
-my $OutputPath = $ARGV[0];
+my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML';
+my $html_content = <<'EOF_HTML_CONTENT';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -225,14 +220,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+EOF_HTML_CONTENT
 
-eval {
-    write_text($OutputPath, $html_content);
-    1;
-} or do {
-    my $error = $@ || 'Unknown error';
-    chomp $error;
-    print STDERR "Konnte Datei '$OutputPath' nicht öffnen: $error\n";
+# Schreibe HTML-Inhalt in die angegebene Datei
+open(my $fh, '>', $output_path) or do {
+    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
     exit 1;
 };
+print $fh $html_content;
+close $fh;

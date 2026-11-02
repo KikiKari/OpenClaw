@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_40f9f2_083cab_0a4e45.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_0a4e45.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab_0a4e45.sh — portiert nach python
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_40f9f2_083cab_0a4e45.sh
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
-if len(sys.argv) != 2:
-    print("Usage: python script.py <OutputPath>", file=sys.stderr)
-    sys.exit(1)
+def main():
+    # Prüfe ob Output-Pfad übergeben wurde
+    if len(sys.argv) == 1:
+        print("FEHLER: Es wird ein Ausgabepfad benötigt.", file=sys.stderr)
+        sys.exit(1)
 
-output_path = sys.argv[1]
+    OUTPUT_PATH = sys.argv[1]
 
-html_content = '''<!DOCTYPE html>
+    HTML_CONTENT = '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -216,11 +218,16 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>'''
+</html>
+'''
 
-try:
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-except Exception as e:
-    print(f"Konnte Datei '{output_path}' nicht öffnen: {str(e)}", file=sys.stderr)
-    sys.exit(1)
+    # Schreibe HTML-Inhalt in die angegebene Datei
+    try:
+        with open(OUTPUT_PATH, 'w', encoding='utf-8') as f:
+            f.write(HTML_CONTENT)
+    except Exception as e:
+        print(f"Konnte Datei '{OUTPUT_PATH}' nicht öffnen: Unbekannter Fehler beim Schreiben", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

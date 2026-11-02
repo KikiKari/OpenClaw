@@ -1,32 +1,25 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af.js — portiert nach python
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.js — portiert nach JavaScript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af.ps1 — portiert nach python
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
-# Prüfe Aufrufparameter
-if len(sys.argv) != 2:
-    print("Aufruf: {} <Ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
-    sys.exit(1)
-
-output_path = sys.argv[1]
-
-html_content = '''<!DOCTYPE html>
+def main():
+    # Parameter verarbeiten
+    if len(sys.argv) < 2:
+        print("Fehler: OutputPath ist erforderlich.", file=sys.stderr)
+        sys.exit(1)
+    
+    output_path = sys.argv[1]
+    
+    html_content = '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
   "schemaVersion": 1,
-  "description": "Secret-Vault Public als interaktives Browser-Artefakt: verschlüsselter Secret-Container vollständig client-seitig (WebCrypto, AES-256-GCM + PBKDF2). Öffnen/Anlegen, Anbieter/Felder ergänzen und ersetzen (Rotation), verschlüsseln und als .svpb herunterladen oder Klartext-JSON exportieren. DE/EN nach Browsersprache. Eigenes Format (nicht kompatibel mit dem scrypt-Python-Tool). Keine Secrets eingebettet.",
+  "description": "Secret-Vault Public als interaktives Browser-Artefakt: verschl\\u00fcsselter Secret-Container vollst\\u00e4ndig client-seitig (WebCrypto, AES-256-GCM + PBKDF2). \\u00d6ffnen/Anlegen, Anbieter/Felder erg\\u00e4nzen und ersetzen (Rotation), verschl\\u00fcsseln und als .svpb herunterladen oder Klartext-JSON exportieren. DE/EN nach Browsersprache. Eigenes Format (nicht kompatibel mit dem scrypt-Python-Tool). Keine Secrets eingebettet.",
   "mcpTools": [],
   "mcpServerNames": []
 }
@@ -44,7 +37,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 0;font-weight:700;}
+h1{font-size:21px;margin:0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -72,17 +65,17 @@ a{color:var(--accent);}
 <body>
 <div class="wrap">
   <div class="brand"><div class="mark"></div><h1 id="title">Secret-Vault Public</h1></div>
-  <div class="sub" id="sub">Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.</div>
+  <div class="sub" id="sub">Verschl\\u00fcsselte Secret-Vault (AES-256-GCM, PBKDF2) \\u2014 alles im Browser, kein Server.</div>
 
   <div class="card">
-    <h2 id="h-open">Öffnen oder neu</h2>
+    <h2 id="h-open">\\u00d6ffnen oder neu</h2>
     <label class="lab" id="l-pass">Passphrase</label>
-    <input id="pass" type="password" placeholder="Passphrase…">
-    <label class="lab" id="l-file">Vault laden (Datei oder Base64 einfügen)</label>
+    <input id="pass" type="password" placeholder="Passphrase\\u2026">
+    <label class="lab" id="l-file">Vault laden (Datei oder Base64 einf\\u00fcgen)</label>
     <input id="file" type="file" accept=".svpb,.txt,.vault,.b64">
-    <textarea id="blob" placeholder="…oder Base64 hier einfügen"></textarea>
+    <textarea id="blob" placeholder="\\u2026oder Base64 hier einf\\u00fcgen"></textarea>
     <div class="row" style="margin-top:10px">
-      <button class="btn primary" id="openBtn">Öffnen / Entschlüsseln</button>
+      <button class="btn primary" id="openBtn">\\u00d6ffnen / Entschl\\u00fcsseln</button>
       <button class="btn" id="newBtn">Neuer leerer Vault</button>
       <span class="msg" id="openMsg"></span>
     </div>
@@ -100,8 +93,8 @@ a{color:var(--accent);}
   <div class="card hide" id="out">
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
-      <button class="btn primary" id="encBtn">Verschlüsseln</button>
-      <button class="btn" id="dlBtn">Als .svbp herunterladen</button>
+      <button class="btn primary" id="encBtn">Verschl\\u00fcsseln</button>
+      <button class="btn" id="dlBtn">Als .svpb herunterladen</button>
       <button class="btn" id="expBtn">Klartext-JSON exportieren</button>
       <span class="msg" id="saveMsg"></span>
     </div>
@@ -116,31 +109,31 @@ a{color:var(--accent);}
 const L = ((navigator.language||"en").toLowerCase().startsWith("de"))?"de":"en";
 const T = {
  title:{de:"Secret-Vault Public",en:"Secret-Vault Public"},
- sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
- hOpen:{de:"Öffnen oder neu",en:"Open or new"},
+ sub:{de:"Verschl\\u00fcsselte Secret-Vault (AES-256-GCM, PBKDF2) \\u2014 alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) \\u2014 fully in the browser, no server."},
+ hOpen:{de:"\\u00d6ffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
- blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
- open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
+ file:{de:"Vault laden (Datei oder Base64 einf\\u00fcgen)",en:"Load vault (file or paste Base64)"},
+ blob:{de:"\\u2026oder Base64 hier einf\\u00fcgen",en:"\\u2026or paste Base64 here"},
+ open:{de:"\\u00d6ffnen / Entschl\\u00fcsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
  hEdit:{de:"Inhalt",en:"Content"},
  newProv:{de:"Neuer Anbieter (Name)",en:"New provider (name)"},
  addProv:{de:"+ Anbieter",en:"+ Provider"},
  hSave:{de:"Speichern / Export",en:"Save / Export"},
- enc:{de:"Verschlüsseln",en:"Encrypt"},
+ enc:{de:"Verschl\\u00fcsseln",en:"Encrypt"},
  dl:{de:"Als .svpb herunterladen",en:"Download as .svpb"},
  exp:{de:"Klartext-JSON exportieren",en:"Export plaintext JSON"},
  result:{de:"Ergebnis (zum Kopieren/Speichern)",en:"Result (to copy/save)"},
  foot:{de:"Eigenes Format (PBKDF2). Nicht kompatibel mit dem scrypt-Python-Tool. Sicherheit liegt in der Passphrase; Inhalt ohne sie nicht wiederherstellbar.",en:"Own format (PBKDF2). Not compatible with the scrypt Python tool. Security rests on the passphrase; content is unrecoverable without it."},
  needPass:{de:"Passphrase eingeben.",en:"Enter a passphrase."},
- noInput:{de:"Datei laden oder Base64 einfügen.",en:"Load a file or paste Base64."},
- bad:{de:"Falsche Passphrase oder ungültiger Vault.",en:"Wrong passphrase or invalid vault."},
- opened:{de:"Geöffnet.",en:"Opened."},
+ noInput:{de:"Datei laden oder Base64 einf\\u00fcgen.",en:"Load a file or paste Base64."},
+ bad:{de:"Falsche Passphrase oder ung\\u00fcltiger Vault.",en:"Wrong passphrase or invalid vault."},
+ opened:{de:"Ge\\u00f6ffnet.",en:"Opened."},
  created:{de:"Neuer Vault angelegt.",en:"New vault created."},
- encrypted:{de:"Verschlüsselt — unten kopieren oder herunterladen.",en:"Encrypted — copy below or download."},
- needOpen:{de:"Erst öffnen/anlegen.",en:"Open/create first."},
+ encrypted:{de:"Verschl\\u00fcsselt \\u2014 unten kopieren oder herunterladen.",en:"Encrypted \\u2014 copy below or download."},
+ needOpen:{de:"Erst \\u00f6ffnen/anlegen.",en:"Open/create first."},
  field:{de:"Feld",en:"field"}, value:{de:"Wert",en:"value"},
- addField:{de:"+ Feld",en:"+ field"}, del:{de:"✕",en:"✕"},
+ addField:{de:"+ Feld",en:"+ field"}, del:{de:"\\u2715",en:"\\u2715"},
  newField:{de:"neues Feld",en:"new field"}, newValue:{de:"Wert",en:"value"}
 };
 const tr=k=>T[k][L];
@@ -165,7 +158,7 @@ function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromC
 function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function deriveKey(pw,salt){
   const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt: new Uint8Array(salt),iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
@@ -228,10 +221,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '''
 
-# Versuche, die HTML-Datei zu schreiben
-try:
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.write(html_content)
-except Exception as err:
-    print("Konnte Datei '{}' nicht öffnen: {}".format(output_path, str(err)), file=sys.stderr)
-    sys.exit(1)
+    try:
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+    except Exception as e:
+        print(f"Konnte Datei '{output_path}' nicht \\u00f6ffnen: {str(e)}", file=sys.stderr)
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

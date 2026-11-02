@@ -1,7 +1,7 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0122af_40f9f2_083cab_16895a.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_16895a.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if {$argc != 1} {
@@ -218,11 +218,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-# Schreibe die HTML-Datei
-if {[catch {set fd [open $output_path w]} error]} {
-    puts stderr "Konnte Datei '$output_path' nicht öffnen: $error"
+# Datei öffnen und schreiben
+if {[catch {set fd [open $output_path w]} err]} {
+    puts stderr "Konnte Datei '$output_path' nicht öffnen: $err"
     exit 1
 }
-
 puts -nonewline $fd $html_content
 close $fd

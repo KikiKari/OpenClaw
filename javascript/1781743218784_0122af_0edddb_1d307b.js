@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_0edddb_1d307b.ps1 — portiert nach javascript
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb_1d307b.ps1
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_0edddb_1d307b.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b.pl
+// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 // Parameter verarbeiten
 if (process.argv.length !== 3) {
-  console.error("Verwendung: node script.js <Ausgabedatei>");
-  process.exit(1);
+    console.error("Verwendung: node script.js <Ausgabedatei>");
+    process.exit(1);
 }
-const outputPath = process.argv[2];
+const OutputPath = process.argv[2];
 
 const fs = require('fs');
 
@@ -216,12 +216,11 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-`;
+</html>`;
 
 try {
-  fs.writeFileSync(outputPath, htmlContent);
-} catch (error) {
-  console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${error.message}`);
-  process.exit(1);
+    fs.writeFileSync(OutputPath, htmlContent);
+} catch (err) {
+    console.error("Konnte Datei '" + OutputPath + "' nicht öffnen: " + err.message);
+    process.exit(1);
 }

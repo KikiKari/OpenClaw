@@ -1,27 +1,22 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_40f9f2_083cab_0a4e45.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab_0a4e45.pl
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_40f9f2_083cab_0a4e45.py — portiert nach javascript
+// Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2_083cab_0a4e45.py
+// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af_40f9f2_083cab.ps1 — portiert nach JavaScript für Node 20
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab.ps1
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+const fs = require('fs');
+const path = require('path');
 
-import { writeFileSync } from 'fs';
-import { program } from 'commander';
-
-program
-  .option('--output-path <path>', 'Ausgabepfad für die HTML-Datei')
-  .parse();
-
-const options = program.opts();
-
-if (!options.outputPath) {
-  console.error('Fehlender Parameter: --output-path');
-  process.exit(1);
-}
-
-const html_content = `<!DOCTYPE html>
+function main() {
+    const args = process.argv.slice(2);
+    
+    if (args.length !== 1) {
+        console.error('Usage: node script.js <output_path>');
+        process.exit(1);
+    }
+    
+    const outputPath = args[0];
+    
+    const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -225,11 +220,15 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>`;
+</html>
+`;
 
-try {
-  writeFileSync(options.outputPath, html_content, 'utf8');
-} catch (error) {
-  console.error(\`Konnte Datei '\${options.outputPath}' nicht öffnen: \${error.message}\`);
-  process.exit(1);
-}`;
+    try {
+        fs.writeFileSync(outputPath, htmlContent, 'utf-8');
+    } catch (e) {
+        console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${e.message}`);
+        process.exit(1);
+    }
+}
+
+main();

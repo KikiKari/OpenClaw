@@ -1,32 +1,20 @@
 #!/bin/bash
-# 1781743218784_0122af_0edddb.pl — portiert nach shell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb.py — portiert nach shell
+# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Verarbeitet Kommandozeilenargumente
-output_path=""
-for arg in "$@"; do
-    case "$arg" in
-        --output_path=*)
-            output_path="${arg#*=}"
-            ;;
-        *)
-            echo "Ungültige Option: $arg" >&2
-            exit 1
-            ;;
-    esac
-done
-
-# Prüft ob output_path gesetzt wurde
-if [[ -z "$output_path" ]]; then
-    echo "output_path ist erforderlich" >&2
+# Parameter verarbeiten
+if [[ $# -lt 1 ]]; then
+    echo "Verwendung: $0 <Ausgabedatei>" >&2
     exit 1
 fi
 
-# Schreibt HTML-Inhalt in die angegebene Datei
-cat > "$output_path" << 'HTML_END'
+output_path="$1"
+
+# HTML-Inhalt in Variable speichern
+html_content=$(cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -232,10 +220,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+EOF
+)
 
-# Prüfung auf erfolgreiche Dateierstellung
-if [[ ! -f "$output_path" ]]; then
-    echo "Konnte Datei '$output_path' nicht erstellen." >&2
+# Datei schreiben
+if ! printf '%s' "$html_content" > "$output_path"; then
+    echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
     exit 1
 fi

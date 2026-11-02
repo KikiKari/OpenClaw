@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_40f9f2_083cab.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab.pl
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_40f9f2_083cab.py — portiert nach javascript
+// Quelle: python, Projects@abstractions:python/1781743218784_0122af_40f9f2_083cab.py
+// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
-'use strict';
-
-const fs = require('fs');
+import fs from 'fs';
+import process from 'process';
 
 function main() {
     // Prüfe Aufrufparameter
@@ -225,13 +224,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 `;
 
     try {
-        fs.writeFileSync(output_path, html_content);
-    } catch (err) {
-        console.error(`Konnte Datei '${output_path}' nicht öffnen: ${err.message}`);
+        fs.writeFileSync(output_path, html_content, 'utf-8');
+    } catch (error) {
+        console.error(\`Konnte Datei '\${output_path}' nicht öffnen: \${error}\`);
         process.exit(1);
     }
 }
 
-if (require.main === module) {
-    main();
-}
+main();

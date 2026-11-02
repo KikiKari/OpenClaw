@@ -1,19 +1,17 @@
-#!/usr/bin/env tclsh
-# 1781743218784_0122af_40f9f2_083cab_0a4e45.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_0a4e45.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env tclsh8.6
+# 1781743218784_0122af_40f9f2_083cab_0a4e45.sh — portiert nach tcl
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_40f9f2_083cab_0a4e45.sh
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe die Anzahl der Argumente
-if {$argc != 1} {
-    puts stderr "Usage: tclsh script.tcl <OutputPath>"
+# Prüfe ob Output-Pfad übergeben wurde
+if {$argc == 0} {
+    puts stderr "FEHLER: Es wird ein Ausgabepfad benötigt."
     exit 1
 }
 
-# Hole das Ausgabepfad-Argument
-lassign $argv OutputPath
+set OUTPUT_PATH [lindex $argv 0]
 
-# HTML-Inhalt als Tcl-Variable
-set html_content {<!DOCTYPE html>
+set HTML_CONTENT {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -157,7 +155,7 @@ function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromC
 function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function deriveKey(pw,salt){
   const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt: salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
@@ -219,11 +217,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>}
 
-# Schreibe den Inhalt in die angegebene Datei
-if {[catch {set fh [open $OutputPath w]} err]} {
-    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $err"
+# Schreibe HTML-Inhalt in die angegebene Datei
+if {[catch {set fd [open $OUTPUT_PATH w]}]} {
+    puts stderr "Konnte Datei '$OUTPUT_PATH' nicht öffnen: Unbekannter Fehler beim Schreiben"
     exit 1
 }
 
-puts -nonewline $fh $html_content
-close $fh
+puts -nonewline $fd $HTML_CONTENT
+close $fd

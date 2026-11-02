@@ -1,20 +1,20 @@
 #!/bin/bash
-# 1781743218784_0122af_40f9f2_083cab_16895a.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_16895a.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab_16895a.tcl — portiert nach shell
+# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2_083cab_16895a.tcl
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Prüfe Aufrufparameter
 if [[ $# -ne 1 ]]; then
-  echo "Aufruf: $0 <Ausgabedatei>" >&2
-  exit 1
+    echo "Aufruf: $0 <Ausgabedatei>" >&2
+    exit 1
 fi
 
 output_path="$1"
 
-# HTML-Inhalt
-read -r -d '' html_content <<'EOF_HTML_CONTENT'
+# HTML-Inhalt als mehrzeilige Variable
+read -r -d '' html_content <<'EOF_HTML'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,10 +220,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF_HTML_CONTENT
+EOF_HTML
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$html_content" >"$output_path"; then
-  echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
-  exit 1
+# Schreibe den Inhalt in die Ausgabedatei
+if ! printf '%s' "$html_content" > "$output_path"; then
+    echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
+    exit 1
 fi

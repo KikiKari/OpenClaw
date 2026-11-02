@@ -1,12 +1,7 @@
 #!/usr/bin/env node
-// 1781743218784_0122af.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
+// 1781743218784_0122af.ps1 — portiert nach javascript
+// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
+// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 // Parameter verarbeiten
 if (process.argv.length < 3) {
@@ -221,9 +216,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </body>
 </html>`;
 
+import { writeFileSync } from 'fs';
+
 try {
-    fs.writeFileSync(outputPath, htmlContent, 'utf8');
-} catch (err) {
-    console.error(err.message);
+    writeFileSync(outputPath, htmlContent, 'utf8');
+} catch (error) {
+    console.error(\`Konnte Datei '\${outputPath}' nicht öffnen: \${error.message}\`);
     process.exit(1);
 }

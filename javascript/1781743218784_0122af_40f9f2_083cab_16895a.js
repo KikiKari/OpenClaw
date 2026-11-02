@@ -1,22 +1,23 @@
 #!/usr/bin/env node
 // 1781743218784_0122af_40f9f2_083cab_16895a.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab_16895a.pl
+// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0122af_40f9f2_083cab_16895a.js — portiert nach JavaScript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_40f9f2_083cab_16895a.pl
 // Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af_40f9f2_083cab.tcl — portiert nach perl5
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_40f9f2_083cab.tcl
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+const fs = require('fs');
 
-// Prüfe Aufrufparameter
 if (process.argv.length !== 3) {
-    console.error(`Aufruf: ${process.argv[1]} <Ausgabedatei>`);
+    console.error("Aufruf: " + process.argv[1] + " <Ausgabedatei>");
     process.exit(1);
 }
 
-const fs = require('fs');
 const output_path = process.argv[2];
 
-const html_content = `<!DOCTYPE html>
+const html_content = `\
+<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -192,7 +193,7 @@ function renderEditor(){
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
   root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
   root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
-  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(\`.nf[data-np="\${CSS.escape(p)}"]\`).value.trim(); const nv=root.querySelector(\`.nv[data-np="\${CSS.escape(p)}"]\`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
+  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(\`\.nf[data-np="\${CSS.escape(p)}"]\`).value.trim(); const nv=root.querySelector(\`\.nv[data-np="\${CSS.escape(p)}"]\`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
 
 document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
@@ -223,10 +224,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
-// Datei öffnen und schreiben
 try {
-    fs.writeFileSync(output_path, html_content);
+    fs.writeFileSync(output_path, html_content, 'utf8');
 } catch (err) {
-    console.error(`Konnte Datei '${output_path}' nicht öffnen: ${err.message}`);
+    console.error("Konnte Datei '" + output_path + "' nicht öffnen: " + err.message);
     process.exit(1);
 }

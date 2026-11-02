@@ -1,13 +1,12 @@
-#!/usr/bin/env perl
-# 1781743218784_0122af_40f9f2_083cab_16895a.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab_16895a.ps1
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0122af_40f9f2_083cab_16895a_2feb0e.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_16895a_2feb0e.js
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(encode decode);
-use File::Slurper qw(write_text);
+use open qw(:std :utf8);
 
 # Prüfe Aufrufparameter
 if (@ARGV != 1) {
@@ -225,11 +224,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML
 
-eval {
-    write_text($output_path, $html_content, 'UTF-8');
-    1;
-} or do {
-    my $error = $@ || 'Unknown error';
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $error\n";
+# Schreibe die HTML-Datei
+open(my $fh, '>:encoding(UTF-8)', $output_path) or do {
+    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
     exit 1;
 };
+
+print $fh $html_content;
+close $fh;

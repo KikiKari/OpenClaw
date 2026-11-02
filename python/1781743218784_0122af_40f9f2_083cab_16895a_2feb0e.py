@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_40f9f2_083cab_16895a.ps1 — portiert nach python
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_40f9f2_083cab_16895a.ps1
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_40f9f2_083cab_16895a_2feb0e.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_40f9f2_083cab_16895a_2feb0e.js
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
 # Prüfe Aufrufparameter
-if len(sys.argv) != 2:
-    print("Aufruf: {} <Ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
+if len(sys.argv) != 3:
+    print(f"Aufruf: {sys.argv[1]} <Ausgabedatei>", file=sys.stderr)
     sys.exit(1)
 
-output_path = sys.argv[1]
+output_path = sys.argv[2]
 
 html_content = '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -221,6 +222,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
-except Exception as e:
-    print(f"Konnte Datei '{output_path}' nicht öffnen: {e}", file=sys.stderr)
+except Exception as error:
+    print(f"Konnte Datei '{output_path}' nicht öffnen: {error}", file=sys.stderr)
     sys.exit(1)
