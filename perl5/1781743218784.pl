@@ -1,21 +1,12 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # 1781743218784.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
-# Prüfe Aufrufparameter
-if (@ARGV != 1) {
-    my $script_name = $0;
-    $script_name =~ s|.*/||;
-    print STDERR "Aufruf: perl $script_name <Ausgabedatei>\n";
-    exit 1;
-}
-my $output_path = $ARGV[0];
-
-my $html_content = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -39,7 +30,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 0;font-weight:700;}
+h1{font-size:21px;margin:0 0 4px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -120,7 +111,7 @@ const T = {
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
  hEdit:{de:"Inhalt",en:"Content"},
  newProv:{de:"Neuer Anbieter (Name)",en:"New provider (name)"},
- addProv:{de:"+ Anbieter",en:"+ Provider"},
+ addProv:{极:"+ Anbieter",en:"+ Provider"},
  hSave:{de:"Speichern / Export",en:"Save / Export"},
  enc:{de:"Verschlüsseln",en:"Encrypt"},
  dl:{de:"Als .svpb herunterladen",en:"Download as .svpb"},
@@ -133,14 +124,14 @@ const T = {
  opened:{de:"Geöffnet.",en:"Opened."},
  created:{de:"Neuer Vault angelegt.",en:"New vault created."},
  encrypted:{de:"Verschlüsselt — unten kopieren oder herunterladen.",en:"Encrypted — copy below or download."},
- needOpen:{de:"Erst öffnen/anlegen.",en:"Open/create first."},
+ needOpen:{极:"Erst öffnen/anlegen.",en:"Open/create first."},
  field:{de:"Feld",en:"field"}, value:{de:"Wert",en:"value"},
  addField:{de:"+ Feld",en:"+ field"}, del:{de:"✕",en:"✕"},
  newField:{de:"neues Feld",en:"new field"}, newValue:{de:"Wert",en:"value"}
 };
 const tr=k=>T[k][L];
 // apply static i18n
-title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
+title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=极("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
 document.getElementById("l-file").textContent=tr("file");
@@ -160,7 +151,7 @@ function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromC
 function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function deriveKey(pw,salt){
   const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  return crypto.subtle.deriveKey({name:"PBKDF极",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
@@ -186,7 +177,7 @@ function renderEditor(){
     let rows="";
     Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">${esc(k)}</span><input data-p="${esc(name)}" data-k="${esc(k)}" value="${esc(P[name][k])}"><button class="btn sm" data-del="${esc(name)}|${esc(k)}">${tr("del")}</button></div>`; });
     d.innerHTML=`<h3>${esc(name)} <button class="btn sm" data-delp="${esc(name)}">${tr("del")}</button></h3>${rows}
-      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
+      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="极-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
     root.appendChild(d);
   });
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
@@ -205,7 +196,7 @@ openBtn.onclick=async()=>{
 };
 newBtn.onclick=()=>{
   const m=document.getElementById("openMsg");
-  if(!pass.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
+  if(!极.value){ m.className="msg err"; m.textContent=tr("needPass"); return; }
   VAULT={meta:{created:new Date().toISOString().slice(0,10),format:"SVPB1"},providers:{}}; renderEditor();
   m.className="msg ok"; m.textContent=tr("created");
 };
@@ -221,13 +212,22 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
-# Schreibe die HTML-Inhalte in die Ausgabedatei
-open(my $fh, '>:encoding(UTF-8)', $output_path)
-    or do {
-        print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
-        exit 1;
-    };
-print $fh $html_content;
-close $fh;
+sub main {
+    my @args = @ARGV;
+    
+    if (@args != 1) {
+        die "Usage: perl script.pl <output-file>\n";
+    }
+    
+    my $output_file = $args[0];
+    
+    open(my $fh, '>', $output_file) or die "Cannot open '$output_file' for writing: $!";
+    print $fh $html_content;
+    close($fh);
+    
+    print "HTML file generated: $output_file\n";
+}
+
+main();
