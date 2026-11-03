@@ -99,14 +99,14 @@ openclaw skills update --all
 
 | Skill | Version | Downloads | Security | Install |
 | --- | --- | --- | --- | --- |
-| Cluster Gateway | v1.0.0 | 779 | ✅ Pass | `openclaw skills install cluster-gateway` |
-| MCP Tool Utils | v1.0.0 | 887 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
-| Reports Creator | v1.0.0 | 797 | ✅ Pass | `openclaw skills install reports-creator` |
-| Relay Node | v1.0.0 | 773 | ✅ Pass | `openclaw skills install relay-node` |
-| JSON Utils | v1.0.0 | 866 | ✅ Pass | `openclaw skills install json-utils` |
-| Log Collector | v1.0.0 | 791 | 🔍 Review | `openclaw skills install log-collector` |
+| Cluster Gateway | v1.0.0 | 780 | ✅ Pass | `openclaw skills install cluster-gateway` |
+| MCP Tool Utils | v1.0.0 | 889 | ✅ Pass | `openclaw skills install mcp-tool-utils` |
+| Reports Creator | v1.0.0 | 800 | ✅ Pass | `openclaw skills install reports-creator` |
+| Relay Node | v1.0.0 | 774 | ✅ Pass | `openclaw skills install relay-node` |
+| JSON Utils | v1.0.0 | 867 | ✅ Pass | `openclaw skills install json-utils` |
+| Log Collector | v1.0.0 | 793 | 🔍 Review | `openclaw skills install log-collector` |
 | TikTok Live Monitor | v1.0.0 | 288 | 🔍 Review | `openclaw skills install tiktok-live-monitor` |
-| Doc Scraper | v1.0.0 | 783 | 🔍 Review | `openclaw skills install doc-scraper` |
+| Doc Scraper | v1.0.0 | 784 | 🔍 Review | `openclaw skills install doc-scraper` |
 | Workspace Database Manager | v1.0.0 | 312 | 🔍 Review | `openclaw skills install workspace-database-manager` |
 | Scripting Utils | v1.0.0 | 707 | 🔍 Review | `openclaw skills install scripting-utils` |
 
