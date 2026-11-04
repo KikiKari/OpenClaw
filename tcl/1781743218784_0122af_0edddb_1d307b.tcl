@@ -1,17 +1,17 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_0edddb_1d307b.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b.pl
+# 1781743218784_0122af_0edddb_1d307b.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
 # Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe die Anzahl der Argumente
+# Parameter verarbeiten
 if {$argc != 1} {
     puts stderr "Verwendung: [info script] <Ausgabedatei>"
     exit 1
 }
 
-set OutputPath [lindex $argv 0]
+lassign $argv output_path
 
-set htmlContent {<!DOCTYPE html>
+set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -218,11 +218,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-# Versuche, die HTML-Datei zu schreiben
-if {[catch {set fh [open $OutputPath w]}]} {
-    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $fh"
+# Schreibe die HTML-Datei
+if {[catch {set fd [open $output_path w]} err]} {
+    puts stderr "Konnte Datei '$output_path' nicht öffnen: $err"
     exit 1
 }
 
-puts -nonewline $fh $htmlContent
-close $fh
+puts -nonewline $fd $html_content
+close $fd

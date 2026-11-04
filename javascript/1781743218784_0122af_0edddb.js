@@ -1,20 +1,16 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_0edddb.sh — portiert nach javascript
-// Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_0edddb.sh
+// 1781743218784_0122af_0edddb.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
 // Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af_0edddb.pl — portiert nach shell
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
-
-// Prüfe, ob output_path als Argument übergeben wurde
-if (process.argv.length !== 3) {
-    console.error("output_path ist erforderlich");
+// Parameter verarbeiten
+const outputPath = process.argv[2];
+if (!outputPath) {
+    console.error("Verwendung: node script.js <Ausgabedatei>");
     process.exit(1);
 }
 
 const fs = require('fs');
-const outputPath = process.argv[2];
 
 const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -223,5 +219,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
-// Schreibe den HTML-Inhalt in die Ausgabedatei
-fs.writeFileSync(outputPath, htmlContent);
+// Datei schreiben
+try {
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
+} catch (err) {
+    console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${err.message}`);
+    process.exit(1);
+}

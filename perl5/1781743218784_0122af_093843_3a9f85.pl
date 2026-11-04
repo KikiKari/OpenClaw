@@ -1,11 +1,20 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_093843.sh — portiert nach perl5
-# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_093843.sh
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843_3a9f85.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_3a9f85.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
+use open qw(:std :utf8);
+
+# 1781743218784_0122af_093843.sh — portiert nach javascript
+# Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_093843.sh
+# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af.pl — portiert nach JavaScript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if (@ARGV < 1) {
@@ -224,7 +233,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 HTML_END
 
 # Schreibe HTML-Inhalt in Ausgabedatei
-open(my $fh, '>', $outputPath) or do {
+open(my $fh, '>:encoding(UTF-8)', $outputPath) or do {
     print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
     exit 1;
 };

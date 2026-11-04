@@ -3,24 +3,21 @@
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b.pl
 // Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af_0edddb.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_0122af.ps1 — portiert nach tcl
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_0edddb_1d307b.ps1 — portiert nach perl5
+// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb_1d307b.ps1
+// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
+const path = require('path');
 
 // Parameter verarbeiten
 if (process.argv.length !== 3) {
     console.error("Verwendung: " + process.argv[1] + " <Ausgabedatei>");
     process.exit(1);
 }
-const OutputPath = process.argv[2];
+const output_path = process.argv[2];
 
-const htmlContent = `<!DOCTYPE html>
+const html_content = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -43,7 +40,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0;font-weight:700;}
+h1{font-size:21px;margin:0 0 10px;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -224,11 +221,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>`;
+</html>
+`;
 
 try {
-    fs.writeFileSync(OutputPath, htmlContent, 'utf8');
-} catch (err) {
-    console.error("Konnte Datei '" + OutputPath + "' nicht öffnen: " + err.message);
+    fs.writeFileSync(output_path, html_content, { encoding: 'utf8' });
+} catch (error) {
+    console.error("Konnte Datei '" + output_path + "' nicht öffnen: " + error.message);
     process.exit(1);
 }

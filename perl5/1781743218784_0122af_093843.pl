@@ -1,23 +1,22 @@
-#!/usr/bin/env perl
-# 1781743218784_0122af_093843.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_093843.ps1
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/perl
+# 1781743218784_0122af_093843.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use open qw(:std :utf8);
+use Encode qw(decode_utf8);
 use File::Spec;
-use Encode;
 
 # Parameter verarbeiten
 if (@ARGV < 1) {
-    warn "Fehler: OutputPath ist erforderlich.\n";
-    exit 1;
+    print STDERR "Fehler: OutputPath ist erforderlich.\n";
+    exit(1);
 }
 my $outputPath = $ARGV[0];
 
-my $htmlContent = <<'HTML_END';
+my $htmlContent = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -223,15 +222,17 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
 eval {
-    open my $fh, '>:encoding(UTF-8)', $outputPath or die "Cannot open file '$outputPath': $!";
+    open(my $fh, '>:encoding(UTF-8)', $outputPath) or die "Konnte Datei '$outputPath' nicht öffnen: $!";
     print $fh $htmlContent;
-    close $fh;
-    1;
-} or do {
-    my $error = $@ || 'Unknown error';
-    warn "$error\n";
-    exit 1;
+    close($fh);
 };
+
+if ($@) {
+    my $error = $@;
+    $error =~ s/ at .* line \d+\.$//; # Entferne Perl-interne Fehlerposition
+    print STDERR $error;
+    exit(1);
+}

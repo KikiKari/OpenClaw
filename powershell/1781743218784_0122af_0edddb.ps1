@@ -1,26 +1,16 @@
 #!/usr/bin/env pwsh
 # 1781743218784_0122af_0edddb.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb.js
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_0edddb.py — portiert nach javascript
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
-# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+# Parameter verarbeiten
+$outputPath = $args[0]
+if (-not $outputPath) {
+    Write-Error "Verwendung: pwsh script.ps1 <Ausgabedatei>"
+    exit 1
+}
 
-# 1781743218784_0122af_0edddb.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
-
-param(
-    [Parameter(Mandatory=$true)]
-    [string]$OutputPath
-)
-
-$htmlContent = @'
+$htmlContent = @"
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -226,11 +216,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-'@
+"@
 
+# Datei schreiben
 try {
-    Set-Content -Path $OutputPath -Value $htmlContent -Encoding UTF8
+    [System.IO.File]::WriteAllText($outputPath, $htmlContent, [System.Text.Encoding]::UTF8)
 } catch {
-    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $($_.Exception.Message)"
+    Write-Error "Konnte Datei '$outputPath' nicht öffnen: $($_.Exception.Message)"
     exit 1
 }

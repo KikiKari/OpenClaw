@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_093843.tcl — portiert nach python
+# 1781743218784_0122af_093843_aecdae.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_aecdae.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843.tcl — portiert nach javascript
 # Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_093843.tcl
 # Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
-# Prüfe Python-Version
-if sys.version_info < (3, 12):
-    print("Fehler: Python 3.12 oder höher wird benötigt.", file=sys.stderr)
-    sys.exit(1)
-
 # Parameter verarbeiten
 if len(sys.argv) < 2:
-    print("Fehler: OutputPath ist erforderlich.", file=sys.stderr)
+    print("Fehler: OutputPath ist erforderlich.")
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -227,8 +230,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 # Schreibe HTML-Inhalt in Datei
 try:
-    with open(output_path, 'w', encoding='utf-8') as fh:
-        fh.write(html_content)
-except Exception as error_msg:
-    print(error_msg, file=sys.stderr)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+except Exception as e:
+    print(str(e))
     sys.exit(1)

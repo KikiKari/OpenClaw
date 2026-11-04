@@ -1,16 +1,11 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_093843.tcl — portiert nach javascript
-// Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_093843.tcl
-// Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_093843_aecdae.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_aecdae.pl
+// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af.pl — portiert nach tcl
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
-
-// Prüfe Node.js-Version
-const [major, minor] = process.version.slice(1).split('.').map(Number);
-if (major < 20) {
-    console.error("Fehler: Node.js 20 oder höher wird benötigt.");
+// Prüfe Node-Version (20 oder höher)
+if (process.version.substring(1).split('.').map(Number)[0] < 20) {
+    console.error("Fehler: Node 20 oder höher wird benötigt.");
     process.exit(1);
 }
 
@@ -227,13 +222,11 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-`;
+</html>`;
 
-// Schreibe HTML-Inhalt in Datei
 try {
     fs.writeFileSync(outputPath, htmlContent, 'utf8');
-} catch (error) {
-    console.error(error.message);
+} catch (err) {
+    console.error(err.message);
     process.exit(1);
 }

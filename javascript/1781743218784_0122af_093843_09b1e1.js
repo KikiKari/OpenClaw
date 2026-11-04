@@ -1,20 +1,17 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_093843.py — portiert nach javascript
-// Quelle: python, Projects@abstractions:python/1781743218784_0122af_093843.py
-// Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
-
-const fs = require('fs');
-const path = require('path');
+// 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
+// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
+// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 // Parameter verarbeiten
 if (process.argv.length < 3) {
-  console.error("Fehler: OutputPath ist erforderlich.");
-  process.exit(1);
+    console.error("Fehler: OutputPath ist erforderlich.");
+    process.exit(1);
 }
 
-const outputPath = process.argv[2];
+const output_path = process.argv[2];
 
-const htmlContent = `<!DOCTYPE html>
+const html_content = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -222,8 +219,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 `;
 
 try {
-  fs.writeFileSync(outputPath, htmlContent, 'utf-8');
-} catch (e) {
-  console.error(e.message);
-  process.exit(1);
+    require('fs').writeFileSync(output_path, html_content, 'utf8');
+} catch (error) {
+    console.error(error.message);
+    process.exit(1);
 }

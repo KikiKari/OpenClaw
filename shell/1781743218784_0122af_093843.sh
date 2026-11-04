@@ -1,25 +1,19 @@
 #!/bin/bash
-# 1781743218784_0122af_093843.tcl — portiert nach shell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_093843.tcl
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Bash-Version
-if [[ ${BASH_VERSINFO[0]} -lt 5 ]]; then
-    echo "Fehler: Bash 5 oder höher wird benötigt." >&2
-    exit 1
-fi
-
 # Parameter verarbeiten
-if [[ $# -lt 1 ]]; then
+if [ $# -lt 1 ]; then
     echo "Fehler: OutputPath ist erforderlich." >&2
     exit 1
 fi
 outputPath="$1"
 
-# HTML-Inhalt
-read -r -d '' htmlContent <<'EOF'
+# HTML-Inhalt als here document
+read -r -d '' htmlContent <<'HTML_END' || true
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -225,10 +219,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
+HTML_END
 
-# Schreibe HTML-Inhalt in Datei
-if ! echo "$htmlContent" > "$outputPath"; then
-    echo "Fehler beim Schreiben in $outputPath" >&2
+# Schreiben der Datei mit Fehlerbehandlung
+if ! printf '%s' "$htmlContent" > "$outputPath"; then
+    echo "Cannot open $outputPath: $!" >&2
     exit 1
 fi

@@ -6,15 +6,14 @@
 import sys
 import os
 
-def main():
-    # Parameter verarbeiten
-    if len(sys.argv) < 2:
-        print(f"Verwendung: {sys.argv[0]} <Ausgabedatei>", file=sys.stderr)
-        sys.exit(1)
-    
-    output_path = sys.argv[1]
-    
-    html_content = '''<!DOCTYPE html>
+# Parameter verarbeiten
+if len(sys.argv) < 2:
+    print("Verwendung: python script.py <Ausgabedatei>", file=sys.stderr)
+    sys.exit(1)
+
+output_path = sys.argv[1]
+
+html_content = '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -221,13 +220,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '''
 
-    # Datei schreiben
-    try:
-        with open(output_path, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-    except Exception as e:
-        print(f"Konnte Datei '{output_path}' nicht öffnen: {e}", file=sys.stderr)
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
+# Datei schreiben
+try:
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+except Exception as e:
+    print(f"Konnte Datei '{output_path}' nicht öffnen: {str(e)}", file=sys.stderr)
+    sys.exit(1)

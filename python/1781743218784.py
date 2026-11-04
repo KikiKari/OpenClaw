@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-# 1781743218784.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784.js — portiert nach perl5
+# 1781743218784.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
 # Prüfe Aufrufparameter
 if len(sys.argv) != 2:
-    script_name = sys.argv[0]
+    script_name = os.path.basename(sys.argv[0])
     print(f"Aufruf: python3 {script_name} <Ausgabedatei>", file=sys.stderr)
     sys.exit(1)
+
 output_path = sys.argv[1]
 
 html_content = '''<!DOCTYPE html>
@@ -220,13 +218,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
 try:
-    with open(output_path, 'w', encoding='utf-8') as fh:
-        fh.write(html_content)
-except Exception as e:
-    print(f"Konnte Datei '{output_path}' nicht öffnen: {e}", file=sys.stderr)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+except Exception as err:
+    print(f"Konnte Datei '{output_path}' nicht öffnen: {err}", file=sys.stderr)
     sys.exit(1)

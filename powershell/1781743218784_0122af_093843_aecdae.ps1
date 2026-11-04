@@ -1,9 +1,9 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_093843.tcl — portiert nach powershell
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_093843.tcl
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843_aecdae.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_aecdae.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe PowerShell-Version
+# Prüfe PowerShell-Version (PowerShell 7 ist aktuell genug)
 if ($PSVersionTable.PSVersion.Major -lt 7) {
     Write-Error "Fehler: PowerShell 7 oder höher wird benötigt."
     exit 1
@@ -224,8 +224,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
+# Schreibe HTML-Inhalt in Datei
 try {
-    [System.IO.File]::WriteAllText($outputPath, $htmlContent, [System.Text.Encoding]::UTF8)
+    Set-Content -Path $outputPath -Value $htmlContent -Encoding UTF8
 } catch {
     Write-Error $_.Exception.Message
     exit 1
