@@ -1,21 +1,25 @@
 #!/usr/bin/perl
 # 1781743218784_0122af_0edddb.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
 use open qw(:std :utf8);
+use File::Basename;
 
-# Parameter verarbeiten
-my $outputPath = $ARGV[0];
-if (!$outputPath) {
-    print STDERR "Verwendung: $0 <Ausgabedatei>\n";
-    exit 1;
-}
-
-my $htmlContent = <<'HTML_END';
+sub main {
+    # Parameter verarbeiten
+    if (@ARGV < 1) {
+        my $script_name = basename($0);
+        print STDERR "Verwendung: $script_name <Ausgabedatei>\n";
+        exit 1;
+    }
+    
+    my $output_path = $ARGV[0];
+    
+    my $html_content = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -223,10 +227,14 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Datei schreiben
-open(my $fh, '>:encoding(UTF-8)', $outputPath) or do {
-    print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
-    exit 1;
-};
-print $fh $htmlContent;
-close($fh);
+    # Datei schreiben
+    if (open(my $fh, '>:encoding(UTF-8)', $output_path)) {
+        print $fh $html_content;
+        close $fh;
+    } else {
+        print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
+        exit 1;
+    }
+}
+
+main();

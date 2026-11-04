@@ -1,23 +1,19 @@
 #!/bin/bash
-# 1781743218784_0122af_0edddb.ps1 — portiert nach shell
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb.ps1
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_2ee5f4.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_2ee5f4.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# 1781743218784_0122af_0edddb.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
 # Parameter verarbeiten
-if [[ $# -ne 1 ]]; then
-    echo "Usage: $0 <OutputPath>" >&2
+output_path="${1:-}"
+if [[ -z "$output_path" ]]; then
+    echo "Fehlender Parameter: OutputPath" >&2
     exit 1
 fi
 
-OutputPath="$1"
-
-read -r -d '' html_content <<'EOF_HTML_CONTENT'
+# HTML-Inhalt erstellen
+read -r -d '' html_content <<'HTML_END' || true
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -223,10 +219,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF_HTML_CONTENT
+HTML_END
 
-# Schreibe den Inhalt in die Ausgabedatei
-if ! printf '%s' "$html_content" > "$OutputPath"; then
-    echo "Konnte Datei '$OutputPath' nicht öffnen: $!" >&2
-    exit 1
-fi
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+echo "$html_content" > "$output_path"

@@ -1,20 +1,19 @@
 #!/bin/bash
-# 1781743218784_0122af_0edddb_1d307b.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
-# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe Anzahl der Argumente
+# Parameter verarbeiten
 if [[ $# -ne 1 ]]; then
     echo "Verwendung: $0 <Ausgabedatei>" >&2
     exit 1
 fi
+OutputPath="$1"
 
-OUTPUT_PATH="$1"
-
-# HTML-Inhalt
-read -r -d '' HTML_CONTENT <<'EOF_HTML'
+# HTML-Inhalt in Variable speichern
+htmlContent=$(cat <<'HTMLCONTENT'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,10 +219,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF_HTML
+HTMLCONTENT
+)
 
-# Schreibe HTML-Inhalt in Ausgabedatei
-if ! printf '%s' "$HTML_CONTENT" > "$OUTPUT_PATH"; then
-    echo "Konnte Datei '$OUTPUT_PATH' nicht öffnen." >&2
+# Versuche, die HTML-Datei zu schreiben
+if ! echo "$htmlContent" > "$OutputPath"; then
+    echo "Konnte Datei '$OutputPath' nicht öffnen: $!" >&2
     exit 1
 fi

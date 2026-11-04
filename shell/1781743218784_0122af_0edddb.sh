@@ -1,7 +1,7 @@
-#!/bin/bash
-# 1781743218784_0122af_0edddb.py — portiert nach shell
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
-# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+#!/usr/bin/env bash
+# 1781743218784_0122af_0edddb.js — portiert nach shell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
@@ -11,10 +11,10 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-output_path="$1"
+outputPath="$1"
 
 # HTML-Inhalt in Variable speichern
-html_content=$(cat <<'EOF'
+htmlContent=$(cat <<'EOF'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -224,7 +224,7 @@ EOF
 )
 
 # Datei schreiben
-if ! printf '%s' "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
+if ! printf '%s' "$htmlContent" > "$outputPath"; then
+    echo "Konnte Datei '$outputPath' nicht öffnen: $!" >&2
     exit 1
 fi

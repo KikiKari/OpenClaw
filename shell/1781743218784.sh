@@ -1,12 +1,20 @@
 #!/bin/bash
-# 1781743218784.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
+# 1781743218784.pl — portiert nach shell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
 # Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-generate_html() {
-  cat << 'EOF'
+# Prüfe Aufrufparameter
+if [[ $# -ne 1 ]]; then
+    script_name=$(basename "$0")
+    echo "Aufruf: bash $script_name <Ausgabedatei>" >&2
+    exit 1
+fi
+output_path="$1"
+
+# HTML-Inhalt als Variable
+read -r -d '' html_content <<'HTML_END' || true
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -30,7 +38,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Hel
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
 .mark{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 12px rgba(91,91,214,.35);position:relative;flex:0 0 auto;}
 .mark:after{content:"";position:absolute;inset:8px;border-radius:4px;border:2px solid rgba(255,255,255,.92);}
-h1{font-size:21px;margin:0 0 4px;font-weight:700;}
+h1{font-size:21px;margin:0 0 0;font-weight:700;}
 .sub{color:var(--muted);font-size:13px;margin:2px 0 16px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:14px;}
 .card h2{font-size:14px;margin:0 0 10px;}
@@ -93,7 +101,7 @@ a{color:var(--accent);}
     </div>
     <label class="lab" id="l-result">Ergebnis (zum Kopieren/Speichern)</label>
     <textarea id="result" readonly></textarea>
-    </div>
+  </div>
 
   <div class="foot" id="foot"></div>
 </div>
@@ -115,14 +123,14 @@ const T = {
  hSave:{de:"Speichern / Export",en:"Save / Export"},
  enc:{de:"Verschlüsseln",en:"Encrypt"},
  dl:{de:"Als .svpb herunterladen",en:"Download as .svpb"},
- exp:{极:"Klartext-JSON exportieren",en:"Export plaintext JSON"},
+ exp:{de:"Klartext-JSON exportieren",en:"Export plaintext JSON"},
  result:{de:"Ergebnis (zum Kopieren/Speichern)",en:"Result (to copy/save)"},
  foot:{de:"Eigenes Format (PBKDF2). Nicht kompatibel mit dem scrypt-Python-Tool. Sicherheit liegt in der Passphrase; Inhalt ohne sie nicht wiederherstellbar.",en:"Own format (PBKDF2). Not compatible with the scrypt Python tool. Security rests on the passphrase; content is unrecoverable without it."},
  needPass:{de:"Passphrase eingeben.",en:"Enter a passphrase."},
  noInput:{de:"Datei laden oder Base64 einfügen.",en:"Load a file or paste Base64."},
  bad:{de:"Falsche Passphrase oder ungültiger Vault.",en:"Wrong passphrase or invalid vault."},
  opened:{de:"Geöffnet.",en:"Opened."},
- created:{de:"Neuer Vault angelegt.",极:"New vault created."},
+ created:{de:"Neuer Vault angelegt.",en:"New vault created."},
  encrypted:{de:"Verschlüsselt — unten kopieren oder herunterladen.",en:"Encrypted — copy below or download."},
  needOpen:{de:"Erst öffnen/anlegen.",en:"Open/create first."},
  field:{de:"Feld",en:"field"}, value:{de:"Wert",en:"value"},
@@ -134,7 +142,7 @@ const tr=k=>T[k][L];
 title.textContent=tr("title"); sub.textContent=tr("sub"); document.title=tr("title");
 document.getElementById("h-open").textContent=tr("hOpen");
 document.getElementById("l-pass").textContent=tr("pass");
-document.getElementById("l-file").textContent=极("file");
+document.getElementById("l-file").textContent=tr("file");
 blob.placeholder=tr("blob");
 openBtn.textContent=tr("open"); newBtn.textContent=tr("neu");
 document.getElementById("h-edit").textContent=tr("hEdit");
@@ -156,7 +164,7 @@ async function deriveKey(pw,salt){
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
   const key=await deriveKey(pw,salt);
-  const ct=new Uint极Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj,null,2))));
   const magic=enc.encode("SVPB1"); const out=new Uint8Array(5+16+12+ct.length);
   out.set(magic,0); out.set(salt,5); out.set(iv,21); out.set(ct,33); return u8b64(out);
 }
@@ -177,12 +185,12 @@ function renderEditor(){
     let rows="";
     Object.keys(P[name]).forEach(k=>{ rows+=`<div class="kv"><span class="k">${esc(k)}</span><input data-p="${esc(name)}" data-k="${esc(k)}" value="${esc(P[name][k])}"><button class="btn sm" data-del="${esc(name)}|${esc(k)}">${tr("del")}</button></div>`; });
     d.innerHTML=`<h3>${esc(name)} <button class="btn sm" data-delp="${esc(name)}">${tr("del")}</button></h3>${rows}
-      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm极 data-addf="${esc(name)}">${tr("addField")}</button></div>`;
+      <div class="row" style="margin-top:6px"><input class="nf" data-np="${esc(name)}" placeholder="${tr("newField")}" style="max-width:180px"><input class="nv" data-np="${esc(name)}" placeholder="${tr("newValue")}" style="max-width:260px"><button class="btn sm" data-addf="${esc(name)}">${tr("addField")}</button></div>`;
     root.appendChild(d);
   });
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
   root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
-  root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()极 delete VAULT.providers[b.dataset.delp]; renderEditor(); });
+  root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
   root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
 
@@ -212,19 +220,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
-}
+HTML_END
 
-main() {
-  if [ $# -ne 1 ]; then
-    echo "Usage: $0 <output-file>" >&2
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+echo "$html_content" > "$output_path" || {
+    echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
     exit 1
-  fi
-
-  local output_file="$1"
-  
-  generate_html > "$output_file"
-  echo "HTML file generated: $output_file"
 }
-
-main "$@"

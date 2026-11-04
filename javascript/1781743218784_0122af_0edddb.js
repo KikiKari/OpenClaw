@@ -1,29 +1,22 @@
 #!/usr/bin/env node
-// 1781743218784_0122af_0edddb.py — portiert nach javascript
-// Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb.py
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+// 1781743218784_0122af_0edddb.sh — portiert nach javascript
+// Quelle: shell, Projects@abstractions:shell/1781743218784_0122af_0edddb.sh
+// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af_0edddb.pl — portiert nach python
+// 1781743218784_0122af_0edddb.pl — portiert nach shell
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-// Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
 
-// 1781743218784_0122af.ps1 — portiert nach perl5
-// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-// Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
+// Prüfe, ob output_path als Argument übergeben wurde
+if (process.argv.length !== 3) {
+    console.error("output_path ist erforderlich");
+    process.exit(1);
+}
 
-import { writeFileSync } from 'fs';
-import { exit } from 'process';
+const fs = require('fs');
+const outputPath = process.argv[2];
 
-function main() {
-    // Parameter verarbeiten
-    if (process.argv.length < 3) {
-        console.error(`Verwendung: ${process.argv[1]} <Ausgabedatei>`);
-        exit(1);
-    }
-    
-    const outputPath = process.argv[2];
-    
-    const htmlContent = `<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -230,13 +223,5 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 `;
 
-    // Datei schreiben
-    try {
-        writeFileSync(outputPath, htmlContent, { encoding: 'utf-8' });
-    } catch (e) {
-        console.error(`Konnte Datei '${outputPath}' nicht öffnen: ${e.message}`);
-        exit(1);
-    }
-}
-
-main();
+// Schreibe den HTML-Inhalt in die Ausgabedatei
+fs.writeFileSync(outputPath, htmlContent);

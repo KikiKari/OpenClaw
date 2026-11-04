@@ -1,22 +1,20 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_0edddb_1d307b.py — portiert nach perl5
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb_1d307b.py
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b_016083.ps1 — portiert nach perl5
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb_1d307b_016083.ps1
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 # Parameter verarbeiten
 if (@ARGV != 1) {
-    my $script_name = $0;
-    $script_name =~ s{.*/}{};
-    print STDERR "Verwendung: $script_name <Ausgabedatei>\n";
+    print STDERR "Verwendung: $0 <Ausgabedatei>\n";
     exit 1;
 }
 
-my $output_path = $ARGV[0];
+my $outputPath = $ARGV[0];
 
-my $html_content = <<'HTML_END';
+my $htmlContent = <<'HTML_CONTENT';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,12 +220,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML_CONTENT
 
-# Datei schreiben
-open(my $fd, '>:encoding(UTF-8)', $output_path) or do {
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
-    exit 1;
-};
-print $fd $html_content;
-close($fd);
+# Versuche, die HTML-Datei zu schreiben
+open(my $fh, '>:encoding(UTF-8)', $outputPath)
+    or die "Konnte Datei '$outputPath' nicht öffnen: $!";
+print $fh $htmlContent;
+close $fh;

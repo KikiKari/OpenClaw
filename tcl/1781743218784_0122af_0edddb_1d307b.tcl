@@ -1,22 +1,15 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_0edddb_1d307b.js — portiert nach tcl
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_0edddb.tcl — portiert nach javascript
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.ps1 — portiert nach tcl
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
-# Erzeugt: 2026-10-31 durch ABSTRACTIONS_MANAGER.py
-
-# Parameter verarbeiten
+# Prüfe die Anzahl der Argumente
 if {$argc != 1} {
     puts stderr "Verwendung: [info script] <Ausgabedatei>"
     exit 1
 }
-lassign $argv OutputPath
+
+set OutputPath [lindex $argv 0]
 
 set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -225,10 +218,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-if {[catch {open $OutputPath w} fh]} {
-    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $::errorInfo"
+# Versuche, die HTML-Datei zu schreiben
+if {[catch {set fh [open $OutputPath w]}]} {
+    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $fh"
     exit 1
 }
 
-puts $fh $htmlContent
+puts -nonewline $fh $htmlContent
 close $fh

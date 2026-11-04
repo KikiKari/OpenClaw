@@ -1,11 +1,12 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_0edddb_1d307b.py — portiert nach tcl
-# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb_1d307b.py
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b_016083.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b_016083.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if {$argc != 1} {
-    puts stderr "Verwendung: [info script] <Ausgabedatei>"
+    set script_name [file tail $argv0]
+    puts stderr "Verwendung: $script_name <Ausgabedatei>"
     exit 1
 }
 
@@ -215,13 +216,14 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
-if {[catch {set fd [open $output_path w]} err]} {
-    puts stderr "Konnte Datei '$output_path' nicht öffnen: $err"
+if {[catch {
+    set fd [open $output_path w]
+    fconfigure $fd -encoding utf-8
+    puts -nonewline $fd $html_content
+    close $fd
+} err]} {
+    puts stderr $err
     exit 1
 }
-
-puts -nonewline $fd $html_content
-close $fd

@@ -1,18 +1,19 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_0edddb.ps1 — portiert nach tcl
+# 1781743218784_0122af_0edddb_2ee5f4.pl — portiert nach tcl
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_2ee5f4.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_0edddb.ps1 — portiert nach perl5 — portiert nach Tcl 8.6
 # Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb.ps1
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py — portiert am 2024-12-02
 
-# 1781743218784_0122af_0edddb.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
+# Parameter verarbeiten
 if {$argc != 1} {
-    puts stderr "Verwendung: [info script] <Ausgabepfad>"
+    puts stderr "Fehlender Parameter: OutputPath"
     exit 1
 }
 
-set OutputPath [lindex $argv 0]
+set output_path [lindex $argv 0]
 
 set html_content {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -221,10 +222,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-if {[catch {set fd [open $OutputPath w]}]} {
-    puts stderr "Konnte Datei '$OutputPath' nicht öffnen: $fd"
+# Schreibe die HTML-Inhalte in die Ausgabedatei
+if {[catch {open $output_path w} fh]} {
+    puts stderr "Konnte Datei '$output_path' nicht öffnen: $::errorInfo"
     exit 1
 }
 
-puts -nonewline $fd $html_content
-close $fd
+puts -nonewline $fh $html_content
+close $fh

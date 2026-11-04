@@ -1,22 +1,23 @@
 #!/usr/bin/env perl
-# 1781743218784_0122af_0edddb.ps1 — portiert nach perl5
-# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_0edddb.ps1
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af_0edddb.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_2ee5f4.py — portiert nach perl5
+# Quelle: python, Projects@abstractions:python/1781743218784_0122af_0edddb_2ee5f4.py
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
+use Getopt::Long;
+use Path::Tiny;
 use utf8;
-use Encode qw(decode encode);
-use File::Slurper qw(write_text);
 
-# Parameter verarbeiten
-my $output_path = shift @ARGV;
-if (!$output_path) {
-    die "Usage: $0 OUTPUT_PATH\n";
+binmode(STDOUT, ':encoding(UTF-8)');
+
+my $output_path;
+GetOptions(
+    'output_path=s' => \$output_path,
+) or die "Ungültige Optionen\n";
+
+if (!defined $output_path) {
+    die "output_path ist erforderlich\n";
 }
 
 my $html_content = <<'HTML_END';
@@ -164,7 +165,7 @@ function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromC
 function b64u8(b64){ const s=atob(b64.trim()); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function deriveKey(pw,salt){
   const km=await crypto.subtle.importKey("raw",enc.encode(pw),"PBKDF2",false,["deriveKey"]);
-  return crypto.subtle.deriveKey({name:"PBKDF2",salt:5,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+  return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:210000,hash:"SHA-256"},km,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function encryptObj(obj,pw){
   const salt=crypto.getRandomValues(new Uint8Array(16)), iv=crypto.getRandomValues(new Uint8Array(12));
@@ -228,12 +229,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 HTML_END
 
 eval {
-    write_text($output_path, $html_content, 'UTF-8');
+    path($output_path)->spew_utf8($html_content);
     1;
 } or do {
     my $error = $@ || 'Unknown error';
     warn "Konnte Datei '$output_path' nicht öffnen: $error\n";
     exit 1;
 };
-
-exit 0;

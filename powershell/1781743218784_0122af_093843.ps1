@@ -1,13 +1,14 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af.pl — portiert nach powershell
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843.py — portiert nach powershell
+# Quelle: python, Projects@abstractions:python/1781743218784_0122af_093843.py
+# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
 
 # Parameter verarbeiten
 if ($args.Count -lt 1) {
     Write-Error "Fehler: OutputPath ist erforderlich."
     exit 1
 }
+
 $outputPath = $args[0]
 
 $htmlContent = @'

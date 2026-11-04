@@ -1,20 +1,20 @@
 #!/usr/bin/perl
-# 1781743218784_0122af_0edddb.tcl — portiert nach perl5
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_2f7aa9.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_2f7aa9.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 
 # Parameter verarbeiten
 if (@ARGV != 1) {
-    print STDERR "Verwendung: $0 <Ausgabedatei>\n";
-    exit 1;
+  print STDERR "Verwendung: $0 <Ausgabedatei>\n";
+  exit 1;
 }
 
-my $output_path = $ARGV[0];
+my $outputPath = $ARGV[0];
 
-my $html_content = <<'HTML';
+my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,13 +220,12 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 
 # Datei schreiben
-open my $fh, '>', $output_path or do {
-    print STDERR "Konnte Datei '$output_path' nicht öffnen: $!\n";
-    exit 1;
+open(my $fh, '>', $outputPath) or do {
+  print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
+  exit 1;
 };
-
-print $fh $html_content;
+print $fh $htmlContent;
 close $fh;

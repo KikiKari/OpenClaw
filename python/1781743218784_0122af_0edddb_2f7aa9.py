@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_0edddb.tcl — portiert nach python
-# Quelle: tcl, Projects@abstractions:tcl/1781743218784_0122af_0edddb.tcl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af_0edddb.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb.pl
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_2f7aa9.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_2f7aa9.js
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
 # Parameter verarbeiten
 if len(sys.argv) != 2:
-    print(f"Verwendung: {sys.argv[0]} <Ausgabedatei>", file=sys.stderr)
+    print("Verwendung: {} <Ausgabedatei>".format(sys.argv[0]), file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -225,8 +222,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 
 # Datei schreiben
 try:
-    with open(output_path, 'w') as fh:
-        fh.write(html_content)
-except Exception as e:
-    print(f"Konnte Datei '{output_path}' nicht öffnen: {e}", file=sys.stderr)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+except Exception as err:
+    print("Konnte Datei '{}' nicht öffnen: {}".format(output_path, err), file=sys.stderr)
     sys.exit(1)

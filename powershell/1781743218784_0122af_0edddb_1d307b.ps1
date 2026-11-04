@@ -1,16 +1,17 @@
 #!/usr/bin/env pwsh
-# 1781743218784_0122af_0edddb_1d307b.js — portiert nach powershell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_0edddb_1d307b.js
-# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_0edddb_1d307b.pl — portiert nach powershell
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_0edddb_1d307b.pl
+# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
 
-# Parameter verarbeiten
+# Prüfe die Anzahl der Argumente
 if ($args.Count -ne 1) {
     Write-Error "Verwendung: $($MyInvocation.MyCommand.Name) <Ausgabedatei>"
     exit 1
 }
+
 $OutputPath = $args[0]
 
-$HtmlContent = @'
+$htmlContent = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -219,8 +220,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '@
 
 try {
-    Set-Content -Path $OutputPath -Value $HtmlContent -Encoding UTF8
+    [System.IO.File]::WriteAllText($OutputPath, $htmlContent, [System.Text.Encoding]::UTF8)
 } catch {
-    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $($_.Exception.Message)"
+    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $_"
     exit 1
 }
