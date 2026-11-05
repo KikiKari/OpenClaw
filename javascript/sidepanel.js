@@ -1,1304 +1,668 @@
 #!/usr/bin/env node
-// sidepanel.css — portiert nach javascript
-// Quelle: css, Projects@TikTok-Live-Companion:plugin-source/browser-extension/sidepanel.css
-// auch in: Projects@TikTok-Live-Companion-Android:plugin-source/browser-extension/sidepanel.css
-// auch in: Projects@TikTok-Live-Companion-iOS:plugin-source/browser-extension/sidepanel.css
-// auch in: Projects@vercel/install-and-configure-vercel-s-8vf8rt:plugin-source/browser-extension/sidepanel.css
-// Erzeugt: 2026-10-23 durch ABSTRACTIONS_MANAGER.py
-
-const fs = require('fs');
-const path = require('path');
-
-function generateCSS() {
-  const cssRules = [];
-
-  // Root variables
-  cssRules.push({
-    selector: ':root',
-    declarations: {
-      'color-scheme': 'light dark',
-      'font-family': 'Inter, "Segoe UI", system-ui, sans-serif',
-      '--accent': '#fe2c55',
-      '--accent-dark': '#d91f46',
-      '--surface': 'color-mix(in srgb, Canvas 94%, CanvasText 6%)',
-      '--border': 'color-mix(in srgb, CanvasText 18%, transparent)',
-      '--muted': 'color-mix(in srgb, CanvasText 65%, transparent)',
-      '--good': '#147d45',
-      '--warn': '#a65f00',
-      '--bad': '#b42318'
-    }
-  });
-
-  // Universal selector
-  cssRules.push({
-    selector: '*',
-    declarations: {
-      'box-sizing': 'border-box'
-    }
-  });
-
-  // Body
-  cssRules.push({
-    selector: 'body',
-    declarations: {
-      'margin': '0',
-      'background': 'Canvas',
-      'color': 'CanvasText',
-      'min-width': '300px'
-    }
-  });
-
-  // Header
-  cssRules.push({
-    selector: 'header',
-    declarations: {
-      'padding': '11px 18px',
-      'background': 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 18%, Canvas), Canvas)',
-      'border-bottom': '1px solid var(--border)'
-    }
-  });
-
-  // Headings
-  cssRules.push({
-    selector: 'h2',
-    declarations: {
-      'margin': '0',
-      'font-size': '15px'
-    }
-  });
-
-  // Main content
-  cssRules.push({
-    selector: 'main',
-    declarations: {
-      'padding': '14px',
-      'display': 'grid',
-      'grid-template-columns': 'minmax(0, 1fr)',
-      'gap': '12px'
-    }
-  });
-
-  // Sections
-  cssRules.push({
-    selector: 'section',
-    declarations: {
-      'min-width': '0',
-      'padding': '14px',
-      'background': 'var(--surface)',
-      'border': '1px solid var(--border)',
-      'border-radius': '13px',
-      'box-shadow': '0 5px 20px color-mix(in srgb, CanvasText 6%, transparent)'
-    }
-  });
-
-  // Section titles and button rows
-  cssRules.push({
-    selector: '.section-title, .button-row',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'justify-content': 'space-between',
-      'gap': '8px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.section-title',
-    declarations: {
-      'min-width': '0',
-      'flex-wrap': 'wrap'
-    }
-  });
-
-  cssRules.push({
-    selector: '.title-actions',
-    declarations: {
-      'display': 'flex',
-      'min-width': '0',
-      'max-width': '100%',
-      'align-items': 'center',
-      'justify-content': 'flex-end',
-      'flex-wrap': 'wrap',
-      'gap': '6px'
-    }
-  });
-
-  // Status LED
-  cssRules.push({
-    selector: '.status-led',
-    declarations: {
-      'width': '11px',
-      'height': '11px',
-      'flex': '0 0 11px',
-      'border-radius': '50%',
-      'background': 'var(--bad)',
-      'box-shadow': '0 0 0 3px color-mix(in srgb, var(--bad) 15%, transparent)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.status-led.on',
-    declarations: {
-      'background': 'var(--good)',
-      'box-shadow': '0 0 0 3px color-mix(in srgb, var(--good) 17%, transparent)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.status-led.off',
-    declarations: {
-      'background': 'var(--bad)'
-    }
-  });
-
-  // Button row
-  cssRules.push({
-    selector: '.button-row',
-    declarations: {
-      'justify-content': 'flex-start',
-      'flex-wrap': 'wrap',
-      'margin-top': '10px'
-    }
-  });
-
-  // Buttons
-  cssRules.push({
-    selector: 'button',
-    declarations: {
-      'border': '0',
-      'border-radius': '9px',
-      'padding': '9px 11px',
-      'font': 'inherit',
-      'font-size': '12px',
-      'font-weight': '700',
-      'cursor': 'pointer'
-    }
-  });
-
-  cssRules.push({
-    selector: 'button:disabled',
-    declarations: {
-      'cursor': 'not-allowed',
-      'opacity': '.55'
-    }
-  });
-
-  cssRules.push({
-    selector: '.compact',
-    declarations: {
-      'padding': '7px 9px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.settings-button',
-    declarations: {
-      'min-width': '34px',
-      'font-size': '17px',
-      'line-height': '1'
-    }
-  });
-
-  cssRules.push({
-    selector: '.primary',
-    declarations: {
-      'color': 'white',
-      'background': 'var(--accent)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.primary:hover',
-    declarations: {
-      'background': 'var(--accent-dark)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.secondary',
-    declarations: {
-      'color': 'CanvasText',
-      'background': 'color-mix(in srgb, CanvasText 9%, Canvas)',
-      'border': '1px solid var(--border)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.ghost',
-    declarations: {
-      'color': 'var(--muted)',
-      'background': 'transparent'
-    }
-  });
-
-  cssRules.push({
-    selector: '.danger-outline',
-    declarations: {
-      'color': 'var(--bad)',
-      'border-color': 'color-mix(in srgb, var(--bad) 45%, transparent)'
-    }
-  });
-
-  // Enable captions button
-  cssRules.push({
-    selector: '#enable-captions',
-    declarations: {
-      'width': '100%',
-      'margin-top': '11px'
-    }
-  });
-
-  // Text styles
-  cssRules.push({
-    selector: '.muted',
-    declarations: {
-      'color': 'var(--muted)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.small',
-    declarations: {
-      'font-size': '12px',
-      'line-height': '1.45'
-    }
-  });
-
-  cssRules.push({
-    selector: '#page-title',
-    declarations: {
-      'margin': '0',
-      'font-size': '12px',
-      'white-space': 'nowrap',
-      'overflow': 'hidden',
-      'text-overflow': 'ellipsis'
-    }
-  });
-
-  // Status grid
-  cssRules.push({
-    selector: '.status-grid',
-    declarations: {
-      'display': 'grid',
-      'grid-template-columns': '1fr 1fr',
-      'gap': '7px',
-      'margin-top': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.status',
-    declarations: {
-      'padding': '9px',
-      'border': '1px solid var(--border)',
-      'border-radius': '9px',
-      'background': 'Canvas'
-    }
-  });
-
-  cssRules.push({
-    selector: '.status-label',
-    declarations: {
-      'display': 'block',
-      'color': 'var(--muted)',
-      'font-size': '10px',
-      'text-transform': 'uppercase',
-      'letter-spacing': '.06em'
-    }
-  });
-
-  cssRules.push({
-    selector: '.status-value',
-    declarations: {
-      'display': 'block',
-      'margin-top': '3px',
-      'font-size': '12px',
-      'font-weight': '750'
-    }
-  });
-
-  cssRules.push({
-    selector: '.good .status-value',
-    declarations: {
-      'color': 'var(--good)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.warn .status-value',
-    declarations: {
-      'color': 'var(--warn)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.bad .status-value',
-    declarations: {
-      'color': 'var(--bad)'
-    }
-  });
-
-  // Count elements
-  cssRules.push({
-    selector: '.count',
-    declarations: {
-      'min-width': '25px',
-      'padding': '3px 7px',
-      'border-radius': '999px',
-      'background': 'color-mix(in srgb, var(--accent) 15%, Canvas)',
-      'color': 'var(--accent)',
-      'text-align': 'center',
-      'font-size': '11px',
-      'font-weight': '800'
-    }
-  });
-
-  cssRules.push({
-    selector: '.count-button',
-    declarations: {
-      'border': '1px solid color-mix(in srgb, var(--accent) 30%, transparent)',
-      'cursor': 'pointer'
-    }
-  });
-
-  cssRules.push({
-    selector: '.count-button:hover, .count-button:focus-visible',
-    declarations: {
-      'background': 'color-mix(in srgb, var(--accent) 25%, Canvas)'
-    }
-  });
-
-  // Live indicator
-  cssRules.push({
-    selector: '.live-indicator',
-    declarations: {
-      'padding': '3px 7px',
-      'border-radius': '999px',
-      'background': 'color-mix(in srgb, var(--muted) 15%, Canvas)',
-      'color': 'var(--muted)',
-      'font-size': '10px',
-      'font-weight': '800',
-      'text-transform': 'uppercase'
-    }
-  });
-
-  cssRules.push({
-    selector: '.live-indicator.active',
-    declarations: {
-      'background': 'color-mix(in srgb, var(--good) 16%, Canvas)',
-      'color': 'var(--good)'
-    }
-  });
-
-  // Stats grid
-  cssRules.push({
-    selector: '.stats-grid .status-value',
-    declarations: {
-      'font-size': '16px',
-      'font-variant-numeric': 'tabular-nums'
-    }
-  });
-
-  // Chat list
-  cssRules.push({
-    selector: '.chat-list',
-    declarations: {
-      'display': 'grid',
-      'gap': '6px',
-      'margin-top': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chat-list.empty',
-    declarations: {
-      'color': 'var(--muted)',
-      'font-size': '12px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chat-line',
-    declarations: {
-      'margin': '0',
-      'padding': '7px 8px',
-      'border-left': '3px solid color-mix(in srgb, var(--accent) 45%, var(--border))',
-      'border-radius': '6px',
-      'background': 'Canvas',
-      'font-size': '12px',
-      'line-height': '1.4',
-      'overflow-wrap': 'anywhere'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chat-author',
-    declarations: {
-      'font-weight': '800'
-    }
-  });
-
-  // Player controls
-  cssRules.push({
-    selector: '.player-controls',
-    declarations: {
-      'display': 'grid',
-      'grid-template-columns': 'repeat(2, minmax(0, 1fr))',
-      'gap': '7px',
-      'margin-top': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.player-controls button',
-    declarations: {
-      'width': '100%'
-    }
-  });
-
-  cssRules.push({
-    selector: '.player-time',
-    declarations: {
-      'font-size': '13px',
-      'font-weight': '800',
-      'font-variant-numeric': 'tabular-nums'
-    }
-  });
-
-  // Audio controls
-  cssRules.push({
-    selector: '.audio-controls',
-    declarations: {
-      'display': 'grid',
-      'gap': '7px',
-      'margin-top': '12px',
-      'padding-top': '11px',
-      'border-top': '1px solid var(--border)'
-    }
-  });
-
-  // Control labels
-  cssRules.push({
-    selector: '.control-label, .audio-meter-row',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'justify-content': 'space-between',
-      'gap': '8px',
-      'font-size': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.control-label output, .audio-meter-row strong',
-    declarations: {
-      'font-variant-numeric': 'tabular-nums'
-    }
-  });
-
-  // Range inputs
-  cssRules.push({
-    selector: 'input[type="range"]',
-    declarations: {
-      'width': '100%',
-      'accent-color': 'var(--accent)'
-    }
-  });
-
-  // Settings grid
-  cssRules.push({
-    selector: '.settings-grid',
-    declarations: {
-      'display': 'grid',
-      'gap': '7px',
-      'margin-top': '10px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.settings-grid label',
-    declarations: {
-      'display': 'grid',
-      'gap': '4px',
-      'color': 'var(--muted)',
-      'font-size': '10px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.settings-grid label[hidden]',
-    declarations: {
-      'display': 'none'
-    }
-  });
-
-  // Form inputs
-  cssRules.push({
-    selector: 'input[type="url"], input[type="text"], input[type="password"], input[type="number"], select',
-    declarations: {
-      'width': '100%',
-      'min-width': '0',
-      'padding': '7px 8px',
-      'border': '1px solid var(--border)',
-      'border-radius': '7px',
-      'background': 'Canvas',
-      'color': 'CanvasText',
-      'font': 'inherit',
-      'font-size': '11px'
-    }
-  });
-
-  // Top chatters
-  cssRules.push({
-    selector: '.top-chatters',
-    declarations: {
-      'display': 'grid',
-      'gap': '6px',
-      'margin-top': '8px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.top-chatters.empty',
-    declarations: {
-      'color': 'var(--muted)',
-      'font-size': '12px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.top-chatters-actions',
-    declarations: {
-      'display': 'flex',
-      'justify-content': 'flex-end',
-      'gap': '9px',
-      'margin-top': '7px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.top-chatters-actions[hidden]',
-    declarations: {
-      'display': 'none'
-    }
-  });
-
-  // Top chatter link
-  cssRules.push({
-    selector: '.top-chatter-link',
-    declarations: {
-      'padding': '0',
-      'color': 'var(--accent)',
-      'background': 'transparent',
-      'border': '0',
-      'border-radius': '0',
-      'font-weight': '700'
-    }
-  });
-
-  cssRules.push({
-    selector: '.top-chatter-link:hover',
-    declarations: {
-      'text-decoration': 'underline'
-    }
-  });
-
-  // Chatter row
-  cssRules.push({
-    selector: '.chatter-row',
-    declarations: {
-      'display': 'grid',
-      'grid-template-columns': 'minmax(0, 1fr) auto auto',
-      'align-items': 'center',
-      'gap': '7px',
-      'padding': '7px 8px',
-      'border': '1px solid var(--border)',
-      'border-radius': '8px',
-      'background': 'Canvas'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chatter-name',
-    declarations: {
-      'min-width': '0',
-      'overflow': 'hidden',
-      'text-overflow': 'ellipsis',
-      'white-space': 'nowrap',
-      'font-size': '11px',
-      'font-weight': '800'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chatter-metrics',
-    declarations: {
-      'color': 'var(--muted)',
-      'font-size': '10px',
-      'white-space': 'nowrap'
-    }
-  });
-
-  // Mute toggle
-  cssRules.push({
-    selector: '.mute-toggle',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'gap': '4px',
-      'color': 'var(--muted)',
-      'font-size': '10px'
-    }
-  });
-
-  // Recognize song
-  cssRules.push({
-    selector: '#recognize-song',
-    declarations: {
-      'width': '100%',
-      'margin-top': '10px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.song-result',
-    declarations: {
-      'margin-top': '9px',
-      'padding': '9px',
-      'border': '1px solid var(--border)',
-      'border-radius': '9px',
-      'background': 'Canvas',
-      'font-size': '11px',
-      'line-height': '1.45'
-    }
-  });
-
-  cssRules.push({
-    selector: '.song-result strong, .song-result span, .song-result a',
-    declarations: {
-      'display': 'block'
-    }
-  });
-
-  cssRules.push({
-    selector: '.song-result a',
-    declarations: {
-      'margin-top': '4px',
-      'color': 'var(--accent)',
-      'overflow-wrap': 'anywhere'
-    }
-  });
-
-  // Modal backdrop
-  cssRules.push({
-    selector: '.modal-backdrop',
-    declarations: {
-      'position': 'fixed',
-      'inset': '0',
-      'z-index': '100',
-      'padding': '14px',
-      'background': 'color-mix(in srgb, CanvasText 42%, transparent)',
-      'overflow': 'auto'
-    }
-  });
-
-  cssRules.push({
-    selector: '.modal',
-    declarations: {
-      'width': 'min(520px, 100%)',
-      'max-height': 'calc(100vh - 28px)',
-      'margin': '0 auto',
-      'overflow': 'auto',
-      'background': 'Canvas'
-    }
-  });
-
-  // Audience list
-  cssRules.push({
-    selector: '.audience-list, .chat-history-list, .recommendation-list',
-    declarations: {
-      'display': 'grid',
-      'gap': '7px',
-      'margin-top': '9px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chat-history-row',
-    declarations: {
-      'padding': '8px 9px',
-      'border': '1px solid var(--border)',
-      'border-radius': '9px',
-      'background': 'var(--surface)',
-      'font-size': '11px',
-      'line-height': '1.4',
-      'overflow-wrap': 'anywhere'
-    }
-  });
-
-  cssRules.push({
-    selector: '.chat-history-meta',
-    declarations: {
-      'display': 'block',
-      'margin-bottom': '3px',
-      'color': 'var(--muted)',
-      'font-size': '10px'
-    }
-  });
-
-  // Audience row
-  cssRules.push({
-    selector: '.audience-row',
-    declarations: {
-      'display': 'grid',
-      'gap': '6px',
-      'padding': '9px',
-      'border': '1px solid var(--border)',
-      'border-radius': '9px',
-      'background': 'var(--surface)'
-    }
-  });
-
-  cssRules.push({
-    selector: '.audience-row-head',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'justify-content': 'space-between',
-      'gap': '8px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.audience-row select',
-    declarations: {
-      'width': 'auto',
-      'max-width': '170px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.audience-metrics',
-    declarations: {
-      'color': 'var(--muted)',
-      'font-size': '10px',
-      'line-height': '1.45'
-    }
-  });
-
-  // Option row
-  cssRules.push({
-    selector: '.option-row',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'flex-start',
-      'gap': '7px',
-      'margin-top': '8px',
-      'color': 'var(--muted)',
-      'font-size': '11px',
-      'line-height': '1.35'
-    }
-  });
-
-  cssRules.push({
-    selector: '.option-row input',
-    declarations: {
-      'margin': '1px 0 0',
-      'accent-color': 'var(--accent)'
-    }
-  });
-
-  // Auto chat refresh
-  cssRules.push({
-    selector: '.auto-chat-refresh',
-    declarations: {
-      'align-items': 'center'
-    }
-  });
-
-  // External speech trigger row
-  cssRules.push({
-    selector: '.external-speech-trigger-row',
-    declarations: {
-      'align-items': 'center'
-    }
-  });
-
-  cssRules.push({
-    selector: '.external-speech-trigger-row label',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'gap': '7px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.external-speech-trigger-row input[type="text"]',
-    declarations: {
-      'width': '48px',
-      'margin-left': '3px',
-      'padding': '3px 4px',
-      'border': '1px solid var(--border)',
-      'border-radius': '6px',
-      'background': 'Canvas',
-      'color': 'CanvasText',
-      'font': 'inherit',
-      'font-size': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.auto-chat-refresh input[type="number"]',
-    declarations: {
-      'width': '48px',
-      'margin-left': '3px',
-      'padding': '3px 4px',
-      'border': '1px solid var(--border)',
-      'border-radius': '6px',
-      'background': 'Canvas',
-      'color': 'CanvasText',
-      'font': 'inherit',
-      'font-size': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.quick-recover-setting input[type="number"]',
-    declarations: {
-      'width': '48px',
-      'margin-left': '3px',
-      'padding': '3px 4px',
-      'border': '1px solid var(--border)',
-      'border-radius': '6px',
-      'background': 'Canvas',
-      'color': 'CanvasText',
-      'font': 'inherit',
-      'font-size': '11px'
-    }
-  });
-
-  // Audio note
-  cssRules.push({
-    selector: '.audio-note',
-    declarations: {
-      'margin': '1px 0 0'
-    }
-  });
-
-  // Profile info
-  cssRules.push({
-    selector: '.profile-info',
-    declarations: {
-      'display': 'grid',
-      'gap': '8px',
-      'margin-top': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.profile-heading',
-    declarations: {
-      'margin': '0',
-      'font-size': '14px',
-      'font-weight': '800'
-    }
-  });
-
-  cssRules.push({
-    selector: '.profile-handle, .profile-bio',
-    declarations: {
-      'margin': '0',
-      'color': 'var(--muted)',
-      'font-size': '11px',
-      'line-height': '1.45',
-      'white-space': 'pre-wrap'
-    }
-  });
-
-  // Profile stats
-  cssRules.push({
-    selector: '.profile-stats',
-    declarations: {
-      'display': 'grid',
-      'grid-template-columns': 'repeat(3, minmax(0, 1fr))',
-      'gap': '6px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.profile-stat',
-    declarations: {
-      'padding': '7px',
-      'border': '1px solid var(--border)',
-      'border-radius': '8px',
-      'background': 'Canvas'
-    }
-  });
-
-  cssRules.push({
-    selector: '.profile-stat strong, .profile-stat span',
-    declarations: {
-      'display': 'block'
-    }
-  });
-
-  cssRules.push({
-    selector: '.profile-stat span',
-    declarations: {
-      'margin-top': '2px',
-      'color': 'var(--muted)',
-      'font-size': '9px',
-      'text-transform': 'uppercase'
-    }
-  });
-
-  // Summary info
-  cssRules.push({
-    selector: '.summary-info',
-    declarations: {
-      'margin-top': '10px',
-      'padding-top': '9px',
-      'border-top': '1px solid var(--border)',
-      'font-size': '11px',
-      'line-height': '1.45'
-    }
-  });
-
-  cssRules.push({
-    selector: '.summary-text',
-    declarations: {
-      'margin': '6px 0 0',
-      'white-space': 'pre-wrap'
-    }
-  });
-
-  // Recommendation controls
-  cssRules.push({
-    selector: '.recommendation-controls',
-    declarations: {
-      'display': 'grid',
-      'grid-template-columns': 'minmax(70px, .7fr) minmax(150px, 1.3fr)',
-      'gap': '8px',
-      'margin-top': '10px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-controls label',
-    declarations: {
-      'display': 'grid',
-      'gap': '4px',
-      'color': 'var(--muted)',
-      'font-size': '10px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-list.empty',
-    declarations: {
-      'display': 'block',
-      'color': 'var(--muted)',
-      'font-size': '12px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-row',
-    declarations: {
-      'padding': '9px',
-      'border': '1px solid var(--border)',
-      'border-radius': '9px',
-      'background': 'Canvas'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-head',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'flex-start',
-      'justify-content': 'space-between',
-      'gap': '8px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-name',
-    declarations: {
-      'min-width': '0',
-      'margin': '0',
-      'font-size': '11px',
-      'font-weight': '800',
-      'overflow-wrap': 'anywhere'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-viewers',
-    declarations: {
-      'flex': '0 0 auto',
-      'color': 'var(--muted)',
-      'font-size': '10px',
-      'font-variant-numeric': 'tabular-nums'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-description',
-    declarations: {
-      'margin': '5px 0 0',
-      'color': 'var(--muted)',
-      'font-size': '10px',
-      'line-height': '1.4',
-      'overflow-wrap': 'anywhere'
-    }
-  });
-
-  cssRules.push({
-    selector: '.recommendation-link',
-    declarations: {
-      'display': 'inline-block',
-      'margin-top': '6px',
-      'color': 'var(--accent)',
-      'font-size': '11px',
-      'font-weight': '700'
-    }
-  });
-
-  // List
-  cssRules.push({
-    selector: '.list',
-    declarations: {
-      'display': 'grid',
-      'gap': '8px',
-      'margin-top': '11px',
-      'max-height': '300px',
-      'overflow': 'auto'
-    }
-  });
-
-  cssRules.push({
-    selector: '.list.empty',
-    declarations: {
-      'display': 'block',
-      'color': 'var(--muted)',
-      'font-size': '12px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.item',
-    declarations: {
-      'padding': '10px',
-      'border': '1px solid var(--border)',
-      'border-radius': '9px',
-      'background': 'Canvas'
-    }
-  });
-
-  cssRules.push({
-    selector: '.item-head',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'justify-content': 'space-between',
-      'gap': '8px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.item-title',
-    declarations: {
-      'font-size': '12px',
-      'font-weight': '800'
-    }
-  });
-
-  cssRules.push({
-    selector: '.item-meta, .item-url, .caption-meta',
-    declarations: {
-      'color': 'var(--muted)',
-      'font-size': '10px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.item-url',
-    declarations: {
-      'margin-top': '6px',
-      'overflow-wrap': 'anywhere',
-      'max-height': '42px',
-      'overflow': 'hidden'
-    }
-  });
-
-  cssRules.push({
-    selector: '.copy',
-    declarations: {
-      'flex': '0 0 auto',
-      'padding': '6px 8px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.caption-text',
-    declarations: {
-      'margin': '5px 0 0',
-      'white-space': 'pre-wrap',
-      'font-size': '12px',
-      'line-height': '1.4'
-    }
-  });
-
-  // Inline status and notice
-  cssRules.push({
-    selector: '.inline-status, .notice',
-    declarations: {
-      'min-height': '17px',
-      'margin': '9px 0 0',
-      'color': 'var(--muted)',
-      'font-size': '11px'
-    }
-  });
-
-  cssRules.push({
-    selector: '.action-status',
-    declarations: {
-      'line-height': '1.4'
-    }
-  });
-
-  cssRules.push({
-    selector: '.reset-note',
-    declarations: {
-      'margin': '7px 0 0'
-    }
-  });
-
-  cssRules.push({
-    selector: '.notice',
-    declarations: {
-      'margin': '0 3px 8px',
-      'color': 'var(--bad)'
-    }
-  });
-
-  // Media queries
-  cssRules.push({
-    selector: '@media (min-width: 430px)',
-    declarations: {},
-    nested: [
+// sidepanel.html — portiert nach javascript
+// Quelle: html, Projects@TikTok-Live-Companion:plugin-source/browser-extension/sidepanel.html
+// Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+import { writeFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+function createDocument() {
+  const doc = {
+    doctype: '<!doctype html>',
+    html: {
+      attrs: { lang: 'de' },
+      head: {
+        children: [
+          { tag: 'meta', attrs: { charset: 'utf-8' } },
+          { tag: 'meta', attrs: { name: 'viewport', content: 'width=device-width, initial-scale=1' } },
+          { tag: 'title', text: 'TikTok LIVE Companion' },
+          { tag: 'link', attrs: { rel: 'stylesheet', href: 'sidepanel.css' } },
+          { tag: 'link', attrs: { rel: 'stylesheet', href: 'icon-controls.css' } },
+          { tag: 'link', attrs: { rel: 'stylesheet', href: 'status-overview-panel.css' } }
+        ]
+      },
+      body: {
+        children: []
+      }
+    }
+  };
+
+  // Body content
+  const body = doc.html.body;
+
+  // Hidden page title
+  body.children.push({ tag: 'p', attrs: { id: 'page-title', hidden: true } });
+
+  // Main container
+  const main = { tag: 'main', children: [] };
+  body.children.push(main);
+
+  // Chat section
+  const chatSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'chat-heading' },
+    children: [
       {
-        selector: '.speech-settings',
-        declarations: {
-          'grid-template-columns': '1fr 1fr'
-        }
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'chat-heading' }, text: 'Chat' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'span', attrs: { id: 'chat-led', class: 'status-led off', role: 'status', 'aria-label': 'Chat inaktiv', title: 'Chat inaktiv' } },
+              { tag: 'button', attrs: { id: 'chat-count', class: 'count count-button', type: 'button', 'aria-haspopup': 'dialog', title: 'Gesammelte Chatzeilen öffnen' }, text: '0' },
+              { tag: 'button', attrs: { id: 'refresh-chat', class: 'secondary compact', title: 'Chatanzeige leeren' }, text: 'Reset' },
+              { tag: 'button', attrs: { id: 'toggle-speech', class: 'secondary compact', 'aria-pressed': 'false', 'aria-label': 'Vorlesen' }, text: 'On' },
+              { tag: 'span', attrs: { id: 'speech-led', class: 'status-led off', role: 'status', 'aria-label': 'Vorlesen inaktiv', title: 'Vorlesen inaktiv' } }
+            ]
+          }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'chat-list', class: 'chat-list empty', role: 'log', 'aria-live': 'polite', 'aria-relevant': 'additions', 'aria-label': 'Die letzten fünf bereinigten Chatnachrichten' }, text: 'Noch keine Chatnachrichten erkannt.' },
+      { tag: 'p', attrs: { id: 'speech-status', role: 'status', class: 'inline-status' }, text: 'Vorlesen ist ausgeschaltet.' },
+      {
+        tag: 'div',
+        attrs: { class: 'control-label' },
+        children: [
+          { tag: 'label', attrs: { for: 'speech-volume' }, text: 'Vorleselautstärke' },
+          { tag: 'output', attrs: { id: 'speech-volume-output', for: 'speech-volume' }, text: '100%' }
+        ]
+      },
+      { tag: 'input', attrs: { id: 'speech-volume', type: 'range', min: '0', max: '100', step: '5', value: '50' } },
+      {
+        tag: 'div',
+        attrs: { class: 'button-row' },
+        children: [
+          { tag: 'button', attrs: { id: 'service-action', class: 'secondary' }, text: 'Sprachdienst' },
+          { tag: 'button', attrs: { id: 'sherpa-action', class: 'secondary' }, text: 'Sherpa' },
+          { tag: 'button', attrs: { id: 'open-speech-settings', class: 'secondary compact settings-button', type: 'button', 'aria-label': 'Erweiterte Einstellungen öffnen', 'aria-haspopup': 'dialog', title: 'Einstellungen' } }
+        ]
+      },
+      { tag: 'p', attrs: { id: 'service-status', class: 'inline-status' }, text: 'Lokaler Sprachdienst noch nicht geprüft.' },
+      { tag: 'div', attrs: { id: 'service-setup', class: 'inline-status', hidden: true }, children: [
+        { tag: 'button', attrs: { id: 'copy-service-setup', class: 'secondary compact' }, text: 'Installation abschließen!' }
+      ]}
+    ]
+  };
+  main.children.push(chatSection);
+
+  // Stats section
+  const statsSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'stats-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'stats-heading' }, text: 'LIVE-Information' },
+          { tag: 'span', attrs: { id: 'stats-live', class: 'live-indicator' }, text: 'warte' }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'live-stats', class: 'status-grid stats-grid' } },
+      { tag: 'p', attrs: { id: 'stats-status', class: 'inline-status' } }
+    ]
+  };
+  main.children.push(statsSection);
+
+  // Page info section
+  const pageInfoSection = {
+    tag: 'section',
+    attrs: { id: 'page-info-section', 'aria-labelledby': 'page-info-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'page-info-heading' }, text: 'PROFIL-Information' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'span', attrs: { id: 'page-info-source', class: 'live-indicator' }, text: 'Metadaten' },
+              { tag: 'button', attrs: { id: 'refresh-page-info', class: 'secondary compact', title: 'Refresh' }, text: 'Refresh' },
+              { tag: 'button', attrs: { id: 'force-page-info', class: 'secondary compact danger-outline' }, text: 'Force' }
+            ]
+          }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'profile-info', class: 'profile-info', hidden: true } },
+      { tag: 'div', attrs: { id: 'summary-info', class: 'summary-info' } }
+    ]
+  };
+  main.children.push(pageInfoSection);
+
+  // Hook section
+  const hookSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'hook-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title header-controls' },
+        children: [
+          { tag: 'h2', attrs: { id: 'hook-heading' }, text: 'Connection' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'button', attrs: { id: 'reset-tab', class: 'secondary compact danger-outline', title: 'Reset' }, text: 'Reset' },
+              { tag: 'input', attrs: { id: 'hook-autostart', type: 'checkbox', 'aria-label': 'Hook dauerhaft', title: 'Hook dauerhaft: Off' } },
+              { tag: 'span', attrs: { class: 'status-led off', 'data-switch-status': 'hook-autostart', role: 'status' } }
+            ]
+          }
+        ]
       },
       {
-        selector: '.speech-settings label:first-child',
-        declarations: {
-          'grid-column': '1 / -1'
-        }
-      }
-    ]
-  });
-
-  cssRules.push({
-    selector: '@media (prefers-reduced-motion: reduce)',
-    declarations: {},
-    nested: [
+        tag: 'div',
+        attrs: { class: 'button-row' },
+        children: [
+          { tag: 'button', attrs: { id: 'toggle-hook', class: 'primary', 'aria-label': 'Connection', 'aria-pressed': 'false' }, text: 'On' },
+          { tag: 'button', attrs: { id: 'open-connection-settings', class: 'secondary compact settings-button', type: 'button', 'aria-label': 'Connection-Einstellungen öffnen', 'aria-haspopup': 'dialog' } },
+          { tag: 'button', attrs: { id: 'open-embed-live', class: 'secondary' }, text: 'Embed' },
+          { tag: 'button', attrs: { id: 'open-normal-live', class: 'secondary' }, text: 'Browser' },
+          { tag: 'button', attrs: { id: 'player-vlc-frame', class: 'secondary compact' }, text: 'Player' }
+        ]
+      },
       {
-        selector: '*',
-        declarations: {
-          'scroll-behavior': 'auto !important'
-        }
+        tag: 'div',
+        attrs: { class: 'connection-status' },
+        children: [
+          { tag: 'span', attrs: { id: 'hook-led', class: 'status-led off', role: 'status', 'aria-label': 'Hook inaktiv', title: 'Hook inaktiv' } },
+          { tag: 'p', attrs: { id: 'hook-status', class: 'inline-status' } }
+        ]
+      },
+      { tag: 'p', attrs: { id: 'embed-startup-status', class: 'inline-status', role: 'status', 'aria-live': 'polite', hidden: true } },
+      { tag: 'button', attrs: { id: 'cancel-embed-startup', class: 'secondary', hidden: true }, text: 'Embed-Start abbrechen' },
+      { tag: 'p', attrs: { id: 'hook-reconnect-status', class: 'inline-status', role: 'status' }, text: 'Hook-Reconnect: aus' },
+      { tag: 'p', attrs: { id: 'player-recovery-status', class: 'inline-status', role: 'status' }, text: 'Player-Recovery: aus' }
+    ]
+  };
+  main.children.push(hookSection);
+
+  // Player section
+  const playerSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'player-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title header-controls' },
+        children: [
+          { tag: 'h2', attrs: { id: 'player-heading' }, text: 'Player' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'button', attrs: { id: 'player-replay', class: 'secondary compact', title: 'Neu laden' }, text: 'Neu laden' },
+              { tag: 'input', attrs: { id: 'limiter-enabled', type: 'checkbox', 'aria-label': 'Pegelschutz', title: 'Pegelschutz: Off' } },
+              { tag: 'span', attrs: { class: 'status-led off', 'data-switch-status': 'limiter-enabled', role: 'status' } }
+            ]
+          }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'player-controls', role: 'group', 'aria-label': 'TikTok-Player steuern' },
+        children: [
+          { tag: 'button', attrs: { id: 'player-play', class: 'secondary compact' }, text: 'Play' },
+          { tag: 'button', attrs: { id: 'player-mute', class: 'secondary compact' }, text: 'Mute' },
+          { tag: 'button', attrs: { id: 'player-pip', class: 'secondary compact' }, text: 'Bild-in-Bild' },
+          { tag: 'button', attrs: { id: 'player-fullscreen', class: 'secondary compact' }, text: 'Vollbild' },
+          { tag: 'button', attrs: { id: 'player-report', class: 'secondary compact danger-outline' }, text: 'Meldung' }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'audio-controls' },
+        children: [
+          {
+            tag: 'div',
+            attrs: { class: 'control-label' },
+            children: [
+              { tag: 'label', attrs: { for: 'player-volume' }, text: 'Lautstärke' },
+              { tag: 'output', attrs: { id: 'player-volume-output', for: 'player-volume' }, text: '–' }
+            ]
+          },
+          { tag: 'input', attrs: { id: 'player-volume', type: 'range', min: '0', max: '100', step: '1', value: '100' } },
+          {
+            tag: 'div',
+            attrs: { class: 'audio-meter-row' },
+            children: [
+              { tag: 'span', text: 'Spitzenpegel' },
+              { tag: 'strong', attrs: { id: 'player-peak' }, text: '–' }
+            ]
+          },
+          {
+            tag: 'div',
+            attrs: { class: 'control-label' },
+            children: [
+              { tag: 'label', attrs: { for: 'limiter-strength' }, text: 'Schutzstärke' },
+              { tag: 'output', attrs: { id: 'limiter-strength-output', for: 'limiter-strength' }, text: '30' }
+            ]
+          },
+          { tag: 'input', attrs: { id: 'limiter-strength', type: 'range', min: '0', max: '100', step: '1', value: '30' } }
+        ]
+      },
+      { tag: 'p', attrs: { id: 'multi-guest-status', class: 'inline-status' }, text: 'Verbundene Streams: noch nicht erkannt.' },
+      { tag: 'p', attrs: { id: 'player-status', role: 'status', class: 'inline-status' }, text: 'Warte auf den TikTok-Player.' },
+      { tag: 'span', attrs: { id: 'player-time', class: 'player-time', hidden: true }, text: '–' }
+    ]
+  };
+  main.children.push(playerSection);
+
+  // Top chatters section
+  const topChattersSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'top-chatters-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'top-chatters-heading' }, text: 'Top-Chatter' },
+          { tag: 'button', attrs: { id: 'open-audience', class: 'secondary compact' }, text: 'Zuschauer*innen' }
+        ]
+      },
+      { tag: 'p', attrs: { id: 'team-tag-status', class: 'inline-status' }, text: 'Teamkürzel: noch nicht erkannt.' },
+      { tag: 'div', attrs: { id: 'top-chatters', class: 'top-chatters empty' }, text: 'Noch keine Personen im Chat beobachtet.' },
+      {
+        tag: 'div',
+        attrs: { id: 'top-chatters-actions', class: 'top-chatters-actions', hidden: true },
+        children: [
+          { tag: 'button', attrs: { id: 'top-chatters-reset', class: 'top-chatter-link', type: 'button', hidden: true }, text: 'Reset' },
+          { tag: 'button', attrs: { id: 'top-chatters-more', class: 'top-chatter-link', type: 'button' }, text: 'mehr…' }
+        ]
       }
     ]
-  });
+  };
+  main.children.push(topChattersSection);
 
-  // Additional header controls
-  cssRules.push({
-    selector: '.section-title.header-controls',
-    declarations: {
-      'flex-wrap': 'nowrap',
-      'align-items': 'flex-start'
-    }
-  });
+  // Recommendations section
+  const recommendationsSection = {
+    tag: 'section',
+    attrs: { id: 'recommendations-section', 'aria-labelledby': 'recommendations-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'recommendations-heading' }, text: 'LIVE-Empfehlungen' },
+          { tag: 'span', attrs: { id: 'recommendation-status', class: 'live-indicator' }, text: 'bereit' }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'recommendation-controls' },
+        children: [
+          {
+            tag: 'label',
+            children: [
+              { tag: 'span', text: 'Anzahl' },
+              { tag: 'input', attrs: { id: 'recommendation-limit', type: 'number', min: '1', max: '300', step: '1', value: '20', inputmode: 'numeric' } }
+            ]
+          },
+          {
+            tag: 'label',
+            children: [
+              { tag: 'span', text: 'Sortierung' },
+              {
+                tag: 'select',
+                attrs: { id: 'recommendation-sort' },
+                children: [
+                  { tag: 'option', attrs: { value: 'tiktok' }, text: 'TikTok-Reihenfolge' },
+                  { tag: 'option', attrs: { value: 'viewers' }, text: 'Zuschauer*innen' }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'button-row' },
+        children: [
+          { tag: 'button', attrs: { id: 'scan-recommendations', class: 'primary' }, text: 'Empfehlungen scannen' },
+          { tag: 'button', attrs: { id: 'cancel-recommendations', class: 'secondary', hidden: true }, text: 'Abbrechen' }
+        ]
+      },
+      { tag: 'p', attrs: { id: 'recommendation-progress', class: 'inline-status', 'aria-live': 'polite' }, text: 'Noch kein Scan gestartet.' },
+      { tag: 'div', attrs: { id: 'recommendation-list', class: 'recommendation-list empty' }, text: 'Noch keine Empfehlungen erfasst.' },
+      {
+        tag: 'div',
+        attrs: { id: 'recommendation-actions', class: 'top-chatters-actions', hidden: true },
+        children: [
+          { tag: 'button', attrs: { id: 'recommendation-more', class: 'top-chatter-link', type: 'button' }, text: 'mehr…' }
+        ]
+      }
+    ]
+  };
+  main.children.push(recommendationsSection);
 
-  cssRules.push({
-    selector: '.header-controls > .title-actions',
-    declarations: {
-      'margin-inline-start': 'auto',
-      'flex-wrap': 'nowrap',
-      'flex-shrink': '0'
-    }
-  });
+  // Overview section
+  const overviewSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'overview-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title header-controls' },
+        children: [
+          { tag: 'h2', attrs: { id: 'overview-heading' }, text: 'STATUS-Monitor' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'button', attrs: { id: 'overview-settings', class: 'secondary compact', type: 'button', 'aria-label': 'Monitor Einstellungen' }, text: 'Monitor Einstellungen' },
+              { tag: 'button', attrs: { id: 'overview-reset', class: 'secondary compact', type: 'button', 'aria-label': 'Streamnamen leeren' }, text: 'Streamnamen leeren' },
+              { tag: 'input', attrs: { id: 'overview-enabled', type: 'checkbox', 'aria-label': 'LIVE-Prüfung' } },
+              { tag: 'span', attrs: { class: 'status-led off', 'data-switch-status': 'overview-enabled', role: 'status' } }
+            ]
+          }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'overview-rows' } },
+      {
+        tag: 'div',
+        attrs: { class: 'button-row overview-actions' },
+        children: [
+          { tag: 'button', attrs: { id: 'overview-check', class: 'secondary', type: 'button', 'aria-label': 'Jetzt prüfen', title: 'Jetzt prüfen' } },
+          { tag: 'button', attrs: { id: 'overview-copy', class: 'secondary' }, text: 'Alle kopieren' },
+          { tag: 'button', attrs: { id: 'overview-open', class: 'primary' }, text: 'Overview' }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'top-chatters-actions' },
+        children: [
+          { tag: 'button', attrs: { id: 'overview-collapse', class: 'top-chatter-link', type: 'button', hidden: true }, text: 'Reset' },
+          { tag: 'button', attrs: { id: 'overview-more', class: 'top-chatter-link', type: 'button' }, text: 'mehr…' }
+        ]
+      },
+      { tag: 'p', attrs: { id: 'overview-message', class: 'overview-visually-hidden', role: 'status' } }
+    ]
+  };
+  main.children.push(overviewSection);
 
-  cssRules.push({
-    selector: '.header-controls > .title-actions input[type="checkbox"]',
-    declarations: {
-      'margin': '0'
-    }
-  });
+  // Caption section
+  const captionSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'caption-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'caption-heading' }, text: 'Titel' },
+          { tag: 'button', attrs: { id: 'scan', class: 'secondary' }, text: 'Status' }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'caption-status', class: 'status-grid' } },
+      { tag: 'button', attrs: { id: 'enable-captions', class: 'primary' }, text: 'Untertitel' },
+      { tag: 'p', attrs: { id: 'caption-action-status', role: 'status', class: 'inline-status action-status' } }
+    ]
+  };
+  main.children.push(captionSection);
 
-  cssRules.push({
-    selector: '.connection-status',
-    declarations: {
-      'display': 'flex',
-      'align-items': 'center',
-      'gap': '8px'
-    }
-  });
+  // Song section
+  const songSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'song-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title header-controls' },
+        children: [
+          { tag: 'h2', attrs: { id: 'song-heading' }, text: 'Songs' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'input', attrs: { id: 'song-enabled', type: 'checkbox', 'aria-label': 'Songerkennung', title: 'Songerkennung: Off' } },
+              { tag: 'span', attrs: { id: 'song-led', class: 'status-led off', 'data-switch-status': 'song-enabled', role: 'status', 'aria-label': 'Songerkennung inaktiv' } }
+            ]
+          }
+        ]
+      },
+      { tag: 'button', attrs: { id: 'recognize-song', class: 'primary', disabled: true }, text: 'Jetzt erkennen' },
+      { tag: 'p', attrs: { id: 'song-status', class: 'inline-status' } },
+      { tag: 'div', attrs: { id: 'song-result', class: 'song-result', hidden: true } }
+    ]
+  };
+  main.children.push(songSection);
 
-  return cssRules;
-}
+  // Links section
+  const linksSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'links-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title' },
+        children: [
+          { tag: 'h2', attrs: { id: 'links-heading' }, text: 'HAR-Logs' },
+          { tag: 'span', attrs: { id: 'media-count', class: 'count' }, text: '0' }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'media-list', class: 'list empty' }, text: 'Noch keine FLV-/HLS-Links erkannt.' }
+    ]
+  };
+  main.children.push(linksSection);
 
-function formatCSS(cssRules) {
-  let cssString = '';
+  // Log section
+  const logSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'log-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title header-controls' },
+        children: [
+          { tag: 'h2', attrs: { id: 'log-heading' }, text: 'LIVE-Logs' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'span', attrs: { class: 'status-led off', 'data-counter-status': 'caption-count', role: 'status' } },
+              { tag: 'span', attrs: { id: 'caption-count', class: 'count' }, text: '0' },
+              { tag: 'button', attrs: { id: 'clear', class: 'ghost compact', title: 'Reset' }, text: 'Reset' },
+              { tag: 'input', attrs: { id: 'live-logs-enabled', type: 'checkbox', 'aria-label': 'LIVE-Logs', title: 'LIVE-Logs: Off' } },
+              { tag: 'span', attrs: { class: 'status-led off', 'data-switch-status': 'live-logs-enabled', role: 'status', 'aria-label': 'LIVE-Logs: deaktiviert' } }
+            ]
+          }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'button-row' },
+        children: [
+          { tag: 'button', attrs: { id: 'export-log', class: 'secondary' }, text: 'JSON-L-Export' },
+          { tag: 'button', attrs: { id: 'export-caption-raw', class: 'secondary' }, text: 'RAW-JSON-Export' }
+        ]
+      },
+      { tag: 'div', attrs: { id: 'caption-list', class: 'list empty' }, text: 'Noch keine CaptionMessages empfangen.' }
+    ]
+  };
+  main.children.push(logSection);
 
-  cssRules.forEach(rule => {
-    if (rule.selector.startsWith('@media')) {
-      cssString += `${rule.selector} {\n`;
-      rule.nested.forEach(nestedRule => {
-        cssString += `  ${nestedRule.selector} {`;
-        const decls = Object.entries(nestedRule.declarations)
-          .map(([prop, value]) => `\n    ${prop}: ${value};`)
-          .join('');
-        cssString += decls + '\n  }\n';
-      });
-      cssString += '}\n\n';
-    } else {
-      cssString += `${rule.selector} {`;
-      const decls = Object.entries(rule.declarations)
-        .map(([prop, value]) => `\n  ${prop}: ${value};`)
-        .join('');
-      cssString += decls + '\n}\n\n';
-    }
-  });
+  // Debug section
+  const debugSection = {
+    tag: 'section',
+    attrs: { 'aria-labelledby': 'debug-heading' },
+    children: [
+      {
+        tag: 'div',
+        attrs: { class: 'section-title header-controls' },
+        children: [
+          { tag: 'h2', attrs: { id: 'debug-heading' }, text: 'Debugmodus' },
+          {
+            tag: 'div',
+            attrs: { class: 'title-actions' },
+            children: [
+              { tag: 'span', attrs: { class: 'status-led off', 'data-counter-status': 'debug-count', role: 'status' } },
+              { tag: 'span', attrs: { id: 'debug-count', class: 'count' }, text: '0' },
+              { tag: 'button', attrs: { id: 'clear-debug', class: 'ghost compact', title: 'Reset' }, text: 'Reset' },
+              { tag: 'input', attrs: { id: 'debug-enabled', type: 'checkbox', 'aria-label': 'Diagnoseereignisse für diesen Tab protokollieren', title: 'Diagnoseereignisse für diesen Tab protokollieren: Off' } },
+              { tag: 'span', attrs: { class: 'status-led off', 'data-switch-status': 'debug-enabled', role: 'status' } }
+            ]
+          }
+        ]
+      },
+      {
+        tag: 'div',
+        attrs: { class: 'button-row' },
+        children: [
+          { tag: 'button', attrs: { id: 'export-debug', class: 'secondary' }, text: 'Debug exportieren' }
+        ]
+      },
+      { tag: 'p', attrs: { class: 'muted small' } }
+    ]
+  };
+  main.children.push(debugSection);
 
-  return cssString;
-}
+  // Audience modal
+  const audienceModal = {
+    tag: 'div',
+    attrs: { id: 'audience-modal', class: 'modal-backdrop', hidden: true },
+    children: [
+      {
+        tag: 'section',
+        attrs: { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'audience-heading' },
+        children: [
+          {
+            tag: 'div',
+            attrs: { class: 'section-title' },
+            children: [
+              { tag: 'h2', attrs: { id: 'audience-heading' }, text: 'Im Chat beobachtete Personen' },
+              { tag: 'button', attrs: { id: 'close-audience', class: 'secondary compact', 'aria-label': 'Übersicht schließen' }, text: 'Schließen' }
+            ]
+          },
+          { tag: 'p', attrs: { id: 'audience-limit', class: 'inline-status' } },
+          { tag: 'div', attrs: { id: 'audience-list', class: 'audience-list' } }
+        ]
+      }
+    ]
+  };
+  body.children.push(audienceModal);
 
-function main() {
-  const args = process.argv.slice(2);
-  
-  if (args.length !== 1) {
-    console.error('Usage: node sidepanel.js <output-file>');
-    process.exit(1);
-  }
-  
-  const outputFile = args[0];
-  const cssRules = generateCSS();
-  const cssContent = formatCSS(cssRules);
-  
-  try {
-    fs.writeFileSync(outputFile, cssContent, 'utf8');
-    console.log(`CSS file generated successfully: ${outputFile}`);
-  } catch (error) {
-    console.error(`Error writing to file: ${error.message}`);
-    process.exit(1);
-  }
-}
-
-main();
+  // Speech settings modal
+  const speechSettingsModal = {
+    tag: 'div',
+    attrs: { id: 'speech-settings-modal', class: 'modal-backdrop', hidden: true },
+    children: [
+      {
+        tag: 'section',
+        attrs: { class: 'modal', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': 'speech-settings-heading' },
+        children: [
+          {
+            tag: 'div',
+            attrs: { class: 'section-title' },
+            children: [
+              { tag: 'h2', attrs: { id: 'speech-settings-heading' }, text: 'Erweiterte Einstellungen' },
+              { tag: 'button', attrs: { id: 'close-speech-settings', class: 'secondary compact', 'aria-label': 'Einstellungen schließen' }, text: 'Schließen' }
+            ]
+          },
+          {
+            tag: 'div',
+            attrs: { class: 'settings-grid speech-integration-settings' },
+            children: [
+              {
+                tag: 'label',
+                attrs: { class: 'icon-style-setting' },
+                children: [
+                  { tag: 'span', text: 'Icon-Stil' },
+                  {
+                    tag: 'select',
+                    attrs: { id: 'icon-style' },
+                    children: [
+                      { tag: 'option', attrs: { value: 'plastisch' }, text: '3D / Plastisch' },
+                      { tag: 'option', attrs: { value: 'glass' }, text: 'Glass / Realistisch' },
+                      { tag: 'option', attrs: { value: 'linear' }, text: 'Minimal / Linear' }
+                    ]
+                  }
+                ]
+              },
+              {
+                tag: 'label',
+                children: [
+                  { tag: 'span', text: 'Sprache' },
+                  {
+                    tag: 'select',
+                    attrs: { id: 'speech-language' },
+                    children: [
+                      { tag: 'option', attrs: { value: 'auto' }, text: 'Auto' },
+                      { tag: 'option', attrs: { value: 'de-DE' }, text: 'Deutsch' },
+                      { tag: 'option', attrs: { value: 'en-US' }, text: 'Englisch' },
+                      { tag: 'option', attrs: { value: 'ru-RU' }, text: 'Russisch' },
+                      { tag: 'option', attrs: { value: 'uk-UA' }, text: 'Ukrainisch' },
+                      { tag: 'option', attrs: { value: 'bg-BG' }, text: 'Bulgarisch' },
+                      { tag: 'option', attrs: { value: 'sr-RS' }, text: 'Serbisch' },
+                      { tag: 'option', attrs: { value: 'kk-KZ' }, text: 'Kasachisch' },
+                      { tag: 'option', attrs: { value: 'zh-CN' }, text: 'Chinesisch' },
+                      { tag: 'option', attrs: { value: 'ja-JP' }, text: 'Japanisch' },
+                      { tag: 'option', attrs: { value: 'ko-KR' }, text: 'Koreanisch' },
+                      { tag: 'option', attrs: { value: 'ar-JO' }, text: 'Arabisch' },
+                      { tag: 'option', attrs: { value: 'fa-IR' }, text: 'Persisch' },
+                      { tag: 'option', attrs: { value: 'ur-PK' }, text: 'Urdu' },
+                      { tag: 'option', attrs: { value: 'hi-IN' }, text: 'Hindi' },
+                      { tag: 'option', attrs: { value: 'ne-NP' }, text: 'Nepali' },
+                      { tag: 'option', attrs: { value: 'ml-IN' }, text: 'Malayalam' }
+                    ]
+                  }
+                ]
+              },
+              {
+                tag: 'label',
+                children: [
+                  { tag: 'span', text: 'Stimme' },
+                  {
+                    tag: 'select',
+                    attrs: { id: 'speech-voice' },
+                    children: [
+                      { tag: 'option', attrs: { value: '' }, text: 'Standard' }
+                    ]
+                  }
+                ]
+              },
+              {
+                tag: 'label',
+                attrs: { id: 'audd-token-setting' },
+                children: [
+                  { tag: 'span', attrs: { id: 'audd-token-label' }, text: 'AudD API-Token (optional - ' },
+                  { tag: 'a', attrs: { href: 'https://audd.io/', target: '_blank', rel: 'noopener noreferrer' }, text: 'https://AudD.io' },
+                  { tag: 'span', text: ' Trial/Paid)' },
+                  { tag: 'input', attrs: { id: 'audd-token', type: 'password', autocomplete: 'off', spellcheck: false } }
+                ]
+              },
+              {
+                tag: 'label',
+                attrs: { id: 'pairing-code-setting' },
+                children: [
+                  { tag: 'span', text: 'Pairing-Code' },
+                  { tag: 'input', attrs: { id: 'pairing-code', type: 'password', autocomplete: 'off', spellcheck: false } }
+                ]
+              },
+              {
+                tag: 'label',
+                children: [
+                  { tag: 'span', text: 'Universal API-Key' },
+                  { tag: 'input', attrs: { id: 'universal-caption-api-key', type: 'password', autocomplete: 'off', spellcheck: false } }
+                ]
+              }
+            ]
+          },
+          { tag: 'label', attrs: { class: 'option-row' }, children: [
+            { tag: 'input', attrs: { id: 'speak-names', type: 'checkbox', checked: true } },
+            { tag: 'span', text: ' Chatnamen sprechen' }
+          ]},
+          { tag: 'label', attrs: { class: 'option-row' }, children: [
+            { tag: 'input', attrs: { id: 'shorten-names', type: 'checkbox' } },
+            { tag: 'span', text: ' Chatnamen kürzen' }
+          ]},
+          {
