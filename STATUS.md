@@ -34,10 +34,6 @@ Noch offene Sprachpaare: **22845**
 - bearbeitete Quelldateien: 40
 - erzeugte Uebersetzungen: 172
 - verworfen: 28
-
-## Herkunft
-
-- `KikiKari/OpenClaw` — main, gateway1, gateway2
 - `KikiKari/Projects` — alle Branches
 - `KikiKari/Onboarding` — main
 
