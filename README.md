@@ -37,24 +37,6 @@ npm run build
 
 Das Ergebnis liegt in `dist/`. Die Versionen der npm-Abhängigkeiten sind in `package-lock.json` festgehalten.
 
-## Fortschreibung statt Verdrängung
-
-Der vollständige Stand unmittelbar vor der Migration bleibt versioniert unter
-[`historical/abstractions-pre-migration-20260808/`](historical/abstractions-pre-migration-20260808/)
-erhalten. Er umfasst 125 damalige Branchpfade, darunter die ursprüngliche
-README, den damaligen Statusbericht und 122 frühere Sprachdateien.
-
-Die historische README ist unverändert abrufbar unter
-[`gateway1-abstractions-before/README.md`](historical/abstractions-pre-migration-20260808/gateway1-abstractions-before/README.md).
-Historische Sprachdateien bleiben getrennt, damit sie nicht als aktive,
-modellgeprüfte Übersetzungen ausgegeben oder vom Manager weiterverwendet werden.
-
-Ein während des damaligen Laufs vorgefundener Zwischenstand mit 182 Dateien wurde
-zusätzlich verlustfrei unter
-[`recovered-uncommitted-20260809/`](historical/abstractions-pre-migration-20260808/.artifacts/recovered-uncommitted-20260809/)
-gesichert. Der später regulär abgeschlossene Originalcommit `14b5336` ist in
-den aktiven Bestand integriert; der Zwischenstand bleibt als Prüfbeleg getrennt.
-
 ## Veröffentlichung
 
 Der aktive Manager schreibt in die sechs Sprachverzeichnisse, aktualisiert
