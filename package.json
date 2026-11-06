@@ -1,0 +1,1 @@
+{"name":"gateway-abstractions-preview","version":"1.0.0","private":true,"type":"module","scripts":{"build":"vite build"},"devDependencies":{"vite":"6.4.1"}}
