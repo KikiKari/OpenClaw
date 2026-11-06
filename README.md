@@ -6,7 +6,7 @@ Bestand alle sechs Stunden fort und veröffentlicht direkt in diesem Branch.
 
 ## Aktueller Arbeitsstand
 
-Stand laut [STATUS.md](STATUS.md): **6. November 2026, 19:20 UTC**. Die Zahlen sind eine Momentaufnahme; aktuelle Lauf- und Quellenzahlen stehen in `STATUS.md`.
+Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details zu den Läufen stehen in [STATUS.md](STATUS.md).
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
