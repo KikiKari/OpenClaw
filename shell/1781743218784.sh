@@ -1,7 +1,7 @@
 #!/bin/bash
 # 1781743218784.js — portiert nach shell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
@@ -224,6 +224,6 @@ EOF_HTML_CONTENT
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
 if ! printf '%s' "$html_content" > "$output_path"; then
-    echo "Konnte Datei '$output_path' nicht öffnen: $!" >&2
+    echo "Konnte Datei '$output_path' nicht öffnen: $?" >&2
     exit 1
 fi

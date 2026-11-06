@@ -1,17 +1,19 @@
 #!/usr/bin/env tclsh
-# 1781743218784_0122af_093843_09b1e1.pl — portiert nach tcl
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843_09b1e1_bff071.js — portiert nach tcl
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1_bff071.js
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
-# Parameter verarbeiten
+# Prüfe die Anzahl der Argumente
 if {$argc < 1} {
     puts stderr "Fehler: OutputPath ist erforderlich."
     exit 1
 }
 
-set output_path [lindex $argv 0]
+# Setze den Ausgabepfad
+set outputPath [lindex $argv 0]
 
-set html_content {<!DOCTYPE html>
+# HTML-Inhalt als Variable definieren
+set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -91,7 +93,7 @@ a{color:var(--accent);}
     <h2 id="h-save">Speichern / Export</h2>
     <div class="row">
       <button class="btn primary" id="encBtn">Verschlüsseln</button>
-      <button class="btn" id="dlBtn">Als .svpb herunterladen</button>
+      <button class="btn" id="dlBtn">Als .svb herunterladen</button>
       <button class="btn" id="expBtn">Klartext-JSON exportieren</button>
       <span class="msg" id="saveMsg"></span>
     </div>
@@ -218,12 +220,11 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 }
 
-if {[catch {
-    set fh [open $output_path w]
-    fconfigure $fh -encoding utf-8
-    puts -nonewline $fh $html_content
-    close $fh
-} error]} {
-    puts stderr $error
+# Schreibe den HTML-Inhalt in die angegebene Datei
+if {[catch {set fileId [open $outputPath "w"]} errorMsg]} {
+    puts stderr $errorMsg
     exit 1
 }
+
+puts -nonewline $fileId $htmlContent
+close $fileId

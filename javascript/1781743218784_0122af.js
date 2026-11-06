@@ -1,7 +1,19 @@
 #!/usr/bin/env node
+// 1781743218784_0122af.ps1 — portiert nach javascript
+// Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af.ps1
+// Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0122af.js — portiert nach powershell
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
+// Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
 // 1781743218784_0122af.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+// 1781743218784_0122af.js — portiert nach perl5
+// Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
+// Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
 
@@ -187,7 +199,7 @@ function renderEditor(){
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
   root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
   root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
-  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(\`.nf[data-np="\${CSS.escape(p)}"]\`).value.trim(); const nv=root.querySelector(\`.nv[data-np="\${CSS.escape(p)}"]\`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
+  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(\`\.nf[data-np="\${CSS.escape(p)}"]\`).value.trim(); const nv=root.querySelector(\`\.nv[data-np="\${CSS.escape(p)}"]\`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
 
 document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
@@ -219,8 +231,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 `;
 
 try {
-    fs.writeFileSync(outputPath, htmlContent);
-} catch (err) {
-    console.error(err.message);
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
+} catch (error) {
+    console.error(error.message);
     process.exit(1);
 }

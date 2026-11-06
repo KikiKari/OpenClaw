@@ -1,15 +1,32 @@
 #!/usr/bin/env pwsh
 # 1781743218784_0122af_093843_09b1e1.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
-# Parameter verarbeiten
-if ($args.Count -lt 1) {
-    Write-Error "Fehler: OutputPath ist erforderlich."
-    exit 1
-}
+# 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
 
-$outputPath = $args[0]
+# 1781743218784_0122af_093843_09b1e1.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843.py — portiert nach javascript
+# Quelle: python, Projects@abstractions:python/1781743218784_0122af_093843.py
+# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af.pl — portiert nach python
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
+# Erzeugt: 2026-11-02 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af.js — portiert nach python3.12
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
+# Erzeugt: 2026-11-01 durch ABSTRACTIONS_MANAGER.py
+
+param(
+    [Parameter(Mandatory=$true)]
+    [string]$OutputPath
+)
 
 $htmlContent = @'
 <!DOCTYPE html>
@@ -219,9 +236,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 '@
 
+# Schreiben der HTML-Datei
 try {
-    Set-Content -Path $outputPath -Value $htmlContent -Encoding UTF8
+    Set-Content -Path $OutputPath -Value $htmlContent -Encoding UTF8
 } catch {
-    Write-Error $_.Exception.Message
+    Write-Error "Konnte Datei '$OutputPath' nicht öffnen: $($_.Exception.Message)"
     exit 1
 }

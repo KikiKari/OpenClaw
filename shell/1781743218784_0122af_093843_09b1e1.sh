@@ -1,20 +1,28 @@
 #!/bin/bash
-# 1781743218784_0122af_093843_09b1e1.js — portiert nach shell
-# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843_09b1e1.ps1 — portiert nach shell
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_093843_09b1e1.ps1
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
-# Prüfe, ob ein Argument übergeben wurde
-if [ $# -lt 1 ]; then
-    echo "Fehler: OutputPath ist erforderlich." >&2
+# 1781743218784_0122af_093843_09b1e1.js — portiert nach powershell
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+# Portiert nach Bash 5
+
+if [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <output_path>" >&2
     exit 1
 fi
 
-output_path="$1"
+OUTPUT_PATH="$1"
 
-# HTML-Inhalt in eine Variable speichern
-html_content=$(cat <<'EOF'
+read -r -d '' HTML_CONTENT <<'EOF_HTML_CONTENT'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -191,7 +199,7 @@ function renderEditor(){
   root.querySelectorAll("input[data-k]").forEach(i=>i.onchange=()=>{ VAULT.providers[i.dataset.p][i.dataset.k]=i.value; });
   root.querySelectorAll("button[data-del]").forEach(b=>b.onclick=()=>{ const [p,k]=b.dataset.del.split("|"); delete VAULT.providers[p][k]; renderEditor(); });
   root.querySelectorAll("button[data-delp]").forEach(b=>b.onclick=()=>{ delete VAULT.providers[b.dataset.delp]; renderEditor(); });
-  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`input.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`input.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
+  root.querySelectorAll("button[data-addf]").forEach(b=>b.onclick=()=>{ const p=b.dataset.addf; const nf=root.querySelector(`.nf[data-np="${CSS.escape(p)}"]`).value.trim(); const nv=root.querySelector(`.nv[data-np="${CSS.escape(p)}"]`).value; if(nf){ VAULT.providers[p][nf]=nv; renderEditor(); } });
 }
 
 document.getElementById("file").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{ blob.value=r.result.trim(); }; r.readAsText(f); };
@@ -220,11 +228,9 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-EOF
-)
+EOF_HTML_CONTENT
 
-# Schreibe den HTML-Inhalt in die angegebene Datei
-echo "$html_content" > "$output_path" || {
-    echo "Fehler beim Schreiben der Datei $output_path" >&2
+if ! echo "$HTML_CONTENT" > "$OUTPUT_PATH"; then
+    echo "Failed to write to output path: $OUTPUT_PATH" >&2
     exit 1
-}
+fi

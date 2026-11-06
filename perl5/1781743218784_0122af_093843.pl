@@ -1,22 +1,22 @@
 #!/usr/bin/perl
 # 1781743218784_0122af_093843.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(decode_utf8);
 use File::Spec;
+use File::Basename;
 
 # Parameter verarbeiten
 if (@ARGV < 1) {
     print STDERR "Fehler: OutputPath ist erforderlich.\n";
-    exit(1);
+    exit 1;
 }
 my $outputPath = $ARGV[0];
 
-my $htmlContent = <<'HTML';
+my $htmlContent = <<'HTML_END';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -222,17 +222,15 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML
+HTML_END
 
+# Schreibe den HTML-Inhalt in die Ausgabedatei
 eval {
     open(my $fh, '>:encoding(UTF-8)', $outputPath) or die "Konnte Datei '$outputPath' nicht öffnen: $!";
     print $fh $htmlContent;
     close($fh);
 };
-
 if ($@) {
-    my $error = $@;
-    $error =~ s/ at .* line \d+\.$//; # Entferne Perl-interne Fehlerposition
-    print STDERR $error;
-    exit(1);
+    print STDERR $@;
+    exit 1;
 }

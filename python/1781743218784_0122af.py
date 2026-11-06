@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 # 1781743218784_0122af.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
-
-# 1781743218784_0122af.pl — portiert nach javascript
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af.pl
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
 # Prüfe Aufrufparameter
 if len(sys.argv) != 2:
-    print(f"Aufruf: {sys.argv[0]} <Ausgabedatei>", file=sys.stderr)
+    sys.stderr.write(f"Aufruf: {sys.argv[0]} <Ausgabedatei>\n")
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -114,7 +111,7 @@ const T = {
  sub:{de:"Verschlüsselte Secret-Vault (AES-256-GCM, PBKDF2) — alles im Browser, kein Server.",en:"Encrypted secret vault (AES-256-GCM, PBKDF2) — fully in the browser, no server."},
  hOpen:{de:"Öffnen oder neu",en:"Open or new"},
  pass:{de:"Passphrase",en:"Passphrase"},
- file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64")},
+ file:{de:"Vault laden (Datei oder Base64 einfügen)",en:"Load vault (file or paste Base64)"},
  blob:{de:"…oder Base64 hier einfügen",en:"…or paste Base64 here"},
  open:{de:"Öffnen / Entschlüsseln",en:"Open / Decrypt"},
  neu:{de:"Neuer leerer Vault",en:"New empty vault"},
@@ -227,6 +224,6 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
-except Exception as e:
-    print(e, file=sys.stderr)
+except Exception as error:
+    sys.stderr.write(f"{str(error)}\n")
     sys.exit(1)

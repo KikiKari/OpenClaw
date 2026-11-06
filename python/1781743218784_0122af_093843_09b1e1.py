@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 # 1781743218784_0122af_093843_09b1e1.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843_09b1e1.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0122af_093843.py — portiert nach javascript
 # Quelle: python, Projects@abstractions:python/1781743218784_0122af_093843.py
@@ -19,7 +27,7 @@ import sys
 
 # Parameter verarbeiten
 if len(sys.argv) < 2:
-    print("Fehler: OutputPath ist erforderlich.")
+    print("Fehler: OutputPath ist erforderlich.", file=sys.stderr)
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -228,12 +236,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
+# Schreiben der HTML-Datei
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
-except Exception as e:
-    print(e)
+except Exception as err:
+    print(f"Konnte Datei '{output_path}' nicht öffnen: {err}", file=sys.stderr)
     sys.exit(1)

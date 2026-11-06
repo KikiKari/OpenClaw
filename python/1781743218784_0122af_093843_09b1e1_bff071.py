@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
-# 1781743218784_0122af_093843_09b1e1.pl — portiert nach python
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# 1781743218784_0122af_093843_09b1e1_bff071.js — portiert nach python
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1_bff071.js
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
-# 1781743218784_0122af_093843.py — portiert nach python3
-# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.pl
+# 1781743218784_0122af_093843_09b1e1_bff071.ps1 — portiert nach javascript
+# Quelle: powershell, Projects@abstractions:powershell/1781743218784_0122af_093843_09b1e1_bff071.ps1
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 import sys
-import os
 
 # Parameter verarbeiten
 if len(sys.argv) < 2:
-    print("Fehler: OutputPath ist erforderlich.", file=sys.stderr)
+    print("Fehler: OutputPath ist erforderlich.")
     sys.exit(1)
 
 output_path = sys.argv[1]
@@ -225,8 +224,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 '''
 
 try:
-    with open(output_path, 'w', encoding='utf-8') as fh:
-        fh.write(html_content)
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
 except Exception as e:
-    print(str(e), file=sys.stderr)
+    print(str(e))
     sys.exit(1)

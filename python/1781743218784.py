@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 # 1781743218784.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 import sys
 import os
 
 # Prüfe Aufrufparameter
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
     script_name = os.path.basename(sys.argv[0])
     print(f"Aufruf: python3 {script_name} <Ausgabedatei>", file=sys.stderr)
     sys.exit(1)
-
-output_path = sys.argv[1]
+    
+output_path = sys.argv[2]
 
 html_content = '''<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">

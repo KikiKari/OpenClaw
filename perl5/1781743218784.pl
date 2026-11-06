@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 # 1781743218784.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
@@ -14,7 +14,7 @@ if (@ARGV != 1) {
 }
 my $output_path = $ARGV[0];
 
-my $html_content = <<'HTML_END';
+my $html_content = <<'HTML';
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -220,12 +220,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-HTML_END
+HTML
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
-open(my $fh, '>', $output_path) or do {
-    warn "Konnte Datei '$output_path' nicht öffnen: $!\n";
-    exit 1;
-};
+open(my $fh, '>:encoding(UTF-8)', $output_path)
+    or die "Konnte Datei '$output_path' nicht öffnen: $!";
 print $fh $html_content;
 close $fh;

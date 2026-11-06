@@ -1,14 +1,7 @@
 #!/usr/bin/env node
 // 1781743218784_0122af_093843.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843.pl
-// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
-
-// 1781743218784_0122af_093843.pl — portiert nach javascript
-// Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843.pl
-// Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
-
-const fs = require('fs');
-const path = require('path');
+// Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 // Parameter verarbeiten
 if (process.argv.length < 3) {
@@ -16,6 +9,8 @@ if (process.argv.length < 3) {
     process.exit(1);
 }
 const outputPath = process.argv[2];
+
+const fs = require('fs');
 
 const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -221,11 +216,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>`;
+</html>
+`;
 
 try {
-    fs.writeFileSync(outputPath, htmlContent, { encoding: 'utf8' });
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
 } catch (error) {
-    console.error(error.message || 'Unknown error');
+    console.error(error.message);
     process.exit(1);
 }

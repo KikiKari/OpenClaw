@@ -1,21 +1,21 @@
 #!/usr/bin/env pwsh
 # 1781743218784.js — portiert nach powershell
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784.pl — portiert nach javascript
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-# Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
 
 # Prüfe Aufrufparameter
 if ($args.Count -ne 1) {
     $script_name = [System.IO.Path]::GetFileName($MyInvocation.ScriptName)
-    Write-Error "Aufruf: powershell $script_name <Ausgabedatei>"
+    Write-Error "Aufruf: pwsh $script_name <Ausgabedatei>"
     exit 1
 }
 $output_path = $args[0]
 
-$html_content = @"
+$html_content = @'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -221,7 +221,7 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </script>
 </body>
 </html>
-"@
+'@
 
 # Schreibe die HTML-Inhalte in die Ausgabedatei
 try {

@@ -1,7 +1,15 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0122af_093843_09b1e1.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843_09b1e1.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0122af_093843.py — portiert nach javascript
 # Quelle: python, Projects@abstractions:python/1781743218784_0122af_093843.py
@@ -227,12 +235,11 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
-# Schreibe die HTML-Inhalte in die Ausgabedatei
-if {[catch {set fh [open $outputPath w]} errmsg]} {
-    puts stderr $errmsg
+# Schreiben der HTML-Datei
+if {[catch {set fh [open $outputPath w]} error]} {
+    puts stderr "Konnte Datei '$outputPath' nicht öffnen: $error"
     exit 1
 }
 

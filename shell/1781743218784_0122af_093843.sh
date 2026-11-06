@@ -1,19 +1,19 @@
 #!/bin/bash
 # 1781743218784_0122af_093843.pl — portiert nach shell
 # Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843.pl
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 set -euo pipefail
 
 # Parameter verarbeiten
-if [ $# -lt 1 ]; then
+if [[ $# -lt 1 ]]; then
     echo "Fehler: OutputPath ist erforderlich." >&2
     exit 1
 fi
 outputPath="$1"
 
-# HTML-Inhalt als here document
-read -r -d '' htmlContent <<'HTML_END' || true
+# HTML-Inhalt
+read -r -d '' htmlContent || true <<'HTML_END'
 <!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -221,8 +221,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-# Schreiben der Datei mit Fehlerbehandlung
-if ! printf '%s' "$htmlContent" > "$outputPath"; then
-    echo "Cannot open $outputPath: $!" >&2
+# Datei schreiben
+if ! echo "$htmlContent" > "$outputPath"; then
+    echo "Cannot open file '$outputPath': $!" >&2
     exit 1
 fi

@@ -1,14 +1,16 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0122af.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
+
+package require Tcl 8.6
 
 # Prüfe Aufrufparameter
-if {$argc != 1} {
+if {$::argc != 1} {
     puts stderr "Aufruf: [info script] <Ausgabedatei>"
     exit 1
 }
-set outputPath [lindex $argv 0]
+set outputPath [lindex $::argv 0]
 
 set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
@@ -218,9 +220,16 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 }
 
 # Versuche, die HTML-Datei zu schreiben
-if {[catch {set fd [open $outputPath w]} err]} {
-    puts stderr $err
+if {[catch {set fd [open $outputPath w]} error]} {
+    puts stderr $error
     exit 1
 }
-puts -nonewline $fd $htmlContent
-close $fd
+if {[catch {puts -nonewline $fd $htmlContent} error]} {
+    close $fd
+    puts stderr $error
+    exit 1
+}
+if {[catch {close $fd} error]} {
+    puts stderr $error
+    exit 1
+}

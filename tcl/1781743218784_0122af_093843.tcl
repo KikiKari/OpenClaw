@@ -1,18 +1,17 @@
 #!/usr/bin/env tclsh
 # 1781743218784_0122af_093843.js — portiert nach tcl
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
-# Prüfe die Anzahl der Argumente
+package require Tcl 8.6
+
+# Parameter verarbeiten
 if {$argc < 1} {
     puts stderr "Fehler: OutputPath ist erforderlich."
     exit 1
 }
-
-# Hole den Ausgabepfad aus den Argumenten
 set outputPath [lindex $argv 0]
 
-# HTML-Inhalt definieren
 set htmlContent {<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
@@ -217,14 +216,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-}
+</html>}
 
-# Schreibe den HTML-Inhalt in die angegebene Datei
-if {[catch {set fileId [open $outputPath w]} errorMsg]} {
-    puts stderr $errorMsg
+# Schreibe den HTML-Inhalt in die Ausgabedatei
+if {[catch {set fd [open $outputPath w]} errmsg]} {
+    puts stderr $errmsg
     exit 1
 }
-
-puts -nonewline $fileId $htmlContent
-close $fileId
+puts -nonewline $fd $htmlContent
+close $fd

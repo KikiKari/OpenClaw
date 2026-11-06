@@ -1,17 +1,24 @@
 #!/usr/bin/env node
 // 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
-// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
-// Parameter verarbeiten
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+process.stdout.setEncoding('utf8');
+process.stderr.setEncoding('utf8');
+
 if (process.argv.length < 3) {
-    console.error("Fehler: OutputPath ist erforderlich.");
+    process.stderr.write("Fehler: OutputPath ist erforderlich.\n");
     process.exit(1);
 }
 
-const output_path = process.argv[2];
+const outputPath = process.argv[2];
 
-const html_content = `<!DOCTYPE html>
+const htmlContent = `<!DOCTYPE html>
 <script type="application/json" id="cowork-artifact-meta">
 {
   "name": "Secret Vault Public",
@@ -219,8 +226,8 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 `;
 
 try {
-    require('fs').writeFileSync(output_path, html_content, 'utf8');
+    fs.writeFileSync(outputPath, htmlContent, 'utf8');
 } catch (error) {
-    console.error(error.message);
+    process.stderr.write(error.message + '\n');
     process.exit(1);
 }

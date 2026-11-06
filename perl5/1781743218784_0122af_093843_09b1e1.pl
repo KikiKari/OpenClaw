@@ -1,13 +1,20 @@
 #!/usr/bin/perl
 # 1781743218784_0122af_093843_09b1e1.js — portiert nach perl5
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 use strict;
 use warnings;
 use utf8;
-use Encode qw(decode_utf8);
-use File::Slurp qw(write_file);
+use open qw(:std :utf8);
+
+# 1781743218784_0122af_093843_09b1e1.pl — portiert nach javascript
+# Quelle: perl5, Projects@abstractions:perl5/1781743218784_0122af_093843_09b1e1.pl
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
+
+# 1781743218784_0122af_093843_09b1e1.js — portiert nach perl5
+# Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843_09b1e1.js
+# Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
 
 # 1781743218784_0122af_093843.py — portiert nach javascript
 # Quelle: python, Projects@abstractions:python/1781743218784_0122af_093843.py
@@ -237,10 +244,10 @@ expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2)
 </html>
 HTML_END
 
-eval {
-    write_file($outputPath, {binmode => ':utf8'}, $htmlContent);
-};
-if ($@) {
-    print STDERR $@->message . "\n";
+# Schreiben der HTML-Datei
+open(my $fh, '>:encoding(UTF-8)', $outputPath) or do {
+    print STDERR "Konnte Datei '$outputPath' nicht öffnen: $!\n";
     exit 1;
-}
+};
+print $fh $htmlContent;
+close($fh);

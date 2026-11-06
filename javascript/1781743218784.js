@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // 1781743218784.pl — portiert nach javascript
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-// Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 // 1781743218784.js — portiert nach JavaScript für Node 20
 // Quelle: perl5, Projects@abstractions:perl5/1781743218784.pl
-// Erzeugt: 2026-11-03 durch ABSTRACTIONS_MANAGER.py
+// Erzeugt: 2026-11-05 durch ABSTRACTIONS_MANAGER.py
 
 const fs = require('fs');
+const path = require('path');
 
 function generate_html() {
     return `<!DOCTYPE html>

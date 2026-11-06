@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # 1781743218784_0122af_093843.js — portiert nach python
 # Quelle: javascript, Projects@abstractions:javascript/1781743218784_0122af_093843.js
-# Erzeugt: 2026-11-04 durch ABSTRACTIONS_MANAGER.py
+# Erzeugt: 2026-11-06 durch ABSTRACTIONS_MANAGER.py
 
 import sys
+import os
 
 # Parameter verarbeiten
 if len(sys.argv) < 2:
@@ -216,12 +217,12 @@ dlBtn.onclick=()=>{ if(!result.value)return; try{ const b=new Blob([result.value
 expBtn.onclick=()=>{ if(!VAULT)return; result.value=JSON.stringify(VAULT,null,2); };
 </script>
 </body>
-</html>
-'''
+</html>'''
 
+# Schreibe den HTML-Inhalt in die Ausgabedatei
 try:
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
-except Exception as e:
-    print(str(e), file=sys.stderr)
+except Exception as err:
+    print(err, file=sys.stderr)
     sys.exit(1)
