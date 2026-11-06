@@ -6,23 +6,36 @@ Bestand alle sechs Stunden fort und veröffentlicht direkt in diesem Branch.
 
 ## Aktueller Arbeitsstand
 
-Letzter dokumentierter Lauf: **2026-08-09 08:16 UTC**. Detaillierte Lauf- und
-Quellenzahlen stehen in [STATUS.md](STATUS.md).
+Stand laut [STATUS.md](STATUS.md): **6. November 2026, 19:20 UTC**. Die Zahlen sind eine Momentaufnahme; aktuelle Lauf- und Quellenzahlen stehen in `STATUS.md`.
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 64 | `javascript/` |
-| Perl 5 | 61 | `perl5/` |
-| PowerShell | 54 | `powershell/` |
-| Python | 58 | `python/` |
-| Shell | 55 | `shell/` |
-| Tcl | 68 | `tcl/` |
-| **Gesamt** | **360** | |
+| JavaScript | 682 | `javascript/` |
+| Perl 5 | 757 | `perl5/` |
+| PowerShell | 729 | `powershell/` |
+| Python | 706 | `python/` |
+| Shell | 532 | `shell/` |
+| Tcl | 790 | `tcl/` |
+| **Gesamt** | **4196** | |
 
-Die ursprünglichen Job-Commits bleiben Teil der Historie: `f965cba` erzeugte
+Bei einem früheren dokumentierten Lauf blieben die folgenden Job-Commits Teil der Historie: `f965cba` erzeugte
 fünf High-Priority-Übersetzungen, `723dac3` erzeugte 184 Medium-Priority-
-Übersetzungen und `14b5336` erzeugte 213 Low-Priority-Übersetzungen. Der letzte
-Lauf verwarf zusätzlich 27 nicht bestandene Ergebnisse.
+Übersetzungen und `14b5336` erzeugte 213 Low-Priority-Übersetzungen. Dieser frühere Lauf verwarf zusätzlich 27 nicht bestandene Ergebnisse.
+
+## Vercel-Preview
+
+Die [Gateway-1-Preview](https://openclaw-git-gateway1-abstractions-openclaw-vercel-project.vercel.app) zeigt den aktiven Bestand mit Sprachfilter, Dateisuche und Quelltextansicht. Die Dateien werden als Text angezeigt und nicht ausgeführt. Das historische Verzeichnis ist vom Katalog ausgeschlossen.
+
+Der Build erfasst die sechs Sprachverzeichnisse und erzeugt `dist/catalog.json`. Neue Dateien erscheinen nach dem nächsten erfolgreichen Build. Der Katalog enthält den vollständigen Quelltext und wird beim Öffnen der Preview geladen; seine Größe kann die Ladezeit beeinflussen.
+
+Lokaler Build mit installiertem Node.js und npm:
+
+```sh
+npm ci
+npm run build
+```
+
+Das Ergebnis liegt in `dist/`. Die Versionen der npm-Abhängigkeiten sind in `package-lock.json` festgehalten.
 
 ## Fortschreibung statt Verdrängung
 
@@ -36,7 +49,7 @@ Die historische README ist unverändert abrufbar unter
 Historische Sprachdateien bleiben getrennt, damit sie nicht als aktive,
 modellgeprüfte Übersetzungen ausgegeben oder vom Manager weiterverwendet werden.
 
-Ein während des letzten Laufs vorgefundener Zwischenstand mit 182 Dateien wurde
+Ein während des damaligen Laufs vorgefundener Zwischenstand mit 182 Dateien wurde
 zusätzlich verlustfrei unter
 [`recovered-uncommitted-20260809/`](historical/abstractions-pre-migration-20260808/.artifacts/recovered-uncommitted-20260809/)
 gesichert. Der später regulär abgeschlossene Originalcommit `14b5336` ist in
