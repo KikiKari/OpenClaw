@@ -10,13 +10,17 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 1489 | `javascript/` |
-| Perl 5 | 1680 | `perl5/` |
-| PowerShell | 1583 | `powershell/` |
-| Python | 1553 | `python/` |
-| Shell | 1142 | `shell/` |
-| Tcl | 1733 | `tcl/` |
-| **Gesamt** | **9180** | |
+| JavaScript | 1493 | `javascript/` |
+| Perl 5 | 1681 | `perl5/` |
+| PowerShell | 1587 | `powershell/` |
+| Python | 1554 | `python/` |
+| Shell | 1144 | `shell/` |
+| Tcl | 1737 | `tcl/` |
+| Raku | 4 | `perl6/` |
+| Ruby | 37 | `ruby/` |
+| Lua | 31 | `lua/` |
+| Go | 35 | `go/` |
+| **Gesamt** | **9303** | |
 
 Bei einem früheren dokumentierten Lauf blieben die folgenden Job-Commits Teil der Historie: `f965cba` erzeugte
 fünf High-Priority-Übersetzungen, `723dac3` erzeugte 184 Medium-Priority-
