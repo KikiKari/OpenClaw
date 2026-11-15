@@ -3,7 +3,7 @@
 Script Abstractions Manager
 
 Uebersetzt jede Quelldatei aus den drei Repositories KikiKari/OpenClaw,
-KikiKari/Projects und KikiKari/Onboarding in sechs Zielsprachen und legt
+KikiKari/Projects und KikiKari/Onboarding in zehn Zielsprachen und legt
 das Ergebnis in den Sprachverzeichnissen des Abstraktions-Repositories ab.
 
 Es entstehen vollstaendige Uebersetzungen, keine Ruempfe: jede Datei geht
@@ -66,6 +66,8 @@ QUELLEN: List[Dict[str, object]] = [
 # Dateiendung -> Quellsprache. Bestimmt zugleich, was eingelesen wird.
 QUELLSPRACHEN: Dict[str, str] = {
     ".pl": "perl5", ".pm": "perl5",
+    ".raku": "perl6", ".rakumod": "perl6",
+    ".rb": "ruby", ".lua": "lua", ".go": "go",
     ".ps1": "powershell", ".psm1": "powershell",
     ".sh": "shell", ".bash": "shell",
     ".tcl": "tcl",
@@ -75,7 +77,7 @@ QUELLSPRACHEN: Dict[str, str] = {
     ".css": "css",
 }
 
-# Die sechs Zielverzeichnisse, nach der Vorlage aus
+# Die zehn Zielverzeichnisse, nach der Vorlage aus
 # OpenClaw@gateway1-abstractions. Sie liegen im Wurzelverzeichnis des
 # Abstraktions-Repositories.
 ZIELSPRACHEN: Dict[str, Dict[str, str]] = {
@@ -85,6 +87,10 @@ ZIELSPRACHEN: Dict[str, Dict[str, str]] = {
     "python":     {"ext": ".py",  "bezeichnung": "Python 3.12"},
     "shell":      {"ext": ".sh",  "bezeichnung": "Bash 5 mit set -euo pipefail"},
     "tcl":        {"ext": ".tcl", "bezeichnung": "Tcl 8.6"},
+    "perl6":      {"ext": ".raku", "bezeichnung": "Raku"},
+    "ruby":       {"ext": ".rb", "bezeichnung": "Ruby"},
+    "lua":        {"ext": ".lua", "bezeichnung": "Lua"},
+    "go":         {"ext": ".go", "bezeichnung": "Go"},
 }
 
 # Verzeichnisse und Muster, die nie eingelesen werden.
@@ -152,7 +158,8 @@ def zustand_laden() -> Dict:
         try:
             return json.loads(STATE_FILE.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as fehler:
-            logger.warning("Zustand unlesbar (%s) — es wird neu begonnen", fehler)
+            logger.error("Zustand unlesbar (%s) — Lauf wird angehalten", fehler)
+            raise
     return {"erledigt": {}, "statistik": {}}
 
 
@@ -166,6 +173,7 @@ def zustand_speichern(zustand: Dict) -> None:
         os.replace(pfad, STATE_FILE)
     except OSError as fehler:
         logger.error("Zustand konnte nicht gespeichert werden: %s", fehler)
+        raise
 
 
 # ---------------------------------------------------------------------------
@@ -343,6 +351,14 @@ def _zaeune_entfernen(text: str) -> str:
     return "\n".join(zeilen).strip() + "\n"
 
 
+def _modell_code_bereinigen(text: str, zielsprache: str) -> str:
+    code = _zaeune_entfernen(text)
+    # Go source files cannot contain the shebang requested in the shared prompt.
+    if zielsprache == "go" and code.startswith("#!"):
+        code = code.partition("\n")[2]
+    return code
+
+
 def modell_fragen(quelle: str, quellsprache: str, zielsprache: str,
                   name: str, schluessel: str) -> Optional[str]:
     """
@@ -384,7 +400,7 @@ def modell_fragen(quelle: str, quellsprache: str, zielsprache: str,
                     daten = json.loads(antwort.read().decode("utf-8"))
                 inhalt = daten["choices"][0]["message"]["content"]
                 if inhalt and inhalt.strip():
-                    return _zaeune_entfernen(inhalt)
+                    return _modell_code_bereinigen(inhalt, zielsprache)
                 logger.warning("%s -> %s: leere Antwort von %s", name, zielsprache, modell)
             except urllib.error.HTTPError as fehler:
                 text = fehler.read().decode("utf-8", "replace")[:200]
@@ -410,6 +426,10 @@ PRUEFBEFEHLE: Dict[str, List[str]] = {
     "powershell": ["pwsh", "-NoProfile", "-Command"],
     "shell":      ["bash", "-n"],
     "tcl":        ["tclsh"],
+    "perl6":      ["raku", "-c"],
+    "ruby":       ["ruby", "-c"],
+    "lua":        ["luac", "-p"],
+    "go":         ["gofmt", "-e"],
 }
 
 VERDACHT = ("TODO: Implementiere", "TODO: implement", "not implemented",
@@ -425,8 +445,8 @@ def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bo
     Die Mindestlaenge richtet sich nach der Quelle — ein dreizeiliger Aufrufer
     darf auch in der Zielsprache drei Zeilen haben.
 
-    Danach, wenn der passende Interpreter vorhanden ist, die Syntax. Fehlt er,
-    gilt die inhaltliche Pruefung als ausreichend.
+    Danach wird die Syntax mit dem passenden Interpreter geprueft. Ist die
+    Pruefung nicht moeglich, wird das Erzeugnis nicht als validiert angenommen.
 
     Returns:
         (angenommen, Begruendung)
@@ -454,9 +474,10 @@ def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bo
 
     befehl = PRUEFBEFEHLE.get(zielsprache)
     if not befehl:
-        return True, "ohne Syntaxpruefung angenommen"
+        return False, "kein Syntaxpruefer konfiguriert"
 
     endung = ZIELSPRACHEN[zielsprache]["ext"]
+    pfad = None
     try:
         kennung, pfad = tempfile.mkstemp(suffix=endung)
         with os.fdopen(kennung, "w", encoding="utf-8") as griff:
@@ -464,15 +485,16 @@ def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bo
         if zielsprache == "powershell":
             aufruf = befehl + [f"$null = [ScriptBlock]::Create((Get-Content -Raw '{pfad}'))"]
         elif zielsprache == "tcl":
-            aufruf = ["tclsh"]
-            ergebnis = subprocess.run(aufruf, input=f"if {{[catch {{info complete [read [open {pfad}]]}}]}} {{exit 1}}",
+            aufruf = ["tclsh", "/dev/stdin", pfad]
+            pruefskript = ('if {[catch {set f [open [lindex $argv 0]]; '
+                           'set code [read $f]; close $f; info complete $code} complete] '
+                           '|| !$complete} {exit 1}\n')
+            ergebnis = subprocess.run(aufruf, input=pruefskript,
                                       capture_output=True, text=True, timeout=30)
-            os.unlink(pfad)
-            return (ergebnis.returncode == 0), ("syntax ok" if ergebnis.returncode == 0 else "Syntaxfehler")
+            return (ergebnis.returncode == 0), ("Tcl-Befehle vollstaendig" if ergebnis.returncode == 0 else "Tcl-Befehle unvollstaendig")
         else:
             aufruf = befehl + [pfad]
         ergebnis = subprocess.run(aufruf, capture_output=True, text=True, timeout=30)
-        os.unlink(pfad)
         if ergebnis.returncode == 0:
             return True, "syntax ok"
 
@@ -481,17 +503,19 @@ def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bo
         # sondern eine Luecke dieser Pruefumgebung. perl -c und node --check
         # brechen dann ab, obwohl die Syntax stimmt.
         if "Can't locate" in meldung or "Cannot find module" in meldung:
-            return True, "Fremdmodul fehlt hier — Syntax nicht abschliessend geprueft"
+            return False, "Fremdmodul fehlt hier — Syntax nicht abschliessend geprueft"
         erste = meldung.splitlines()[0][:90] if meldung.splitlines() else "unbekannt"
         return False, "Syntaxfehler: " + erste
     except FileNotFoundError:
-        try:
-            os.unlink(pfad)
-        except OSError:
-            pass
-        return True, "Interpreter fehlt — ohne Syntaxpruefung angenommen"
+        return False, "Interpreter fehlt — Syntaxpruefung nicht moeglich"
     except (OSError, subprocess.TimeoutExpired, IndexError):
-        return True, "Pruefung nicht moeglich — angenommen"
+        return False, "Syntaxpruefung nicht moeglich"
+    finally:
+        if pfad is not None:
+            try:
+                os.unlink(pfad)
+            except OSError:
+                pass
 
 # ---------------------------------------------------------------------------
 # Ablage
@@ -515,12 +539,21 @@ def _zieldatei(eintrag: Dict, zielsprache: str, belegt: Dict[str, str]) -> Path:
         stamm = f"{stamm}_{eintrag['hash'][:6]}"
     else:
         belegt[schluessel] = eintrag["hash"]
-    return ABSTRACTIONS_REPO / zielsprache / f"{stamm}{endung}"
+    verzeichnis = ABSTRACTIONS_REPO / zielsprache
+    ziel = verzeichnis / f"{stamm}{endung}"
+    if os.path.lexists(ziel):
+        stamm = f"{eintrag['stamm']}_{eintrag['hash'][:6]}"
+        ziel = verzeichnis / f"{stamm}{endung}"
+        zaehler = 2
+        while os.path.lexists(ziel):
+            ziel = verzeichnis / f"{stamm}_{zaehler}{endung}"
+            zaehler += 1
+    return ziel
 
 
 def _kopf(eintrag: Dict, zielsprache: str) -> str:
     """Setzt den Herkunftsvermerk als Kommentar in der Zielsprache."""
-    zeichen = "//" if zielsprache == "javascript" else "#"
+    zeichen = "//" if zielsprache in ("javascript", "go") else "--" if zielsprache == "lua" else "#"
     heute = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     zeilen = [
         f"{zeichen} {eintrag['name']} — portiert nach {zielsprache}",
@@ -544,6 +577,18 @@ def ablegen(eintrag: Dict, zielsprache: str, code: str, belegt: Dict[str, str]) 
             inhalt = zeilen[0] + "\n" + _kopf(eintrag, zielsprache) + "\n" + "\n".join(zeilen[1:]).lstrip("\n") + "\n"
         else:
             inhalt = _kopf(eintrag, zielsprache) + "\n" + code
+        # The marker and digest travel with the artifact. This permits recovery
+        # if the process stops after os.replace but before saving its state.
+        if eintrag.get("source_sha256"):
+            prefix = "//" if zielsprache in ("javascript", "go") else "--" if zielsprache == "lua" else "#"
+            metadata = {"source_sha256": eintrag["source_sha256"], "target_language": zielsprache,
+                        "artifact_sha256": hashlib.sha256(inhalt.encode("utf-8")).hexdigest()}
+            markierung = prefix + " abstraction-provenance: " + json.dumps(metadata, sort_keys=True) + "\n"
+            if inhalt.startswith("#!"):
+                erste, rest = inhalt.split("\n", 1)
+                inhalt = erste + "\n" + markierung + rest
+            else:
+                inhalt = markierung + inhalt
         kennung, pfad = tempfile.mkstemp(dir=ziel.parent, prefix=".neu_",
                                          suffix=ZIELSPRACHEN[zielsprache]["ext"])
         with os.fdopen(kennung, "w", encoding="utf-8") as griff:
@@ -555,13 +600,44 @@ def ablegen(eintrag: Dict, zielsprache: str, code: str, belegt: Dict[str, str]) 
         return None
 
 
+def vorhandenes_erzeugnis(eintrag: Dict, zielsprache: str, quelle: str) -> Optional[Path]:
+    """Find one intact, validated artifact for this exact source and target."""
+    verzeichnis = ABSTRACTIONS_REPO / zielsprache
+    if not verzeichnis.is_dir():
+        return None
+    marker = " abstraction-provenance: "
+    funde = []
+    for pfad in verzeichnis.glob("*" + ZIELSPRACHEN[zielsprache]["ext"]):
+        try:
+            inhalt = pfad.read_text(encoding="utf-8")
+            zeilen = inhalt.splitlines(keepends=True)
+            indices = [i for i, zeile in enumerate(zeilen[:2]) if marker in zeile]
+            if len(indices) != 1:
+                continue
+            index = indices[0]
+            daten = json.loads(zeilen[index].split(marker, 1)[1])
+            ohne_marker = "".join(zeilen[:index] + zeilen[index + 1:])
+            if (daten.get("source_sha256") != eintrag["source_sha256"] or
+                daten.get("target_language") != zielsprache or
+                daten.get("artifact_sha256") != hashlib.sha256(ohne_marker.encode("utf-8")).hexdigest()):
+                continue
+            if erzeugnis_pruefen(ohne_marker, zielsprache, quelle)[0]:
+                funde.append((pfad, daten["artifact_sha256"]))
+        except (OSError, UnicodeError, ValueError, TypeError, AttributeError):
+            continue
+    if len({digest for _, digest in funde}) > 1:
+        raise RuntimeError("mehrere unterschiedliche gueltige Erzeugnisse fuer dieselbe Quelle")
+    return funde[0][0] if funde else None
+
+
 # ---------------------------------------------------------------------------
 # Durchlauf
 # ---------------------------------------------------------------------------
 
 
 def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
-                anzahl: int, probelauf: bool, schluessel: str) -> Dict[str, int]:
+                anzahl: int, probelauf: bool, schluessel: str,
+                dispatcher=None, transport=None, state_saver=None) -> Dict[str, int]:
     """
     Arbeitet das Inventar ab und erzeugt fehlende Uebersetzungen.
 
@@ -590,24 +666,70 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             continue
 
         try:
-            quelle = Path(eintrag["pfad"]).read_text(encoding="utf-8", errors="replace")
+            roh = Path(eintrag["pfad"]).read_bytes()
+            quelle = roh.decode("utf-8", errors="replace")
+            eintrag = {**eintrag, "source_sha256": hashlib.sha256(roh).hexdigest()}
         except OSError as fehler:
             logger.warning("%s nicht lesbar: %s", eintrag["name"], fehler)
             continue
 
         zaehler["dateien"] += 1
+        if not probelauf:
+            for zielsprache in list(ziele):
+                if vorhandenes_erzeugnis(eintrag, zielsprache, quelle):
+                    fertig.add(zielsprache)
+                    erledigt[eintrag["hash"]] = sorted(fertig)
+                    if state_saver:
+                        state_saver(zustand)
+                    ziele.remove(zielsprache)
+                    zaehler["uebersprungen"] += 1
+            if not ziele:
+                continue
         logger.info("[%s] %s (%s, %d B) -> %s",
                     eintrag["prioritaet"], eintrag["name"], eintrag["sprache"],
                     eintrag["bytes"], ", ".join(ziele))
 
-        for zielsprache in ziele:
+        plan = None
+        if dispatcher is not None and not probelauf:
+            plan = dispatcher.dispatch(Path(eintrag["pfad"]), ziele,
+                                       source_text=quelle,
+                                       source_language=eintrag["sprache"])
+
+        for index, zielsprache in enumerate(ziele):
             if probelauf:
                 logger.info("  %s: Probelauf, nichts gesendet", zielsprache)
                 zaehler["uebersprungen"] += 1
                 continue
 
-            code = modell_fragen(quelle, eintrag["sprache"], zielsprache,
-                                 eintrag["name"], schluessel)
+            if plan is None:
+                code = modell_fragen(quelle, eintrag["sprache"], zielsprache,
+                                     eintrag["name"], schluessel)
+            else:
+                try:
+                    job = plan["translation_jobs"][index]
+                    if job["target_language"] != zielsprache:
+                        raise ValueError("dispatch plan language mismatch")
+                    job["source_name"] = eintrag["name"]
+                    job["source_sha256"] = eintrag["source_sha256"]
+                    if hasattr(dispatcher, "node_ids"):
+                        job["selected_device_id"] = dispatcher.node_ids.get(job["selected_node"])
+                    job["target_description"] = ZIELSPRACHEN[zielsprache]["bezeichnung"]
+                    job["system_prompt"] = ANWEISUNG
+                    override = os.environ.get("ABSTRACTIONS_MODELL")
+                    job["model_settings"] = {"models": [override] if override else list(MODELLE),
+                                             "attempts": VERSUCHE, "timeout_seconds": ZEITLIMIT}
+                    job["markup_hint"] = (MARKUP_HINWEIS.format(sprache=eintrag["sprache"].upper())
+                                          if eintrag["sprache"] in ("html", "css") else "")
+                    previous = zustand.get("auftraege", {}).get(eintrag["source_sha256"] + ":" + zielsprache)
+                    if isinstance(previous, dict) and isinstance(previous.get("job"), dict):
+                        job.update(previous["job"])
+                    code = dispatcher.execute_translation(job, transport)
+                    code = _modell_code_bereinigen(code, zielsprache)
+                except OSError:
+                    raise
+                except Exception as fehler:
+                    logger.warning("  %s: Transport fehlgeschlagen (%s)", zielsprache, type(fehler).__name__)
+                    code = None
             if code is None:
                 zaehler["verworfen"] += 1
                 continue
@@ -626,6 +748,9 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             logger.info("  %s: %s (%s)", zielsprache, ziel.name, grund)
             zaehler["erzeugt"] += 1
             fertig.add(zielsprache)
+            erledigt[eintrag["hash"]] = sorted(fertig)
+            if state_saver:
+                state_saver(zustand)
 
         erledigt[eintrag["hash"]] = sorted(fertig)
 
@@ -661,7 +786,7 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
         "",
         f"**Letzter Lauf:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC",
         "",
-        "Jede Quelldatei der drei Repositories wird in sechs Zielsprachen portiert.",
+        "Jede Quelldatei der drei Repositories wird in zehn Zielsprachen portiert.",
         "Es werden vollstaendige Uebersetzungen abgelegt; Erzeugnisse ohne gueltige",
         "Syntax oder mit Platzhaltern werden verworfen.",
         "",
@@ -707,7 +832,7 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
         logger.error("STATUS.md konnte nicht geschrieben werden: %s", fehler)
 
 
-def veroeffentlichen(nachricht: str) -> None:
+def veroeffentlichen(nachricht: str) -> bool:
     """
     Uebertraegt neue Erzeugnisse in den Branch gateway1-abstractions.
 
@@ -717,34 +842,48 @@ def veroeffentlichen(nachricht: str) -> None:
     """
     if not (ABSTRACTIONS_REPO / ".git").exists():
         logger.info("Kein Git-Arbeitsbaum in %s — nichts zu veroeffentlichen", ABSTRACTIONS_REPO)
-        return
+        return False
 
     stand = _git("status", "--porcelain", verzeichnis=ABSTRACTIONS_REPO)
-    if not stand.stdout.strip():
-        logger.info("Keine Aenderungen zu veroeffentlichen")
-        return
-
-    for sprache in ZIELSPRACHEN:
-        _git("add", sprache, verzeichnis=ABSTRACTIONS_REPO)
-    _git("add", "STATUS.md", verzeichnis=ABSTRACTIONS_REPO)
-
-    ergebnis = _git("commit", "-m", nachricht, verzeichnis=ABSTRACTIONS_REPO)
-    if ergebnis.returncode != 0:
-        logger.warning("Commit fehlgeschlagen: %s", (ergebnis.stderr or ergebnis.stdout).strip()[:200])
-        return
-    logger.info("Commit gesetzt: %s", nachricht)
+    if stand.returncode != 0:
+        logger.error("Git-Status konnte nicht gelesen werden")
+        return False
+    if stand.stdout.strip():
+        index = _git("diff", "--cached", "--quiet", verzeichnis=ABSTRACTIONS_REPO)
+        if index.returncode != 0:
+            logger.error("Git-Index ist nicht leer oder nicht lesbar; kein automatischer Commit")
+            return False
+        for sprache in ZIELSPRACHEN:
+            if (ABSTRACTIONS_REPO / sprache).exists() and _git("add", sprache, verzeichnis=ABSTRACTIONS_REPO).returncode:
+                logger.error("Git add fehlgeschlagen")
+                return False
+        if (ABSTRACTIONS_REPO / "STATUS.md").exists() and _git("add", "STATUS.md", verzeichnis=ABSTRACTIONS_REPO).returncode:
+            logger.error("Git add fuer STATUS.md fehlgeschlagen")
+            return False
+        ergebnis = _git("diff", "--cached", "--quiet", verzeichnis=ABSTRACTIONS_REPO)
+        if ergebnis.returncode not in (0, 1):
+            logger.error("Git-Index konnte nicht gelesen werden")
+            return False
+        if ergebnis.returncode == 1:
+            ergebnis = _git("commit", "-m", nachricht, verzeichnis=ABSTRACTIONS_REPO)
+            if ergebnis.returncode != 0:
+                logger.warning("Commit fehlgeschlagen: %s", (ergebnis.stderr or ergebnis.stdout).strip()[:200])
+                return False
+            logger.info("Commit gesetzt: %s", nachricht)
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("ABSTRACTIONS_PUSH_TOKEN")
     if not token:
         logger.info("Kein Token in der Umgebung — Commit bleibt lokal")
-        return
+        return False
 
     url = f"https://x-access-token:{token}@github.com/{GITHUB_BENUTZER}/OpenClaw.git"
     ergebnis = _git("push", url, "HEAD:gateway1-abstractions", verzeichnis=ABSTRACTIONS_REPO)
     if ergebnis.returncode == 0:
         logger.info("Nach OpenClaw@gateway1-abstractions veroeffentlicht")
+        return True
     else:
         logger.error("Push fehlgeschlagen: %s", (ergebnis.stderr or "").replace(token, "***")[:200])
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -754,7 +893,7 @@ def veroeffentlichen(nachricht: str) -> None:
 
 def main() -> int:
     """Holt die Quellen, uebersetzt eine Prioritaetsstufe und veroeffentlicht."""
-    zerleger = argparse.ArgumentParser(description="Portiert Quellcode in sechs Zielsprachen.")
+    zerleger = argparse.ArgumentParser(description="Portiert Quellcode in zehn Zielsprachen.")
     zerleger.add_argument("--prioritaet", choices=["high", "medium", "low", "alle"],
                           help="Nur diese Stufe bearbeiten. Ohne Angabe wird reihum gewechselt.")
     zerleger.add_argument("--anzahl", type=int,
@@ -762,28 +901,52 @@ def main() -> int:
                           help="Hoechstzahl Quelldateien je Lauf.")
     zerleger.add_argument("--probelauf", action="store_true",
                           help="Inventar aufbauen und Plan zeigen, ohne zu uebersetzen.")
+    zerleger.add_argument("--nur-veroeffentlichen", action="store_true",
+                          help="Gespeicherte Ergebnisse getrennt veroeffentlichen oder Push wiederholen.")
     argumente = zerleger.parse_args()
 
     logger.info("Abstractions Manager gestartet — Arbeitsverzeichnis %s", WORKSPACE)
+    if argumente.nur_veroeffentlichen:
+        if argumente.probelauf:
+            logger.error("--probelauf und --nur-veroeffentlichen sind nicht kombinierbar")
+            return 2
+        return 0 if veroeffentlichen("auto: gespeicherte Uebersetzungen") else 1
 
-    # Umschliessende Leerzeichen und Zeilenumbrueche entfernen: ein Schluessel,
-    # der beim Einfuegen ein Leerzeichen mitbekommen hat, ist zwar nicht leer,
-    # ergibt aber einen leeren Bearer — OpenRouter antwortet dann mit
-    # "Missing Authentication header" statt mit "User not found".
-    schluessel = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    schluessel = ""
+    dispatcher = transport = None
     if not argumente.probelauf:
-        if not schluessel:
-            logger.error("OPENROUTER_API_KEY ist leer oder besteht nur aus Leerraum "
-                         "— ohne Schluessel keine Uebersetzung")
+        import importlib.util
+        from gateway_transport import GatewayTransport, TransportUnresolved, gateway_token
+        gateway_url = os.environ.get("ABSTRACTIONS_GATEWAY_URL", "http://127.0.0.1:18789/plugins/abstractions-transport")
+        token = gateway_token()
+        try:
+            transport = GatewayTransport(zustand_laden(), zustand_speichern, gateway_url, token)
+            path = Path(__file__).resolve().parents[2] / "multi-nodes-utils/scripts/dispatch_job.py"
+            spec = importlib.util.spec_from_file_location("abstractions_dispatcher", path)
+            if spec is None or spec.loader is None:
+                raise RuntimeError("dispatcher unavailable")
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            class GatewayDispatcher(module.JobDispatcher):
+                def select_node(self, job_weight):
+                    preferred = {"heavy": ("node1", "node2", "node5", "node6"),
+                                 "medium": ("node1", "node2", "node3", "node6"),
+                                 "light": ("node2", "node1", "node3", "node4")}[job_weight]
+                    try:
+                        states = transport.available()
+                    except TransportUnresolved:
+                        return None
+                    ids = states.get("node_ids")
+                    self.node_ids = ids if isinstance(ids, dict) else {}
+                    return next((node for node in preferred if states.get(node) is True and
+                                 isinstance(self.node_ids.get(node), str) and self.node_ids[node]), None)
+            dispatcher = GatewayDispatcher()
+            transport.release_pending()
+        except (ValueError, OSError, RuntimeError) as fehler:
+            logger.error("Gateway-Transport nicht verfuegbar (%s)", type(fehler).__name__)
             return 2
-        if not schluessel.startswith("sk-or-"):
-            logger.error("OPENROUTER_API_KEY sieht nicht nach einem OpenRouter-Schluessel "
-                         "aus (%d Zeichen, beginnt mit %r) — erwartet wird sk-or-...",
-                         len(schluessel), schluessel[:6])
-            return 2
-        logger.info("Schluessel erkannt: %d Zeichen", len(schluessel))
 
-    zustand = zustand_laden()
+    zustand = transport.state if transport is not None else zustand_laden()
     baeume = quellen_holen()
     if not baeume:
         logger.error("Keine Quellen verfuegbar")
@@ -796,10 +959,11 @@ def main() -> int:
 
     prioritaet = argumente.prioritaet or zustand.get("naechste_prioritaet", "high")
     zaehler = uebersetzen(inventar, zustand, prioritaet, argumente.anzahl,
-                          argumente.probelauf, schluessel)
+                          argumente.probelauf, schluessel, dispatcher, transport,
+                          state_saver=zustand_speichern)
 
     reihum = {"high": "medium", "medium": "low", "low": "high", "alle": "alle"}
-    zustand["naechste_prioritaet"] = reihum[prioritaet]
+    zustand["naechste_prioritaet"] = prioritaet if zaehler["verworfen"] else reihum[prioritaet]
     zustand["statistik"] = {
         "letzter_lauf": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "quelldateien": len(inventar),
@@ -810,14 +974,11 @@ def main() -> int:
     zustand_speichern(zustand)
 
     if zaehler["erzeugt"] and not argumente.probelauf:
-        veroeffentlichen(
-            f"auto: {zaehler['erzeugt']} Uebersetzungen ({prioritaet}) "
-            f"aus {zaehler['dateien']} Quelldateien"
-        )
+        logger.info("Ergebnisse gespeichert; Veroeffentlichung mit --nur-veroeffentlichen ausfuehren")
 
     logger.info("Abgeschlossen: %d erzeugt, %d verworfen, %d Quelldateien bearbeitet",
                 zaehler["erzeugt"], zaehler["verworfen"], zaehler["dateien"])
-    return 0
+    return 1 if zaehler["verworfen"] else 0
 
 
 if __name__ == "__main__":

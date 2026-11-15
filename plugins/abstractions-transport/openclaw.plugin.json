@@ -1,0 +1,1 @@
+{"id":"abstractions-transport","name":"Abstractions Transport","description":"Paired-node transport for complete translation jobs","activation":{"onStartup":true},"configSchema":{"type":"object","additionalProperties":false,"properties":{"nodes":{"type":"object","additionalProperties":{"type":"string"}}}}}
