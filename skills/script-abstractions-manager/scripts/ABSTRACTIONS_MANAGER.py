@@ -676,10 +676,13 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
         zaehler["dateien"] += 1
         if not probelauf:
             for zielsprache in list(ziele):
-                if vorhandenes_erzeugnis(eintrag, zielsprache, quelle):
+                vorhanden = vorhandenes_erzeugnis(eintrag, zielsprache, quelle)
+                if vorhanden:
                     fertig.add(zielsprache)
                     erledigt[eintrag["hash"]] = sorted(fertig)
                     if state_saver:
+                        from github_publisher import queue_artifact
+                        queue_artifact(zustand, ABSTRACTIONS_REPO, vorhanden)
                         state_saver(zustand)
                     ziele.remove(zielsprache)
                     zaehler["uebersprungen"] += 1
@@ -750,6 +753,8 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             fertig.add(zielsprache)
             erledigt[eintrag["hash"]] = sorted(fertig)
             if state_saver:
+                from github_publisher import queue_artifact
+                queue_artifact(zustand, ABSTRACTIONS_REPO, ziel)
                 state_saver(zustand)
 
         erledigt[eintrag["hash"]] = sorted(fertig)
@@ -833,57 +838,13 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
 
 
 def veroeffentlichen(nachricht: str) -> bool:
-    """
-    Uebertraegt neue Erzeugnisse in den Branch gateway1-abstractions.
-
-    Es wird nur gepusht, wenn ein Token in der Umgebung liegt. Ohne Token
-    bleibt der Commit lokal — das ist der Normalfall im Container, der nur
-    liest.
-    """
-    if not (ABSTRACTIONS_REPO / ".git").exists():
-        logger.info("Kein Git-Arbeitsbaum in %s — nichts zu veroeffentlichen", ABSTRACTIONS_REPO)
-        return False
-
-    stand = _git("status", "--porcelain", verzeichnis=ABSTRACTIONS_REPO)
-    if stand.returncode != 0:
-        logger.error("Git-Status konnte nicht gelesen werden")
-        return False
-    if stand.stdout.strip():
-        index = _git("diff", "--cached", "--quiet", verzeichnis=ABSTRACTIONS_REPO)
-        if index.returncode != 0:
-            logger.error("Git-Index ist nicht leer oder nicht lesbar; kein automatischer Commit")
-            return False
-        for sprache in ZIELSPRACHEN:
-            if (ABSTRACTIONS_REPO / sprache).exists() and _git("add", sprache, verzeichnis=ABSTRACTIONS_REPO).returncode:
-                logger.error("Git add fehlgeschlagen")
-                return False
-        if (ABSTRACTIONS_REPO / "STATUS.md").exists() and _git("add", "STATUS.md", verzeichnis=ABSTRACTIONS_REPO).returncode:
-            logger.error("Git add fuer STATUS.md fehlgeschlagen")
-            return False
-        ergebnis = _git("diff", "--cached", "--quiet", verzeichnis=ABSTRACTIONS_REPO)
-        if ergebnis.returncode not in (0, 1):
-            logger.error("Git-Index konnte nicht gelesen werden")
-            return False
-        if ergebnis.returncode == 1:
-            ergebnis = _git("commit", "-m", nachricht, verzeichnis=ABSTRACTIONS_REPO)
-            if ergebnis.returncode != 0:
-                logger.warning("Commit fehlgeschlagen: %s", (ergebnis.stderr or ergebnis.stdout).strip()[:200])
-                return False
-            logger.info("Commit gesetzt: %s", nachricht)
-
-    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("ABSTRACTIONS_PUSH_TOKEN")
-    if not token:
-        logger.info("Kein Token in der Umgebung — Commit bleibt lokal")
-        return False
-
-    url = f"https://x-access-token:{token}@github.com/{GITHUB_BENUTZER}/OpenClaw.git"
-    ergebnis = _git("push", url, "HEAD:gateway1-abstractions", verzeichnis=ABSTRACTIONS_REPO)
-    if ergebnis.returncode == 0:
-        logger.info("Nach OpenClaw@gateway1-abstractions veroeffentlicht")
-        return True
-    else:
-        logger.error("Push fehlgeschlagen: %s", (ergebnis.stderr or "").replace(token, "***")[:200])
-        return False
+    """Veroeffentlicht vorgemerkte Erzeugnisse einzeln und wiederholbar."""
+    from github_publisher import publish_pending
+    zustand = zustand_laden()
+    token = os.environ.get("GITHUB_TOKEN") or os.environ.get("ABSTRACTIONS_PUSH_TOKEN") or ""
+    ergebnis = publish_pending(ABSTRACTIONS_REPO, zustand, zustand_speichern, token)
+    logger.info("Veroeffentlichung %s", "abgeschlossen" if ergebnis else "ausstehend")
+    return ergebnis
 
 
 # ---------------------------------------------------------------------------
@@ -914,7 +875,16 @@ def main() -> int:
 
     schluessel = ""
     dispatcher = transport = None
-    if not argumente.probelauf:
+    ausfuehrung = os.environ.get("ABSTRACTIONS_EXECUTION", "gateway")
+    if ausfuehrung not in ("gateway", "standalone"):
+        logger.error("Unbekannte Ausfuehrungsart")
+        return 2
+    if not argumente.probelauf and ausfuehrung == "standalone":
+        schluessel = os.environ.get("OPENROUTER_API_KEY", "").strip()
+        if not schluessel:
+            logger.error("OpenRouter-Zugang fuer eigenstaendigen Lauf fehlt")
+            return 2
+    if not argumente.probelauf and ausfuehrung == "gateway":
         import importlib.util
         from gateway_transport import GatewayTransport, TransportUnresolved, gateway_token
         gateway_url = os.environ.get("ABSTRACTIONS_GATEWAY_URL", "http://127.0.0.1:18789/plugins/abstractions-transport")
@@ -973,12 +943,13 @@ def main() -> int:
     bericht_schreiben(inventar, zustand, zaehler)
     zustand_speichern(zustand)
 
-    if zaehler["erzeugt"] and not argumente.probelauf:
-        logger.info("Ergebnisse gespeichert; Veroeffentlichung mit --nur-veroeffentlichen ausfuehren")
+    veroeffentlicht = True
+    if not argumente.probelauf and zustand.get("ausstehende_veroeffentlichungen"):
+        veroeffentlicht = veroeffentlichen("auto: gespeicherte Uebersetzungen")
 
     logger.info("Abgeschlossen: %d erzeugt, %d verworfen, %d Quelldateien bearbeitet",
                 zaehler["erzeugt"], zaehler["verworfen"], zaehler["dateien"])
-    return 1 if zaehler["verworfen"] else 0
+    return 1 if zaehler["verworfen"] or not veroeffentlicht else 0
 
 
 if __name__ == "__main__":

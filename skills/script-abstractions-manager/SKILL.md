@@ -16,6 +16,10 @@ Run the bundled manager as the single implementation of this workflow:
 - The gateway manager sends complete per-language jobs through the authenticated
   `abstractions-transport` plugin to available paired nodes. The existing
   Gateway wrapper is the entry point for its six-hour schedule.
+- `ABSTRACTIONS_EXECUTION=standalone` runs translations locally without a
+  Gateway connection. Each accepted artifact is queued in the existing state
+  and published separately to `OpenClaw@gateway1-abstractions`; publication
+  can be retried with `--nur-veroeffentlichen`.
 - Read `OPENROUTER_API_KEY` from the server environment; never print or version it.
 - Write only to the checkout `workspace/git/OpenClaw-gateway1-abstractions` on branch `gateway1-abstractions`.
 - Use `--probelauf` to refresh the inventory without model requests.
