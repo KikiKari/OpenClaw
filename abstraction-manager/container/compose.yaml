@@ -1,0 +1,25 @@
+name: abstractions-manager
+
+services:
+  app:
+    build: .
+    image: ghcr.io/kikikari/abstractions-manager:local
+    container_name: abstractions-manager
+    volumes:
+      - abstractions-state:/home/openclaw/.openclaw/workspace
+    environment:
+      OPENROUTER_API_KEY: "${ABSTRACTIONS_OPENROUTER_KEY:?OPENROUTER_API_KEY fehlt}"
+      GITHUB_TOKEN: "${ABSTRACTIONS_GITHUB_TOKEN:?GitHub-Zugang fehlt}"
+      ABSTRACTIONS_INTERVAL_SECONDS: "${ABSTRACTIONS_INTERVAL_SECONDS:-43200}"
+      TZ: Europe/Berlin
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+volumes:
+  abstractions-state:
+    name: abstractions-manager_abstractions-state
+    external: true
