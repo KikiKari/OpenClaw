@@ -30,6 +30,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -237,6 +238,19 @@ def quellen_holen() -> List[Tuple[str, str, Path]]:
                 continue
             baeume.append((repo, branch, baum))
 
+    # Lokale Gateway-Skripte gehören zum ursprünglichen Arbeitsumfang und
+    # müssen auch dann erfasst werden, wenn der Git-Sync noch aussteht.
+    if os.environ.get("ABSTRACTIONS_EXECUTION", "gateway") == "gateway":
+        lokal = WORKSPACE / "scripts"
+        if lokal.is_dir():
+            baeume.append(("workspace", "local/scripts", lokal))
+        skills = WORKSPACE / "skills"
+        if skills.is_dir():
+            for skill in sorted(skills.iterdir()):
+                scripts = skill / "scripts"
+                if scripts.is_dir() and not skill.is_symlink():
+                    baeume.append(("workspace", "local/skills/" + skill.name + "/scripts", scripts))
+
     logger.info("Quellen bereit: %d Arbeitsbaeume", len(baeume))
     return baeume
 
@@ -260,6 +274,17 @@ def _prioritaet(pfad: str, sprache: str) -> str:
     if pfad.startswith("scripts/") or "/scripts/" in pfad:
         return "high"
     return "medium"
+
+
+def enthaelt_zugangsdaten(roh: bytes) -> bool:
+    muster = rb'(?:sk-or-v1-[A-Za-z0-9_-]{20,}|gh[opusr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)'
+    if re.search(muster, roh):
+        return True
+    for name, wert in os.environ.items():
+        if any(k in name.upper() for k in ("TOKEN", "SECRET", "PASSWORD", "API_KEY")) and len(wert) >= 12:
+            if wert.encode("utf-8") in roh:
+                return True
+    return False
 
 
 def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
@@ -289,7 +314,7 @@ def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
                 roh = pfad.read_bytes()
             except OSError:
                 continue
-            if not roh.strip() or len(roh) > MAX_BYTES:
+            if not roh.strip() or len(roh) > MAX_BYTES or enthaelt_zugangsdaten(roh):
                 continue
 
             schluessel = hashlib.sha256(roh).hexdigest()[:16]
@@ -667,6 +692,10 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
 
         try:
             roh = Path(eintrag["pfad"]).read_bytes()
+            if enthaelt_zugangsdaten(roh):
+                logger.warning("%s enthaelt Zugangsdaten und wird nicht gesendet", eintrag["name"])
+                zaehler["verworfen"] += 1
+                continue
             quelle = roh.decode("utf-8", errors="replace")
             eintrag = {**eintrag, "source_sha256": hashlib.sha256(roh).hexdigest()}
         except OSError as fehler:
