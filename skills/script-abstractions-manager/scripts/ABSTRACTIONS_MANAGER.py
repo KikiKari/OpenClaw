@@ -98,7 +98,7 @@ ZIELSPRACHEN: Dict[str, Dict[str, str]] = {
 AUSSCHLUSS: Tuple[str, ...] = (
     "node_modules/", "/.git/", "__pycache__/", "dist/", "build/", "vendor/",
     ".venv/", "site-packages/", "python-hardener-workspace/", ".artifacts/",
-    "coverage/", ".next/", "target/",
+    "coverage/", ".next/", "target/", "/work/", "/backups/",
 )
 MAX_BYTES = 200_000
 
@@ -241,15 +241,8 @@ def quellen_holen() -> List[Tuple[str, str, Path]]:
     # Lokale Gateway-Skripte gehören zum ursprünglichen Arbeitsumfang und
     # müssen auch dann erfasst werden, wenn der Git-Sync noch aussteht.
     if os.environ.get("ABSTRACTIONS_EXECUTION", "gateway") == "gateway":
-        lokal = WORKSPACE / "scripts"
-        if lokal.is_dir():
-            baeume.append(("workspace", "local/scripts", lokal))
-        skills = WORKSPACE / "skills"
-        if skills.is_dir():
-            for skill in sorted(skills.iterdir()):
-                scripts = skill / "scripts"
-                if scripts.is_dir() and not skill.is_symlink():
-                    baeume.append(("workspace", "local/skills/" + skill.name + "/scripts", scripts))
+        if WORKSPACE.is_dir():
+            baeume.append(("workspace", "local", WORKSPACE))
 
     logger.info("Quellen bereit: %d Arbeitsbaeume", len(baeume))
     return baeume
@@ -277,7 +270,7 @@ def _prioritaet(pfad: str, sprache: str) -> str:
 
 
 def enthaelt_zugangsdaten(roh: bytes) -> bool:
-    muster = rb'(?:sk-or-v1-[A-Za-z0-9_-]{20,}|gh[opusr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)'
+    muster = rb'(?:sk-or-v1-[A-Za-z0-9_-]{20,}|sk-(?:proj-)?[A-Za-z0-9_-]{20,}|gh[opusr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|ntn_[A-Za-z0-9_]{20,}|tvly-[A-Za-z0-9_-]{20,}|nvapi-[A-Za-z0-9_-]{20,}|tskey-[A-Za-z0-9_-]{20,}|xox[baprs]-[A-Za-z0-9_-]{20,}|AKIA[A-Z0-9]{16}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)'
     if re.search(muster, roh):
         return True
     for name, wert in os.environ.items():
@@ -305,6 +298,18 @@ def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
             if not pfad.is_file():
                 continue
             rel = str(pfad.relative_to(baum)).replace("\\", "/")
+            if repo == "workspace":
+                # Ausgaben nicht als neue Quellen erneut übersetzen; die
+                # Repository-Arbeitsbäume werden separat erfasst.
+                teile = pfad.relative_to(baum).parts
+                if teile[:2] in (("git", "Abstraktionen"), ("git", "OpenClaw-gateway1-abstractions"), ("git", "quellen")):
+                    continue
+                if any(t.lower() in ("work", "backups", "logs", "log", "db", "state", "tmp", "temp", "cache", ".cache", "artifacts", ".openclaw", "secrets", "credentials", ".credentials", "private", ".private") for t in teile):
+                    continue
+                try:
+                    pfad.resolve().relative_to(baum.resolve())
+                except (OSError, ValueError):
+                    continue
             if any(muster in "/" + rel for muster in AUSSCHLUSS):
                 continue
             sprache = QUELLSPRACHEN.get(pfad.suffix.lower())
@@ -314,7 +319,7 @@ def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
                 roh = pfad.read_bytes()
             except OSError:
                 continue
-            if not roh.strip() or len(roh) > MAX_BYTES or enthaelt_zugangsdaten(roh):
+            if not roh.strip() or enthaelt_zugangsdaten(roh):
                 continue
 
             schluessel = hashlib.sha256(roh).hexdigest()[:16]
@@ -688,6 +693,11 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
         fertig = set(erledigt.get(eintrag["hash"], []))
         ziele = [z for z in ZIELSPRACHEN if z != eintrag["sprache"] and z not in fertig]
         if not ziele:
+            continue
+
+        if eintrag["bytes"] > MAX_BYTES:
+            logger.warning("%s: %d Bytes überschreiten das Auftragslimit von %d Bytes", eintrag["name"], eintrag["bytes"], MAX_BYTES)
+            zaehler["verworfen"] += 1
             continue
 
         try:
