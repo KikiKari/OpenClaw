@@ -1,0 +1,208 @@
+#!/usr/bin/env pwsh
+# abstraction-provenance: {"artifact_sha256": "7364f8386bff0122a4c40af29337c0316786d0891ed02ff6665c718c8ae2485c", "source_sha256": "5a841c728d9c1585b5c3191e88fdd38cf887a0d51560ce803b8c0172412bef3d", "target_language": "powershell"}
+# check_nodes.py — portiert nach powershell
+# Quelle: python, OpenClaw@gateway1:skills/multi-nodes-utils/scripts/check_nodes.py
+# auch in: OpenClaw@gateway2:skills/multi-nodes-utils/scripts/check_nodes.py
+# Erzeugt: 2026-11-16 durch ABSTRACTIONS_MANAGER.py
+
+<#
+.SYNOPSIS
+Node-Status Checker - Prüft Verfügbarkeit aller Nodes
+#>
+
+# Node-Konfiguration (sollte aus config file geladen werden)
+$NODES = @{
+    "node1" = @{
+        "always_available" = $true
+        "capacity" = "medium"
+        "priority" = 2
+        "description" = "Gateway-Master"
+    }
+    "node2" = @{
+        "always_available" = $true
+        "capacity" = "medium"
+        "priority" = 3
+        "description" = "Stable Worker"
+    }
+    "node3" = @{
+        "always_available" = $false
+        "capacity" = "medium"
+        "priority" = 4
+        "description" = "Bald verfügbar (nach Reorganisation)"
+    }
+    "node5" = @{
+        "always_available" = $false
+        "capacity" = "low"
+        "priority" = 5
+        "device" = "Redmi Note 11S"
+        "description" = "Mobile (bei Internet verfügbar)"
+    }
+    "node7" = @{
+        "always_available" = $true
+        "capacity" = "high"
+        "priority" = 1
+        "description" = "Docker Hauptarbeitspferd (bald verfügbar)"
+    }
+}
+
+function Check-NodeStatus {
+    param(
+        [string]$NodeId
+    )
+    
+    try {
+        $result = Start-Process -FilePath "openclaw" -ArgumentList "nodes", "status", $NodeId -NoNewWindow -PassThru -Wait -RedirectStandardOutput "$env:TEMP\stdout.txt" -RedirectStandardError "$env:TEMP\stderr.txt"
+        $output = Get-Content "$env:TEMP\stdout.txt" -Raw
+        
+        $isOnline = $result.ExitCode -eq 0 -and (
+            $output.ToLower().Contains("online") -or 
+            $output.ToLower().Contains("active")
+        )
+        
+        return @{
+            "id" = $NodeId
+            "online" = $isOnline
+            "available" = if ($NODES[$NodeId]["always_available"] -ne $null) { $NODES[$NodeId]["always_available"] } else { $false }
+            "response" = if ($output) { $output.Trim().Substring(0, [Math]::Min(100, $output.Length)) } else { "No response" }
+        }
+    }
+    catch {
+        if ($_ -match "TimedOut") {
+            return @{
+                "id" = $NodeId
+                "online" = $false
+                "available" = if ($NODES[$NodeId]["always_available"] -ne $null) { $NODES[$NodeId]["always_available"] } else { $false }
+                "response" = "Timeout"
+            }
+        }
+        else {
+            return @{
+                "id" = $NodeId
+                "online" = $false
+                "available" = if ($NODES[$NodeId]["always_available"] -ne $null) { $NODES[$NodeId]["always_available"] } else { $false }
+                "response" = "Error: $_"
+            }
+        }
+    }
+}
+
+function Print-Table {
+    param(
+        [array]$NodesStatus
+    )
+    
+    Write-Host ""
+    Write-Host ("=" * 90)
+    Write-Host ("{0,-8} {1,-12} {2,-12} {3,-10} {4,-10} {5}" -f "Node", "Status", "Verfügbar", "Kapazität", "Priorität", "Gerät/Beschreibung")
+    Write-Host ("=" * 90)
+    
+    foreach ($status in $NodesStatus) {
+        $nodeId = $status["id"]
+        $config = $NODES[$nodeId]
+        
+        $statusIcon = if ($status["online"]) { "🟢 Online" } else { "🔴 Offline" }
+        $availIcon = if ($status["available"]) { "✅ Immer" } else { "📱 Bedingt" }
+        $capacity = if ($config["capacity"]) { $config["capacity"] } else { "unknown" }
+        $priority = if ($config["priority"]) { $config["priority"] } else { "-" }
+        $device = if ($config["device"]) { $config["device"] } elseif ($config["description"]) { $config["description"] } else { "" }
+        
+        Write-Host ("{0,-8} {1,-12} {2,-12} {3,-10} {4,-10} {5}" -f $nodeId, $statusIcon, $availIcon, $capacity, $priority, $device)
+    }
+    
+    Write-Host ("=" * 90)
+    Write-Host ""
+    Write-Host ("Geprüft am: {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
+}
+
+function Print-Json {
+    param(
+        [array]$NodesStatus
+    )
+    
+    $output = @{
+        "timestamp" = (Get-Date).ToString("o")
+        "nodes" = @{}
+    }
+    
+    foreach ($status in $NodesStatus) {
+        $nodeId = $status["id"]
+        $output["nodes"][$nodeId] = @{
+            "status" = $status
+            "config" = $NODES[$nodeId]
+        }
+    }
+    
+    ConvertTo-Json -InputObject $output -Depth 10 | Write-Host
+}
+
+function Main {
+    param(
+        [string]$Format = "table",
+        [string]$Save
+    )
+    
+    Write-Host "🔍 Prüfe Node-Status..."
+    
+    # Prüfe alle Nodes
+    $nodesStatus = @()
+    foreach ($nodeId in ($NODES.Keys | Sort-Object)) {
+        Write-Host "  → $nodeId..." -NoNewline
+        $status = Check-NodeStatus -NodeId $nodeId
+        $nodesStatus += $status
+        if ($status["online"]) {
+            Write-Host "✓"
+        } else {
+            Write-Host "✗"
+        }
+    }
+    
+    # Ausgabe
+    if ($Format -eq "table") {
+        Print-Table -NodesStatus $nodesStatus
+    } else {
+        Print-Json -NodesStatus $nodesStatus
+    }
+    
+    # Speichern
+    if ($Save) {
+        $output = @{
+            "timestamp" = (Get-Date).ToString("o")
+            "nodes" = @{}
+        }
+        
+        foreach ($s in $nodesStatus) {
+            $output["nodes"][$s["id"]] = $s
+        }
+        
+        $output | ConvertTo-Json -Depth 10 | Out-File -FilePath $Save -Encoding utf8
+        Write-Host ""
+        Write-Host "💾 Gespeichert: $Save"
+    }
+    
+    # Zusammenfassung
+    $onlineCount = ($nodesStatus | Where-Object { $_["online"] }).Count
+    Write-Host ""
+    Write-Host "📊 Zusammenfassung: $onlineCount/$($nodesStatus.Count) Nodes online"
+}
+
+# Parameter parsing
+$format = "table"
+$save = $null
+
+for ($i = 0; $i -lt $args.Count; $i++) {
+    $arg = $args[$i]
+    if ($arg -eq "--format" -or $arg -eq "-f") {
+        $i++
+        if ($i -lt $args.Count) {
+            $format = $args[$i]
+        }
+    }
+    elseif ($arg -eq "--save" -or $arg -eq "-s") {
+        $i++
+        if ($i -lt $args.Count) {
+            $save = $args[$i]
+        }
+    }
+}
+
+Main -Format $format -Save $save
