@@ -1,19 +1,7 @@
 name: Update abstraction counts
 on:
-  push:
-    branches: [gateway1-abstractions]
-    paths:
-      - 'javascript/**'
-      - 'perl5/**'
-      - 'powershell/**'
-      - 'python/**'
-      - 'shell/**'
-      - 'tcl/**'
-      - 'perl6/**'
-      - 'ruby/**'
-      - 'lua/**'
-      - 'go/**'
-      - '.github/workflows/update-abstraction-counts.yml'
+  schedule:
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 permissions:
   contents: write
@@ -33,7 +21,7 @@ jobs:
           set -eu
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for attempt in 1 2 3 4 5; do
+          for attempt in $(seq 1 12); do
             git fetch origin gateway1-abstractions
             git checkout --detach FETCH_HEAD
           python3 - <<'PY'
@@ -61,7 +49,8 @@ jobs:
             git add -- README.md
             git commit -m "docs: update abstraction counts"
             if git push origin HEAD:gateway1-abstractions; then exit 0; fi
-            echo "Branch changed; recalculating counts ($attempt/5)"
+            echo "Branch changed; recalculating counts ($attempt/12)"
+            sleep $((attempt * 5))
           done
-          echo "::error::Could not publish counts after five attempts."
+          echo "::error::Could not publish counts after twelve attempts."
           exit 1
