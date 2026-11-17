@@ -1,0 +1,56 @@
+name: Update abstraction counts
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: abstraction-counts-gateway1
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gateway1-abstractions
+      - name: Recompute and publish counts
+        shell: bash
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in $(seq 1 12); do
+            git fetch origin gateway1-abstractions
+            git checkout --detach FETCH_HEAD
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          languages = [("JavaScript", "javascript"), ("Perl 5", "perl5"), ("PowerShell", "powershell"), ("Python", "python"), ("Shell", "shell"), ("Tcl", "tcl"), ("Raku", "perl6"), ("Ruby", "ruby"), ("Lua", "lua"), ("Go", "go")]
+          tracked = subprocess.check_output(["git", "ls-files", "-z"]).split(b"\0")
+          counts = {folder: sum(p.startswith((folder + "/").encode()) for p in tracked if p) for _, folder in languages}
+          readme = Path("README.md")
+          text = readme.read_text(encoding="utf-8")
+          pattern = r"(?m)^\| Sprache \| Aktive Dateien \| Verzeichnis \|\n\| --- \| ---: \| --- \|\n(?:\|[^\n]*\|\n)*?\| \*\*Gesamt\*\* \| \*\*\d+\*\* \| \|"
+          rows = ["| Sprache | Aktive Dateien | Verzeichnis |", "| --- | ---: | --- |"]
+          rows += [f"| {name} | {counts[folder]} | `{folder}/` |" for name, folder in languages]
+          rows += [f"| **Gesamt** | **{sum(counts.values())}** | |"]
+          text, matches = re.subn(pattern, lambda _: "\n".join(rows), text)
+          if matches != 1:
+              raise SystemExit(f"Expected exactly one count table, found {matches}")
+          text = re.sub(r"Stand laut \[STATUS\.md\]\(STATUS\.md\): \*\*[^\n]*\n", "Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details zu den Läufen stehen in [STATUS.md](STATUS.md).\n", text, count=1)
+          readme.write_text(text, encoding="utf-8")
+
+          PY
+            if git diff --quiet -- README.md; then exit 0; fi
+            git add -- README.md
+            git commit -m "docs: update abstraction counts"
+            if git push origin HEAD:gateway1-abstractions; then exit 0; fi
+            echo "Branch changed; recalculating counts ($attempt/12)"
+            sleep $((attempt * 5))
+          done
+          echo "::error::Could not publish counts after twelve attempts."
+          exit 1
