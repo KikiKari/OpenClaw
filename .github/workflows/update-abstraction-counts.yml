@@ -1,7 +1,19 @@
 name: Update abstraction counts
 on:
-  schedule:
-    - cron: "*/15 * * * *"
+  push:
+    branches: [gateway1-abstractions]
+    paths:
+      - 'javascript/**'
+      - 'perl5/**'
+      - 'powershell/**'
+      - 'python/**'
+      - 'shell/**'
+      - 'tcl/**'
+      - 'perl6/**'
+      - 'ruby/**'
+      - 'lua/**'
+      - 'go/**'
+      - '.github/workflows/update-abstraction-counts.yml'
   workflow_dispatch:
 permissions:
   contents: write
