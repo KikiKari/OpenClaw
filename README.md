@@ -17,10 +17,10 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Shell | 1240 | `shell/` |
 | Tcl | 1896 | `tcl/` |
 | Raku | 56 | `perl6/` |
-| Ruby | 179 | `ruby/` |
-| Lua | 174 | `lua/` |
-| Go | 143 | `go/` |
-| **Gesamt** | **10491** | |
+| Ruby | 180 | `ruby/` |
+| Lua | 175 | `lua/` |
+| Go | 144 | `go/` |
+| **Gesamt** | **10494** | |
 
 Bei einem früheren dokumentierten Lauf blieben die folgenden Job-Commits Teil der Historie: `f965cba` erzeugte
 fünf High-Priority-Übersetzungen, `723dac3` erzeugte 184 Medium-Priority-
