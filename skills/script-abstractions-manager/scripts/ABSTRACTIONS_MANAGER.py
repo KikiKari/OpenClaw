@@ -683,6 +683,11 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
     erledigt = zustand.setdefault("erledigt", {})
 
     offen = [e for e in inventar if prioritaet == "alle" or e["prioritaet"] == prioritaet]
+    cursor = zustand.get("auswahl_cursor", {}).get(prioritaet)
+    if cursor:
+        position = next((i for i, e in enumerate(offen) if e["hash"] == cursor), None)
+        if position is not None:
+            offen = offen[position + 1:] + offen[:position + 1]
     logger.info("Prioritaet %s: %d Quelldateien im Bestand", prioritaet, len(offen))
 
     for eintrag in offen:
@@ -713,6 +718,8 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             continue
 
         zaehler["dateien"] += 1
+        if not probelauf:
+            zustand.setdefault("auswahl_cursor", {})[prioritaet] = eintrag["hash"]
         if not probelauf:
             for zielsprache in list(ziele):
                 vorhanden = vorhandenes_erzeugnis(eintrag, zielsprache, quelle)
@@ -763,7 +770,7 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
                     job["markup_hint"] = (MARKUP_HINWEIS.format(sprache=eintrag["sprache"].upper())
                                           if eintrag["sprache"] in ("html", "css") else "")
                     previous = zustand.get("auftraege", {}).get(eintrag["source_sha256"] + ":" + zielsprache)
-                    if isinstance(previous, dict) and isinstance(previous.get("job"), dict):
+                    if isinstance(previous, dict) and previous.get("status") != "rejected" and isinstance(previous.get("job"), dict):
                         job.update(previous["job"])
                     code = dispatcher.execute_translation(job, transport)
                     code = _modell_code_bereinigen(code, zielsprache)
@@ -779,6 +786,13 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             angenommen, grund = erzeugnis_pruefen(code, zielsprache, quelle)
             if not angenommen:
                 logger.warning("  %s: verworfen — %s", zielsprache, grund)
+                # Missing validation tools/dependencies do not make a new model
+                # response useful: keep this result for a later recheck.
+                pruefung_nicht_moeglich = ("Interpreter fehlt" in grund or
+                                          "Fremdmodul fehlt" in grund or
+                                          "Syntaxpruefung nicht moeglich" in grund)
+                if not pruefung_nicht_moeglich and transport is not None and hasattr(transport, "reject"):
+                    transport.reject(job, grund)
                 zaehler["verworfen"] += 1
                 continue
 
@@ -972,7 +986,8 @@ def main() -> int:
                           state_saver=zustand_speichern)
 
     reihum = {"high": "medium", "medium": "low", "low": "high", "alle": "alle"}
-    zustand["naechste_prioritaet"] = prioritaet if zaehler["verworfen"] else reihum[prioritaet]
+    if not argumente.probelauf:
+        zustand["naechste_prioritaet"] = reihum[prioritaet]
     zustand["statistik"] = {
         "letzter_lauf": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "quelldateien": len(inventar),

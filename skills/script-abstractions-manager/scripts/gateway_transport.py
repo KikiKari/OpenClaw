@@ -85,9 +85,21 @@ class GatewayTransport:
 
     def release_pending(self):
         for entry in self.state.get('auftraege', {}).values():
-            if (isinstance(entry, dict) and entry.get('status') in ('completed', 'failed', 'unknown')
+            if (isinstance(entry, dict) and entry.get('status') in ('completed', 'rejected', 'failed')
                 and isinstance(entry.get('job'), dict)):
                 self._release(entry['job'], entry)
+
+    def reject(self, job, reason):
+        """Record a completed response rejected by validation, before retrying it."""
+        key = job['source_sha256'] + ':' + job['target_language']
+        entry = self.state.get('auftraege', {}).get(key)
+        if not isinstance(entry, dict) or entry.get('status') != 'completed':
+            return
+        if entry.get('job', {}).get('attempt_id') != job.get('attempt_id'):
+            raise TransportUnresolved('rejected attempt identity mismatch')
+        entry['status'] = 'rejected'
+        entry['validation_error'] = str(reason)[:500]
+        self.save(self.state)
 
     def __call__(self, job):
         if not job.get('source_sha256') or not job.get('target_language') or not job.get('selected_device_id'):
@@ -95,8 +107,25 @@ class GatewayTransport:
         key = job['source_sha256'] + ':' + job['target_language']
         entries = self.state.setdefault('auftraege', {})
         entry = entries.get(key)
-        fresh = entry is None
-        if fresh:
+        if isinstance(entry, dict) and entry.get('status') == 'rejected':
+            self._release(entry['job'], entry)
+            if not entry.get('released'):
+                raise TransportUnresolved('rejected attempt release is unresolved')
+            previous = entry
+            original = dict(job, attempt_id=str(uuid.uuid4()))
+            entry = {'job': original, 'status': 'submitted',
+                     'previous_attempts': previous.get('previous_attempts', []) + [{
+                         'job_id': previous['job'].get('job_id'),
+                         'attempt_id': previous['job'].get('attempt_id'),
+                         'selected_node': previous['job'].get('selected_node'),
+                         'validation_error': previous.get('validation_error'),
+                     }]}
+            entries[key] = entry
+            self.save(self.state)
+            fresh = True
+        else:
+            fresh = entry is None
+        if entry is None:
             original = dict(job, attempt_id=str(uuid.uuid4()))
             entry = {'job': original, 'status': 'submitted'}
             entries[key] = entry
@@ -141,7 +170,8 @@ class GatewayTransport:
             if state in ('failed', 'unknown'):
                 entry['status'] = state
                 self.save(self.state)
-                self._release(original, entry)
+                if state == 'failed':
+                    self._release(original, entry)
                 raise TransportUnresolved('attempt requires reconciliation')
             if state != 'running' or self.clock() >= deadline:
                 raise TransportUnresolved('attempt is unresolved')
