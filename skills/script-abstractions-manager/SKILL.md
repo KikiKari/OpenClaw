@@ -40,3 +40,7 @@ Run the bundled manager as the single implementation of this workflow:
 Der zusammengeführte Bestand aus `Projects@abstractions` und `OpenClaw@gateway1-abstractions` ist unter [abstractions-two.vercel.app](https://abstractions-two.vercel.app/) veröffentlicht. Das Vercel-Projekt `abstractions` verwendet `KikiKari/OpenClaw` und den Produktionsbranch `gateway1-abstractions`. Das Produktionsdeployment des Commits [`917ebb8`](https://github.com/KikiKari/OpenClaw/commit/917ebb8649543ac7e40df0448fba39d9c149cb21) wurde als READY und der Domain zugeordnet bestätigt; die [3D-Architektur](https://abstractions-two.vercel.app/3d.html) ist Teil des Deployments. Der Katalog umfasste bei diesem Stand 9.474 Dateien in zehn Sprachverzeichnissen. Der Abgleich erhielt alle Inhalte des Projects-Bestands: 132 zusätzliche Pfade und 39 abweichende Varianten wurden übernommen, 5.099 Dateien waren bytegleich. Diese Zahlen sind eine Momentaufnahme.
 
 Die Umstellung belegt weder einen neuen Managerlauf noch die fachliche Prüfung aller Übersetzungen. Die automatische Domainzuweisung ist aktiviert; die Vercel-Projekteinstellung weist `KikiKari/OpenClaw` und `gateway1-abstractions` als Git-Quelle und Produktionsbranch aus.
+
+## Betriebsstand 19.11.2026
+
+Node 1 gibt nach beendetem Worker mit `unknown` dessen Ausführungsplatz frei; der Versuch bleibt abfragbar und wird nicht automatisch neu versendet. Einzelheiten zu Prüfungen, Sicherungen und dem noch nicht installierten Actions-Entwurf stehen in `/home/openclaw/.openclaw/workspace/docs/abstractions/OPERATIONS.md`.

@@ -36,7 +36,8 @@ export function createNodeCommand({ node, python, worker, spawnProcess = spawn,
     if (!available()) throw new Error('worker unavailable');
     // A second attempt for the same job cannot silently run on this node.
     if ([...tasks.values()].some(task => task.jobId === job.job_id)) throw new Error('job already admitted');
-    if ([...tasks.values()].filter(task => task.status !== 'released').length >= 4)
+    if ([...tasks.values()].filter(task => task.status !== 'released' &&
+        !(task.status === 'unknown' && task.workerExited)).length >= 4)
       throw new Error('node job capacity reached');
     if (tasks.size >= 4096) {
       const released = [...tasks].find(([, task]) => task.status === 'released');
@@ -59,6 +60,7 @@ export function createNodeCommand({ node, python, worker, spawnProcess = spawn,
       child.stdin.on('error', () => {});
       child.on('error', () => { task.status = 'unknown'; });
       child.on('close', code => {
+        task.workerExited = true;
         if (task.status !== 'running') return;
         if (code !== 0 || overflow) { task.status = 'unknown'; return; }
         try {
