@@ -1,6 +1,13 @@
 # =====================================================
 # SECRETS & CREDENTIALS - höchste Priorität
 # =====================================================
+logs/abstractions-manager/
+work/
+.npm/
+.openclaw/
+MEMORY.md
+DREAMS.md
+openclaw-workspace-state.json*
 .env
 .env.*
 *.env
