@@ -819,11 +819,11 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
 # ---------------------------------------------------------------------------
 
 
-def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, int]) -> None:
+def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, int]) -> bool:
     """Schreibt STATUS.md im Abstraktions-Repository fort."""
     if not ABSTRACTIONS_REPO.exists():
         logger.warning("Abstraktions-Repository fehlt: %s", ABSTRACTIONS_REPO)
-        return
+        return False
 
     je_sprache = {}
     for sprache in ZIELSPRACHEN:
@@ -886,16 +886,19 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
     try:
         (ABSTRACTIONS_REPO / "STATUS.md").write_text("\n".join(zeilen), encoding="utf-8")
         logger.info("STATUS.md fortgeschrieben")
+        return True
     except OSError as fehler:
         logger.error("STATUS.md konnte nicht geschrieben werden: %s", fehler)
+        return False
 
 
 def veroeffentlichen(nachricht: str) -> bool:
     """Veroeffentlicht vorgemerkte Erzeugnisse einzeln und wiederholbar."""
-    from github_publisher import publish_pending
+    from github_publisher import publish_pending, synchronize_checkout
     zustand = zustand_laden()
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("ABSTRACTIONS_PUSH_TOKEN") or ""
-    ergebnis = publish_pending(ABSTRACTIONS_REPO, zustand, zustand_speichern, token)
+    ergebnis = publish_pending(ABSTRACTIONS_REPO, zustand, zustand_speichern, token,
+                               sync=synchronize_checkout)
     logger.info("Veroeffentlichung %s", "abgeschlossen" if ergebnis else "ausstehend")
     return ergebnis
 
@@ -994,7 +997,10 @@ def main() -> int:
         **zaehler,
     }
 
-    bericht_schreiben(inventar, zustand, zaehler)
+    bericht_ok = bericht_schreiben(inventar, zustand, zaehler)
+    if bericht_ok and not argumente.probelauf:
+        from github_publisher import queue_artifact
+        queue_artifact(zustand, ABSTRACTIONS_REPO, ABSTRACTIONS_REPO / 'STATUS.md')
     zustand_speichern(zustand)
 
     veroeffentlicht = True
@@ -1003,7 +1009,7 @@ def main() -> int:
 
     logger.info("Abgeschlossen: %d erzeugt, %d verworfen, %d Quelldateien bearbeitet",
                 zaehler["erzeugt"], zaehler["verworfen"], zaehler["dateien"])
-    return 1 if zaehler["verworfen"] or not veroeffentlicht else 0
+    return 1 if zaehler["verworfen"] or not veroeffentlicht or not bericht_ok else 0
 
 
 if __name__ == "__main__":
