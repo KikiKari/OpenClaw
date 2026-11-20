@@ -1,0 +1,273 @@
+// abstraction-provenance: {"artifact_sha256": "bbf220cc2dc4c4c8fa54e2cb53f30f8556927e57a7481418b05088c3a3575af3", "source_sha256": "2ca708f3e5a694b78eb83d1e37cf5eefe3e601ebec3e31d771a7ebd4246aa33c", "target_language": "go"}
+// ios-beta-prepare.sh — portiert nach go
+// Quelle: shell, workspace@local:skills/github-clones/openclaw/scripts/ios-beta-prepare.sh
+// Erzeugt: 2026-11-20 durch ABSTRACTIONS_MANAGER.py
+
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+func usage() {
+	fmt.Fprint(os.Stderr, `Usage:
+  OPENCLAW_PUSH_RELAY_BASE_URL=https://relay.example.com \
+    scripts/ios-beta-prepare.sh --build-number 7 [--team-id TEAMID]
+
+Prepares local beta-release inputs without touching local signing overrides:
+- reads apps/ios/version.json and writes apps/ios/build/Version.xcconfig
+- writes apps/ios/build/BetaRelease.xcconfig with canonical bundle IDs
+- configures the beta build for relay-backed APNs registration
+- regenerates apps/ios/OpenClaw.xcodeproj via xcodegen
+`)
+}
+
+func main() {
+	rootDir := filepath.Join(filepath.Dir(os.Args[0]), "..")
+	if absRoot, err := filepath.Abs(rootDir); err == nil {
+		rootDir = absRoot
+	}
+
+	iosDir := filepath.Join(rootDir, "apps", "ios")
+	buildDir := filepath.Join(iosDir, "build")
+	betaXcconfig := filepath.Join(buildDir, "BetaRelease.xcconfig")
+	teamHelper := filepath.Join(rootDir, "scripts", "ios-team-id.sh")
+	versionHelper := filepath.Join(rootDir, "scripts", "ios-write-version-xcconfig.sh")
+	iosVersionHelper := filepath.Join(rootDir, "scripts", "ios-version.ts")
+	versionSyncHelper := filepath.Join(rootDir, "scripts", "ios-sync-versioning.ts")
+
+	buildNumber := ""
+	teamID := os.Getenv("IOS_DEVELOPMENT_TEAM")
+	pushRelayBaseURL := os.Getenv("OPENCLAW_PUSH_RELAY_BASE_URL")
+	if pushRelayBaseURL == "" {
+		pushRelayBaseURL = os.Getenv("IOS_PUSH_RELAY_BASE_URL")
+	}
+	pushRelayBaseURLXcconfig := ""
+	iosVersion := ""
+
+	// Parse command line arguments
+	args := os.Args[1:]
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		switch arg {
+		case "--":
+			continue
+		case "--build-number":
+			i++
+			if i >= len(args) {
+				fmt.Fprintln(os.Stderr, "Missing value for --build-number")
+				usage()
+				os.Exit(1)
+			}
+			buildNumber = args[i]
+		case "--team-id":
+			i++
+			if i >= len(args) {
+				fmt.Fprintln(os.Stderr, "Missing value for --team-id")
+				usage()
+				os.Exit(1)
+			}
+			teamID = args[i]
+		case "-h", "--help":
+			usage()
+			os.Exit(0)
+		default:
+			fmt.Fprintf(os.Stderr, "Unknown argument: %s\n", arg)
+			usage()
+			os.Exit(1)
+		}
+	}
+
+	if buildNumber == "" {
+		fmt.Fprintln(os.Stderr, "Missing required --build-number.")
+		usage()
+		os.Exit(1)
+	}
+
+	if teamID == "" {
+		cmd := exec.Command("bash", teamHelper)
+		cmd.Env = append(os.Environ(), "IOS_ALLOW_KEYCHAIN_TEAM_FALLBACK=1")
+		output, err := cmd.Output()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to execute team helper: %v\n", err)
+			os.Exit(1)
+		}
+		teamID = strings.TrimSpace(string(output))
+	}
+
+	if teamID == "" {
+		fmt.Fprintln(os.Stderr, "Could not resolve Apple Team ID. Set IOS_DEVELOPMENT_TEAM or sign into Xcode.")
+		os.Exit(1)
+	}
+
+	if pushRelayBaseURL == "" {
+		fmt.Fprintln(os.Stderr, "Missing OPENCLAW_PUSH_RELAY_BASE_URL (or IOS_PUSH_RELAY_BASE_URL) for beta relay registration.")
+		os.Exit(1)
+	}
+
+	if err := validatePushRelayBaseURL(pushRelayBaseURL); err != nil {
+		fmt.Fprintf(os.Stderr, "Invalid OPENCLAW_PUSH_RELAY_BASE_URL: %v\n", err)
+		os.Exit(1)
+	}
+
+	// `.xcconfig` treats `//` as a comment opener. Break the URL with a helper setting
+	// so Xcode still resolves it back to `https://...` at build time.
+	pushRelayBaseURLXcconfig = strings.ReplaceAll(pushRelayBaseURL, "//", "$(OPENCLAW_URL_SLASH)$(OPENCLAW_URL_SLASH)")
+
+	if err := prepareBuildDir(buildDir); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to prepare build directory: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Run version sync check
+	cmd := exec.Command("node", "--import", "tsx", versionSyncHelper, "--check")
+	cmd.Dir = rootDir
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Version sync check failed: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Get iOS version
+	cmd = exec.Command("node", "--import", "tsx", iosVersionHelper, "--field", "canonicalVersion")
+	cmd.Dir = rootDir
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to get iOS version: %v\n", err)
+		os.Exit(1)
+	}
+	iosVersion = strings.TrimSpace(string(output))
+	if iosVersion == "" {
+		fmt.Fprintf(os.Stderr, "Unable to resolve iOS version from %s/apps/ios/version.json.\n", rootDir)
+		os.Exit(1)
+	}
+
+	// Write version xcconfig
+	cmd = exec.Command("bash", versionHelper, "--build-number", buildNumber)
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to write version xcconfig: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Write beta xcconfig
+	content := fmt.Sprintf(`// Auto-generated by scripts/ios-beta-prepare.sh.
+// Local beta-release override; do not commit.
+OPENCLAW_CODE_SIGN_STYLE = Automatic
+OPENCLAW_DEVELOPMENT_TEAM = %s
+OPENCLAW_IOS_SELECTED_TEAM = %s
+OPENCLAW_APP_BUNDLE_ID = ai.openclaw.client
+OPENCLAW_SHARE_BUNDLE_ID = ai.openclaw.client.share
+OPENCLAW_ACTIVITY_WIDGET_BUNDLE_ID = ai.openclaw.client.activitywidget
+OPENCLAW_WATCH_APP_BUNDLE_ID = ai.openclaw.client.watchkitapp
+OPENCLAW_WATCH_EXTENSION_BUNDLE_ID = ai.openclaw.client.watchkitapp.extension
+OPENCLAW_APP_PROFILE =
+OPENCLAW_SHARE_PROFILE =
+OPENCLAW_PUSH_TRANSPORT = relay
+OPENCLAW_PUSH_DISTRIBUTION = official
+OPENCLAW_URL_SLASH = /
+OPENCLAW_PUSH_RELAY_BASE_URL = %s
+OPENCLAW_PUSH_APNS_ENVIRONMENT = production
+`, teamID, teamID, pushRelayBaseURLXcconfig)
+
+	if err := writeGeneratedFile(betaXcconfig, content); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to write beta xcconfig: %v\n", err)
+		os.Exit(1)
+	}
+
+	// Run xcodegen
+	cmd = exec.Command("xcodegen", "generate")
+	cmd.Dir = iosDir
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to run xcodegen: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Prepared iOS beta release: version=%s build=%s team=%s\n", iosVersion, buildNumber, teamID)
+	fmt.Printf("XCODE_XCCONFIG_FILE=%s\n", betaXcconfig)
+}
+
+func validatePushRelayBaseURL(value string) error {
+	if regexp.MustCompile(`\s`).MatchString(value) {
+		return fmt.Errorf("whitespace is not allowed")
+	}
+
+	if strings.ContainsAny(value, "$()=") {
+		return fmt.Errorf("contains forbidden xcconfig characters")
+	}
+
+	parsedURL, err := url.Parse(value)
+	if err != nil {
+		return fmt.Errorf("expected https://host[:port][/path]")
+	}
+
+	if parsedURL.Scheme != "https" {
+		return fmt.Errorf("expected https://host[:port][/path]")
+	}
+
+	if parsedURL.Host == "" {
+		return fmt.Errorf("expected https://host[:port][/path]")
+	}
+
+	hostParts := strings.Split(parsedURL.Host, ":")
+	if len(hostParts) > 2 {
+		return fmt.Errorf("invalid host format")
+	}
+
+	if len(hostParts) == 2 {
+		port, err := strconv.Atoi(hostParts[1])
+		if err != nil || port < 1 || port > 65535 {
+			return fmt.Errorf("port must be between 1 and 65535")
+		}
+	}
+
+	return nil
+}
+
+func prepareBuildDir(buildDir string) error {
+	if info, err := os.Lstat(buildDir); err == nil && info.Mode()&os.ModeSymlink != 0 {
+		return fmt.Errorf("refusing to use symlinked build directory: %s", buildDir)
+	}
+
+	return os.MkdirAll(buildDir, 0755)
+}
+
+func writeGeneratedFile(outputPath, content string) error {
+	if info, err := os.Lstat(outputPath); err == nil && info.Mode()&os.ModeSymlink != 0 {
+		return fmt.Errorf("refusing to overwrite symlinked file: %s", outputPath)
+	}
+
+	tmpFile, err := ioutil.TempFile(filepath.Dir(outputPath), filepath.Base(outputPath)+".*")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmpFile.Name())
+
+	writer := bufio.NewWriter(tmpFile)
+	_, err = writer.WriteString(content)
+	if err != nil {
+		tmpFile.Close()
+		return err
+	}
+	
+	err = writer.Flush()
+	if err != nil {
+		tmpFile.Close()
+		return err
+	}
+	
+	err = tmpFile.Close()
+	if err != nil {
+		return err
+	}
+
+	return os.Rename(tmpFile.Name(), outputPath)
+}
