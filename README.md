@@ -16,11 +16,11 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Python | 1862 | `python/` |
 | Shell | 1332 | `shell/` |
 | Tcl | 2088 | `tcl/` |
-| Raku | 94 | `perl6/` |
+| Raku | 97 | `perl6/` |
 | Ruby | 243 | `ruby/` |
 | Lua | 241 | `lua/` |
 | Go | 208 | `go/` |
-| **Gesamt** | **11676** | |
+| **Gesamt** | **11679** | |
 
 ## Vercel-Preview
 
