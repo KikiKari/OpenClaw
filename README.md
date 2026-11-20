@@ -10,17 +10,17 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 1632 | `javascript/` |
-| Perl 5 | 1811 | `perl5/` |
-| PowerShell | 1750 | `powershell/` |
-| Python | 1707 | `python/` |
-| Shell | 1261 | `shell/` |
-| Tcl | 1927 | `tcl/` |
-| Raku | 90 | `perl6/` |
-| Ruby | 236 | `ruby/` |
-| Lua | 233 | `lua/` |
-| Go | 200 | `go/` |
-| **Gesamt** | **10847** | |
+| JavaScript | 1638 | `javascript/` |
+| Perl 5 | 1814 | `perl5/` |
+| PowerShell | 1755 | `powershell/` |
+| Python | 1713 | `python/` |
+| Shell | 1263 | `shell/` |
+| Tcl | 1932 | `tcl/` |
+| Raku | 94 | `perl6/` |
+| Ruby | 241 | `ruby/` |
+| Lua | 240 | `lua/` |
+| Go | 207 | `go/` |
+| **Gesamt** | **10897** | |
 
 ## Vercel-Preview
 
