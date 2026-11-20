@@ -22,10 +22,6 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Go | 200 | `go/` |
 | **Gesamt** | **10847** | |
 
-Bei einem früheren dokumentierten Lauf blieben die folgenden Job-Commits Teil der Historie: `f965cba` erzeugte
-fünf High-Priority-Übersetzungen, `723dac3` erzeugte 184 Medium-Priority-
-Übersetzungen und `14b5336` erzeugte 213 Low-Priority-Übersetzungen. Dieser frühere Lauf verwarf zusätzlich 27 nicht bestandene Ergebnisse.
-
 ## Vercel-Preview
 
 Die [Gateway-1-Preview](https://openclaw-git-gateway1-abstractions-openclaw-vercel-project.vercel.app) zeigt den aktiven Bestand mit Sprachfilter, Dateisuche und Quelltextansicht. Die Dateien werden als Text angezeigt und nicht ausgeführt. Das historische Verzeichnis ist vom Katalog ausgeschlossen.
