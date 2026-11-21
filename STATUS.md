@@ -43,7 +43,7 @@ Noch offene Sprachpaare: **58702**
 
 ## Herkunft
 
-- `KikiKari/OpenClaw` — main, gateway1, gateway2
+- `KikiKari/OpenClaw` — main, gateway1
 - `KikiKari/Projects` — alle Branches
 - `KikiKari/Onboarding` — main
 
