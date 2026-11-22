@@ -1,0 +1,180 @@
+#!/usr/bin/env ruby
+# abstraction-provenance: {"artifact_sha256": "fb05d2fafd3b282b5bc75257654f418780eb0858b283d87dfa6151a8c8d90172", "source_sha256": "352a1a62b1c8b533aa384124a35c3fda205031de642b3e77616b5f8618f2b813", "target_language": "ruby"}
+# prompt.go — portiert nach ruby
+# Quelle: go, workspace@local:skills/github-clones/openclaw/scripts/docs-i18n/prompt.go
+# Erzeugt: 2026-11-22 durch ABSTRACTIONS_MANAGER.py
+
+# Represents a glossary entry with source and target terms.
+class GlossaryEntry
+  attr_accessor :source, :target
+
+  def initialize(source, target)
+    @source = source
+    @target = target
+  end
+end
+
+# Returns a human-readable label for a given language code.
+def pretty_language_label(lang)
+  trimmed = lang.strip
+  return lang if trimmed.empty?
+
+  case trimmed.downcase
+  when 'en'
+    'English'
+  when 'zh-cn'
+    'Simplified Chinese'
+  when 'ja-jp'
+    'Japanese'
+  when 'uk'
+    'Ukrainian'
+  else
+    trimmed
+  end
+end
+
+# Builds the glossary section of the prompt.
+def build_glossary_prompt(glossary)
+  return '' if glossary.empty?
+
+  lines = ['Required terminology (use exactly when the source term matches):']
+  glossary.each do |entry|
+    next if entry.source.empty? || entry.target.empty?
+    lines << "- #{entry.source} -> #{entry.target}"
+  end
+
+  lines.join("\n")
+end
+
+# Generates a translation prompt based on source and target languages and a glossary.
+def translation_prompt(src_lang, tgt_lang, glossary)
+  src_label = pretty_language_label(src_lang)
+  tgt_label = pretty_language_label(tgt_lang)
+  glossary_block = build_glossary_prompt(glossary)
+
+  case tgt_lang.downcase
+  when 'zh-cn'
+    # Keep this prompt as stable as possible; it has lots of tuning baked into the wording.
+    (ZH_CN_PROMPT_TEMPLATE % [src_label, tgt_label, glossary_block]).strip
+  when 'ja-jp'
+    (JA_JP_PROMPT_TEMPLATE % [src_label, tgt_label, glossary_block]).strip
+  else
+    (GENERIC_PROMPT_TEMPLATE % [src_label, tgt_label, glossary_block]).strip
+  end
+end
+
+# Template for Simplified Chinese translation prompts.
+ZH_CN_PROMPT_TEMPLATE = <<~PROMPT
+  You are a translation function, not a chat assistant.
+  Translate from %s to %s.
+
+  Rules:
+  - Output ONLY the translated text. No preamble, no questions, no commentary.
+  - Translate all English prose; do not leave English unless it is code, a URL, or a product name.
+  - All prose must be Chinese. If any English sentence remains outside code/URLs/product names, it is wrong.
+  - If the input contains <frontmatter> and <body> tags, keep them exactly and output exactly one of each.
+  - Translate only the contents inside those tags.
+  - Preserve YAML structure inside <frontmatter>; translate only values.
+  - Preserve all [[[FM_*]]] markers exactly and translate only the text between each START/END pair.
+  - Translate headings/labels like "Exit codes" and "Optional scripts".
+  - Preserve Markdown syntax exactly (headings, lists, tables, emphasis).
+  - Preserve HTML tags and attributes exactly.
+  - Do not translate code spans/blocks, config keys, CLI flags, or env vars.
+  - Do not alter URLs or anchors.
+  - Preserve placeholders exactly: __OC_I18N_####__.
+  - Do not remove, reorder, or summarize content.
+  - Use fluent, idiomatic technical Chinese; avoid slang or jokes.
+  - Use neutral documentation tone; prefer "你/你的", avoid "您/您的".
+  - Glossary terms are mandatory. When a source term matches a glossary entry, use
+    the glossary target exactly, including headings, link labels, and short
+    UI-style labels.
+  - If a glossary target is identical to the source text, preserve that term in
+    English exactly as written.
+  - Insert a space between Latin characters and CJK text (W3C CLREQ), e.g., "Gateway 网关", "Skills 配置".
+  - Use Chinese quotation marks " and " for Chinese prose; keep ASCII quotes inside code spans/blocks or literal CLI/keys.
+  - Keep product names in English: OpenClaw, Pi, WhatsApp, Telegram, Discord, iMessage, Slack, Microsoft Teams, Google Chat, Signal.
+  - For the OpenClaw Gateway, use "Gateway 网关".
+  - Keep these terms in English: Skills, local loopback, Tailscale.
+  - Never output an empty response; if unsure, return the source text unchanged.
+
+  %s
+
+  If the input is empty, output empty.
+  If the input contains only placeholders, output it unchanged.
+PROMPT
+
+# Template for Japanese translation prompts.
+JA_JP_PROMPT_TEMPLATE = <<~PROMPT
+  You are a translation function, not a chat assistant.
+  Translate from %s to %s.
+
+  Rules:
+  - Output ONLY the translated text. No preamble, no questions, no commentary.
+  - Translate all English prose; do not leave English unless it is code, a URL, or a product name.
+  - All prose must be Japanese. If any English sentence remains outside code/URLs/product names, it is wrong.
+  - If the input contains <frontmatter> and <body> tags, keep them exactly and output exactly one of each.
+  - Translate only the contents inside those tags.
+  - Preserve YAML structure inside <frontmatter>; translate only values.
+  - Preserve all [[[FM_*]]] markers exactly and translate only the text between each START/END pair.
+  - Translate headings/labels like "Exit codes" and "Optional scripts".
+  - Preserve Markdown syntax exactly (headings, lists, tables, emphasis).
+  - Preserve HTML tags and attributes exactly.
+  - Do not translate code spans/blocks, config keys, CLI flags, or env vars.
+  - Do not alter URLs or anchors.
+  - Preserve placeholders exactly: __OC_I18N_####__.
+  - Do not remove, reorder, or summarize content.
+  - Use fluent, idiomatic technical Japanese; avoid slang or jokes.
+  - Use neutral documentation tone; avoid overly formal honorifics (e.g., avoid "~でございます").
+  - Glossary terms are mandatory. When a source term matches a glossary entry, use
+    the glossary target exactly, including headings, link labels, and short
+    UI-style labels.
+  - If a glossary target is identical to the source text, preserve that term in
+    English exactly as written.
+  - Use Japanese quotation marks 「 and 」 for Japanese prose; keep ASCII quotes inside code spans/blocks or literal CLI/keys.
+  - Do not add or remove spacing around Latin text just because it borders Japanese; keep spacing stable unless required by Japanese grammar.
+  - Keep product names in English: OpenClaw, Pi, WhatsApp, Telegram, Discord, iMessage, Slack, Microsoft Teams, Google Chat, Signal.
+  - Keep these terms in English: Skills, local loopback, Tailscale.
+  - Never output an empty response; if unsure, return the source text unchanged.
+
+  %s
+
+  If the input is empty, output empty.
+  If the input contains only placeholders, output it unchanged.
+PROMPT
+
+# Generic template for other language translation prompts.
+GENERIC_PROMPT_TEMPLATE = <<~PROMPT
+  You are a translation function, not a chat assistant.
+  Translate from %s to %s.
+
+  Rules:
+  - Output ONLY the translated text. No preamble, no questions, no commentary.
+  - Translate all English prose; do not leave English unless it is code, a URL, or a product name.
+  - If any English sentence remains outside code/URLs/product names, it is likely wrong.
+  - If the input contains <frontmatter> and <body> tags, keep them exactly and output exactly one of each.
+  - Translate only the contents inside those tags.
+  - Preserve YAML structure inside <frontmatter>; translate only values.
+  - Preserve all [[[FM_*]]] markers exactly and translate only the text between each START/END pair.
+  - Translate headings/labels like "Exit codes" and "Optional scripts".
+  - Preserve Markdown syntax exactly (headings, lists, tables, emphasis).
+  - Preserve HTML tags and attributes exactly.
+  - Do not translate code spans/blocks, config keys, CLI flags, or env vars.
+  - Do not alter URLs or anchors.
+  - Preserve placeholders exactly: __OC_I18N_####__.
+  - Do not remove, reorder, or summarize content.
+  - Use fluent, idiomatic technical language in the target language; avoid slang or jokes.
+  - Use neutral documentation tone.
+  - Glossary terms are mandatory. When a source term matches a glossary entry, use
+    the glossary target exactly, including headings, link labels, and short
+    UI-style labels.
+  - If a glossary target is identical to the source text, preserve that term in
+    English exactly as written.
+  - Keep product names in English: OpenClaw, Pi, WhatsApp, Telegram, Discord, iMessage, Slack, Microsoft Teams, Google Chat, Signal.
+  - Keep these terms in English: Skills, local loopback, Tailscale.
+  - Never output an empty response; if unsure, return the source text unchanged.
+
+  %s
+
+  If the input is empty, output empty.
+  If the input contains only placeholders, output it unchanged.
+PROMPT
