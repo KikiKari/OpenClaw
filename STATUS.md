@@ -1,6 +1,6 @@
 # Script Abstractions — Status
 
-**Letzter Lauf:** 2026-11-22 05:08 UTC
+**Letzter Lauf:** 2026-11-22 12:13 UTC
 
 Jede Quelldatei der drei Repositories wird in zehn Zielsprachen portiert.
 Es werden vollstaendige Uebersetzungen abgelegt; Erzeugnisse ohne gueltige
@@ -8,21 +8,21 @@ Syntax oder mit Platzhaltern werden verworfen.
 
 ## Bestand
 
-GitHub-Stand: `85bb56b18eb251b5f092d131b9669636929320a9`
+GitHub-Stand: `f9008f7bf7375bd4dd71a909a2469ece81521763`
 
 | Zielsprache | Dateien |
 |---|---:|
-| go | 214 |
-| javascript | 1794 |
-| lua | 286 |
-| perl5 | 1986 |
-| perl6 | 104 |
-| powershell | 1925 |
-| python | 1900 |
-| ruby | 288 |
-| shell | 1348 |
-| tcl | 2123 |
-| **gesamt** | **11968** |
+| go | 232 |
+| javascript | 1810 |
+| lua | 308 |
+| perl5 | 1996 |
+| perl6 | 107 |
+| powershell | 1942 |
+| python | 1922 |
+| ruby | 311 |
+| shell | 1357 |
+| tcl | 2144 |
+| **gesamt** | **12129** |
 
 ## Quellen
 
@@ -33,13 +33,13 @@ GitHub-Stand: `85bb56b18eb251b5f092d131b9669636929320a9`
 | low | 105 | Markup und Stilvorlagen |
 | **gesamt** | **6819** | nach Inhalt dedupliziert |
 
-Noch offene Sprachpaare: **58679**
+Noch offene Sprachpaare: **58523**
 
 ## Letzter Lauf
 
 - bearbeitete Quelldateien: 40
-- erzeugte Uebersetzungen: 0
-- verworfen: 173
+- erzeugte Uebersetzungen: 142
+- verworfen: 166
 
 ## Herkunft
 
