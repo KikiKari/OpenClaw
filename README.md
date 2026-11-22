@@ -15,12 +15,12 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | PowerShell | 1927 | `powershell/` |
 | Python | 1901 | `python/` |
 | Shell | 1348 | `shell/` |
-| Tcl | 2124 | `tcl/` |
+| Tcl | 2125 | `tcl/` |
 | Raku | 105 | `perl6/` |
-| Ruby | 290 | `ruby/` |
-| Lua | 288 | `lua/` |
-| Go | 216 | `go/` |
-| **Gesamt** | **11983** | |
+| Ruby | 291 | `ruby/` |
+| Lua | 289 | `lua/` |
+| Go | 217 | `go/` |
+| **Gesamt** | **11987** | |
 
 ## Vercel-Preview
 
