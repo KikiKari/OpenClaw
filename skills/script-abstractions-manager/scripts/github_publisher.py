@@ -12,7 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-LANGUAGES = frozenset({"perl5", "powershell", "perl6", "tcl", "javascript", "ruby", "python", "lua", "shell", "go"})
+LANGUAGES = frozenset({"perl5", "powershell", "perl6", "tcl", "javascript", "ruby", "python", "lua", "shell", "go", "java", "c", "cpp", "php", "fsharp", "css"})
 
 
 def synchronize_checkout(root, *, remote="https://github.com/KikiKari/OpenClaw.git",
@@ -78,9 +78,7 @@ def queue_artifact(state, root, path):
     if path.is_symlink():
         raise ValueError("artifact must not be a symlink")
     relative = path.resolve(strict=True).relative_to(root)
-    if relative.as_posix() != 'STATUS.md' and (not relative.parts or relative.parts[0] not in {
-        "perl5", "powershell", "perl6", "tcl", "javascript", "ruby", "python", "lua", "shell", "go"
-    }):
+    if relative.as_posix() != 'STATUS.md' and (not relative.parts or relative.parts[0] not in LANGUAGES):
         raise ValueError("artifact is outside a language directory")
     state.setdefault("ausstehende_veroeffentlichungen", {})[relative.as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
 

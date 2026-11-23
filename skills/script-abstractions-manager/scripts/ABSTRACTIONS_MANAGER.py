@@ -31,6 +31,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -38,6 +39,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -76,6 +78,8 @@ QUELLSPRACHEN: Dict[str, str] = {
     ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript",
     ".py": "python",
     ".css": "css",
+    ".java": "java", ".c": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp",
+    ".php": "php", ".fs": "fsharp", ".fsx": "fsharp",
 }
 
 # Die zehn Zielverzeichnisse, nach der Vorlage aus
@@ -92,6 +96,12 @@ ZIELSPRACHEN: Dict[str, Dict[str, str]] = {
     "ruby":       {"ext": ".rb", "bezeichnung": "Ruby"},
     "lua":        {"ext": ".lua", "bezeichnung": "Lua"},
     "go":         {"ext": ".go", "bezeichnung": "Go"},
+    "java":       {"ext": ".java", "bezeichnung": "Java"},
+    "c":          {"ext": ".c", "bezeichnung": "C"},
+    "cpp":        {"ext": ".cpp", "bezeichnung": "C++"},
+    "php":        {"ext": ".php", "bezeichnung": "PHP"},
+    "fsharp":     {"ext": ".fs", "bezeichnung": "F#"},
+    "css":        {"ext": ".css", "bezeichnung": "CSS"},
 }
 
 # Verzeichnisse und Muster, die nie eingelesen werden.
@@ -115,6 +125,53 @@ MODELLE: List[str] = [
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
 ZEITLIMIT = 240
 VERSUCHE = 3
+
+# Mindestreserven auf dem Gateway und auf den entfernten Nodes.
+GATEWAY_MIN_FREI = 40 * 1024**3
+NODE_MIN_FREI = 4 * 1024**3
+NODE_STATUS_MAX_ALTER_MS = 300_000
+
+
+def node_speicherstatus() -> Dict[str, int]:
+    """Liefert nur aktuelle freie Bytes, keyed by paired device identity."""
+    try:
+        result = subprocess.run(["openclaw", "nodes", "status", "--json"],
+                                capture_output=True, text=True, timeout=10, check=True)
+        status = json.loads(result.stdout)
+        timestamp = status.get("ts")
+        nodes = status.get("nodes")
+        if isinstance(timestamp, bool) or not isinstance(timestamp, (int, float)) or not isinstance(nodes, list):
+            return {}
+        if abs(time.time() * 1000 - timestamp) > NODE_STATUS_MAX_ALTER_MS:
+            return {}
+        available = {}
+        for node in nodes:
+            if not isinstance(node, dict) or node.get("connected") is not True:
+                continue
+            node_id, stats = node.get("nodeId"), node.get("hostStats")
+            if not isinstance(node_id, str) or not node_id or not isinstance(stats, dict):
+                continue
+            free, updated = stats.get("diskAvailableBytes"), stats.get("updatedAtMs")
+            if (isinstance(free, bool) or not isinstance(free, int) or free < 0 or
+                isinstance(updated, bool) or not isinstance(updated, (int, float)) or
+                abs(timestamp - updated) > NODE_STATUS_MAX_ALTER_MS):
+                continue
+            available[node_id] = free
+        return available
+    except (OSError, subprocess.SubprocessError, ValueError, TypeError, AttributeError):
+        return {}
+
+
+def node_hat_reserve(node: str, device_id: str, frei: Dict[str, int]) -> bool:
+    """Unbekannte Werte sind nicht als ausreichender Speicher nachgewiesen."""
+    if node == "node1":
+        try:
+            return shutil.disk_usage(WORKSPACE).free >= GATEWAY_MIN_FREI
+        except OSError:
+            return False
+    wert = frei.get(device_id)
+    return isinstance(wert, int) and not isinstance(wert, bool) and wert >= NODE_MIN_FREI
+
 
 # ---------------------------------------------------------------------------
 # Protokoll
@@ -243,6 +300,9 @@ def quellen_holen() -> List[Tuple[str, str, Path]]:
     if os.environ.get("ABSTRACTIONS_EXECUTION", "gateway") == "gateway":
         if WORKSPACE.is_dir():
             baeume.append(("workspace", "local", WORKSPACE))
+        # CSS-Quellen ausserhalb des Workspace: gesamtes OpenClaw-Verzeichnis.
+        if WORKSPACE.parent.is_dir():
+            baeume.append(("openclaw-css", "local", WORKSPACE.parent))
 
     logger.info("Quellen bereit: %d Arbeitsbaeume", len(baeume))
     return baeume
@@ -280,6 +340,16 @@ def enthaelt_zugangsdaten(roh: bytes) -> bool:
     return False
 
 
+def css_html_dateien(baum: Path):
+    """Durchsucht lokale HTML-Quellen ohne ausgeschlossene Unterbaeume."""
+    ausgeschlossen = {".git", "node_modules", "__pycache__", "dist", "build", "vendor", ".venv", "site-packages", "python-hardener-workspace", ".artifacts", "coverage", ".next", "target", "work", "backups", "logs", "log", "db", "state", "tmp", "temp", "cache", ".cache", "artifacts", "secrets", "credentials", ".credentials", "private", ".private"}
+    for wurzel, verzeichnisse, dateien in os.walk(baum, followlinks=False):
+        verzeichnisse[:] = [d for d in verzeichnisse if d.lower() not in ausgeschlossen]
+        for name in dateien:
+            if Path(name).suffix.lower() in (".html", ".htm"):
+                yield Path(wurzel) / name
+
+
 def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
     """
     Erfasst alle Quelldateien und fasst inhaltsgleiche Fundstellen zusammen.
@@ -294,10 +364,24 @@ def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
     dateien: Dict[str, Dict] = {}
 
     for repo, branch, baum in baeume:
-        for pfad in baum.rglob("*"):
+        pfade = css_html_dateien(baum) if repo == "openclaw-css" else baum.rglob("*")
+        for pfad in pfade:
             if not pfad.is_file():
                 continue
             rel = str(pfad.relative_to(baum)).replace("\\", "/")
+            if repo == "openclaw-css":
+                # Dieser zusaetzliche Bestand dient ausschliesslich CSS.
+                if pfad.suffix.lower() not in (".html", ".htm"):
+                    continue
+                teile = pfad.relative_to(baum).parts
+                if any(t.lower() in ("work", "backups", "logs", "log", "db", "state", "tmp", "temp", "cache", ".cache", "artifacts", "secrets", "credentials", ".credentials", "private", ".private") for t in teile):
+                    continue
+                if any(teile[i:i+2] in (("git", "Abstraktionen"), ("git", "OpenClaw-gateway1-abstractions"), ("git", "quellen")) for i in range(len(teile)-1)):
+                    continue
+                try:
+                    pfad.resolve().relative_to(baum.resolve())
+                except (OSError, ValueError):
+                    continue
             if repo == "workspace":
                 # Ausgaben nicht als neue Quellen erneut übersetzen; die
                 # Repository-Arbeitsbäume werden separat erfasst.
@@ -334,8 +418,11 @@ def inventar_bauen(baeume: List[Tuple[str, str, Path]]) -> List[Dict]:
                     "pfad": str(pfad),
                     "herkunft": [],
                     "prioritaet": _prioritaet(rel, sprache),
+                    "css_only": repo == "openclaw-css",
                 }
                 dateien[schluessel] = eintrag
+            elif repo != "openclaw-css":
+                eintrag["css_only"] = False
             eintrag["herkunft"].append(f"{repo}@{branch}:{rel}")
 
     rang = {"high": 0, "medium": 1, "low": 2}
@@ -366,6 +453,52 @@ Zielsprache, das dieses Dokument erzeugt und ueber einen Parameter in eine
 Datei schreibt — kein blosses Einbetten als Zeichenkette, sondern eine
 nachvollziehbare Erzeugung der Struktur."""
 
+CSS_HINWEIS = "Erzeuge ausschliesslich CSS aus den vorhandenen Stilinformationen des HTML-Dokuments. Erfinde keine Anwendungslogik."
+
+
+class _StilSuche(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.gefunden = False
+        self.im_style = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() == "style":
+            self.im_style = True
+        if any(k.lower() == "style" and v and v.strip() for k, v in attrs):
+            self.gefunden = True
+
+    def handle_data(self, data):
+        if self.im_style and data.strip():
+            self.gefunden = True
+
+    def handle_endtag(self, tag):
+        if tag.lower() == "style":
+            self.im_style = False
+
+
+def zielsprachen_fuer(quellsprache: str, quelle: Optional[str] = None) -> List[str]:
+    """CSS ist nur fuer HTML-Quellen vorgesehen, nicht fuer Skriptlogik."""
+    css = quellsprache == "html"
+    if css and quelle is not None:
+        parser = _StilSuche()
+        parser.feed(quelle)
+        css = parser.gefunden
+    return [z for z in ZIELSPRACHEN if z != quellsprache and (z != "css" or css)]
+
+
+def system_anweisung(zielsprache: str) -> str:
+    if zielsprache in ("java", "c", "cpp", "php", "fsharp", "css"):
+        return ANWEISUNG.replace("6. Beginne mit der passenden Shebang-Zeile.",
+                                 "6. Gib Quelltext im gueltigen Format der Zielsprache aus; verwende keine Shebang-Zeile.")
+    return ANWEISUNG
+
+
+def markup_hinweis(quellsprache: str, zielsprache: str) -> str:
+    if zielsprache == "css":
+        return CSS_HINWEIS
+    return MARKUP_HINWEIS.format(sprache=quellsprache.upper()) if quellsprache in ("html", "css") else ""
+
 
 def _zaeune_entfernen(text: str) -> str:
     """Loest Code aus Markdown-Zaeunen, falls das Modell welche gesetzt hat."""
@@ -384,7 +517,7 @@ def _zaeune_entfernen(text: str) -> str:
 def _modell_code_bereinigen(text: str, zielsprache: str) -> str:
     code = _zaeune_entfernen(text)
     # Go source files cannot contain the shebang requested in the shared prompt.
-    if zielsprache == "go" and code.startswith("#!"):
+    if zielsprache in ("go", "java", "c", "cpp", "fsharp", "css") and code.startswith("#!"):
         code = code.partition("\n")[2]
     return code
 
@@ -402,8 +535,9 @@ def modell_fragen(quelle: str, quellsprache: str, zielsprache: str,
     """
     ziel = ZIELSPRACHEN[zielsprache]["bezeichnung"]
     auftrag = f"Portiere die folgende Datei {name} von {quellsprache} nach {ziel}.\n"
-    if quellsprache in ("html", "css"):
-        auftrag += MARKUP_HINWEIS.format(sprache=quellsprache.upper()) + "\n"
+    hinweis = markup_hinweis(quellsprache, zielsprache)
+    if hinweis:
+        auftrag += hinweis + "\n"
     auftrag += f"\n----- Beginn {name} -----\n{quelle}\n----- Ende {name} -----"
 
     modelle = [os.environ["ABSTRACTIONS_MODELL"]] if os.environ.get("ABSTRACTIONS_MODELL") else MODELLE
@@ -413,7 +547,7 @@ def modell_fragen(quelle: str, quellsprache: str, zielsprache: str,
             rumpf = json.dumps({
                 "model": modell,
                 "messages": [
-                    {"role": "system", "content": ANWEISUNG},
+                    {"role": "system", "content": system_anweisung(zielsprache)},
                     {"role": "user", "content": auftrag},
                 ],
                 "temperature": 0.1,
@@ -465,6 +599,25 @@ PRUEFBEFEHLE: Dict[str, List[str]] = {
 VERDACHT = ("TODO: Implementiere", "TODO: implement", "not implemented",
             "hier waere", "Platzhalter", "your code here", "pass  # TODO")
 
+PARSER_SPRACHEN = frozenset({"java", "c", "cpp", "php", "fsharp", "css"})
+
+
+def verfuegbare_parser() -> set:
+    try:
+        from tree_sitter_language_pack import available_languages
+        return PARSER_SPRACHEN.intersection(available_languages())
+    except (ImportError, OSError):
+        return set()
+
+
+PARSER_PROGRAMM = r'''import sys
+from tree_sitter_language_pack import available_languages, get_parser
+if sys.argv[1] not in available_languages():
+    sys.exit(2)
+tree = get_parser(sys.argv[1]).parse(sys.stdin.buffer.read())
+sys.exit(1 if tree.root_node.has_error else 0)
+'''
+
 
 def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bool, str]:
     """
@@ -501,6 +654,20 @@ def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bo
             return True, "syntax ok"
         except SyntaxError as fehler:
             return False, f"Syntaxfehler Zeile {fehler.lineno}"
+
+    if zielsprache in PARSER_SPRACHEN:
+        if zielsprache == "php" and not code.startswith("<?php"):
+            return False, "PHP-Datei muss mit <?php beginnen"
+        try:
+            pruefung = subprocess.run([sys.executable, "-c", PARSER_PROGRAMM, zielsprache],
+                                      input=code, capture_output=True, text=True, timeout=30)
+            if pruefung.returncode == 0:
+                return True, "Syntaxbaum ohne Fehler"
+            if pruefung.returncode == 1 and not pruefung.stderr:
+                return False, "Syntaxfehler im Syntaxbaum"
+            return False, "Syntaxpruefer oder Grammatik nicht verfuegbar"
+        except (OSError, subprocess.TimeoutExpired):
+            return False, "Syntaxpruefung nicht moeglich"
 
     befehl = PRUEFBEFEHLE.get(zielsprache)
     if not befehl:
@@ -583,7 +750,9 @@ def _zieldatei(eintrag: Dict, zielsprache: str, belegt: Dict[str, str]) -> Path:
 
 def _kopf(eintrag: Dict, zielsprache: str) -> str:
     """Setzt den Herkunftsvermerk als Kommentar in der Zielsprache."""
-    zeichen = "//" if zielsprache in ("javascript", "go") else "--" if zielsprache == "lua" else "#"
+    zeichen = "//" if zielsprache in ("javascript", "go", "java", "c", "cpp", "php", "fsharp") else "--" if zielsprache == "lua" else "#"
+    if zielsprache == "css":
+        zeichen = "/*"
     heute = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     zeilen = [
         f"{zeichen} {eintrag['name']} — portiert nach {zielsprache}",
@@ -594,31 +763,42 @@ def _kopf(eintrag: Dict, zielsprache: str) -> str:
     if len(eintrag["herkunft"]) > 4:
         zeilen.append(f"{zeichen} auch in: {len(eintrag['herkunft']) - 4} weiteren Fundstellen")
     zeilen.append(f"{zeichen} Erzeugt: {heute} durch ABSTRACTIONS_MANAGER.py")
+    if zielsprache == "css":
+        zeilen = [zeile.replace("*/", "* /") + " */" for zeile in zeilen]
     return "\n".join(zeilen) + "\n"
 
 
-def ablegen(eintrag: Dict, zielsprache: str, code: str, belegt: Dict[str, str]) -> Optional[Path]:
+def ablegen(eintrag: Dict, zielsprache: str, code: str, belegt: Dict[str, str], quelle: str = "") -> Optional[Path]:
     """Schreibt ein geprueftes Erzeugnis atomar in sein Sprachverzeichnis."""
     ziel = _zieldatei(eintrag, zielsprache, belegt)
     try:
         ziel.parent.mkdir(parents=True, exist_ok=True)
         zeilen = code.splitlines()
-        if zeilen and zeilen[0].startswith("#!"):
+        if zielsprache == "php":
+            if not code.startswith("<?php"):
+                return None
+            inhalt = "<?php\n" + _kopf(eintrag, zielsprache) + code[len("<?php"):].lstrip("\n")
+        elif zeilen and zeilen[0].startswith("#!"):
             inhalt = zeilen[0] + "\n" + _kopf(eintrag, zielsprache) + "\n" + "\n".join(zeilen[1:]).lstrip("\n") + "\n"
         else:
             inhalt = _kopf(eintrag, zielsprache) + "\n" + code
         # The marker and digest travel with the artifact. This permits recovery
         # if the process stops after os.replace but before saving its state.
         if eintrag.get("source_sha256"):
-            prefix = "//" if zielsprache in ("javascript", "go") else "--" if zielsprache == "lua" else "#"
+            prefix = "//" if zielsprache in ("javascript", "go", "java", "c", "cpp", "php", "fsharp") else "--" if zielsprache == "lua" else "/*" if zielsprache == "css" else "#"
             metadata = {"source_sha256": eintrag["source_sha256"], "target_language": zielsprache,
                         "artifact_sha256": hashlib.sha256(inhalt.encode("utf-8")).hexdigest()}
-            markierung = prefix + " abstraction-provenance: " + json.dumps(metadata, sort_keys=True) + "\n"
-            if inhalt.startswith("#!"):
+            markierung = prefix + " abstraction-provenance: " + json.dumps(metadata, sort_keys=True) + (" */" if zielsprache == "css" else "") + "\n"
+            if inhalt.startswith(("#!", "<?php\n")):
                 erste, rest = inhalt.split("\n", 1)
                 inhalt = erste + "\n" + markierung + rest
             else:
                 inhalt = markierung + inhalt
+        if zielsprache in PARSER_SPRACHEN:
+            gueltig, grund = erzeugnis_pruefen(inhalt, zielsprache, quelle)
+            if not gueltig:
+                logger.warning("%s: Erzeugnis nach Herkunftsvermerk ungueltig (%s)", ziel, grund)
+                return None
         kennung, pfad = tempfile.mkstemp(dir=ziel.parent, prefix=".neu_",
                                          suffix=ZIELSPRACHEN[zielsprache]["ext"])
         with os.fdopen(kennung, "w", encoding="utf-8") as griff:
@@ -645,7 +825,7 @@ def vorhandenes_erzeugnis(eintrag: Dict, zielsprache: str, quelle: str) -> Optio
             if len(indices) != 1:
                 continue
             index = indices[0]
-            daten = json.loads(zeilen[index].split(marker, 1)[1])
+            daten = json.loads(zeilen[index].split(marker, 1)[1].removesuffix("\n").removesuffix(" */"))
             ohne_marker = "".join(zeilen[:index] + zeilen[index + 1:])
             if (daten.get("source_sha256") != eintrag["source_sha256"] or
                 daten.get("target_language") != zielsprache or
@@ -681,6 +861,10 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
     zaehler = {"erzeugt": 0, "uebersprungen": 0, "verworfen": 0, "dateien": 0}
     belegt: Dict[str, str] = {}
     erledigt = zustand.setdefault("erledigt", {})
+    parser_verfuegbar = verfuegbare_parser() if not probelauf else PARSER_SPRACHEN
+    fehlend = PARSER_SPRACHEN - parser_verfuegbar
+    if fehlend:
+        logger.warning("Ziele ohne verfuegbaren Syntaxpruefer werden uebersprungen: %s", ", ".join(sorted(fehlend)))
 
     offen = [e for e in inventar if prioritaet == "alle" or e["prioritaet"] == prioritaet]
     cursor = zustand.get("auswahl_cursor", {}).get(prioritaet)
@@ -696,7 +880,9 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             break
 
         fertig = set(erledigt.get(eintrag["hash"], []))
-        ziele = [z for z in ZIELSPRACHEN if z != eintrag["sprache"] and z not in fertig]
+        ziele = [z for z in zielsprachen_fuer(eintrag["sprache"]) if z not in fertig and z not in fehlend]
+        if eintrag.get("css_only"):
+            ziele = [z for z in ziele if z == "css"]
         if not ziele:
             continue
 
@@ -712,6 +898,9 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
                 zaehler["verworfen"] += 1
                 continue
             quelle = roh.decode("utf-8", errors="replace")
+            ziele = [z for z in ziele if z in zielsprachen_fuer(eintrag["sprache"], quelle)]
+            if not ziele:
+                continue
             eintrag = {**eintrag, "source_sha256": hashlib.sha256(roh).hexdigest()}
         except OSError as fehler:
             logger.warning("%s nicht lesbar: %s", eintrag["name"], fehler)
@@ -763,12 +952,11 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
                     if hasattr(dispatcher, "node_ids"):
                         job["selected_device_id"] = dispatcher.node_ids.get(job["selected_node"])
                     job["target_description"] = ZIELSPRACHEN[zielsprache]["bezeichnung"]
-                    job["system_prompt"] = ANWEISUNG
+                    job["system_prompt"] = system_anweisung(zielsprache)
                     override = os.environ.get("ABSTRACTIONS_MODELL")
                     job["model_settings"] = {"models": [override] if override else list(MODELLE),
                                              "attempts": VERSUCHE, "timeout_seconds": ZEITLIMIT}
-                    job["markup_hint"] = (MARKUP_HINWEIS.format(sprache=eintrag["sprache"].upper())
-                                          if eintrag["sprache"] in ("html", "css") else "")
+                    job["markup_hint"] = markup_hinweis(eintrag["sprache"], zielsprache)
                     previous = zustand.get("auftraege", {}).get(eintrag["source_sha256"] + ":" + zielsprache)
                     if isinstance(previous, dict) and previous.get("status") != "rejected" and isinstance(previous.get("job"), dict):
                         job.update(previous["job"])
@@ -790,13 +978,14 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
                 # response useful: keep this result for a later recheck.
                 pruefung_nicht_moeglich = ("Interpreter fehlt" in grund or
                                           "Fremdmodul fehlt" in grund or
+                                          "Syntaxpruefer oder Grammatik nicht verfuegbar" in grund or
                                           "Syntaxpruefung nicht moeglich" in grund)
                 if not pruefung_nicht_moeglich and transport is not None and hasattr(transport, "reject"):
                     transport.reject(job, grund)
                 zaehler["verworfen"] += 1
                 continue
 
-            ziel = ablegen(eintrag, zielsprache, code, belegt)
+            ziel = ablegen(eintrag, zielsprache, code, belegt, quelle)
             if ziel is None:
                 zaehler["verworfen"] += 1
                 continue
@@ -834,17 +1023,25 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
     rang = {"high": 0, "medium": 1, "low": 2}
     je_prio = {p: sum(1 for e in inventar if e["prioritaet"] == p) for p in rang}
     erledigt = zustand.get("erledigt", {})
-    offen = sum(
-        len([z for z in ZIELSPRACHEN if z != e["sprache"]]) - len(erledigt.get(e["hash"], []))
-        for e in inventar
-    )
+    offen = 0
+    for e in inventar:
+        quelle = None
+        if e["sprache"] == "html":
+            try:
+                quelle = Path(e["pfad"]).read_text(encoding="utf-8", errors="replace")
+            except OSError:
+                quelle = ""
+        ziele = set(zielsprachen_fuer(e["sprache"], quelle))
+        if e.get("css_only"):
+            ziele.intersection_update({"css"})
+        offen += len(ziele - set(erledigt.get(e["hash"], [])))
 
     zeilen = [
         "# Script Abstractions — Status",
         "",
         f"**Letzter Lauf:** {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')} UTC",
         "",
-        "Jede Quelldatei der drei Repositories wird in zehn Zielsprachen portiert.",
+        "Quelldateien werden in die jeweils geeigneten Zielsprachen portiert.",
         "Es werden vollstaendige Uebersetzungen abgelegt; Erzeugnisse ohne gueltige",
         "Syntax oder mit Platzhaltern werden verworfen.",
         "",
@@ -910,7 +1107,7 @@ def veroeffentlichen(nachricht: str) -> bool:
 
 def main() -> int:
     """Holt die Quellen, uebersetzt eine Prioritaetsstufe und veroeffentlicht."""
-    zerleger = argparse.ArgumentParser(description="Portiert Quellcode in zehn Zielsprachen.")
+    zerleger = argparse.ArgumentParser(description="Portiert Quellcode in konfigurierte Zielsprachen.")
     zerleger.add_argument("--prioritaet", choices=["high", "medium", "low", "alle"],
                           help="Nur diese Stufe bearbeiten. Ohne Angabe wird reihum gewechselt.")
     zerleger.add_argument("--anzahl", type=int,
@@ -964,8 +1161,15 @@ def main() -> int:
                         return None
                     ids = states.get("node_ids")
                     self.node_ids = ids if isinstance(ids, dict) else {}
-                    return next((node for node in preferred if states.get(node) is True and
-                                 isinstance(self.node_ids.get(node), str) and self.node_ids[node]), None)
+                    frei = node_speicherstatus()
+                    for node in preferred:
+                        device_id = self.node_ids.get(node)
+                        if states.get(node) is not True or not isinstance(device_id, str) or not device_id:
+                            continue
+                        if node_hat_reserve(node, device_id, frei):
+                            return node
+                        logger.warning("%s: Speicherreserve unterschritten oder nicht nachgewiesen", node)
+                    return None
             dispatcher = GatewayDispatcher()
             transport.release_pending()
         except (ValueError, OSError, RuntimeError) as fehler:

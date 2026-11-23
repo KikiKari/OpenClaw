@@ -13,6 +13,7 @@ Run the bundled manager as the single implementation of this workflow:
 
 - Keep `QUELLEN`, `MODELLE`, prompts, and CLI behavior unchanged. Results whose
   configured syntax check cannot complete are not accepted as validated.
+- For gateway dispatch, require 40 GiB free for node1 on the workspace filesystem and 4 GiB per remote node based on fresh, device-bound Node status; missing or stale measurements exclude that node. Node host metrics do not establish free space on every container or volume filesystem. This is not a standalone-container disk guard.
 - The gateway manager sends complete per-language jobs through the authenticated
   `abstractions-transport` plugin to available paired nodes. The existing
   Gateway wrapper is the entry point for its six-hour schedule.
