@@ -17,10 +17,10 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Shell | 1384 | `shell/` |
 | Tcl | 2195 | `tcl/` |
 | Raku | 118 | `perl6/` |
-| Ruby | 385 | `ruby/` |
-| Lua | 379 | `lua/` |
-| Go | 262 | `go/` |
-| **Gesamt** | **12561** | |
+| Ruby | 386 | `ruby/` |
+| Lua | 380 | `lua/` |
+| Go | 264 | `go/` |
+| **Gesamt** | **12565** | |
 
 ## Vercel-Preview
 
