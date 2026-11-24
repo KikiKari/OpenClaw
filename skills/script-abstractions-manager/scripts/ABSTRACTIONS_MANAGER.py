@@ -267,16 +267,24 @@ def _indizierter_quellbaum(spiegel: Path, repo: str, branch: str) -> Path:
         if metadata.split(b" ")[1] != b"blob":
             continue
         if Path(os.fsdecode(path)).suffix.lower() in QUELLSPRACHEN:
-            paths.append(b":(literal)" + path)
+            paths.append(path)
     parent = QUELLEN_DIR / "indizierte-baeume" / repo
     parent.mkdir(parents=True, exist_ok=True)
     baum = Path(tempfile.mkdtemp(prefix="quelle-", dir=parent))
     try:
         if paths:
-            result = subprocess.run(["git", "-C", str(spiegel), "--work-tree", str(baum),
-                                     "checkout", sha, "--pathspec-from-file=-", "--pathspec-file-nul"],
-                                    input=b"\0".join(paths) + b"\0", stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, timeout=1800, check=True)
+            # checkout's pathspec matching can become very expensive with
+            # thousands of entries. Use a private Git index and exact NUL-
+            # delimited names; never mutate the mirror's shared index.
+            with tempfile.TemporaryDirectory(prefix="quellindex-") as index_dir:
+                env = dict(os.environ, GIT_INDEX_FILE=str(Path(index_dir) / "index"))
+                subprocess.run(["git", "-C", str(spiegel), "read-tree", sha],
+                               env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               timeout=1800, check=True)
+                subprocess.run(["git", "-C", str(spiegel), "--work-tree", str(baum), "checkout-index", "--stdin", "-z",
+                                "--prefix=" + str(baum) + "/"],
+                               input=b"\0".join(paths) + b"\0", env=env,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3000, check=True)
         atexit.register(shutil.rmtree, baum, ignore_errors=True)
         return baum
     except BaseException:
