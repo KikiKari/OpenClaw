@@ -1,0 +1,206 @@
+/* abstraction-provenance: {"artifact_sha256": "62cf551e2d18c0924663c65ac2b578d63a89b2b4a06d003fb9bf2e34ad19c5b7", "source_sha256": "e48c1623d8fdce193daf72caa7d76d4da5acf28c8842186c21c07f8cfddb5613", "target_language": "css"} */
+/* index.html — portiert nach css */
+/* Quelle: html, OpenClaw@gateway1:skills/scripting-utils/references/eggdrop/index.html */
+/* auch in: OpenClaw@gateway2:skills/scripting-utils/references/eggdrop/index.html */
+/* auch in: workspace@local:git/skills/scripting-utils/references/eggdrop/index.html */
+/* auch in: workspace@local:skills/scripting-utils/references/eggdrop/index.html */
+/* auch in: 4 weiteren Fundstellen */
+/* Erzeugt: 2026-11-24 durch ABSTRACTIONS_MANAGER.py */
+
+/* Basic styling for the entire document */
+body {
+  font-family: sans-serif;
+  font-size: 100%;
+  background-color: white;
+  color: black;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header styles */
+.header-wrapper {
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.headertitle a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.rel a {
+  text-decoration: none;
+  color: #0066cc;
+  padding: 5px 10px;
+  border: 1px solid #0066cc;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.rel a:hover {
+  background-color: #0066cc;
+  color: white;
+}
+
+/* Content wrapper */
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 250px;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-right: 1px solid #ddd;
+  height: fit-content;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.sidebar li {
+  margin-bottom: 5px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #0066cc;
+}
+
+.sidebar a:hover {
+  text-decoration: underline;
+}
+
+.sidebar .caption {
+  font-weight: bold;
+  margin-top: 1.5em;
+  color: #555;
+}
+
+/* Document/content area */
+.document {
+  flex-grow: 1;
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.document h1,
+.document h2,
+.document h3 {
+  color: #333;
+}
+
+.document p {
+  line-height: 1.6;
+}
+
+.document a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.document a:hover {
+  text-decoration: underline;
+}
+
+.document ul {
+  line-height: 1.6;
+}
+
+.document .toctree-wrapper {
+  margin-top: 2em;
+}
+
+/* Search form in sidebar */
+.search h3 {
+  margin-top: 1.5em;
+  color: #333;
+}
+
+.search input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.search input[type="submit"] {
+  padding: 8px 15px;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.search input[type="submit"]:hover {
+  background-color: #0052a3;
+}
+
+/* Footer styles */
+.footer-wrapper {
+  background-color: #f0f0f0;
+  border-top: 1px solid #ccc;
+  padding: 20px 0;
+  margin-top: 40px;
+}
+
+.footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.footer .left a {
+  text-decoration: none;
+  color: #0066cc;
+  padding: 5px 10px;
+  border: 1px solid #0066cc;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.footer .left a:hover {
+  background-color: #0066cc;
+  color: white;
+}
+
+.footer .right {
+  text-align: right;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.clearer {
+  clear: both;
+}
