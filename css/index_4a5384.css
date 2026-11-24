@@ -1,0 +1,85 @@
+/* abstraction-provenance: {"artifact_sha256": "1d2e716f72aefb54d4012c624c56cb19ed99322204d8231a9cfc0ffdaf93956d", "source_sha256": "4a538441efa5dc693b7bd214f0716c6e858f0505fe24d6de5d4affff5e6c2478", "target_language": "css"} */
+/* index.html — portiert nach css */
+/* Quelle: html, openclaw-css@local:canvas/index.html */
+/* Erzeugt: 2026-11-24 durch ABSTRACTIONS_MANAGER.py */
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font: 16px/1.4 -apple-system, BlinkMacSystemFont, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.wrap {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.card {
+  width: min(720px, 100%);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 18px 18px 14px;
+}
+
+.title {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0.2px;
+}
+
+.sub {
+  opacity: 0.75;
+  font-size: 13px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+button {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.ok {
+  color: #24e08a;
+}
+
+.bad {
+  color: #ff5c5c;
+}
+
+.log {
+  margin-top: 14px;
+  opacity: 0.85;
+  font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  white-space: pre-wrap;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 10px;
+  border-radius: 12px;
+}
