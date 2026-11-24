@@ -1,0 +1,57 @@
+/* abstraction-provenance: {"artifact_sha256": "a1fbc2d1b8d19018c188315ebade021100b6a70c499b94797f0bd50418f64401", "source_sha256": "5f1051ecfd7f7a7dbdb89449a4e356b1ff5b7daa5e21e2c82defb13ede719988", "target_language": "css"} */
+/* index.html — portiert nach css */
+/* Quelle: html, OpenClaw@gateway1:skills/scripting-utils/references/tcl/index.html */
+/* auch in: OpenClaw@gateway2:skills/scripting-utils/references/tcl/index.html */
+/* auch in: workspace@local:git/skills/scripting-utils/references/tcl/index.html */
+/* auch in: workspace@local:skills/scripting-utils/references/tcl/index.html */
+/* auch in: 4 weiteren Fundstellen */
+/* Erzeugt: 2026-11-24 durch ABSTRACTIONS_MANAGER.py */
+
+body {
+    background-color: white;
+    color: black;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+#globalnav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#globalnav li {
+    float: left;
+}
+
+#globalnav li a {
+    display: block;
+    text-decoration: none;
+    padding: 8px 16px;
+}
+
+#globalnav li a.here {
+    font-weight: bold;
+}
+
+.keylist dt {
+    font-weight: bold;
+    margin-top: 1em;
+}
+
+.keylist dd {
+    margin-left: 0;
+}
+
+.footer {
+    text-align: center;
+}
+
+.banner {
+    text-align: right;
+    font-size: larger;
+    font-weight: bold;
+}
