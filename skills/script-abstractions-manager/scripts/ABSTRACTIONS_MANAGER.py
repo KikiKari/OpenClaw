@@ -306,12 +306,11 @@ def quellen_holen() -> List[Tuple[str, str, Path]]:
             logger.info("%s wird geholt", repo)
             ergebnis = _git("clone", "--mirror", "--filter=blob:none", url, str(spiegel))
             if ergebnis.returncode != 0:
-                logger.error("%s konnte nicht geholt werden: %s", repo, ergebnis.stderr.strip()[:200])
-                continue
+                raise RuntimeError(f"{repo}: Quellspiegel konnte nicht geholt werden")
         else:
             ergebnis = _git("remote", "update", "--prune", verzeichnis=spiegel)
             if ergebnis.returncode != 0:
-                logger.warning("%s konnte nicht aktualisiert werden: %s", repo, ergebnis.stderr.strip()[:200])
+                raise RuntimeError(f"{repo}: Quellspiegel konnte nicht aktualisiert werden")
 
         gewuenscht = eintrag["branches"]
         if gewuenscht == "alle":
