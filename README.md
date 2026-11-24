@@ -12,7 +12,7 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | --- | ---: | --- |
 | JavaScript | 1983 | `javascript/` |
 | Perl 5 | 2157 | `perl5/` |
-| PowerShell | 2114 | `powershell/` |
+| PowerShell | 2115 | `powershell/` |
 | Python | 2115 | `python/` |
 | Shell | 1461 | `shell/` |
 | Tcl | 2344 | `tcl/` |
@@ -23,10 +23,10 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Java | 86 | `java/` |
 | C | 72 | `c/` |
 | C++ | 62 | `cpp/` |
-| PHP | 79 | `php/` |
+| PHP | 80 | `php/` |
 | F# | 76 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **13848** | |
+| **Gesamt** | **13850** | |
 
 ## Vercel-Preview
 
