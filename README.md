@@ -20,13 +20,13 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Ruby | 424 | `ruby/` |
 | Lua | 421 | `lua/` |
 | Go | 265 | `go/` |
-| Java | 46 | `java/` |
-| C | 36 | `c/` |
-| C++ | 34 | `cpp/` |
+| Java | 47 | `java/` |
+| C | 37 | `c/` |
+| C++ | 35 | `cpp/` |
 | PHP | 48 | `php/` |
-| F# | 40 | `fsharp/` |
+| F# | 41 | `fsharp/` |
 | CSS | 4 | `css/` |
-| **Gesamt** | **13509** | |
+| **Gesamt** | **13513** | |
 
 ## Vercel-Preview
 
