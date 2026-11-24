@@ -22,11 +22,11 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Go | 265 | `go/` |
 | Java | 45 | `java/` |
 | C | 35 | `c/` |
-| C++ | 32 | `cpp/` |
-| PHP | 46 | `php/` |
+| C++ | 33 | `cpp/` |
+| PHP | 47 | `php/` |
 | F# | 40 | `fsharp/` |
-| CSS | 3 | `css/` |
-| **Gesamt** | **13502** | |
+| CSS | 4 | `css/` |
+| **Gesamt** | **13505** | |
 
 ## Vercel-Preview
 
