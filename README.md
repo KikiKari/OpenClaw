@@ -365,3 +365,13 @@ dort entstehen die ausführlichen Projektdokumentationen:
 | --- | --------- |
 | Gateway-Workspace | täglich ~06:15 und ~18:15 Uhr |
 | Script-Abstraktionen | täglich ~04:35 und ~13:35 Uhr |
+
+## Abstraction Manager: Entwicklungs- und Betriebsstand (24.11.2026)
+
+Die Arbeiten [0PE-265](https://linear.app/0penclaw/issue/0PE-265), [0PE-267](https://linear.app/0penclaw/issue/0PE-267), [0PE-277](https://linear.app/0penclaw/issue/0PE-277) und [0PE-278](https://linear.app/0penclaw/issue/0PE-278) verbinden die Spracherweiterung mit Projects, Gateway-Nodes und dem unabhängigen Observer. Der Runner erstellt einen commitgebundenen Quellenindex und Gateway-Auftrag; das Gateway verteilt Teilaufträge und der Runner prüft authentifizierte Ergebnisse. Die Modellkette über OpenRouter umfasst qwen/qwen3-coder, deepseek/deepseek-chat-v3.1, z-ai/glm-4.6, mistralai/codestral-2508 und qwen/qwen-2.5-coder-32b-instruct; `ABSTRACTIONS_MODELL` kann die Auswahl ersetzen.
+
+Der Observer läuft über Cron und erfasst Lauf-, Node-, Dependabot- und Anbieterzustände einschließlich Transport-, Rate-, Nutzungs- und Billing-Grenzen. Befunde werden projektbezogen priorisiert und mit bestehenden Linear-Issues einschließlich abgeschlossener und duplizierter Einträge abgeglichen; 0PE-277 bleibt das Entwicklungsissue. Projekt-Activity kann über bestehende Linear-Slack-Verknüpfungen weitergeleitet werden. Die konkrete Zustellung ist je Projekt zu belegen.
+
+**Nachweisstand:** [Projects-Lauf 388](https://github.com/KikiKari/Projects/actions/runs/45316876792) erstellte beide Artefakte, erreichte aber keinen vollständig bestätigten Rücktransport. Der [nachfolgende Lauf](https://github.com/KikiKari/Projects/actions/runs/45367050896) verarbeitet Teilaufträge; ein Node-Auftrag meldete `provider_invalid_response`. Linear lehnte die neue Issue-Anlage wegen der kostenlosen Issue-Grenze ab. Ein vollständiger produktiver Durchlauf mit authentifizierter Rückgabe bleibt nachzuweisen.
+
+[Vercel](https://vercel.com/openclaw-vercel-project): Das Projekt `abstractions` zeigt Produktions-Deployments von `gateway1-abstractions` und Preview-Deployments von `main` und `gateway1`; der aktuelle Zustand ist jeweils am Deployment zu prüfen. Weitere Einzelheiten stehen in der [Abstraction-Manager-Dokumentation](https://app.notion.com/p/4168d8ad3db981cd9ab4e7935df22343).
