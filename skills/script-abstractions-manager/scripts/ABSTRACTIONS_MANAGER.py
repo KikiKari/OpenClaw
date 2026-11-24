@@ -32,6 +32,7 @@ import logging
 import os
 import re
 import shutil
+import atexit
 import subprocess
 import sys
 import tempfile
@@ -245,7 +246,42 @@ def _git(*argumente: str, verzeichnis: Optional[Path] = None) -> subprocess.Comp
     if verzeichnis is not None:
         befehl += ["-C", str(verzeichnis)]
     befehl += list(argumente)
-    return subprocess.run(befehl, capture_output=True, text=True, timeout=600)
+    return subprocess.run(befehl, capture_output=True, text=True, timeout=1800)
+
+
+def _indizierter_quellbaum(spiegel: Path, repo: str, branch: str) -> Path:
+    """Materialisiere nur erfasste Quelltypen aus genau einem Branch-Commit."""
+    revision = _git("rev-parse", "--verify", "refs/heads/" + branch + "^{commit}", verzeichnis=spiegel)
+    if revision.returncode != 0:
+        raise RuntimeError("Branch-Commit nicht verfuegbar")
+    sha = revision.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", sha):
+        raise RuntimeError("ungueltiger Branch-Commit")
+    listing = subprocess.run(["git", "-C", str(spiegel), "ls-tree", "-r", "-z", "--full-tree", sha],
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=1800, check=True)
+    paths = []
+    for record in listing.stdout.split(b"\0"):
+        if not record:
+            continue
+        metadata, path = record.split(b"\t", 1)
+        if metadata.split(b" ")[1] != b"blob":
+            continue
+        if Path(os.fsdecode(path)).suffix.lower() in QUELLSPRACHEN:
+            paths.append(b":(literal)" + path)
+    parent = QUELLEN_DIR / "indizierte-baeume" / repo
+    parent.mkdir(parents=True, exist_ok=True)
+    baum = Path(tempfile.mkdtemp(prefix="quelle-", dir=parent))
+    try:
+        if paths:
+            result = subprocess.run(["git", "-C", str(spiegel), "--work-tree", str(baum),
+                                     "checkout", sha, "--pathspec-from-file=-", "--pathspec-file-nul"],
+                                    input=b"\0".join(paths) + b"\0", stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, timeout=1800, check=True)
+        atexit.register(shutil.rmtree, baum, ignore_errors=True)
+        return baum
+    except BaseException:
+        shutil.rmtree(baum, ignore_errors=True)
+        raise
 
 
 def quellen_holen() -> List[Tuple[str, str, Path]]:
@@ -285,14 +321,10 @@ def quellen_holen() -> List[Tuple[str, str, Path]]:
             branches = list(gewuenscht)  # type: ignore[arg-type]
 
         for branch in branches:
-            baum = QUELLEN_DIR / "baeume" / repo / branch.replace("/", "_")
-            baum.mkdir(parents=True, exist_ok=True)
-            ergebnis = _git("--work-tree", str(baum), "checkout", "-f", branch, "--", ".",
-                            verzeichnis=spiegel)
-            if ergebnis.returncode != 0:
-                logger.warning("%s@%s: Arbeitsbaum fehlgeschlagen: %s",
-                               repo, branch, ergebnis.stderr.strip()[:160])
-                continue
+            try:
+                baum = _indizierter_quellbaum(spiegel, repo, branch)
+            except (OSError, RuntimeError, subprocess.SubprocessError) as fehler:
+                raise RuntimeError(f"{repo}@{branch}: indizierter Checkout fehlgeschlagen") from fehler
             baeume.append((repo, branch, baum))
 
     # Lokale Gateway-Skripte gehören zum ursprünglichen Arbeitsumfang und
