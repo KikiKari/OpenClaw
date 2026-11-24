@@ -1,0 +1,90 @@
+/* abstraction-provenance: {"artifact_sha256": "d38381bace6cd7b5aa6ae01dbfe6a231e4270d889d349e1ae21ffb9f9e406bba", "source_sha256": "f3db1b8cfe4e73cf15a46abaabe8cbc46ae8eccd1fca8996e411f85cc1310df1", "target_language": "css"} */
+/* inline-widget-compare.html — portiert nach css */
+/* Quelle: html, openclaw-css@local:agents/ops-hub/agent/codex-home/.tmp/plugins/plugins/data-analytics/tests/inline-widget-compare.html */
+/* auch in: openclaw-css@local:agents/main/agent/codex-home/.tmp/plugins/plugins/data-analytics/tests/inline-widget-compare.html */
+/* auch in: openclaw-css@local:agents/cron/agent/codex-home/.tmp/plugins/plugins/data-analytics/tests/inline-widget-compare.html */
+/* auch in: openclaw-css@local:agents/knecht/agent/codex-home/.tmp/plugins/plugins/data-analytics/tests/inline-widget-compare.html */
+/* auch in: 1 weiteren Fundstellen */
+/* Erzeugt: 2026-11-24 durch ABSTRACTIONS_MANAGER.py */
+
+:root {
+  color-scheme: light dark;
+  --background: #f8fafc;
+  --foreground: #111827;
+  --muted: #64748b;
+  --border: #d8dee8;
+  --card: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #101318;
+    --foreground: #f8fafc;
+    --muted: #94a3b8;
+    --border: #2f3745;
+    --card: #151a22;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 28px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+header {
+  margin: 0 0 18px;
+}
+
+h1 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.panel {
+  min-width: 0;
+}
+
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+iframe {
+  display: block;
+  width: 100%;
+  height: 520px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+}
+
+#status {
+  margin-top: 14px;
+}
