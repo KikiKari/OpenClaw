@@ -24,9 +24,9 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | C | 35 | `c/` |
 | C++ | 32 | `cpp/` |
 | PHP | 45 | `php/` |
-| F# | 39 | `fsharp/` |
-| CSS | 2 | `css/` |
-| **Gesamt** | **13498** | |
+| F# | 40 | `fsharp/` |
+| CSS | 3 | `css/` |
+| **Gesamt** | **13500** | |
 
 ## Vercel-Preview
 
