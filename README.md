@@ -15,18 +15,18 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | PowerShell | 2104 | `powershell/` |
 | Python | 2098 | `python/` |
 | Shell | 1454 | `shell/` |
-| Tcl | 2327 | `tcl/` |
+| Tcl | 2328 | `tcl/` |
 | Raku | 119 | `perl6/` |
-| Ruby | 430 | `ruby/` |
-| Lua | 426 | `lua/` |
+| Ruby | 431 | `ruby/` |
+| Lua | 427 | `lua/` |
 | Go | 268 | `go/` |
-| Java | 65 | `java/` |
+| Java | 66 | `java/` |
 | C | 53 | `c/` |
 | C++ | 48 | `cpp/` |
 | PHP | 61 | `php/` |
 | F# | 57 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **13637** | |
+| **Gesamt** | **13641** | |
 
 ## Vercel-Preview
 
