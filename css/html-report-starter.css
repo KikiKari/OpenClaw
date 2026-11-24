@@ -1,0 +1,75 @@
+/* abstraction-provenance: {"artifact_sha256": "2f9b96a58acf054abc52885e0fdd6ef323147218fa40a87e6c9a9a4dc7627626", "source_sha256": "d2508f1d132639ec1970b1e3d2ada9d23d0c4412e09a085f814114586d1545f7", "target_language": "css"} */
+/* html-report-starter.html — portiert nach css */
+/* Quelle: html, openclaw-css@local:agents/ops-hub/agent/codex-home/.tmp/plugins/plugins/build-web-data-visualization/assets/templates/html-report-starter.html */
+/* auch in: openclaw-css@local:agents/main/agent/codex-home/.tmp/plugins/plugins/build-web-data-visualization/assets/templates/html-report-starter.html */
+/* auch in: openclaw-css@local:agents/cron/agent/codex-home/.tmp/plugins/plugins/build-web-data-visualization/assets/templates/html-report-starter.html */
+/* auch in: openclaw-css@local:agents/knecht/agent/codex-home/.tmp/plugins/plugins/build-web-data-visualization/assets/templates/html-report-starter.html */
+/* auch in: 1 weiteren Fundstellen */
+/* Erzeugt: 2026-11-23 durch ABSTRACTIONS_MANAGER.py */
+
+:root {
+  --ink: #172033;
+  --muted: #667085;
+  --accent: #2b59c3;
+  --rule: #d9dee8;
+  --panel: #f7f8fb;
+  --paper: #fffdfb;
+}
+
+body {
+  background: var(--paper);
+  font-family: "Source Serif Pro", "Georgia", serif;
+  color: var(--ink);
+  margin: 40px;
+  line-height: 1.5;
+}
+
+header,
+section {
+  margin-bottom: 28px;
+}
+
+figure {
+  border-top: 1px solid var(--rule);
+  margin: 0 0 32px;
+  padding-top: 22px;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: 8px;
+}
+
+.summary {
+  background: var(--panel);
+  border-left: 4px solid var(--accent);
+  padding: 16px 18px;
+}
+
+.figure-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.figure-dek {
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+
+.source {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 520px) {
+  body {
+    margin: 24px 18px;
+  }
+}
