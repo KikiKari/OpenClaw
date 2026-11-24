@@ -18,15 +18,15 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Tcl | 2334 | `tcl/` |
 | Raku | 119 | `perl6/` |
 | Ruby | 441 | `ruby/` |
-| Lua | 435 | `lua/` |
+| Lua | 436 | `lua/` |
 | Go | 268 | `go/` |
-| Java | 75 | `java/` |
+| Java | 76 | `java/` |
 | C | 61 | `c/` |
 | C++ | 55 | `cpp/` |
 | PHP | 71 | `php/` |
 | F# | 67 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **13737** | |
+| **Gesamt** | **13739** | |
 
 ## Vercel-Preview
 
