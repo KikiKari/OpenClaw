@@ -21,12 +21,12 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Lua | 441 | `lua/` |
 | Go | 268 | `go/` |
 | Java | 81 | `java/` |
-| C | 66 | `c/` |
-| C++ | 58 | `cpp/` |
+| C | 67 | `c/` |
+| C++ | 59 | `cpp/` |
 | PHP | 75 | `php/` |
 | F# | 72 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **13788** | |
+| **Gesamt** | **13790** | |
 
 ## Vercel-Preview
 
