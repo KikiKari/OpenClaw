@@ -957,6 +957,8 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
         zaehler["dateien"] += 1
         if not probelauf:
             zustand.setdefault("auswahl_cursor", {})[prioritaet] = eintrag["hash"]
+            if eintrag.get("source_blob"):
+                zustand.setdefault("auswahl_blob_cursor", {})[prioritaet] = eintrag["source_blob"]
         if not probelauf:
             for zielsprache in list(ziele):
                 vorhanden = vorhandenes_erzeugnis(eintrag, zielsprache, quelle)
@@ -1102,7 +1104,7 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
     zeilen += [
         f"| **gesamt** | **{sum(je_sprache.values())}** |",
         "",
-        "## Quellen",
+        "## Geladene Quellen",
         "",
         "| Prioritaet | Quelldateien | Bedeutung |",
         "|---|---:|---|",
@@ -1111,7 +1113,7 @@ def bericht_schreiben(inventar: List[Dict], zustand: Dict, zaehler: Dict[str, in
         f"| low | {je_prio['low']} | Markup und Stilvorlagen |",
         f"| **gesamt** | **{len(inventar)}** | nach Inhalt dedupliziert |",
         "",
-        f"Noch offene Sprachpaare: **{offen}**",
+        f"Offene Sprachpaare in den geladenen Quellen: **{offen}**",
         "",
         "## Letzter Lauf",
         "",
@@ -1225,20 +1227,56 @@ def main() -> int:
             return 2
 
     zustand = transport.state if transport is not None else zustand_laden()
-    baeume = quellen_holen()
-    if not baeume:
-        logger.error("Keine Quellen verfuegbar")
-        return 1
+    prioritaet = argumente.prioritaet or zustand.get("naechste_prioritaet", "high")
+    letzter_blob = None
+    vorheriger_blob = zustand.get("auswahl_blob_cursor", {}).get(prioritaet)
+    if ausfuehrung == "gateway":
+        import git_source_inventory
+        quellverzeichnis = Path(tempfile.mkdtemp(prefix="abstractions-selected-"))
+        atexit.register(shutil.rmtree, quellverzeichnis, ignore_errors=True)
+        index, git_inventar, letzter_blob = git_source_inventory.prepare_git_sources(
+            sys.modules[__name__], quellverzeichnis, zustand, prioritaet, argumente.anzahl,
+            None, None, None)
+        QUELLEN_DIR.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=QUELLEN_DIR,
+                                         prefix=".source-index-", delete=False) as datei:
+            json.dump(index, datei, ensure_ascii=True)
+            index_temp = datei.name
+        os.replace(index_temp, QUELLEN_DIR / "source-index.json")
 
-    inventar = inventar_bauen(baeume)
+        lokale_baeume = []
+        if WORKSPACE.is_dir():
+            lokale_baeume.append(("workspace", "local", WORKSPACE))
+        if WORKSPACE.parent.is_dir():
+            lokale_baeume.append(("openclaw-css", "local", WORKSPACE.parent))
+        lokal = inventar_bauen(lokale_baeume)
+        nach_hash = {eintrag["hash"]: eintrag for eintrag in git_inventar}
+        for eintrag in lokal:
+            bestehend = nach_hash.get(eintrag["hash"])
+            if bestehend is None:
+                nach_hash[eintrag["hash"]] = eintrag
+            else:
+                bestehend["herkunft"].extend(eintrag["herkunft"])
+                if not eintrag.get("css_only"):
+                    bestehend["css_only"] = False
+        rang = {"high": 0, "medium": 1, "low": 2}
+        inventar = sorted(nach_hash.values(), key=lambda e: (rang[e["prioritaet"]], e["name"]))
+    else:
+        baeume = quellen_holen()
+        if not baeume:
+            logger.error("Keine Quellen verfuegbar")
+            return 1
+        inventar = inventar_bauen(baeume)
     if not inventar:
         logger.error("Inventar leer")
         return 1
 
-    prioritaet = argumente.prioritaet or zustand.get("naechste_prioritaet", "high")
     zaehler = uebersetzen(inventar, zustand, prioritaet, argumente.anzahl,
                           argumente.probelauf, schluessel, dispatcher, transport,
                           state_saver=zustand_speichern)
+    if (ausfuehrung == "gateway" and not argumente.probelauf and letzter_blob
+            and zustand.get("auswahl_blob_cursor", {}).get(prioritaet) == vorheriger_blob):
+        zustand.setdefault("auswahl_blob_cursor", {})[prioritaet] = letzter_blob
 
     reihum = {"high": "medium", "medium": "low", "low": "high", "alle": "alle"}
     if not argumente.probelauf:
