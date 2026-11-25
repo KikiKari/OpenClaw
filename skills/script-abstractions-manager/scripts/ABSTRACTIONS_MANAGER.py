@@ -739,7 +739,12 @@ def erzeugnis_pruefen(code: str, zielsprache: str, quelle: str = "") -> Tuple[bo
         # sondern eine Luecke dieser Pruefumgebung. perl -c und node --check
         # brechen dann ab, obwohl die Syntax stimmt.
         if "Can't locate" in meldung or "Cannot find module" in meldung:
-            return False, "Fremdmodul fehlt hier — Syntax nicht abschliessend geprueft"
+            grund = "Fremdmodul fehlt hier — Syntax nicht abschliessend geprueft"
+            if zielsprache == "perl5":
+                treffer = re.search(r"Can't locate ([A-Za-z_][A-Za-z0-9_]*(?:/[A-Za-z_][A-Za-z0-9_]*)*\.pm) in @INC", meldung)
+                if treffer and len(treffer.group(1)) <= 160:
+                    grund += " (Perl-Modul " + treffer.group(1)[:-3].replace("/", "::") + ")"
+            return False, grund
         erste = meldung.splitlines()[0][:90] if meldung.splitlines() else "unbekannt"
         return False, "Syntaxfehler: " + erste
     except FileNotFoundError:
