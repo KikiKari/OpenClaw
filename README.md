@@ -14,8 +14,8 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Perl 5 | 2171 | `perl5/` |
 | PowerShell | 2130 | `powershell/` |
 | Python | 2130 | `python/` |
-| Shell | 1469 | `shell/` |
-| Tcl | 2359 | `tcl/` |
+| Shell | 1470 | `shell/` |
+| Tcl | 2360 | `tcl/` |
 | Raku | 127 | `perl6/` |
 | Ruby | 498 | `ruby/` |
 | Lua | 486 | `lua/` |
@@ -26,7 +26,7 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | PHP | 124 | `php/` |
 | F# | 112 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **14262** | |
+| **Gesamt** | **14264** | |
 
 ## Vercel-Preview
 
