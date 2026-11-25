@@ -137,7 +137,7 @@ class GatewayTransport:
         if entry.get('response') is not None:
             self._release(original, entry)
             return entry['response']
-        if entry.get('status') in ('failed', 'unknown'):
+        if entry.get('status') == 'failed':
             raise TransportUnresolved('attempt requires reconciliation')
         status = None
         if fresh:
