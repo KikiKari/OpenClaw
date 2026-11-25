@@ -858,17 +858,21 @@ def vorhandenes_erzeugnis(eintrag: Dict, zielsprache: str, quelle: str) -> Optio
     funde = []
     for pfad in verzeichnis.glob("*" + ZIELSPRACHEN[zielsprache]["ext"]):
         try:
-            inhalt = pfad.read_text(encoding="utf-8")
+            with pfad.open(encoding="utf-8") as datei:
+                kopf = datei.readline() + datei.readline()
+                kopfzeilen = kopf.splitlines(keepends=True)
+                indices = [i for i, zeile in enumerate(kopfzeilen[:2]) if marker in zeile]
+                if len(indices) != 1:
+                    continue
+                index = indices[0]
+                daten = json.loads(kopfzeilen[index].split(marker, 1)[1].removesuffix("\n").removesuffix(" */"))
+                if (daten.get("source_sha256") != eintrag["source_sha256"] or
+                    daten.get("target_language") != zielsprache):
+                    continue
+                inhalt = kopf + datei.read()
             zeilen = inhalt.splitlines(keepends=True)
-            indices = [i for i, zeile in enumerate(zeilen[:2]) if marker in zeile]
-            if len(indices) != 1:
-                continue
-            index = indices[0]
-            daten = json.loads(zeilen[index].split(marker, 1)[1].removesuffix("\n").removesuffix(" */"))
             ohne_marker = "".join(zeilen[:index] + zeilen[index + 1:])
-            if (daten.get("source_sha256") != eintrag["source_sha256"] or
-                daten.get("target_language") != zielsprache or
-                daten.get("artifact_sha256") != hashlib.sha256(ohne_marker.encode("utf-8")).hexdigest()):
+            if daten.get("artifact_sha256") != hashlib.sha256(ohne_marker.encode("utf-8")).hexdigest():
                 continue
             if erzeugnis_pruefen(ohne_marker, zielsprache, quelle)[0]:
                 funde.append((pfad, daten["artifact_sha256"]))
