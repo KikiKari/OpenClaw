@@ -266,7 +266,10 @@ def _indizierter_quellbaum(spiegel: Path, repo: str, branch: str) -> Path:
         metadata, path = record.split(b"\t", 1)
         if metadata.split(b" ")[1] != b"blob":
             continue
-        if Path(os.fsdecode(path)).suffix.lower() in QUELLSPRACHEN:
+        rel = os.fsdecode(path).replace("\\\\", "/")
+        if any(muster in "/" + rel for muster in AUSSCHLUSS):
+            continue
+        if Path(rel).suffix.lower() in QUELLSPRACHEN:
             paths.append(path)
     parent = QUELLEN_DIR / "indizierte-baeume" / repo
     parent.mkdir(parents=True, exist_ok=True)
