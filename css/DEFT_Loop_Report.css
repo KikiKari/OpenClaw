@@ -1,0 +1,739 @@
+/* abstraction-provenance: {"artifact_sha256": "10932a86a39a931eddf0bf3b94c054d19f59388d515b291b8360d44759e468e1", "source_sha256": "f8c6b0e0a423f9bfc649cb40047794690942f96157bf522cfc76ed541242c32d", "target_language": "css"} */
+/* DEFT_Loop_Report.html — portiert nach css */
+/* Quelle: html, openclaw-css@local:.agents/skills/tao-run-deft-aoi/references/DEFT_Loop_Report.html */
+/* auch in: openclaw-css@local:sandbox/skills-workspaces/workspace-f3c992266d3b75120e0e222552c8b980/.openclaw/sandbox-skills/skills/tao-run-deft-aoi/references/DEFT_Loop_Report.html */
+/* auch in: openclaw-css@local:sandbox/skills-workspaces/workspace-97716830f9b49eb0fc9cd952ca3a3696/.openclaw/sandbox-skills/skills/tao-run-deft-aoi/references/DEFT_Loop_Report.html */
+/* auch in: openclaw-css@local:sandbox/skills-workspaces/workspace-f67191ca898ff29193041eefe865b672/.openclaw/sandbox-skills/skills/tao-run-deft-aoi/references/DEFT_Loop_Report.html */
+/* auch in: 65 weiteren Fundstellen */
+/* Erzeugt: 2026-11-25 durch ABSTRACTIONS_MANAGER.py */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --nvidia-green: #76b900;
+  --nvidia-green-light: #8ed100;
+  --nvidia-yellow: #ffbc01;
+  --nvidia-red: #c2262d;
+  --nvidia-orange: #e67e22;
+  --bg-dark: #1a1a1a;
+  --bg-card: #232323;
+  --bg-panel: #2a2a2a;
+  --bg-panel-2: #2f2f2f;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-muted: #777777;
+  --grid-line: rgba(255,255,255,0.06);
+  --axis-line: rgba(255,255,255,0.15);
+  --border-soft: rgba(255,255,255,0.06);
+}
+
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+}
+
+body {
+  font-family: 'Inter', 'NVIDIA Sans', Arial, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 48px 0;
+  font-size: 16px;
+}
+
+.card {
+  width: 1280px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 36px 48px 40px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--nvidia-green), var(--nvidia-green-light));
+}
+
+.card.alert::before {
+  background: linear-gradient(90deg, var(--nvidia-red), #e74c3c);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.chart-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.chart-subtitle {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.chart-subtitle span { 
+  color: var(--nvidia-green); 
+  font-weight: 600; 
+}
+
+.chart-subtitle span.bad { 
+  color: var(--nvidia-red); 
+}
+
+.hero {
+  width: 1280px;
+  background: linear-gradient(135deg, #1f1f1f 0%, #2a2a2a 100%);
+  border-radius: 16px;
+  padding: 40px 48px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--nvidia-green), var(--nvidia-green-light));
+}
+
+.hero h1 {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.hero .meta {
+  display: flex;
+  gap: 32px;
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.hero .meta-item strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.hero .meta-item .value {
+  color: var(--nvidia-green);
+  font-weight: 700;
+}
+
+.kpi-banner {
+  margin-top: 24px;
+  padding: 18px 22px;
+  background: rgba(194,38,45,0.12);
+  border: 1px solid rgba(194,38,45,0.4);
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.kpi-banner .icon {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--nvidia-red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 19px;
+}
+
+.kpi-banner .content { 
+  flex: 1; 
+}
+
+.kpi-banner .title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--nvidia-red);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.kpi-banner .body {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.kpi-banner .body strong { 
+  color: var(--text-primary); 
+  font-weight: 600; 
+}
+
+.body-row {
+  display: flex;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.chart-col { 
+  flex: 1; 
+  min-width: 0; 
+}
+
+.chart-wrapper {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  height: 320px;
+}
+
+.y-axis-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 14px 32px 0;
+  width: 44px;
+}
+
+.y-tick {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-align: right;
+  line-height: 1;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  border-left: 1px solid var(--axis-line);
+  border-bottom: 1px solid var(--axis-line);
+}
+
+.grid-line {
+  position: absolute;
+  left: 0; right: 0;
+  border-top: 1px solid var(--grid-line);
+}
+
+.y-label {
+  position: absolute;
+  left: -28px;
+  top: 42%;
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.footnote {
+  margin-top: 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.info-col {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-section {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-soft);
+}
+
+.info-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--nvidia-green);
+  margin-bottom: 12px;
+}
+
+.info-text {
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+.info-text strong { 
+  color: var(--text-primary); 
+  font-weight: 600; 
+}
+
+.info-text code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--nvidia-green);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  font-size: 15px;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.data-table td {
+  padding: 13px 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+}
+
+.data-table tr:last-child td { 
+  border-bottom: none; 
+}
+
+.data-table tr.best { 
+  background: rgba(118,185,0,0.06); 
+}
+
+.data-table tr.best td { 
+  color: var(--text-primary); 
+}
+
+.data-table tr.regress { 
+  background: rgba(194,38,45,0.05); 
+}
+
+.data-table .badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.data-table .badge.best {
+  background: rgba(118,185,0,0.15);
+  color: var(--nvidia-green);
+  border: 1px solid rgba(118,185,0,0.35);
+}
+
+.data-table .badge.warn {
+  background: rgba(255,188,1,0.15);
+  color: var(--nvidia-yellow);
+  border: 1px solid rgba(255,188,1,0.35);
+}
+
+.data-table .badge.bad {
+  background: rgba(194,38,45,0.15);
+  color: var(--nvidia-red);
+  border: 1px solid rgba(194,38,45,0.35);
+}
+
+.pos { 
+  color: var(--nvidia-green); 
+  font-weight: 600; 
+}
+
+.neg { 
+  color: var(--nvidia-red); 
+  font-weight: 600; 
+}
+
+.num { 
+  font-family: 'SF Mono', 'Fira Code', monospace; 
+  font-variant-numeric: tabular-nums; 
+}
+
+.check { 
+  color: var(--nvidia-green); 
+  font-weight: 700; 
+}
+
+.cross { 
+  color: var(--nvidia-red); 
+  font-weight: 700; 
+}
+
+.warn  { 
+  color: var(--nvidia-yellow); 
+  font-weight: 700; 
+}
+
+.insight {
+  background: rgba(41,128,185,0.1);
+  border-left: 3px solid #2980b9;
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 18px 0 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.insight strong { 
+  color: var(--text-primary); 
+  font-weight: 600; 
+}
+
+.insight code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: #5dade2;
+}
+
+.context-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 8px;
+}
+
+.context-list li {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  padding: 5px 0 5px 22px;
+  position: relative;
+}
+
+.context-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  color: var(--nvidia-green);
+  font-size: 13px;
+}
+
+.context-list li strong { 
+  color: var(--text-primary); 
+  font-weight: 600; 
+}
+
+.context-list li code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  color: var(--nvidia-green);
+}
+
+.iter-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.iter-card {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-soft);
+  position: relative;
+}
+
+.iter-card.best {
+  border-color: rgba(118,185,0,0.35);
+  background: linear-gradient(180deg, rgba(118,185,0,0.05) 0%, var(--bg-panel) 100%);
+}
+
+.iter-card.regress {
+  border-color: rgba(194,38,45,0.25);
+}
+
+.iter-card .iter-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.iter-card.best .iter-tag {
+  background: var(--nvidia-green);
+  color: #000;
+}
+
+.iter-card.regress .iter-tag {
+  background: rgba(194,38,45,0.2);
+  color: var(--nvidia-red);
+  border: 1px solid rgba(194,38,45,0.35);
+}
+
+.iter-card .iter-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.iter-card .iter-far {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 18px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+
+.iter-card.best .iter-far { 
+  color: var(--nvidia-green); 
+}
+
+.iter-card.regress .iter-far { 
+  color: var(--nvidia-red); 
+}
+
+.iter-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.iter-card li {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  padding: 5px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.iter-card li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--nvidia-green);
+  font-size: 12px;
+}
+
+.iter-card li.warn::before { 
+  color: var(--nvidia-red); 
+}
+
+.reco-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.reco {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--border-soft);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.reco .num-badge {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(118,185,0,0.15);
+  color: var(--nvidia-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 17px;
+  border: 1px solid rgba(118,185,0,0.3);
+}
+
+.reco .reco-body { 
+  flex: 1; 
+}
+
+.reco .reco-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.reco .reco-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.reco .reco-desc code {
+  background: rgba(255,255,255,0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--nvidia-green);
+}
+
+.final-status {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 20px 24px;
+  border: 1px solid var(--border-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.final-status .status-block { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 4px; 
+}
+
+.final-status .status-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.final-status .status-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.final-status .status-value.green { 
+  color: var(--nvidia-green); 
+}
+
+.final-status .checkpoint {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  color: var(--nvidia-green);
+  background: rgba(118,185,0,0.08);
+  padding: 6px 10px;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+h2.section-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+}
+
+h3.sub-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+  margin: 24px 0 14px;
+}
+
+.sample-iter-block {
+  margin-bottom: 36px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.sample-iter-block:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.sample-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 640px;
+}
+
+.sample-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sample-col-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.sample-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-panel);
+  display: block;
+}
+
+.sample-img-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  border: 1px dashed rgba(255,255,255,0.12);
+  background: var(--bg-panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-style: italic;
+}
