@@ -266,7 +266,7 @@ def _indizierter_quellbaum(spiegel: Path, repo: str, branch: str) -> Path:
         metadata, path = record.split(b"\t", 1)
         if metadata.split(b" ")[1] != b"blob":
             continue
-        rel = os.fsdecode(path).replace("\\\\", "/")
+        rel = os.fsdecode(path).replace("\\", "/")
         if any(muster in "/" + rel for muster in AUSSCHLUSS):
             continue
         if Path(rel).suffix.lower() in QUELLSPRACHEN:
