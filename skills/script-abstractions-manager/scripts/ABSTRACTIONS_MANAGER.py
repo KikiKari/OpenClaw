@@ -124,8 +124,8 @@ MODELLE: List[str] = [
     "qwen/qwen-2.5-coder-32b-instruct",
 ]
 API_URL = "https://openrouter.ai/api/v1/chat/completions"
-ZEITLIMIT = 240
-VERSUCHE = 3
+ZEITLIMIT = 60
+VERSUCHE = 2
 
 # Mindestreserven auf dem Gateway und auf den entfernten Nodes.
 GATEWAY_MIN_FREI = 40 * 1024**3
