@@ -19,14 +19,14 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Raku | 121 | `perl6/` |
 | Ruby | 457 | `ruby/` |
 | Lua | 451 | `lua/` |
-| Go | 273 | `go/` |
-| Java | 89 | `java/` |
-| C | 77 | `c/` |
+| Go | 274 | `go/` |
+| Java | 90 | `java/` |
+| C | 78 | `c/` |
 | C++ | 67 | `cpp/` |
 | PHP | 86 | `php/` |
 | F# | 81 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **13901** | |
+| **Gesamt** | **13904** | |
 
 ## Vercel-Preview
 
