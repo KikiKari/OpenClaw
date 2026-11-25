@@ -10,7 +10,7 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 1986 | `javascript/` |
+| JavaScript | 1987 | `javascript/` |
 | Perl 5 | 2159 | `perl5/` |
 | PowerShell | 2119 | `powershell/` |
 | Python | 2117 | `python/` |
@@ -22,11 +22,11 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Go | 296 | `go/` |
 | Java | 116 | `java/` |
 | C | 100 | `c/` |
-| C++ | 87 | `cpp/` |
-| PHP | 109 | `php/` |
-| F# | 101 | `fsharp/` |
+| C++ | 88 | `cpp/` |
+| PHP | 110 | `php/` |
+| F# | 102 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **14094** | |
+| **Gesamt** | **14098** | |
 
 ## Vercel-Preview
 
