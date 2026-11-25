@@ -293,23 +293,15 @@ def _indizierter_quellbaum(spiegel: Path, repo: str, branch: str) -> Path:
 
 
 def quellen_holen() -> List[Tuple[str, str, Path]]:
-    """
-    Holt oder aktualisiert die Quell-Repositories und legt fuer jeden Branch
-    einen Arbeitsbaum an.
+    """Holt Quellspiegel und bereitet Branches begrenzt parallel vor."""
+    from concurrent.futures import ThreadPoolExecutor
 
-    Alle drei Repositories sind oeffentlich, es wird daher kein Token benoetigt.
-
-    Returns:
-        Liste aus (Repo, Branch, Pfad zum Arbeitsbaum).
-    """
     QUELLEN_DIR.mkdir(parents=True, exist_ok=True)
-    baeume: List[Tuple[str, str, Path]] = []
 
-    for eintrag in QUELLEN:
+    def repository(eintrag):
         repo = str(eintrag["repo"])
         spiegel = QUELLEN_DIR / f"{repo}.git"
         url = f"https://github.com/{GITHUB_BENUTZER}/{repo}.git"
-
         if not spiegel.exists():
             logger.info("%s wird geholt", repo)
             ergebnis = _git("clone", "--mirror", "--filter=blob:none", url, str(spiegel))
@@ -323,23 +315,28 @@ def quellen_holen() -> List[Tuple[str, str, Path]]:
         gewuenscht = eintrag["branches"]
         if gewuenscht == "alle":
             aus = _git("for-each-ref", "--format=%(refname:short)", "refs/heads", verzeichnis=spiegel)
+            if aus.returncode != 0:
+                raise RuntimeError(f"{repo}: Branchliste konnte nicht gelesen werden")
             branches = [z.strip() for z in aus.stdout.splitlines() if z.strip()]
         else:
-            branches = list(gewuenscht)  # type: ignore[arg-type]
+            branches = list(gewuenscht)
 
-        for branch in branches:
+        def branch_baum(branch):
             try:
                 baum = _indizierter_quellbaum(spiegel, repo, branch)
             except (OSError, RuntimeError, subprocess.SubprocessError) as fehler:
                 raise RuntimeError(f"{repo}@{branch}: indizierter Checkout fehlgeschlagen") from fehler
-            baeume.append((repo, branch, baum))
+            return repo, branch, baum
 
-    # Lokale Gateway-Skripte gehören zum ursprünglichen Arbeitsumfang und
-    # müssen auch dann erfasst werden, wenn der Git-Sync noch aussteht.
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            return list(pool.map(branch_baum, branches))
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        baeume = [baum for gruppe in pool.map(repository, QUELLEN) for baum in gruppe]
+
     if os.environ.get("ABSTRACTIONS_EXECUTION", "gateway") == "gateway":
         if WORKSPACE.is_dir():
             baeume.append(("workspace", "local", WORKSPACE))
-        # CSS-Quellen ausserhalb des Workspace: gesamtes OpenClaw-Verzeichnis.
         if WORKSPACE.parent.is_dir():
             baeume.append(("openclaw-css", "local", WORKSPACE.parent))
 
