@@ -287,7 +287,7 @@ def _indizierter_quellbaum(spiegel: Path, repo: str, branch: str) -> Path:
                 subprocess.run(["git", "-C", str(spiegel), "--work-tree", str(baum), "checkout-index", "--stdin", "-z",
                                 "--prefix=" + str(baum) + "/"],
                                input=b"\0".join(paths) + b"\0", env=env,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=3000, check=True)
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
         atexit.register(shutil.rmtree, baum, ignore_errors=True)
         return baum
     except BaseException:
