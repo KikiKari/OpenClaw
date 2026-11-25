@@ -17,8 +17,8 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Shell | 1464 | `shell/` |
 | Tcl | 2349 | `tcl/` |
 | Raku | 124 | `perl6/` |
-| Ruby | 483 | `ruby/` |
-| Lua | 471 | `lua/` |
+| Ruby | 484 | `ruby/` |
+| Lua | 472 | `lua/` |
 | Go | 296 | `go/` |
 | Java | 116 | `java/` |
 | C | 100 | `c/` |
@@ -26,7 +26,7 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | PHP | 110 | `php/` |
 | F# | 102 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **14103** | |
+| **Gesamt** | **14105** | |
 
 ## Vercel-Preview
 
