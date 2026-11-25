@@ -920,6 +920,23 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
         position = next((i for i, e in enumerate(offen) if e["hash"] == cursor), None)
         if position is not None:
             offen = offen[position + 1:] + offen[:position + 1]
+    # Git- und Workspace-Quellen abwechselnd einplanen, damit ein voller
+    # Workspace das ausgewählte Git-Inventar nicht dauerhaft verdrängt.
+    if any(e.get("source_blob") for e in offen):
+        git_quellen = iter(e for e in offen if e.get("source_blob"))
+        lokale_quellen = iter(e for e in offen if not e.get("source_blob"))
+        gemischt = []
+        fehlend_eintrag = object()
+        while True:
+            git_eintrag = next(git_quellen, fehlend_eintrag)
+            lokal_eintrag = next(lokale_quellen, fehlend_eintrag)
+            if git_eintrag is fehlend_eintrag and lokal_eintrag is fehlend_eintrag:
+                break
+            if git_eintrag is not fehlend_eintrag:
+                gemischt.append(git_eintrag)
+            if lokal_eintrag is not fehlend_eintrag:
+                gemischt.append(lokal_eintrag)
+        offen = gemischt
     logger.info("Prioritaet %s: %d Quelldateien im Bestand", prioritaet, len(offen))
 
     for eintrag in offen:
