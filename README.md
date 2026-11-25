@@ -10,23 +10,23 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 1988 | `javascript/` |
-| Perl 5 | 2162 | `perl5/` |
+| JavaScript | 1989 | `javascript/` |
+| Perl 5 | 2163 | `perl5/` |
 | PowerShell | 2120 | `powershell/` |
-| Python | 2118 | `python/` |
+| Python | 2120 | `python/` |
 | Shell | 1465 | `shell/` |
 | Tcl | 2350 | `tcl/` |
-| Raku | 124 | `perl6/` |
+| Raku | 125 | `perl6/` |
 | Ruby | 485 | `ruby/` |
 | Lua | 473 | `lua/` |
-| Go | 299 | `go/` |
+| Go | 300 | `go/` |
 | Java | 120 | `java/` |
-| C | 102 | `c/` |
+| C | 103 | `c/` |
 | C++ | 91 | `cpp/` |
 | PHP | 112 | `php/` |
 | F# | 103 | `fsharp/` |
 | CSS | 15 | `css/` |
-| **Gesamt** | **14127** | |
+| **Gesamt** | **14134** | |
 
 ## Vercel-Preview
 
