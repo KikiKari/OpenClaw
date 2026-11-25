@@ -1274,10 +1274,6 @@ def main() -> int:
     zaehler = uebersetzen(inventar, zustand, prioritaet, argumente.anzahl,
                           argumente.probelauf, schluessel, dispatcher, transport,
                           state_saver=zustand_speichern)
-    if (ausfuehrung == "gateway" and not argumente.probelauf and letzter_blob
-            and zustand.get("auswahl_blob_cursor", {}).get(prioritaet) == vorheriger_blob):
-        zustand.setdefault("auswahl_blob_cursor", {})[prioritaet] = letzter_blob
-
     reihum = {"high": "medium", "medium": "low", "low": "high", "alle": "alle"}
     if not argumente.probelauf:
         zustand["naechste_prioritaet"] = reihum[prioritaet]
