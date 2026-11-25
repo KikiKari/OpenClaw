@@ -937,6 +937,34 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             if lokal_eintrag is not fehlend_eintrag:
                 gemischt.append(lokal_eintrag)
         offen = gemischt
+    # Existing unresolved attempts must retain their identities and may not be
+    # resubmitted. Prefer sources with independent work before reconciling them.
+    if transport is not None:
+        auftraege = zustand.get("auftraege", {})
+
+        def hat_unabhaengige_arbeit(eintrag):
+            try:
+                if eintrag["bytes"] > MAX_BYTES:
+                    return 1
+                roh = Path(eintrag["pfad"]).read_bytes()
+                digest = hashlib.sha256(roh).hexdigest()
+                text = roh.decode("utf-8", errors="replace")
+                fertig = set(erledigt.get(eintrag["hash"], []))
+                ziele = zielsprachen_fuer(eintrag["sprache"], text)
+                if eintrag.get("css_only"):
+                    ziele = [z for z in ziele if z == "css"]
+                for ziel in ziele:
+                    if ziel in fertig or ziel in fehlend:
+                        continue
+                    vorher = auftraege.get(digest + ":" + ziel)
+                    if vorher is None or (isinstance(vorher, dict) and
+                                          vorher.get("status") in ("completed", "rejected")):
+                        return 0
+            except (OSError, KeyError, TypeError, ValueError):
+                pass
+            return 1
+
+        offen.sort(key=hat_unabhaengige_arbeit)
     logger.info("Prioritaet %s: %d Quelldateien im Bestand", prioritaet, len(offen))
 
     for eintrag in offen:
