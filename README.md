@@ -10,23 +10,23 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 2005 | `javascript/` |
-| Perl 5 | 2181 | `perl5/` |
-| PowerShell | 2141 | `powershell/` |
-| Python | 2140 | `python/` |
-| Shell | 1474 | `shell/` |
-| Tcl | 2369 | `tcl/` |
-| Raku | 128 | `perl6/` |
-| Ruby | 511 | `ruby/` |
-| Lua | 498 | `lua/` |
-| Go | 301 | `go/` |
-| Java | 181 | `java/` |
-| C | 157 | `c/` |
-| C++ | 135 | `cpp/` |
-| PHP | 170 | `php/` |
-| F# | 154 | `fsharp/` |
+| JavaScript | 2018 | `javascript/` |
+| Perl 5 | 2194 | `perl5/` |
+| PowerShell | 2153 | `powershell/` |
+| Python | 2152 | `python/` |
+| Shell | 1485 | `shell/` |
+| Tcl | 2383 | `tcl/` |
+| Raku | 130 | `perl6/` |
+| Ruby | 527 | `ruby/` |
+| Lua | 511 | `lua/` |
+| Go | 306 | `go/` |
+| Java | 196 | `java/` |
+| C | 172 | `c/` |
+| C++ | 143 | `cpp/` |
+| PHP | 185 | `php/` |
+| F# | 168 | `fsharp/` |
 | CSS | 16 | `css/` |
-| **Gesamt** | **14561** | |
+| **Gesamt** | **14739** | |
 
 ## Vercel-Preview
 
