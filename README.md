@@ -23,10 +23,10 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | Java | 153 | `java/` |
 | C | 131 | `c/` |
 | C++ | 111 | `cpp/` |
-| PHP | 141 | `php/` |
-| F# | 128 | `fsharp/` |
+| PHP | 142 | `php/` |
+| F# | 129 | `fsharp/` |
 | CSS | 16 | `css/` |
-| **Gesamt** | **14420** | |
+| **Gesamt** | **14422** | |
 
 ## Vercel-Preview
 
