@@ -971,6 +971,31 @@ def uebersetzen(inventar: List[Dict], zustand: Dict, prioritaet: str,
             logger.warning("%s nicht lesbar: %s", eintrag["name"], fehler)
             continue
 
+        # Keep unresolved attempts intact; an unavailable status cannot be
+        # resubmitted. Independent source/target pairs can still progress.
+        if transport is not None and not probelauf:
+            bearbeitbar = []
+            for ziel in ziele:
+                vorher = zustand.get("auftraege", {}).get(eintrag["source_sha256"] + ":" + ziel)
+                if isinstance(vorher, dict) and vorher.get("status") in ("submitted", "unknown", "failed"):
+                    if vorher.get("status") == "failed":
+                        continue
+                    original = vorher.get("job")
+                    if not isinstance(original, dict):
+                        continue
+                    try:
+                        status = transport._request(original["selected_node"],
+                            {"operation": "status", "job_id": original["job_id"],
+                             "attempt_id": original["attempt_id"]}, original["selected_device_id"])
+                    except (KeyError, ValueError, RuntimeError, OSError):
+                        continue
+                    if not isinstance(status, dict) or status.get("status") not in ("running", "completed"):
+                        continue
+                bearbeitbar.append(ziel)
+            ziele = bearbeitbar
+            if not ziele:
+                continue
+
         zaehler["dateien"] += 1
         if not probelauf:
             zustand.setdefault("auswahl_cursor", {})[prioritaet] = eintrag["hash"]
