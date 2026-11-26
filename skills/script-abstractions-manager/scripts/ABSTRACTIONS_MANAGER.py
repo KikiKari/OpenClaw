@@ -1244,9 +1244,14 @@ def main() -> int:
             spec.loader.exec_module(module)
             class GatewayDispatcher(module.JobDispatcher):
                 def select_node(self, job_weight):
-                    preferred = {"heavy": ("node1", "node2", "node5", "node6"),
-                                 "medium": ("node1", "node2", "node3", "node6"),
-                                 "light": ("node2", "node1", "node3", "node4")}[job_weight]
+                    primary = {"heavy": ("node1", "node2", "node5", "node6"),
+                               "medium": ("node1", "node2", "node3", "node6"),
+                               "light": ("node2", "node1", "node3", "node4")}[job_weight]
+                    turns = getattr(self, "_node_turn", {})
+                    offset = turns.get(job_weight, 0) % len(primary)
+                    rotated = primary[offset:] + primary[:offset]
+                    preferred = rotated + tuple(node for node in
+                        ("node1", "node2", "node3", "node4", "node5", "node6") if node not in primary)
                     try:
                         states = transport.available()
                     except TransportUnresolved:
@@ -1259,6 +1264,9 @@ def main() -> int:
                         if states.get(node) is not True or not isinstance(device_id, str) or not device_id:
                             continue
                         if node_hat_reserve(node, device_id, frei):
+                            turns[job_weight] = ((primary.index(node) + 1) % len(primary)
+                                                 if node in primary else (offset + 1) % len(primary))
+                            self._node_turn = turns
                             return node
                         logger.warning("%s: Speicherreserve unterschritten oder nicht nachgewiesen", node)
                     return None
