@@ -12,12 +12,12 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | --- | ---: | --- |
 | JavaScript | 2143 | `javascript/` |
 | Perl 5 | 2323 | `perl5/` |
-| PowerShell | 2268 | `powershell/` |
-| Python | 2271 | `python/` |
-| Shell | 1602 | `shell/` |
-| Tcl | 2519 | `tcl/` |
+| PowerShell | 2269 | `powershell/` |
+| Python | 2272 | `python/` |
+| Shell | 1603 | `shell/` |
+| Tcl | 2520 | `tcl/` |
 | Raku | 200 | `perl6/` |
-| Ruby | 664 | `ruby/` |
+| Ruby | 665 | `ruby/` |
 | Lua | 652 | `lua/` |
 | Go | 404 | `go/` |
 | Java | 334 | `java/` |
@@ -26,7 +26,7 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 | PHP | 318 | `php/` |
 | F# | 300 | `fsharp/` |
 | CSS | 52 | `css/` |
-| **Gesamt** | **16602** | |
+| **Gesamt** | **16607** | |
 
 ## Vercel-Preview
 
