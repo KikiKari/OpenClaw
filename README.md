@@ -10,23 +10,23 @@ Die Tabelle wird aus den versionierten Dateien automatisch aktualisiert. Details
 
 | Sprache | Aktive Dateien | Verzeichnis |
 | --- | ---: | --- |
-| JavaScript | 2132 | `javascript/` |
-| Perl 5 | 2312 | `perl5/` |
-| PowerShell | 2259 | `powershell/` |
-| Python | 2260 | `python/` |
-| Shell | 1591 | `shell/` |
-| Tcl | 2507 | `tcl/` |
-| Raku | 192 | `perl6/` |
-| Ruby | 652 | `ruby/` |
-| Lua | 639 | `lua/` |
-| Go | 394 | `go/` |
-| Java | 324 | `java/` |
-| C | 284 | `c/` |
-| C++ | 246 | `cpp/` |
-| PHP | 308 | `php/` |
-| F# | 289 | `fsharp/` |
-| CSS | 51 | `css/` |
-| **Gesamt** | **16440** | |
+| JavaScript | 2142 | `javascript/` |
+| Perl 5 | 2322 | `perl5/` |
+| PowerShell | 2268 | `powershell/` |
+| Python | 2271 | `python/` |
+| Shell | 1602 | `shell/` |
+| Tcl | 2519 | `tcl/` |
+| Raku | 200 | `perl6/` |
+| Ruby | 664 | `ruby/` |
+| Lua | 652 | `lua/` |
+| Go | 404 | `go/` |
+| Java | 334 | `java/` |
+| C | 295 | `c/` |
+| C++ | 257 | `cpp/` |
+| PHP | 318 | `php/` |
+| F# | 300 | `fsharp/` |
+| CSS | 52 | `css/` |
+| **Gesamt** | **16600** | |
 
 ## Vercel-Preview
 
